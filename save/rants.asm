@@ -78,13 +78,13 @@ SRAMFirstBootPattern::
 	db "DevEd"
 	ds 16 
 	db "MAP FORGING"
-	ds 4
+	ds 16
 	db "ISSOtm"
-	ds 4
+	ds 16
 	db "Parzival Wolfram"
-	ds 4
+	ds 16
 	db "Kaikun97 (Kai)"
-	ds 4
+	ds 16 * 2
 	db "TESTING AND DEBUGGING"
 	ds 16
 	db "Parzival Wolfram"

@@ -514,7 +514,7 @@
 01:5240 IntroTileset
 01:6000 SRAMCommonPattern
 01:6FFD SRAMFirstBootPattern
-01:7B06 SRAMFirstBootEnd
+01:7B75 SRAMFirstBootEnd
 01:6E8A SRAMCommonEnd
 02:51E7 TextboxBorderTiles
 02:5257 TextboxBorderTilesEnd

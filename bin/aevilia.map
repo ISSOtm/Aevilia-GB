@@ -535,7 +535,7 @@ ROM Bank #1:
   SECTION: $6000-$7FFC ($1FFD bytes) ["Rant #0"]
            $6000 = SRAMCommonPattern
            $6FFD = SRAMFirstBootPattern
-           $7B06 = SRAMFirstBootEnd
+           $7B75 = SRAMFirstBootEnd
            $6E8A = SRAMCommonEnd
     SLACK: $003A bytes
 
