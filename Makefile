@@ -21,8 +21,12 @@ RGBFIX = ./rgbfix
 
 all: $(bindir)/aevilia.gbc
 
+$(bindir)/aevilia.sym:
+	rm $(bindir)/aevilia.gbc
+	make $(bindir)/aevilia.gbc
+
 $(bindir)/aevilia.gbc: $(objdir)/aevilia.o $(objdir)/home.o $(objdir)/gfx.o $(objdir)/txt.o $(objdir)/error_handler.o $(objdir)/save.o $(objdir)/map.o $(objdir)/font.o $(objdir)/thread2.o $(objdir)/testmaps.o $(objdir)/intromap.o $(objdir)/sound.o $(objdir)/battle.o $(objdir)/defaultsave.o $(objdir)/rants.o
-	$(RGBLINK) $(LFLAGS) -n aevilia.sym -m aevilia.map -o $@ $^
+	$(RGBLINK) $(LFLAGS) -n $(bindir)/aevilia.sym -m $(bindir)/aevilia.map -o $@ $^
 	$(RGBFIX) $(FFLAGS) $@
 	
 	
