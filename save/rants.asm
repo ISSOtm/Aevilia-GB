@@ -76,7 +76,15 @@ SRAMFirstBootPattern::
 	db "SOUND"
 	ds 16
 	db "DevEd"
-	ds 16 * 2
+	ds 16 
+	db "MAP FORGING"
+	ds 4
+	db "ISSOtm"
+	ds 4
+	db "Parzival Wolfram"
+	ds 4
+	db "Kaikun97 (Kai)"
+	ds 4
 	db "TESTING AND DEBUGGING"
 	ds 16
 	db "Parzival Wolfram"
