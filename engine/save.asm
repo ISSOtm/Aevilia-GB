@@ -1,0 +1,1504 @@
+
+INCLUDE "macros.asm"
+INCLUDE "constants.asm"
+
+	
+HIGHLIGHT_LENGTH equ 14
+	
+SECTION "File select", ROMX
+
+FileSelectHighlight::
+	ld b, 3
+.highlightLoop
+	ld c, HIGHLIGHT_LENGTH
+	call FillVRAMLite
+	ld de, VRAM_ROW_SIZE - HIGHLIGHT_LENGTH
+	add hl, de
+	dec b
+	jr nz, .highlightLoop
+	ret
+	
+FileSelectOptionStrings::
+	dstr "MANAGE FILES"
+	dstr "COPY FILE..."
+	dstr "ERASE FILE..."
+	
+FileSelectOptions::
+	ld a, 1
+	ld [wTextboxStatus], a
+	ld [rVBK], a
+	
+	ld hl, $9C00
+	ld c, $20
+	ld a, $41
+	call FillVRAMLite
+	ld c, $20
+	ld a, 1
+	call FillVRAMLite
+	
+	ld c, 14
+	ld a, $42
+	call FillVRAMLite
+	
+	xor a
+	ld bc, $14B
+	call FillVRAM
+	
+	ld [rVBK], a
+	
+	ld hl, $9C00
+	ld c, $20
+	ld a, "_"
+	call FillVRAMLite
+	xor a
+	ld c, $21
+	call FillVRAMLite
+	ld c, 13
+	ld a, "_"
+	call FillVRAMLite
+	xor a
+	ld bc, $122
+	call FillVRAM
+	
+	ld hl, FileSelectOptionStrings
+	ld de, $9C21
+	call CopyStrToVRAM
+	ld e, $84
+	call CopyStrToVRAM
+	ld e, $C4
+	call CopyStrToVRAM
+	
+	call WaitForTextbox ; This will begin to rise the window
+	ld hl, wTextboxStatus
+	inc [hl] ; Go past the window's normal boundary, which will make it continue rising
+	
+	; Perform rest of scrolling animation
+.scrollingLoop
+	rst waitVBlank
+	ld a, [hl]
+	cp TILE_SIZE * 14
+	jr c, .scrollingLoop
+	
+	; Keeping using the textbox system would require constantly overwriting wTextboxStatus,
+	; so instead we just move the window normally
+	; Besides, the textbox disables sprites, and we need one.
+	ld a, $1E
+	ld [wWY], a
+	ld a, 7
+	ld [wWX], a
+	
+	xor a ; Disable textbox trickery
+	ld [wTextboxStatus], a
+	inc a ; ld a, 1
+	ld [wEnableWindow], a
+	ld [wNumOfSprites], a
+	ld [wTransferSprites], a
+	
+	ld hl, wVirtualOAM
+	ld a, $50
+	ld [hli], a
+	ld a, $48
+	ld [hli], a
+	ld a, 1
+	ld [hli], a
+	ld [hl], a
+	
+	ld a, $40
+	ld [wYPos], a
+	ld [wXPos], a
+	
+	ld hl, CursorTile
+	ld de, $8010
+	ld bc, VRAM_TILE_SIZE
+	ld a, BANK(CursorTile)
+	call CopyAcrossToVRAM
+	
+	; Clear the area under the window
+	ld a, 2
+	ld hl, $98C0
+	ld bc, 14 * VRAM_ROW_SIZE
+	call FillVRAM
+	dec a ; ld a, 1
+	ld [rVBK], a
+	inc a ; ld a, 2
+	ld hl, $98C0
+	ld bc, 14 * VRAM_ROW_SIZE
+	call FillVRAM
+	xor a
+	ld [rVBK], a
+	
+	ld bc, 10
+	call DelayBCFrames
+	
+.mainloop
+	rst waitVBlank
+	ldh a, [hPressedButtons]
+	ld b, a
+	and $06
+	jp nz, FileSelectOptionsEnd
+	
+	ldh a, [hHeldButtons]
+	and $F0
+	jr z, .dontMove
+	
+	; Use keys to move sprite on-screen
+	rlca
+	jr nc, .notDown
+	rlca
+	ld c, a
+	ld a, [wYPos]
+	cp $8F
+	jr z, .noVertMovement
+	inc a
+	ld [wYPos], a
+	jr .noVertMovement
+.notDown
+	rlca
+	jr nc, .noVertMovement + 1
+	ld c, a
+	ld a, [wYPos]
+	and a
+	jr z, .noVertMovement
+	dec a
+	ld [wYPos], a
+.noVertMovement
+	ld a, c
+	rlca
+	jr nc, .noLeft
+	ld a, [wXPos]
+	and a
+	jr z, .noHorizMovement
+	dec a
+	ld [wXPos], a
+	jr .noHorizMovement
+.noLeft
+	rlca
+	jr nc, .noHorizMovement
+	ld a, [wXPos]
+	cp $9F
+	jr z, .noHorizMovement
+	inc a
+	ld [wXPos], a
+	
+.noHorizMovement
+	ld hl, wVirtualOAM
+	ld a, [wYPos]
+	add a, $10
+	ld [hli], a
+	ld a, [wXPos]
+	add a, 8
+	ld [hl], a
+	
+	ld a, 1
+	ld [wTransferSprites], a
+	
+.dontMove
+	bit 0, b
+	jr z, .mainloop
+	
+	; Perform A button action depending on position
+	ld a, [wYPos]
+	cp $3B
+	jr c, .mainloop
+	cp $58
+	jr nc, .mainloop
+	ld b, a
+	
+	; This may be either "Copy file" or "Erase file"
+	ld a, [wXPos]
+	cp $1C
+	jr c, .mainloop
+	cp $85
+	jr nc, .mainloop
+	
+	; This is either "Copy" or "Erase"
+	; Perform common operations
+	xor a
+	ld [wXPos + 1], a
+	ld [wNumOfSprites], a
+	dec a ; ld a, $FF
+	ld [wTransferSprites], a
+	ld de, $9922
+	ld [de], a
+	inc de
+	ld hl, FileIDsStr
+	call CopyStrToVRAM
+	
+	ld de, $9901
+	
+	; Determine which one has been selected
+	ld a, b
+	cp $4B
+	jp c, FileSelectOptions_Copy
+	
+FileSelectOptions_Erase:
+	ld hl, EraseWhichFileStr
+	call CopyStrToVRAM
+	
+	ld hl, wWY
+.moveWindowDown
+	rst waitVBlank
+	ld a, [hl]
+	inc a
+	inc a
+	ld [hl], a
+	cp $60
+	jr nz, .moveWindowDown
+	
+	ld hl, $9922
+.mainloop
+	rst waitVBlank
+	ldh a, [hPressedButtons]
+	bit 1, a ; B
+	jr nz, .done
+	ld c, a ; Save keys
+.waitVRAM1
+	rst isVRAMOpen
+	jr nz, .waitVRAM1
+	ld [hl], 0
+	bit 5, c
+	jr nz, .left
+	bit 4, c
+	jr z, .dontmove
+	; Go right
+	ld a, l
+	add a, 3
+	cp $22 + 9
+	jr nz, .moved
+	ld a, $22
+	jr .moved
+	
+.left
+	ld a, l
+	cp $22
+	jr nz, .noleftwrap
+	ld a, $22 + 9
+.noleftwrap
+	sub a, 3
+	
+.moved
+	ld l, a
+.dontmove
+.waitVRAM2
+	rst isVRAMOpen
+	jr nz, .waitVRAM2
+	ld [hl], $7F
+	
+	ld a, c
+	and $0D
+	jr z, .mainloop
+	
+	push hl
+	ld c, BANK(ConfirmDeletionText)
+	ld de, ConfirmDeletionText
+	callacross ProcessText_Hook
+	ld hl, wTextFlags
+	bit 4, [hl] ; Will be set if the first option has been selected
+	pop hl
+	jr nz, .done
+	; So, it's time to erase the file, huh.
+	ld a, l
+	sub $22
+	jr z, .gotDaID
+	; 03 or 06
+	dec a ; 02 or 05
+	rrca ; 01 or 02 !
+.gotDaID
+	add a, sNonVoidSaveFiles & $FF
+	ld l, a
+	ld h, sNonVoidSaveFiles >> 8
+	ld a, SRAM_UNLOCK
+	ld [SRAMEnable], a
+	ld a, BANK(sNonVoidSaveFiles)
+	ld [SRAMBank], a
+	ld [hl], 0 ; Mark save file as empty
+	xor a
+	ld [SRAMBank], a
+	ld [SRAMEnable], a
+	
+.done
+	jp FileSelectOptions
+	
+FileSelectOptions_Copy:
+	ld hl, CopyWhichFileStr
+	call CopyStrToVRAM
+	
+	ld hl, wWY
+.moveWindowDown
+	rst waitVBlank
+	ld a, [hl]
+	inc a
+	inc a
+	ld [hl], a
+	cp $60
+	jr nz, .moveWindowDown
+	
+	ld hl, $9922
+.mainloop
+	rst waitVBlank
+	ldh a, [hPressedButtons]
+	bit 1, a ; B
+	jr nz, .done
+	ld c, a ; Save keys
+.waitVRAM1
+	rst isVRAMOpen
+	jr nz, .waitVRAM1
+	ld [hl], 0
+	bit 5, c
+	jr nz, .left
+	bit 4, c
+	jr z, .dontmove
+	; Go right
+	ld a, l
+	add a, 3
+	cp $22 + 9
+	jr nz, .moved
+	ld a, $22
+	jr .moved
+	
+.left
+	ld a, l
+	cp $22
+	jr nz, .noleftwrap
+	ld a, $22 + 9
+.noleftwrap
+	sub a, 3
+	
+.moved
+	ld l, a
+.dontmove
+.waitVRAM2
+	rst isVRAMOpen
+	jr nz, .waitVRAM2
+	ld [hl], $7F
+	
+	ld a, c
+	and $0D
+	jr z, .mainloop
+	
+	push hl
+	ld c, BANK(ConfirmCopyText)
+	ld de, ConfirmCopyText
+	xor a
+	ld [wEnableWindow], a
+	callacross ProcessText_Hook
+	ld hl, wTextFlags
+	bit 4, [hl] ; Will be set if the first option has been selected
+	pop hl
+	jr nz, .done
+	; So, it's time to erase the file, huh.
+	ld a, l
+	sub $22
+	jr z, .gotDaID
+	; 03 or 06
+	dec a ; 02 or 05
+	rrca ; 01 or 02 !
+.gotDaID
+	add a, sNonVoidSaveFiles & $FF
+	ld l, a
+	ld h, sNonVoidSaveFiles >> 8
+	ld a, SRAM_UNLOCK
+	ld [SRAMEnable], a
+	ld a, BANK(sNonVoidSaveFiles)
+	ld [SRAMBank], a
+	ld [hl], 0 ; Mark save file as empty
+	xor a
+	ld [SRAMBank], a
+	ld [SRAMEnable], a
+	
+.done
+	jp FileSelectOptions
+	
+FileSelectOptionsEnd:
+	ld hl, $98C1
+	xor a
+	ld c, a ; ld c, 0
+	call FillVRAMLite
+	
+	ld [wEnableWindow], a ; Disable "normal" window
+	ld a, $F2
+	ld [wTextboxStatus], a ; Make window begin its descent, the rest will be handled automatically.
+	
+DrawFileSelect::
+	xor a
+	ld [wSaveA], a ; Reset Konami cheat
+	
+	ld a, $10
+	ld [wSCY], a
+	
+	ld de, InvertedPalette + 3
+	ld c, 0
+	callacross LoadOBJPalette_Hook
+	
+	; Print the "save file" texts
+	ld de, $9904
+	ld bc, (3 << 8) | "1"
+	ldh a, [hSRAM32kCompat]
+	and a
+	jr z, .printSaveFilesLoop
+	
+	inc de
+	ld hl, SaveFileStr
+	call CopyStrToVRAM
+	jr .donePrinting
+	
+.printSaveFilesLoop
+	ld hl, SaveFileStr
+	call CopyStrToVRAM
+.printIDWaitLoop
+	rst isVRAMOpen
+	jr nz, .printIDWaitLoop
+	ld a, c ; Write ID
+	ld [de], a
+	inc c
+	
+	ld hl, $55
+	add hl, de
+	ld d, h
+	ld e, l
+	
+	dec b
+	jr nz, .printSaveFilesLoop
+.donePrinting
+	
+	; Copy tile used for corners
+	ld hl, SaveFileCornerTile
+	ld de, vFileSelectCornerTile
+	ld bc, 16
+	call CopyToVRAM
+	
+	; Copy sprites to virtual OAM
+	; hl is correctly positioned
+	ld de, wVirtualOAM
+	ld c, 4 * (4 + 9)
+	rst copy
+	
+	; Transfer sprites
+	ld a, 4 + 9
+	ld [wNumOfSprites], a
+	
+	ld a, [hConsoleType]
+	add a, a
+	ld hl, ConsoleTypes
+	add a, l
+	ld l, a
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld de, $9A24
+	call CopyStrToVRAM
+	ld de, $9A45
+	call CopyStrToVRAM
+	
+	ld a, 1
+	ld [wTransferSprites], a
+	ld [rVBK], a ; Load VRAM bank 1
+	
+	; Highlight first save file
+	; a = 1
+	ld hl, $98E3
+	call FileSelectHighlight
+	
+	ld hl, $9A24
+	ld a, 2
+	ld c, $30
+	call FillVRAMLite
+	
+	ld c, a ; ld c, 2
+	ld de, DarkTextPalette
+	callacross LoadBGPalette_Hook
+	
+	; Zero cursor position
+	xor a
+	ld [wYPos], a
+	ldh [hFrameCounter], a
+	
+	; Wait until the options window (managed by the textbox code at this point) is down to avoid gfx issues
+.waitTextboxDown
+	ld a, [wTextboxStatus]
+	and a
+	jr nz, .waitTextboxDown
+	
+	ldh a, [hSRAM32kCompat]
+	and a
+	jr z, SelectFile
+	ld c, BANK(CompatExplanationText)
+	ld de, CompatExplanationText
+	callacross ProcessText_Hook
+	
+	
+SelectFile:
+	; Move console up and down
+	ldh a, [hFrameCounter]
+	rrca
+	rrca
+	rrca
+	and $0F
+	ld hl, FileSelectHeights
+	add a, l
+	ld l, a
+	ld a, [hl]
+	ld hl, wVirtualOAM + 4 * 4
+	ld b, 3
+.moveSpritesLoop
+	ld c, 3
+.moveColumnLoop
+	ld [hli], a
+	inc hl
+	inc hl
+	inc hl
+	add a, 8
+	dec c
+	jr nz, .moveColumnLoop
+	sub $18
+	dec b
+	jr nz, .moveSpritesLoop
+	ld a, 1
+	ld [wTransferSprites], a ; Schedule transfer
+	
+	rst waitVBlank
+	ldh a, [hPressedButtons]
+	ld b, a
+	; In SRAM32k mode, only thing you're allowed to do is load the file.
+	ldh a, [hSRAM32kCompat]
+	and a
+	ld a, b
+	jr z, .notCompat
+	and $09 ; Only allow A and START
+	; This prevents moving, acessing options, and outright performing the Konami Code (only the last input can be performed...)
+.notCompat
+	and a
+	jr z, SelectFile ; Skip everything if no button is pressed
+	
+	and $04 ; Filter SELECT button
+	jp nz, FileSelectOptions
+	
+	ld a, [wSaveA]
+	ld d, KonamiCheatKeys >> 8
+	ld e, a
+	ld a, [de] ; Get expected button
+	cp b
+	ld a, 0 ; Reset cheat if incorrect button
+	jr nz, .noCheat
+	ld a, e
+	inc a
+.noCheat
+	ld [wSaveA], a
+	
+	ld a, b ; Restore keys
+	and $C0 ; Filter next keys
+	jr z, .noScreenUpdate
+	
+	push af
+	; Clear currently highlighted file
+	ld hl, $98E3
+	ld a, [wYPos]
+	ld b, a
+	add a, a
+	add a, b ; *3
+	swap a ; *16
+	add a, a
+	jr nc, .noCarry1
+	inc h
+.noCarry1
+	add a, l
+	ld l, a
+	jr nc, .noCarry2
+	inc h
+.noCarry2
+	xor a
+	call FileSelectHighlight
+	
+	pop bc
+.moveAgain
+	ld a, b
+	rlca
+	ld a, [wYPos]
+	jr nc, .moveUp
+	inc a
+	inc a
+.moveUp
+	dec a
+	and 3
+	ld [wYPos], a
+	cp 3
+	jr z, .moveAgain
+	
+.moved
+	; Highlight new file
+	ld hl, $98E3
+	ld b, a
+	add a, a
+	add a, b ; *3
+	ld b, a
+	swap a ; *16
+	add a, a
+	jr nc, .noCarry3
+	inc h
+.noCarry3
+	add a, l
+	ld l, a
+	jr nc, .noCarry4
+	inc h
+.noCarry4
+	ld a, b
+	add a, a
+	add a, a
+	add a, a
+	add a, $38
+	ld [wVirtualOAM], a
+	ld [wVirtualOAM + 4], a
+	add a, 16
+	ld [wVirtualOAM + 8], a
+	ld [wVirtualOAM + 12], a
+	ld a, 1
+	ld [wTransferSprites], a
+	rst waitVBlank
+	ld a, 1
+	call FileSelectHighlight
+	
+.noScreenUpdate
+	ld a, b
+	and $09
+	jp z, SelectFile ; Too far
+	
+FileSelected:
+	xor a
+	ld [wNumOfSprites], a
+	inc a
+	ld [wTransferSprites], a
+	
+	; A file has been selected !
+	rst waitVBlank
+	ld a, 1
+	ld [rVBK], a
+	xor a
+	ld hl, $98E3
+	ld c, $AE
+	call FillVRAMLite
+	ld l, $A3
+	ld c, $AE
+	call FillVRAMLite
+	
+	; a = 0
+	ld [rVBK], a
+	ld hl, $9865
+	ld c, 10
+	call FillVRAMLite
+	
+	; a = 0
+	ld hl, $9A24
+	ld c, $30
+	call FillVRAMLite
+	
+	ld hl, $9904
+	ld a, [wSaveA]
+	cp 10
+	jr z, .konamiCheatOn ; Put an absurd number instead
+	ld a, [wYPos]
+.konamiCheatOn
+	ld e, a
+	inc e
+	ld b, 3
+.clearFilesLoop
+	dec e
+	jr z, .skipThisFile
+	xor a
+	ld c, 12
+	call FillVRAMLite
+.skipThisFile
+	ld a, l
+	and $E0
+	add a, $64
+	ld l, a
+	jr nc, .noCarry
+	inc h
+.noCarry
+	dec b
+	jr nz, .clearFilesLoop
+	
+	ld a, [wSaveA] ; Check Konami cheat progression
+	cp 10
+	jr nz, .notKonamiCode
+	
+	ld hl, DLCName
+	ld de, $9866
+	call CopyStrToVRAM
+	
+	ld hl, DLCUnavailableText
+	ret
+	
+.notKonamiCode
+	xor a
+	ld [wSaveA], a ; Clear Konami cheat
+	
+	; Scroll text in the right place
+	; Don't ask how it works. I made it a bit... randomly.
+REPT 3
+	inc e
+ENDR
+	ld b, (8 * 3) * 2 + 1
+	xor a
+	ldh [hFrameCounter], a
+.scrollLoop
+	rst waitVBlank
+	dec b
+	jr z, .loadFile
+	ldh a, [hFrameCounter]
+	and 3
+	sub e
+	jr nc, .scrollLoop
+	ld a, [wSCY]
+	inc a
+	inc a
+	ld [wSCY], a
+	jr .scrollLoop
+	
+.loadFile
+	ld d, e ; Save the file ID
+	
+	ld a, SRAM_UNLOCK
+	ld [SRAMEnable], a
+	ld a, 1
+	ld [SRAMBank], a
+	ld hl, sNonVoidSaveFiles - 1
+	ld a, l
+	add a, e
+	ld l, a
+	ld d, [hl]
+	
+	ld a, e
+	ld [wSaveFileID], a
+	add a, a
+	add a, a
+	ld [SRAMBank], a
+	ld hl, EmptyFileText
+	
+	ld a, d
+	and a
+	ret z
+	
+	; Calculate save file #d's validity
+	ld de, sFile1MagicString0
+	ld hl, MagicString
+.compareMagicStrings
+	ld a, [de]
+	inc de
+	cp [hl]
+	jr nz, .endTests
+	inc hl
+	and a
+	jr nz, .compareMagicStrings
+	
+	ld a, [wSaveFileID]
+	add a, a
+	add a, a
+.calcOneBankSums
+	ld [SRAMBank], a
+	push af
+	ld hl, sFile1Data0Start
+	ld de, sFile1Checksums0
+.nextBlock
+	ld bc, 0
+.checksumOneBlock
+	ld a, [hl]
+	add a, b
+	ld b, a
+	ld a, [hli]
+	xor c
+	ld c, a
+	ld a, l
+	and $3F
+	jr nz, .checksumOneBlock
+	
+	ld a, [de]
+	cp b
+	jr nz, .popAndEndTests
+	inc de
+	ld a, [de]
+	cp c
+	jr nz, .popAndEndTests
+	inc de
+	
+	ld a, e
+	and a
+	jr nz, .nextBlock
+	
+	pop af
+	inc a
+	bit 1, a
+	jr nz, .calcOneBankSums
+	
+	ld hl, ConfirmLoadText
+	ret
+	
+.popAndEndTests
+	pop af
+.endTests
+	ld a, 1
+	ld [wSaveA], a
+	ld hl, CorruptedFileText
+	ret
+	
+	
+ConsoleTypes::
+	dw .crap
+	dw .vc
+	dw .decent
+	dw .gbc
+	dw .gba
+	
+.crap
+	dstr "EMULATOR:"
+	dstr "CRAP"
+.vc
+	dstr "CONSOLE:"
+	dstr "3DS"
+.decent
+	dstr "EMULATOR:"
+	dstr "DECENT"
+.gbc
+	dstr "CONSOLE:"
+	dstr "GBC"
+.gba
+	dstr "CONSOLE:"
+	dstr "GBA"
+	
+MagicString::
+	dstr "AEVILIA"
+	
+SaveFileStr::
+	dstr "SAVE FILE "
+	
+FileSelectHeights::
+	db $7C, $7C, $7D, $7E, $7F, $80, $81, $82
+	db $82, $82, $82, $81, $80, $7F, $7E, $7D
+	
+SaveFileCornerTile::
+	dw $F0F0, $C0C0, $8080, $8080, $0000, $0000, $0000, $0000
+	
+SaveFileSprites::
+	dspr 40, 24 , 1, $00
+	dspr 40, 128, 1, $20
+	dspr 56, 24 , 1, $40
+	dspr 56, 128, 1, $60
+	
+	dspr $70,  2,  2, 1
+	dspr $78,  2,  3, 1
+	dspr $80,  2,  4, 1
+	dspr $70, 10,  5, 1
+	dspr $78, 10,  6, 1
+	dspr $80, 10,  7, 1
+	dspr $70, 18,  8, 1
+	dspr $78, 18,  9, 1
+	dspr $80, 18, 10, 1
+	
+EraseWhichFileStr::
+	dstr "ERASE WHICH FILE ?"
+	
+CopyWhichFileStr::
+	dstr "COPY WHICH FILE ?"
+	
+FileIDsStr::
+	dstr "1  2  3"
+	
+	
+SECTION "File select text", ROMX
+
+CompatExplanationText::
+	print_name TechCrewName
+	print_line .line0
+	print_line .line1
+	print_line .line2
+	wait_user
+	print_line .line3
+	print_line .line4
+	print_line .line5
+	wait_user
+	clear_box
+	print_line .line6
+	print_line .line7
+	delay 30
+	print_line .line8
+	wait_user
+	clear_box
+	print_line .line9
+	wait_user
+	print_line .line10
+	print_line .line11
+	delay 120
+	print_line .line12
+	wait_user
+	clear_box
+	print_line .line13
+	print_line .line14
+	print_line .line15
+	wait_user
+	print_line .line16
+	print_line .line17
+	print_line .line18
+	wait_user
+	clear_box
+	print_line .line19
+	delay 60
+	print_line .line20
+	print_line .line21
+	delay 120
+	wait_user
+	clear_box
+	print_line .line22
+	print_line .line23
+	wait_user
+	print_line .line24
+	print_line .line25
+	wait_user
+	print_line .line26
+	print_line .line27
+	wait_user
+	clear_box
+	print_line .line28
+	print_line .line29
+	print_line .line30
+	wait_user
+	clear_box
+	print_line .line31
+	print_line .line32
+	wait_user
+	done
+	
+.line0
+	dstr "You may notice"
+.line1
+	dstr "there's only 1"
+.line2
+	db "save file,",0
+.line3
+	dstr "out of the 3"
+.line4
+	dstr "promised on the"
+.line5
+	dstr "tin."
+.line6
+	dstr "You might be"
+.line7
+	dstr "wondering:"
+.line8
+	dstr "Why?"
+.line9
+	dstr "Because"
+.line10
+	dstr "THERE CAN BE ONLY"
+.line11
+	dstr "ONE..."
+.line12
+	dstr "save file."
+.line13
+	db "Nah,"
+	dstr " actually your"
+.line14
+	dstr "emulator is having"
+.line15
+	dstr "trouble with save"
+.line16
+	db "data,"
+	dstr " so we're"
+.line17
+	dstr "allowed only 1/4"
+.line18
+	dstr "of what we asked."
+.line19
+	dstr "BUT!"
+.line20
+	dstr "WE STILL MANAGED"
+.line21
+	dstr "TO FIT ONE FILE!"
+.line22
+	dstr "At the cost of the"
+.line23
+	db "two others,",0
+.line24
+	dstr "(they were a bit"
+.line25
+	db "grumpy,"
+	dstr " though)"
+.line26
+	dstr "and at the cost of"
+.line27
+	dstr "the backups."
+.line28
+	db "Thus,"
+	dstr " I really"
+.line29
+	dstr "recommend you use"
+.line30
+	dstr "another emulator."
+.line31
+	dstr "But do as you"
+.line32
+	db "wish,"
+	dstr " man!"
+	
+CompatFileCorruptedText::
+	text_lda_imm SRAM_UNLOCK
+	text_sta SRAMEnable
+	text_lda_imm BANK(sNonVoidSaveFiles)
+	text_sta SRAMBank
+	text_lda_imm 0
+	text_sta sNonVoidSaveFiles
+	text_sta SRAMEnable
+	text_sta SRAMBank
+	print_name TechCrewName
+	print_line .line0
+	print_line .line1
+	wait_user
+	print_line .line2
+	print_line .line3
+	print_line .line4
+	wait_user
+	clear_box
+	print_line .line5
+	print_line .line6
+	wait_user
+	print_line .line7
+	wait_user
+	done
+	
+.line0
+	dstr "The file is"
+.line1
+	dstr "corrupted!"
+.line2
+	dstr "And since we're in"
+.line3
+	dstr "Compatibility Mode"
+.line4
+	dstr "there's no backup."
+.line5
+	dstr "So the file has"
+.line6
+	dstr "been deleted."
+.line7
+	dstr "Sorry!"
+	
+TechCrewName::
+	dstr "Tech crew"
+	
+ConfirmDeletionText::
+	print_pic GameTiles
+	print_name GameName
+	text_lda_imm 0
+	text_sta wEnableWindow
+	print_line .line0
+	print_line .line1
+	wait_user
+	clear_box
+	print_line .line2
+	print_line .line3
+	fake_choice .choice
+	done
+	
+.line0
+	dstr "REALLY DELETE"
+.line1
+	dstr "THIS FILE?"
+.line2
+	dstr "THIS CAN'T BE"
+.line3
+	dstr "CANCELLED."
+.choice
+	dstr "NO"
+	dstr "DELETE"
+	
+ConfirmCopyText::
+	print_pic GameTiles
+	print_name GameName
+	text_lda_imm 0
+	text_sta wEnableWindow
+	print_line .line0
+	print_line .line1
+	wait_user
+	clear_box
+	print_line .line2
+	print_line .line3
+	fake_choice .choice
+	done
+	
+.line0
+	dstr "REALLY COPY"
+.line1
+	dstr "THIS FILE?"
+.line2
+	dstr "THIS CAN'T BE"
+.line3
+	dstr "CANCELLED."
+.choice
+	dstr "NO"
+	dstr "COPY"
+	
+ConfirmLoadText::
+	print_pic GameTiles
+	print_name GameName
+	print_line .line0
+	print_line .line1
+	fake_b_choice YesNoCapsChoice
+	done
+.line0
+	dstr "OK TO LOAD"
+.line1
+	dstr "THIS FILE ?"
+	
+CorruptedFileText::
+	print_pic GameTiles
+	print_name GameName
+	print_line .line0
+	print_line .line1
+	wait_user
+	clear_box
+	print_line .line2
+	print_line .line3
+	wait_user
+	print_line .line4
+	print_line .line5
+	wait_user
+	clear_box
+	print_line .line6
+	empty_line
+	fake_b_choice YesNoCapsChoice
+	done
+	
+.line0
+	dstr "THE FILE WAS"
+.line1
+	dstr "CORRUPTED !"
+.line2
+	db "LUCKILY,"
+	dstr " I"
+.line3
+	db "HAVE A BACKUP,",0
+.line4
+	dstr "SO I CAN"
+.line5
+	dstr "RESTORE IT."
+.line6
+	dstr "SHOULD I ?"
+	
+EmptyFileText::
+	print_pic GameTiles
+	print_name GameName
+	print_line EmptyFileLine0
+	print_line EmptyFileLine1
+	print_line EmptyFileLine2
+	wait_user
+	print_line EmptyFileLine3
+	print_line EmptyFileLine4
+	empty_line
+	fake_b_choice YesNoCapsChoice
+	done
+EmptyFileLine0::
+	dstr "WELCOME TO"
+EmptyFileLine1::
+	dstr "A BRAND"
+EmptyFileLine2::
+	dstr "NEW FILE !"
+EmptyFileLine3::
+	dstr "SHOULD I"
+EmptyFileLine4::
+	dstr "LOAD IT ?"
+
+
+DLCName::
+	dstr "DLC MENU"
+DLCUnavailableText::
+	print_pic GameTiles
+	print_name GameName
+	print_line DLCUnavailableLine0
+	print_line DLCUnavailableLine1
+	print_line DLCUnavailableLine2
+	wait_user
+	clear_box
+	print_line DLCUnavailableLine3
+	wait_user
+	done
+DLCUnavailableLine0::
+	dstr "DLC IS UNAVAI-"
+DLCUnavailableLine1::
+	dstr "LABLE BECAUSE"
+DLCUnavailableLine2::
+	dstr "IT'S NOT."
+DLCUnavailableLine3::
+	dstr "DEAL WITH IT."
+	
+	
+SECTION "Save file management", ROMX
+	
+LoadFile::
+	callacross TransitionToFixedMap
+	ld hl, ProgressTiles
+	ld de, $9010
+	ld c, $80
+	call CopyToVRAMLite
+	
+	ld bc, SaveBlocks
+	ld de, wTextboxTileMap + SCREEN_WIDTH * 14 + 1 ; Progress bar location
+	ld a, SRAM_UNLOCK
+	ld [SRAMEnable], a
+	ldh a, [hSRAM32kCompat]
+	and a
+	jr z, .notCompatMode
+	ld a, 2
+	jr .copyOneBank
+.notCompatMode
+	ld a, [wSaveFileID]
+	add a, a
+	add a, a
+.copyOneBank
+	push af
+	ld [SRAMBank], a
+	ld hl, sFile1Data0Start
+.copyLoop
+	rst waitVBlank
+	ld a, [bc]
+	inc bc
+	push de
+	ld e, a
+	ld a, [bc]
+	inc bc
+	and a
+	jr z, .doneCopying
+	ld d, a
+	bit 4, a
+	jr z, .toWRAM0
+	and $E0
+	jr z, .toHRAM
+	rlca
+	rlca
+	rlca
+	call SwitchRAMBanks
+.toWRAM0
+	ld a, d
+	and $1F
+	or $C0
+	ld d, a
+.highByteDone
+	ld a, [bc]
+	inc bc
+	push bc
+	ld c, a
+	rst copy ; Copy block
+	pop bc
+	pop de
+	ld a, 1
+	ld [wTransferRows + 14], a
+	ld a, [de]
+	inc a
+	ld [de], a
+	cp 8
+	jr nz, .copyLoop
+	inc de
+	jr .copyLoop
+	
+.toHRAM
+	ld d, $FF
+	jr .highByteDone
+	
+.doneCopying
+	pop de
+	pop af
+	inc a
+	inc a
+	bit 1, a
+	jr z, .copyOneBank
+	
+	; Calculate header...
+	
+	ret
+	
+SaveFile::
+	ld hl, ProgressTiles
+	ld de, $9010
+	ld c, $80
+	call CopyToVRAMLite
+	
+	ld a, SRAM_UNLOCK
+	ld [SRAMEnable], a
+	ldh a, [hSRAM32kCompat]
+	and a
+	jr z, .notCompatMode
+	ld a, 2
+	jr .compatMode
+.notCompatMode
+	ld a, [wSaveFileID]
+	add a, a
+	add a, a
+.compatMode
+	
+	ld [SRAMBank], a
+	ld hl, sFile1MagicString0
+	ld [hl], 0 ; Make file invalid to prevent making bad saves 'cause of resets
+	
+	ld bc, SaveBlocks
+	ld hl, wTextboxTileMap + SCREEN_WIDTH * 14 + 1 ; Progress bar location 
+.copyOneBank
+	push af
+	ld [SRAMBank], a
+	ld de, sFile1Data0Start
+.copyLoop
+	rst waitVBlank
+	ld a, [bc]
+	inc bc
+	push hl
+	ld l, a
+	ld a, [bc]
+	inc bc
+	and a
+	jr z, .doneCopying
+	ld h, a
+	bit 4, a
+	jr z, .fromWRAM0
+	and $E0
+	jr z, .fromHRAM
+	rlca
+	rlca
+	rlca
+	call SwitchRAMBanks
+.fromWRAM0
+	ld a, h
+	and $1F
+	or $C0
+	ld h, a
+.highByteDone
+	ld a, [bc]
+	inc bc
+	push bc
+	ld c, a
+	rst copy ; Copy block
+	pop bc
+	pop hl
+	ld a, 1
+	ld [wTransferRows + 14], a
+	ld a, [hl]
+	inc a
+	ld [hl], a
+	cp 8
+	jr nz, .copyLoop
+	inc hl
+	jr .copyLoop
+	
+.fromHRAM
+	ld h, $FF
+	jr .highByteDone
+	
+.doneCopying
+	pop hl
+	pop af
+	inc a
+	inc a
+	bit 1, a
+	jr z, .copyOneBank
+	
+CalculateFileChecksums:
+	; Calculate header checksums
+.calcOneBankSums
+	dec a
+	ld [SRAMBank], a
+	push af
+	ld hl, sFile1Data0Start
+	ld de, sFile1Checksums0
+.nextBlock
+	ld bc, 0
+.checksumOneBlock
+	ld a, [hl]
+	add a, b
+	ld b, a
+	ld a, [hli]
+	xor c
+	ld c, a
+	ld a, l
+	and $3F
+	jr nz, .checksumOneBlock
+	
+	ld a, b
+	ld [de], a
+	inc de
+	ld a, c
+	ld [de], a
+	inc de
+	
+	ld a, e
+	and a
+	jr nz, .nextBlock
+	
+	pop af
+	bit 1, a
+	jr z, .calcOneBankSums
+	
+	inc a
+	ld [SRAMBank], a
+	
+	; Finally, make file (potentially) valid. This is done last, so no cheating is possible... :)
+	ld b, BANK(DefaultSaveMagicString0)
+	ld hl, DefaultSaveMagicString0
+	ld de, sFile1MagicString0
+	call CopyStrAcross
+	
+	xor a
+	ld [SRAMEnable], a
+	ret
+	
+CalculateFileChecksums_Hook::
+	ldh a, [hSRAM32kCompat]
+	and a
+	jr z, .notCompatMode
+	ld a, 4
+	jr .compatMode
+.notCompatMode
+	ld a, [wSaveFileID]
+	add a, a
+	inc a
+	add a, a
+.compatMode
+	call CalculateFileChecksums
+	ld a, SRAM_UNLOCK
+	ld [SRAMEnable], a
+	ret
+	
+	
+wram0_block: MACRO
+	dw (\1 & $1FFF) | $8000
+	db \2
+ENDM
+
+wramx_block: MACRO
+	dw (\1 & $1FFF) | (BANK(\1) << 13)
+	db \2
+ENDM
+
+hram_block: MACRO
+	dw $1000 | (\1 & $FF)
+	db \2
+ENDM
+
+SaveBlocks::
+	; Bank 0
+	wram0_block wTargetWarpID, 2
+	wram0_block wUnlinkJoypad, 14
+	hram_block hOverworldButtonFilter, 1
+	wramx_block wIntroMapStatus, 3
+	hram_block hRandInt, 2
+	wramx_block wNumOfNPCScripts, 3
+	wramx_block wNPCArray, $90
+	dw 0 ; Terminate
+	
+	; Bank 1
+	dw 0 ; Terminate
+	
+ProgressTiles::
+	dw $0080, $0080, $0080, $0080, $0080, $0080, $0080, $0080
+	dw $00C0, $00C0, $00C0, $00C0, $00C0, $00C0, $00C0, $00C0
+	dw $00E0, $00E0, $00E0, $00E0, $00E0, $00E0, $00E0, $00E0
+	dw $00F0, $00F0, $00F0, $00F0, $00F0, $00F0, $00F0, $00F0
+	dw $00F8, $00F8, $00F8, $00F8, $00F8, $00F8, $00F8, $00F8
+	dw $00FC, $00FC, $00FC, $00FC, $00FC, $00FC, $00FC, $00FC
+	dw $00FE, $00FE, $00FE, $00FE, $00FE, $00FE, $00FE, $00FE
+	dw $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF
+	

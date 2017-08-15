@@ -1,0 +1,305 @@
+
+LIST OF FUNCTIONS IN AEVILIA GB
+This document's purpose is to provide a quick overview of all of Aevilia GB's functions.
+At least the most common ones.
+All registers not listed under a function's effects are preserved.
+
+
+rst waitVBlank
+	restarts.asm
+	Waits until next VBlank.
+	Requires VBlank interrupt to be active.
+-	Modifies a.
+
+rst isVBlanking
+	restarts.asm
+	Sets C if and only if VBlanking (except for last scanline).
+-	Modifies a.
+
+rst isVRAMOpen
+	restarts.asm
+	Sets Z if and only if VRAM can be safely accessed.
+-	Modifies a.
+
+rst fill
+	restarts.asm
+	Fills c bytes, starting at hl, with a.
+-	Zeroes c.
+-	Modifies hl.
+
+rst copy
+	restarts.asm
+	Copies c bytes from hl to de.
+-	Zeroes c.
+-	Modifies hl and de.
+-	Modifies a.
+
+rst bankswitch
+	restarts.asm
+	Switches to ROM bank a (and registers switch in HRAM).
+	ALWAYS use this to bankswitch ! Except if you're sure of what you're doing... but avoid anyways.
+-	Preserves all registers.
+
+rst copyStr
+	restarts.asm
+	Copies bytes from hl to de, up to and including the first $00 (NULL) byte.
+-	Modifies hl and de.
+-	Zeroes a.
+
+rst callHL
+	restarts.asm
+	Emulates "call [hl]", but crashes if hl doesn't point to ROM.
+-	Passes all registers intact to the callee.
+
+
+VBlankHandler
+	handlers.asm
+	Handles a VBlank interrupt.
+-	Modifies a and bc.
+-	If interrupt vector, caller should save a and bc before calling !
+-	Doesn't re-enable interrupts by itself, should be done by caller.
+
+UpdateJoypadState
+	handlers.asm
+	Polls the hardware to update hHeldButtons and hPressedButtons. (And pserforms soft-reset)
+-	Modifies a and bc.
+-	Usually called by VBlankHandler, but may be used from any context.
+
+PollJoypad
+	handlers.asm
+	Polls the hardware and returns polled keys in a.
+-	Modifies a.
+-	Caller should have set bits 4 or 5 before calling this !
+-	Subfunction of UpdateJoypadState, but may be called from any other context if needed.
+
+DMAScript
+	handlers.asm
+	Performs an OAM DMA and waits until it has completed.
+-	Zeroes b.
+-	MUST be in HRAM when called ! Otherwise... welp, crash :D
+-	To achieve desired effect, call with c = $46 (rDMA & $FF) and a = (SourceOAM >> 8).
+
+STATHandler
+	handlers.asm
+	Handles a STAT interrupt.
+-	Currently only designed for textbox LY=LYC interrupt.
+-	Modifies a.
+
+
+Fill
+	home/utilities.asm
+	Fills bc bytes starting at hl with a.
+-	Zeroes bc and a.
+-	Modifies hl.
+
+Copy
+	home/utilities.asm
+	Copies bc bytes from de to hl.
+-	Zeroes bc.
+-	Modifies de and hl.
+-	Modifies a.
+
+FillVRAMLite
+	home/utilities.asm
+	Fills c bytes starting at hl with a.
+-	Waits when VRAM can't be accessed.
+-	Zeroes c.
+-	Modifies d and hl.
+
+CopyToVRAM
+	home/utilities.asm
+	Copies bc bytes from de to hl.
+-	Doesn't copy when VRAM can't be accessed.
+-	Zeroes bc.
+-	Modifies de and hl.
+-	Modifies a.
+
+CopyStrToVRAM
+	home/utilities.asm
+	Copies bytes from hl to de, up to and including the first $00 (NULL) byte.
+-	Doesn't copy when VRAM can't be accessed.
+-	Zeroes bc.
+-	Modifies de and hl.
+-	Zeroes a.
+
+OpenSRAM
+	home/utilities.asm
+	Performs a write to ROM to unlock SRAM.
+-	Sets a to $0A.
+-	Please don't mind the hackish "db $D6" that saves one byte and maybe nothing of processor time.
+
+CloseSRAM
+	home/utilities.asm
+	Performs a write to ROM to lock SRAM.
+-	Zeroes a.
+
+DelayBCFrames
+	home/utilities.asm
+	Waits for bc frames to go by.
+-	Zeroes a and bc.
+-	To delay by a single frame, consider using rst waitVBlank instead.
+
+CallAcrossBanks
+	home/utilities.asm
+	Call [b:hl] (call the routine in bank b at address hl).
+-	Use this when the caller and the callee are in switchable ROM space and in different banks.
+-	Only c and de are passed to the callee.
+
+CopyAcrossLite
+	home/utilities.asm
+	Copy c bytes in bank b starting at hl to de.
+-	Zeroes c.
+-	Modifies hl and de.
+-	Modifies a.
+
+CopyStrAcross
+	home/utilities.asm
+	Copy bytes in bank b starting at hl to de up to and including the first $00 (NULL) byte.
+-	Modifies a, hl and de.
+-	Preserves bc... yup. Somehow.
+
+SaveCurRAMBank
+	home/utilities.asm
+	Push the current RAM bank ID on the stack.
+-	Modifies hl.
+
+RestoreRAMBank
+	home/utilities.asm
+	Used in conjunction with SaveCurRAMBank. I'll let you guess what it does.
+-	Modifies a.
+-	Modifies hl.
+
+PreventJoypadMovement
+	home/utilities.asm
+	Increments the joypad movement prevention counter.
+-	Cannot overflow.
+-	Modifies a.
+
+AllowJoypadMovement
+	home/utilities.asm
+	Decrements the joypad movement prevention counter.
+-	Cannot underflow.
+-	Modifies a.
+
+SpeedUpCPU
+	home/utilities.asm
+	Switches to CPU double speed mode.
+-	Modifies a.
+
+SlowDownCPU
+	home/utilities.asm
+	Switches to CPU normal speed mode.
+-	Modifies a.
+
+MultiplyDEByA
+	home/utilities2.asm
+	Multiplies de by a and puts the result into hl.
+-	Detecting overflow would be quite a pain... ensure it doesn't happen, instead.
+-	Zeroes a.
+-	Modifies de.
+
+DivideHLByDE
+	home/utilities2.asm
+	Divides hl by de and puts the result into bc.
+-	The remainder can be obtained in hl by adding de to hl.
+-	Causes an error screen if trying to divide by zero. Won't softlock :)
+-	Modifies a and hl.
+
+DivideHLByDE_KnownDE
+	home/utilities2.asm
+	Performs DivideHLByDE but skips the "division by zero" check.
+-	Use only if de is certain to be non-zero before the call. The check is quick enough.
+
+_AtHL_FatalError
+	home/utilities2.asm
+	Where "rst callHL" jumps to trap jumps to RAM.
+
+FatalError
+	home/utilities2.asm
+	Prints a fatal error screen.
+-	Call with error message ID in a.
+-	Save a before that by loading it into wSaveA.
+
+CopyAcross
+	home/utilities2.asm
+	Copy bc bytes in bank a from hl to de.
+-	Zeroes bc.
+-	Modifies hl and de.
+-	Modifies a.
+
+CopyAcrossToVRAM
+	home/utilities2.asm
+	Copy bc bytes in bank a from hl to de.
+-	Doesn't copy when VRAM can't be accessed.
+-	Modifies hl and de.
+-	Modifies a.
+
+SwitchRAMBanks
+	home/utilities2.asm
+	Switches to WRAM bank a.
+-	Preserves all registers.
+
+SwitchROMBanks
+	home/utilities2.asm
+	Saves the current ROM bank on the stack, then switches to ROM bank b.
+-	Modifies hl.
+-	Modifies a.
+
+RestoreROMBank
+	home/utilities2.asm
+	Pops a ROM bank ID from the stack, and switches to that ROM bank.
+-	Modifies hl.
+-	Modifies a.
+
+
+LoadOBJPalette
+	gfx/graphics.asm
+	Loads OBJ palette #a with the colors pointed to by hl.
+-	Modifies all registers.
+
+LoadOBJPalette_Hook
+	gfx/graphics.asm
+	Loads OBJ palette #c with the colors pointed to by de.
+-	See LoadOBJPalette.
+
+LoadBGPalette
+	gfx/graphics.asm
+	Loads BG palette #a with the colors pointed to by hl.
+-	Modifies all registers.
+
+LoadBGPalette_Hook
+	gfx/graphics.asm
+	Loads BG palette #c with the colors pointed to by de.
+-	See LoadBGPalette.
+
+TransitionToFixedMap
+	gfx/graphics.asm
+	Copies the currrently displayed tiles (from free mode) and their attributes to the fixed tilemap.
+-	Also sets the tilemap mode to fixed map.
+-	Assumes the current tilemap mode is free mode.
+-	Modifies all registers.
+
+CopyToFixedMap
+	gfx/graphics.asm
+	Subfunction of TransitionToFixedMap. Copies the data in one VRAM bank.
+-	All dashes from TransitionToFixedMap apply here.
+
+EnableTextbox
+	gfx/graphics.asm
+	Makes the text box being its appearing animation.
+-	Even if the text box is already up... or going down.
+-	Modifies a.
+
+WaitForTextbox
+	gfx/graphics.asm
+	Waits until the text box has fully appeared.
+-	Will wait even if the text box is closed or closing...
+-	Modifies a.
+
+DisableTextbox
+	gfx/graphics.asm
+	Starts the text box's disappearing animation, and waits until it has been completed.
+-	I recommend using this instead of just setting bit 7, because it's a potential mine of bugs.
+-	Zeroes a.
+
+

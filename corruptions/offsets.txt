@@ -1,0 +1,67 @@
+Interesting offsets to corrupt : (excludes code to try avoiding crashes)
+
+(Note that corrupting text streams still has a chance to crash the game. You have been warned :3)
+
+
+START menu strings :
+StartMenuStrs to end
+(4781 - 47BD)
+
+Palette data :
+DefaultPalette to end of ConsolePalettes
+(47BE - 4859)
+
+Tile data :
+TextTiles to end of ConsoleTiles
+(485A - 50F9)
+
+Misc strings :
+AeviliaStr to end of FirstTimeLoadingText.line11
+(50FA - 7FFF)
+
+
+File select data :
+MagicString to LoadFile (don't corrupt LoadFile, of course...)
+(Corrupting MagicString's length will probably screw up the file loading/saving)
+(C586 - C785)
+
+
+How save data is arranged :
+SaveBlocks to ProgressTiles
+(C8A6 - C8B5)
+
+Progression bar tiles :
+ProgressTiles to end
+(C8B6 - FFFF)
+
+Rants (useless to corrupt, tho) :
+SRAMCommonPattern to SRAMFirstBootEnd (and slightly after)
+(6000 - 795A)
+
+
+Map pointers and ROM banks :
+MapROMBanks to end of MapPointers
+(10000 - 10008)
+
+Tileset pointers and ROM banks :
+TilesetROMBanks to end of TilesetPointers
+(10303 - 10308)
+
+
+Test map & house's data :
+TestTileset to end of TestHouseNPCTiles
+(10309 - 10F37)
+
+Intro map's data :
+IntroTileset to end of IntroNPC0Script.line3
+(10F38 - 13FFF)
+
+
+Battle textbox tiles :
+TextboxTiles to end
+(11FF6 - 12025)
+
+
+Music data :
+SongSpeedTable to end of FlashTitle_CH4.block1
+(1510C - 15EA1)

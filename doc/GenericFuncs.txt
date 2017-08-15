@@ -1,0 +1,215 @@
+
+GENERIC FUNCTIONS
+
+
+Some of the functions in Aevilia are what you'd expect of a GB stdlib.h, and this document explains a few of them.
+
+Obviously, whenevr possible, you will want to use the restarts. They also tend, due to size restrictions for the most part, to preserve registers more.
+They have their limits, though (compare the capabilities of rst fill and call Fill).
+
+
+
+============ RESTARTS ============
+
+rst $00
+rst waitVBlank
+
+Waits until the next VBlank. Relies on interrupts, so beware.
+Since this function uses HALT, all applies here, including the HALT bug. Luckily, there's a NOP 'bout that one.
+It also means using this in a loop will reduce power consumption.
+If this is called during a VBlank, it will wait until the next one.
+
+Note that if the VBlank interrupt is disabled, this will probably malfunction, since what it does is :
+1. Wait for an interrupt (HALT)
+2. Check if VBlanking (using LY)
+3. If not, return to 1.
+
+This will also malfunction if the VBlank handler returns after scanline $98.
+
+
+This function has the same return properties as rst isVBlanking, except it will always have C set because if you don't know why you're retarded.
+
+---------------------------------------------------
+
+rst $08
+rst isVBlanking
+
+This function tests if LY is >= $90, and sets C if VBlanking (and not on scanline $00), ie if there is some VBlank time left
+
+
+This function sets a to the current scanline minus $90. Underflow applies, of course.
+
+---------------------------------------------------
+
+rst $10
+rst isVRAMOpen
+
+This function tests the STAT register to check if VRAM can currently be accessed. Note that this function needs some time to return, so the mode may have changed. Due to timing requirements, a tight
+
+.waitForVRAM
+rst isVRAMOpen
+jr nz, .waitForVRAM
+ld [hl], $XX
+
+loop will guarantee the [hl] write will succeed if the target is in a VRAM-like area (e.g VRAM, palette data, ...) BUT may fail if the target is OAM-like (OAM, FEA0-FEFF range, ...)
+
+
+This function sets Z if and only if VRAM can be accessed. Of course, it modifies a.
+
+----------------------------------------------------
+
+rst $18
+rst fill
+
+This function fills c bytes, starting at hl, with a's value.
+
+This function is NOT suited to write to VRAM, UNLESS you are sure you will have enough time to fill VRAM. Otherwise, use FillVRAMLite.
+
+
+This function sets c to 0 (and sets the Z flag), hl is moved forward (ie hl <- hl + c), and a is preserved.
+The C flag is also preserved. Neat !
+
+----------------------------------------------------
+
+rst $20
+rst copy
+
+This function copies c bytes from hl to de. That is, [de] <- [hl], [de+1] <- [hl+1], and so on.
+Note that c = 0 will instead copy 256 bytes. Because underflow.
+Again, this function shouldn't be used with VRAM. Instead, CopyToVRAM has been designed for just that.
+
+
+This function sets c to 0, moves hl and de, and sets a to the last copied byte. It also sets the Z flag, and preserves the C flag.
+
+----------------------------------------------------
+
+rst $28
+rst bankswitch
+
+This function switches to ROM bank #a. This also applies the change to hCurROMBank.
+
+
+This function preserves all registers. Including flags. Please praise it.
+
+----------------------------------------------------
+
+rst $30
+rst copyStr
+
+strcpy() ! This function copies some bytes from hl to de, up to and including the first $00 (NULL) byte found. There is no check whatsoever, so yes, **THIS IS UNBOUNDED STRCPY !!**
+In the same vein as rst fill and rst copy, avoid using this with VRAM. Use CopyStrToVRAM instead.
+
+
+This function moves hl and de, sets a to the last copied byte (0, of course), sets Z and resets the C flag.
+
+----------------------------------------------------
+
+rst $38
+rst callHL
+
+If "call [hl]" existed, this function would be unnecessary.
+Originally, the function only contained a "jp [hl]". I then added a check : if bit 7 of h is set - meaning the jump destination isn't in ROM (thankfully occupying $0000-$7FFF) - then the game jumps to the error handler.
+YES, THERE IS AN ERROR HANDLER IN THIS GAME, HOLY SH*T ! See ErrorHandler.txt for more details and plaintext.
+
+Note that I could have made this instead :
+
+_AtHL::
+	bit 7, h
+	jp nz, _AtHL_FatalError
+	jp [hl]
+
+But it would have been less efficient by 1 cycle for the normal code flow. I thought this could be called in time-critical functions, so I made this. plus it doesn't use up any extra space.
+
+
+This function preserves all registers to the callee, including hl pointing to itself.
+Except for the Z flag.
+
+
+---------------------------------------------------
+
+~~ The jr @+1 tricks ~~
+
+These tricks are the reason rst $38 is such a critical restart. And it's not luck that "call [hl]" is rst $38 and not any other.
+
+Basically, having RGBDS compile "jr @+1" will output "18 FF" in hex.
+For some other assemblers, this can be "jr @-1". To test, try the code "jr @" (or "jr $" if that's the syntax). If it acts as a NOP, you are in the "jr @-1" case. If it acts as an infinite loop, you're in the "jr @+1" case.
+
+What does "18 FF" do ? The CPU will read that, and attempt to loop. Thus, it goes 1 byte backwards from the end of the instruction, and continue processing.
+This byte is the $FF from the "18 FF". This corresponds to the "rst $38" instruction.
+
+Now, you may say "No shit Sherlock, that's rst $38 but with one more byte and two more CPU cycles ! USELESS !!!!1" but you're only half right. Because unlike rst, jr can have *conditionals* ! So "jr z, @+1" will only execute the bogus rst $38 if the Z flag is set !
+
+
+----------------------------------------------------
+
+
+
+========== UTILITIES ==========
+
+UpdateJoypadState
+
+This function polls $FF00 to update both hHeldButtons and hPressedButtons.
+It is called by the VBlank handler, so you shouldn't call it unless the interrupt is disabled.
+This function is also the one performing a soft reset.
+
+Also note that the Up+Down and Left+Right button combos are cancelled out entirely. And by that I mean holding both Left+Right, for example, counts as holding none.
+
+
+This functions returns [hPressedButtons] in a, the buttons held during the previous frame in c, and the non-cpl'd (ie held=0) held D-Pad keys in b.
+The C flag is reset, and Z is set is no keys were pressed on this frame.
+
+----------------------------------------------------
+
+PollJoypad
+
+This function writes the given a to $FF00, polls $FF00 3 times, and returns the result AND $0F in a. C is reset, and Z is set if all keys are pressed.
+Note that UpdateJoypadState uses the Z flag to determine if it should soft reset.
+
+----------------------------------------------------
+
+DMAScript
+
+This function performs OAM DMA. It must obviously not be called as-is, but first copied into HRAM and called there.
+Unlike the standard DMA procedure, this one must be called with specific values, namely :
+- c = $46 (OAM DMA address low byte)
+- b = $29 (Delay, anything lower than this won't work)
+- a = Value to be written to OAM DMA start (high byte of source OAM)
+
+Calling this when outside HRAM is suicidal. But you can try, maybe it will work fine ?
+
+
+This function preserves c and a, sets b to 0 and sets the Z flag.
+
+-----------------------------------------------------
+
+Fill
+
+This function is an extended version of rst fill. It fills bc bytes starting at hl with a.
+This function is not designed to work with VRAM, and there is no alternative. Thankfully so far I never needed any.
+
+
+This function preserves a, moves hl, sets bc to 0, and sets the Z flag.
+
+-----------------------------------------------------
+
+Copy
+
+This function copies bc bytes from hl to de. If bc = 0, then 65536 bytes will be copied. (This implies copying the entier address space over itself. If that happens, send nukes.) Agin, when working with VRAM (be it source or destination, use CopyToVRAM (even if the destination isn't VRAM, it's just that I don't foresee any uses for copying from VRAM).
+
+
+This function sets a and bc to 0, moves hl and de, clears the C flag and sets the Z flag.
+
+-----------------------------------------------------
+
+FillVRAMLite
+
+This function fills c bytes at hl with a. No operation if performed while VRAM can't be accessed, meaning this is perfectly suited for filling VRAM.
+
+
+This function preserves a, copies a into d, sets c to 0, moves hl, resets the C flag, and sets the Z flag.
+
+-----------------------------------------------------
+
+CopyToVRAM
+
+This function copies bc bytes from de to hl, but only when VRAM can be accessed.

@@ -1,0 +1,45 @@
+
+AEVILIA GB MAP ENGINE
+As modular as I could manage to make it.
+
+
+I- CONCEPTS
+
+There are several abstractions the engine uses. They are intended to make programming and debugging easier.
+
+
+1. Overworld frame
+
+The overworld loop is independent from the rest of the game. Most prominent example : the button registers.
+Basically, the main button registers - hHeldButtons and hPressedButtons - are updated by the VBlank handler. An attentive reader will wonder what happens when an overworld frame spans more than one GB frame (ie. the game lags).
+The answer is, input may be inconsistent across a function (this used to cause softlocks when moving at speeds too high, for technical reasons. 'Twas fun patching, though).
+To fix this, the overworld loop has its own set of :
+ - Frame counter (hOverworldFrameCounter)
+ - Held buttons (hOverworldHeldButtons)
+ - Pressed buttons (hOverworldPressedButtons)
+The functioning of the frame counter and held buttons are pretty much what you'd expect. The pressed buttons, however, follow a slightly more complicated logic.
+The game applies the same logic as it does with hPressedButtons (but uses hOverworldHeldButtons instead), but before writing back, it also applies the mask hOverworldButtonFilter.
+This allows to ignore certain actions (this is notable in the tutorial).
+There also are two options to ignore the player's actions.
+
+
+2. Camera
+
+Everything in the game is rendered relatively to the camera. Also, the camera is a fully independent entity (from the player), which makes stuff such as cutscenes easier to make without any stupid hacks.
+On every overworld frame, the camera's position is transferred to the GB's scrolling registers, and all graphics-related operations are done relatively to the camera.
+Most importantly, redrawing the terrain. Because, obviously, the maps in this game are way bigger than the GBC's 20x18 tile memory. Thus, tile data is updated as the camera (and thus the scrolling registers) moves around.
+The was the camera is designed, it can only move by 16 pixels in a frame. But for cosmetic reasons, the max speed was decreased to 15 pixels/frame.
+
+
+3. NPCs
+
+An NPC is an entity that exists within the overworld. An NPC has a visual existence, a physical existence, and interaction properties.
+In contrast, the player entity only has a physical existence (though it's only affected by NPCs, and not the opposite).
+An NPC has :
+ - A position
+ - A hitbox (both for physical and interactions purposes)
+ - An interaction script (short for "what happens when you interact with it)
+ - An appearance (short for "what you see on-screen"), which is a set of "singleton" appearances
+ - A movement length (which serves both for its obvious purpose and to give the NPC a walking animation)
+ - Movement permissions (which are sliiightly complicated)
+
