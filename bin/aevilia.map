@@ -45,7 +45,7 @@ ROM Bank #0 (HOME):
            $00C7 = AllowJoypadMovement
            $00D1 = SpeedUpCPU
            $00B6 = CopyStrAcross
-  SECTION: $0100-$056C ($046D bytes) ["Home"]
+  SECTION: $0100-$0570 ($0471 bytes) ["Home"]
            $04B9 = OverworldLoop.forceIgnorePlayerActions
            $0150 = Init
            $017C = Init.clearOnlyOneBank
@@ -346,13 +346,13 @@ ROM Bank #0 (HOME):
            $07F5 = LoadMap.dontForcePlayerDir
            $0E5E = StopWalkingAnimation
            $090A = RedrawMap.mapIsTallEnough
-  SECTION: $056D-$05C9 ($005D bytes) ["DevSound netry points"]
-           $056D = DS_Init
-           $056D = DevSound_JumpTable
-           $0576 = DS_Play
-           $057E = DS_Stop
-           $0586 = DS_Fade
-    SLACK: $2BF2 bytes
+  SECTION: $0571-$05CD ($005D bytes) ["DevSound netry points"]
+           $0571 = DS_Init
+           $0571 = DevSound_JumpTable
+           $057A = DS_Play
+           $0582 = DS_Stop
+           $058A = DS_Fade
+    SLACK: $2BEE bytes
 
 ROM Bank #1:
   SECTION: $4000-$47D7 ($07D8 bytes) ["Graphic funcs"]

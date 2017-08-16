@@ -337,11 +337,11 @@
 00:07F5 LoadMap.dontForcePlayerDir
 00:0E5E StopWalkingAnimation
 00:090A RedrawMap.mapIsTallEnough
-00:056D DS_Init
-00:056D DevSound_JumpTable
-00:0576 DS_Play
-00:057E DS_Stop
-00:0586 DS_Fade
+00:0571 DS_Init
+00:0571 DevSound_JumpTable
+00:057A DS_Play
+00:0582 DS_Stop
+00:058A DS_Fade
 01:40CC SryStr
 01:417B ScoldStr
 01:432D PaletteCommon

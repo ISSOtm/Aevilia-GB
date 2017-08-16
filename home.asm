@@ -761,8 +761,11 @@ OverworldLoop::
 	jp .forceIgnorePlayerActions
 	
 .doButtonInteractions
+	; Reset this now, to allow the interaction to choose by itself
+	xor a
+	ldh [hIgnorePlayerActions], a
 	call DoButtonInteractions
-	jr .gotoLoop
+	jp .forceIgnorePlayerActions ; Don't force the player's actions to be taken into account, again.
 	
 	
 SECTION "Misc stuff", ROM0
