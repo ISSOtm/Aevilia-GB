@@ -288,7 +288,7 @@ THE_CONSTANT = 42
 	ld b, a
 	ld a, [rHDMA1]
 	cp b
-	ld a, CONSOLE_3DS
+	ld a, CONSOLE_3DS ; Closer to crap than decent
 	jr nz, .thisIsEmulator
 	
 	; This is decent emulator, but not perfect
@@ -451,22 +451,23 @@ THE_CONSTANT = 42
 	ld bc, VRAM_TILE_SIZE * 9
 	call CopyToVRAMLite
 	
+	ld a, 1
+	ld [wLoadedMap], a
+	
 FileSelect::
 	; Draws file select screen and waits until the user selects a file
 	homecall DrawFileSelect ; To save space in home bank, this is another bank
 	
+	; This function leaves SRAM open, close it
 	xor a
 	ld [SRAMEnable], a
 	ld [SRAMBank], a
 	
-	ldh a, [hSRAM32kCompat]
-	and a
-	jr nz, .loadFile
-	
+	; Display the text (they should all be in the same bank)
 	ld b, BANK(ConfirmLoadText)
 	homecall ProcessText
-	ld a, [wTextboxLine2]
-	and a
+	ld hl, wTextFlags
+	bit TEXT_ZERO_FLAG, [hl]
 	jr nz, .loadFile
 	
 .resetFileSelect

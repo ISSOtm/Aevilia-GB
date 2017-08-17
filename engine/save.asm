@@ -420,6 +420,10 @@ FileSelectOptionsEnd:
 	ld [wTextboxStatus], a ; Make window begin its descent, the rest will be handled automatically.
 	
 DrawFileSelect::
+	ld a, [wSaveA]
+	and a
+	
+	
 	xor a
 	ld [wSaveA], a ; Reset Konami cheat
 	
@@ -522,6 +526,11 @@ DrawFileSelect::
 	ldh a, [hSRAM32kCompat]
 	and a
 	jr z, SelectFile
+	ld hl, wLoadedMap
+	ld a, [hl] ; Don't display the text if this is not the first time
+	and a
+	jr z, SelectFile
+	ld [hl], 0 ; Tell the game it's not the first time anymore
 	ld c, BANK(CompatExplanationText)
 	ld de, CompatExplanationText
 	callacross ProcessText_Hook
@@ -835,9 +844,14 @@ ENDR
 .popAndEndTests
 	pop af
 .endTests
-	ld a, 1
+	ld a, 1 ; Let the loader know the file is corrupted
 	ld [wSaveA], a
+	
+	ldh a, [hSRAM32kCompat]
+	and a
 	ld hl, CorruptedFileText
+	ret z
+	ld hl, CompatFileCorruptedText ; SRAM32k doesn't have backups, thus uses a different text
 	ret
 	
 	

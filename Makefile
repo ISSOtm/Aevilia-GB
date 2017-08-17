@@ -1,6 +1,6 @@
 
 .SHELL: /bin/bash
-.PHONY: all
+.PHONY: all rebuild
 .SUFFIXES:
 .DEFAULT_GOAL: all
 
@@ -12,7 +12,7 @@ objdir = ./obj
 
 CFLAGS = -E -p 0xFF
 LFLAGS = 
-FFLAGS = -Cjv -i ISSO -k 42 -l 0x33 -m 0x1B -n $(ROMVersion) -p 0xFF -r 0x04 -t AEVILIA
+FFLAGS = -Cjv -i ISSO -k 42 -l 0x33 -m 0x1B -n $(ROMVersion) -p 0xFF -r 0x03 -t AEVILIA
 
 RGBASM = ./rgbasm
 RGBLINK = ./rgblink
@@ -20,6 +20,12 @@ RGBFIX = ./rgbfix
 
 
 all: $(bindir)/aevilia.gbc
+
+rebuild: clean all
+
+clean:
+	rm $(objdir)/*.o
+	rm $(bindir)/aevilia.gbc $(bindir)/aevilia.sym $(bindir)/aevilia.map
 
 $(bindir)/aevilia.sym:
 	rm $(bindir)/aevilia.gbc
