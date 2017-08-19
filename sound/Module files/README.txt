@@ -1,0 +1,1 @@
+Open the .dmf files with DefleMask (www.deflemask.com).
