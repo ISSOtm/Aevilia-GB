@@ -781,7 +781,7 @@ TestMapSignLine6::
 	dstr "place."
 TestMapSignLine7::
 	db "Also, "
-	dstr "how the hell"
+	dstr "how on earth"
 TestMapSignLine8::
 	dstr "did you get here??"
 

@@ -9,8 +9,7 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 
 - _aevilia.gbc_<br/>
   The game's ROM. Load it in your favorite emulator to play.<br/>
-  Except if it's VBA.<br/>
-  Then you must DIE.
+  Except if it's VBA, You already know the A doesn't stand for 'accuracy'.<br/>
 - _aevilia.sym_, _aevilia.map_<br/>
   Helper files for debugging. Not required if you just want to play the game.
 - _HUD.lua_<br/>
@@ -31,7 +30,7 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 - _obj/_<br/>
   Intermediate files for compilation. No touchy.
 - The rest<br/>
-  The game's source code. Dat da goooood shit.
+  The game's source code. All the goodness for you GB ASM devs.
 
 
 # Policy
@@ -40,4 +39,4 @@ The game is open-source, you are allowed and actually encouraged to modify it. D
 
 You are not allowed to distribute your modified copy claiming it's the original. We (the Aevilia Dev Team) reserve the right to shut down any modified copy of the game infringing this.
 
-tl;dr : play by the rules and we'll support you. Cheat and WE WILL BREAK YOU.
+tl;dr : play by the rules and we'll support you.
