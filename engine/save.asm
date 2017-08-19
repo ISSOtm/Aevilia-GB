@@ -864,8 +864,9 @@ ConsoleTypes::
 	dstr "CONSOLE:"
 	dstr "GBA"
 	
+; DO NOT CHANGE THE LENGTH OF THIS STRING
 MagicString::
-	dstr "Aevilia GB"
+	dstr "Aevilia"
 	
 SaveFileStr::
 	dstr "Save file "
