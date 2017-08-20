@@ -1175,9 +1175,9 @@ ConfirmLoadText::
 	fake_b_choice YesNoCapsChoice
 	done
 .line0
-	dstr "Ok to load"
+	dstr "OK TO LOAD"
 .line1
-	dstr "this file ?"
+	dstr "THIS FILE ?"
 	
 CorruptedFileText::
 	print_pic GameTiles
@@ -1199,20 +1199,20 @@ CorruptedFileText::
 	done
 	
 .line0
-	dstr "The save was"
+	dstr "THE SAVE WAS"
 .line1
-	dstr "corrupted !"
+	dstr "CORRUPTED !"
 .line2
-	db "Luckily,"
+	db "LUCKILY,"
 	dstr " I"
 .line3
-	db "have a backup,",0
+	db "HAVE A BACKUP,",0
 .line4
-	dstr "So I can"
+	dstr "SO I CAN"
 .line5
-	dstr "restore it."
+	dstr "RESTORE IT."
 .line6
-	dstr "Should I ?"
+	dstr "SHOULD I ?"
 	
 BackupCorruptedText::
 	print_pic GameTiles
@@ -1267,19 +1267,19 @@ EmptyFileText::
 	fake_b_choice YesNoCapsChoice
 	done
 EmptyFileLine0::
-	dstr "Welcome to"
+	dstr "WELCOME TO
 EmptyFileLine1::
-	dstr "a brand"
+	dstr "A BRAND"
 EmptyFileLine2::
-	dstr "new file !"
+	dstr "NEW FILE !"
 EmptyFileLine3::
-	dstr "Should I"
+	dstr "SHOULD I"
 EmptyFileLine4::
-	dstr "load it ?"
+	dstr "LOAD IT ?"
 
 
 DLCName::
-	dstr "DLC menu"
+	dstr "DLC MENU"
 DLCUnavailableText::
 	print_pic GameTiles
 	print_name GameName
@@ -1573,4 +1573,3 @@ ProgressTiles::
 	dw $00FC, $00FC, $00FC, $00FC, $00FC, $00FC, $00FC, $00FC
 	dw $00FE, $00FE, $00FE, $00FE, $00FE, $00FE, $00FE, $00FE
 	dw $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF
-	
