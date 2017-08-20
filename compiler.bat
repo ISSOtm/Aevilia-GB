@@ -1,4 +1,26 @@
 @echo off
+cls
+echo NO.
+timeout /nobreak /t 2 > nul
+echo.
+echo NO GOD PLEASE NO.
+timeout /nobreak /t 2 > nul
+echo.
+echo NO.
+timeout /nobreak /t 3 > nul
+echo.
+color 4C
+echo NOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO!!!!!!!!
+timeout /nobreak /t 5 > nul
+echo.
+color 07
+echo Well, I can't stop you from running the script...
+echo so press any key or wait for 2 minutes, I guess.
+echo Dammit ISSOtm...
+echo.
+echo -Parzival
+timeout /t 120 > nul
+cls
 set ROMVERSION=0
 title Compiling AEVILIA GB version 1.%ROMVERSION%
 echo === COMPILATION ===

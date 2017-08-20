@@ -743,7 +743,7 @@ TestNPCWalkingTiles::
 	dw $08F8, $08F8, $10F0, $20E0, $C0C0, $0000, $0000, $0000
 	
 	
-TestMapSignText::
+TestMapSignText:: ;lel, you're calling the test NPC a signpost? -P
 	disp_box
 	print_line TestMapSignLine0
 	print_line TestMapSignLine1
@@ -1044,3 +1044,7 @@ TestForestWarpToPoints::
 TestForestBlocks::
 INCBIN "maps/test_forest.blk"
 	
+;Like I said,
+;if I could understand this,
+;I'd have added 30 maps or
+;more, by now. -P
