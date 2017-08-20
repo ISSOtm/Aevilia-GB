@@ -7,6 +7,7 @@
 	enum_elem MUSIC_BATTLE_1
 	enum_elem MUSIC_FILESELECT
 	enum_elem MUSIC_OVERWORLD
+	enum_elem MUSIC_CORRUPTION
 	enum_set $FF
 	enum_elem MUSIC_NONE
 	
