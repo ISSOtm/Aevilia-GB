@@ -980,29 +980,29 @@ IntroBoyGirlText::
 	done
 	
 .line0
-	dstr "BEFORE YOU CAN"
+	dstr "Before you can"
 .line1
-	dstr "EMBARK ON THIS"
+	dstr "embark on this"
 .line2
-	dstr "ADVENTURE..."
+	dstr "adventure..."
 .line3
-	dstr "I MUST ASK"
+	dstr "I must ask"
 .line4
-	dstr "A COUPLE OF"
+	dstr "A couple of"
 .line5
-	dstr "QUESTIONS."
+	dstr "questions."
 .line6
-	dstr "THE TOPIC?"
+	dstr "The topic?"
 .line7
-	dstr "YOU."
+	dstr "You."
 .line8
-	db "FOR EXAMPLE,", 0
+	db "For example,", 0
 .line9
-	dstr "I NEED TO KNOW"
+	dstr "I need to know"
 .line10
-	dstr "IF YOU ARE A"
+	dstr "If you are a"
 .line11
-	dstr "BOY OR A GIRL."
+	dstr "boy or girl."
 	
 	
 IntroChoseGenderText::
@@ -1251,7 +1251,7 @@ IntroStartMenuText::
 	db "own, "
 	dstr "get it?"
 .endingLines
-	dstr "God I hate"
+	dstr "Man I hate"
 	dstr "this job."
 	db 0
 

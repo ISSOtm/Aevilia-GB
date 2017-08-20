@@ -900,11 +900,12 @@ ConsoleTypes::
 	dstr "CONSOLE:"
 	dstr "GBA"
 	
+; DO NOT CHANGE THE LENGTH OF THIS STRING
 MagicString::
-	dstr "AEVILIA"
+	dstr "Aevilia"
 	
 SaveFileStr::
-	dstr "SAVE FILE "
+	dstr "Save file "
 	
 FileSelectHeights::
 	db $7C, $7C, $7D, $7E, $7F, $80, $81, $82
@@ -1160,9 +1161,9 @@ ConfirmLoadText::
 	fake_b_choice YesNoCapsChoice
 	done
 .line0
-	dstr "OK TO LOAD"
+	dstr "Ok to load"
 .line1
-	dstr "THIS FILE ?"
+	dstr "this file ?"
 	
 CorruptedFileText::
 	print_pic GameTiles
@@ -1184,20 +1185,20 @@ CorruptedFileText::
 	done
 	
 .line0
-	dstr "THE FILE WAS"
+	dstr "The save was"
 .line1
-	dstr "CORRUPTED !"
+	dstr "corrupted !"
 .line2
-	db "LUCKILY,"
+	db "Luckily,"
 	dstr " I"
 .line3
-	db "HAVE A BACKUP,",0
+	db "have a backup,",0
 .line4
-	dstr "SO I CAN"
+	dstr "So I can"
 .line5
-	dstr "RESTORE IT."
+	dstr "restore it."
 .line6
-	dstr "SHOULD I ?"
+	dstr "Should I ?"
 	
 EmptyFileText::
 	print_pic GameTiles
@@ -1212,19 +1213,19 @@ EmptyFileText::
 	fake_b_choice YesNoCapsChoice
 	done
 EmptyFileLine0::
-	dstr "WELCOME TO"
+	dstr "Welcome to"
 EmptyFileLine1::
-	dstr "A BRAND"
+	dstr "a brand"
 EmptyFileLine2::
-	dstr "NEW FILE !"
+	dstr "new file !"
 EmptyFileLine3::
-	dstr "SHOULD I"
+	dstr "Should I"
 EmptyFileLine4::
-	dstr "LOAD IT ?"
+	dstr "load it ?"
 
 
 DLCName::
-	dstr "DLC MENU"
+	dstr "DLC menu"
 DLCUnavailableText::
 	print_pic GameTiles
 	print_name GameName
@@ -1237,13 +1238,13 @@ DLCUnavailableText::
 	wait_user
 	done
 DLCUnavailableLine0::
-	dstr "DLC IS UNAVAI-"
+	dstr "DLC is unavai-"
 DLCUnavailableLine1::
-	dstr "LABLE BECAUSE"
+	dstr "lable because"
 DLCUnavailableLine2::
-	dstr "IT'S NOT."
+	dstr "it's not."
 DLCUnavailableLine3::
-	dstr "DEAL WITH IT."
+	dstr "Deal with it."
 	
 	
 SECTION "Save file management", ROMX
