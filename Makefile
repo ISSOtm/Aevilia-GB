@@ -81,7 +81,7 @@ $(objdir)/testmaps.o: maps/test.asm
 $(objdir)/intromap.o: maps/intro.asm
 	$(RGBASM) $(CFLAGS) -o $@ $<
 	
-$(objdir)/sound.o: sound/DevSound.asm
+$(objdir)/sound.o: sound/DevSound.asm sound/*.asm
 	$(RGBASM) $(CFLAGS) -o $@ $<
 	
 $(objdir)/battle.o: battle/battle_engine.asm
