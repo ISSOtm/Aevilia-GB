@@ -467,8 +467,8 @@ FileSelect::
 	ld b, BANK(ConfirmLoadText)
 	homecall ProcessText
 	ld hl, wTextFlags
-	bit TEXT_ZERO_FLAG, [hl]
-	jr nz, .loadFile
+	bit TEXT_ZERO_FLAG, [hl] ; If "NO" has been chosen, return to file select
+	jr nz, .loadFile ; Try loading the file
 	
 .resetFileSelect
 	ld a, BANK(AeviliaStr)
@@ -523,7 +523,7 @@ FileSelect::
 	jr nz, .restoreBackupBank
 	
 	homecall VerifyChecksums
-	jr nz, .loadFile ; Backup is valid, move on
+	jp nz, .dontBackup ; Backup is valid, move on (don't backup file, it'd be redundant)
 	
 	ld hl, BackupCorruptedText
 	ld b, BANK(BackupCorruptedText)
@@ -545,10 +545,12 @@ FileSelect::
 	ld a, SRAM_UNLOCK
 	ld [SRAMEnable], a
 	
+	; Check if file has been deemed corrupted
 	ld a, [wSaveA]
 	and a
-	jr nz, .restoreBackup
+	jr nz, .restoreBackup ; If so then it needs to be restored
 	
+	; Check if file is empty
 	ld hl, sNonVoidSaveFiles - 1
 	ld a, [wSaveFileID]
 	ld e, a
@@ -556,8 +558,9 @@ FileSelect::
 	ld l, a
 	ld a, [hl]
 	and a
-	jr nz, .backupFile
+	jr nz, .backupFile ; If file is non-empty and valid, then back it up
 	
+	; File is empty, init it to default file
 	ldh a, [hSRAM32kCompat]
 	and a
 	ld a, 2
@@ -569,6 +572,7 @@ FileSelect::
 .newFile
 	push af
 	ld [SRAMBank], a
+	; Copy both "default" banks from ROM
 	ld hl, DefaultSaveBank0
 	ld de, sFile1Header0
 	ld bc, $2000
@@ -586,17 +590,18 @@ FileSelect::
 	; Calculate checksums so all goes fine
 	callacross CalculateFileChecksums_Hook
 	
-	; Now, initialize backup with default save file. Otherwise, it is possible to load an uninitialized backup, like so :
+	; Now, slide into backup-ing code to initialize backup with default save file. Otherwise, it is possible to load an uninitialized backup, like so :
 	; 1. Start a new file
 	; 2. Save properly at least once
-	; 3. Without loading the file even once, corrupt it
+	; 3. Without loading the file, corrupt it (easiest method : reset while saving, since the file is voluntarily corrupted while saving to prevent such abuse)
 	; 4. Accept to restore from backup
 	; 5. Done ! (Game will probably crash or load test map, as of writing these lines)
+	; If the backup is invalid it will be trapped, but otherwise...
 	
 .backupFile
 	ldh a, [hSRAM32kCompat]
 	and a
-	jr nz, .dontBackup
+	jr nz, .dontBackup ; SRAM32k has no backups (there's just no room for them)
 	
 	ld a, [wSaveFileID]
 	add a, a
