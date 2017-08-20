@@ -21,6 +21,32 @@ enum_elem: MACRO
 ENDM
 
 
+dn: MACRO
+	REPT _NARG / 2
+		db ((\1 & $0F) << 4) | (\2 & $0F)
+		shift
+		shift
+	ENDR
+	
+	; If there's an odd number of arguments, imply a 0 for the last arg
+	IF _NARG % 2 == 1
+		db (\1 & $0F) << 4
+	ENDC
+ENDM
+
+dbfill: MACRO
+	REPT \1
+		db \2
+	ENDR
+ENDM
+
+dwfill: MACRO
+	REPT \1
+		dw \2
+	ENDR
+ENDM
+
+
 INCLUDE "macros/macros.asm"
 INCLUDE "macros/memory.asm"
 INCLUDE "macros/sound.asm"

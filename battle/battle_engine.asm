@@ -284,14 +284,16 @@ TestBattleTransition::
 	ld c, (SCREEN_WIDTH + 2) / 2
 .clearRow
 	rst waitVBlank
+	ld e, l
 	xor a
-	ld [hli], a
-	ld [hld], a
+	ld c, 4
+	rst fill
 	inc a
 	ld [rVBK], a
+	ld l, e
 	xor a
-	ld [hli], a
-	ld [hli], a
+	ld c, 4
+	rst fill
 	ld [rVBK], a
 	ld a, l
 	and $1F

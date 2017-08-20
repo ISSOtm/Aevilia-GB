@@ -30,7 +30,7 @@ DisableTextbox::
 	
 ClearTextbox::
 	ld hl, wTextFlags
-	res 3, [hl]
+	res TEXT_PIC_FLAG, [hl]
 	
 	ld hl, wTextboxTileMap
 	ld a, $11
@@ -410,7 +410,7 @@ YesNoChoice::
 ; Clears all three textbox lines
 ClearText::
 	ld hl, wTextFlags
-	bit 3, [hl]
+	bit TEXT_PIC_FLAG, [hl]
 	ld hl, wTextboxLine0
 	ld c, SCREEN_WIDTH - 6
 	jr nz, .picPresent
@@ -484,7 +484,7 @@ ClearBattleText::
 ; Prints the picture pointed to to VRAM and displays it on the textbox
 PrintPic::
 	ld hl, wTextFlags
-	set 3, [hl] ; Set pic flag
+	set TEXT_PIC_FLAG, [hl] ; Set pic flag
 	
 	ld hl, wDigitBuffer + 1
 	ld a, [hli]
@@ -550,7 +550,7 @@ BattleDummy_4Bytes::
 ; And if the textbox is already fully up, it will not rise again
 PrintNameAndWaitForTextbox::
 	ld hl, wTextFlags
-	bit 3, [hl]
+	bit TEXT_PIC_FLAG, [hl]
 	
 	ld de, wTextboxName
 	jr nz, .picPresent
@@ -806,7 +806,7 @@ PrintKnownPointer::
 	call FillVRAMLite
 	
 	ld hl, wTextFlags
-	bit 3, [hl]
+	bit TEXT_PIC_FLAG, [hl]
 	ld bc, wTextboxPicRow1
 	jr z, .picNotPresent
 	ld c, wTextboxLine0 & $FF
@@ -861,7 +861,7 @@ PrintKnownPointer::
 	
 .printLine
 	ld a, [wTextFlags]
-	bit 3, a ; Check if pic is present
+	bit TEXT_PIC_FLAG, a ; Check if pic is present
 	jr nz, .picIsPresent
 	ld a, e ; Place text on pic's space since it's free
 	sub (wTextboxLine0 - wTextboxPicRow1)
@@ -886,7 +886,7 @@ PrintKnownPointer::
 	ld e, a
 	ld c, 18
 	ld a, [wTextFlags]
-	bit 3, a
+	bit TEXT_PIC_FLAG, a
 	jr z, .noPicThere
 	ld a, e
 	add a, (wTextboxLine0 - wTextboxPicRow1) ; Add pic offset
@@ -1372,7 +1372,7 @@ CURSOR_TILE	equ $7F
 MakeChoice::
 	ld a, [wTextFlags]
 	ld c, a
-	bit 3, c
+	bit TEXT_PIC_FLAG, c
 	
 	ld hl, wDigitBuffer + 1
 	ld b, [hl]
@@ -1392,7 +1392,7 @@ MakeChoice::
 	
 	ld hl, wTextboxLine2 - 4
 	ld de, vTextboxLine2 - 4
-	bit 3, c
+	bit TEXT_PIC_FLAG, c
 	jr z, .picNotPresent
 	ld l, wTextboxLine2 & $FF
 	ld e, vTextboxLine2 & $FF
@@ -1466,10 +1466,10 @@ ENDR
 	ld a, [hl]
 	and a
 	ld hl, wTextFlags
-	set 4, [hl] ; Set Z flag
+	set TEXT_ZERO_FLAG, [hl] ; Set status
 	ld a, 5
 	ret z ; Didn't select the second option
-	res 4, [hl]
+	res TEXT_ZERO_FLAG, [hl]
 	ld a, [wDigitBuffer + 4]
 	ret
 	
@@ -1556,10 +1556,10 @@ ENDR
 	ld a, [hl]
 	and a
 	ld hl, wTextFlags
-	set 4, [hl] ; Set Z flag
+	set TEXT_ZERO_FLAG, [hl] ; Set status
 	ld a, 5
 	ret z ; Didn't select the second option
-	res 4, [hl]
+	res TEXT_ZERO_FLAG, [hl]
 	ld a, [wDigitBuffer + 4]
 	ret
 	
@@ -1627,10 +1627,10 @@ TextDEC::
 	inc [hl]
 	
 	inc hl
-	res 7, [hl]
+	res TEXT_CARRY_FLAG, [hl]
 	and a
 	jr nz, .noCarry
-	set 7, [hl]
+	set TEXT_CARRY_FLAG, [hl]
 .noCarry
 	
 	jr INCDECCommon
@@ -1696,9 +1696,9 @@ TextSBC::
 Text2ByteArithCommon:
 	ld [hli], a
 Text2ByteArithCommon_NoWriteback:
-	res 7, [hl]
+	res TEXT_CARRY_FLAG, [hl]
 	jr nc, .noCarry
-	set 7, [hl]
+	set TEXT_CARRY_FLAG, [hl]
 .noCarry
 	call UpdateTextFlags
 	; a = 1
@@ -1730,9 +1730,9 @@ TextSUB_mem::
 Text3ByteArithCommon:
 	ld [hli], a
 Text3ByteArithCommon_NoWriteback:
-	res 7, [hl]
+	res TEXT_CARRY_FLAG, [hl]
 	jr nc, .noCarry
-	set 7, [hl]
+	set TEXT_CARRY_FLAG, [hl]
 .noCarry
 	call UpdateTextFlags
 	ld a, 3
@@ -1775,7 +1775,7 @@ InstantPrintLines::
 	ld l, a
 	
 	ld a, [wTextFlags]
-	bit 3, a ; Check if pic is there
+	bit TEXT_PIC_FLAG, a ; Check if pic is there
 	ld de, wTextboxPicRow1
 	jr z, .picNotPresent
 	ld e, wTextboxLine0 & $FF
@@ -1818,22 +1818,22 @@ UpdateTextFlags::
 	ld b, a
 	ld hl, wTextFlags
 	ld a, [hl]
-	and $88 ; Reset all flags, but preserve carry and pic flag
+	and (1 << TEXT_CARRY_FLAG) | (1 << TEXT_PIC_FLAG) ; Reset all flags, but preserve carry and pic flag
 	ld [hl], a
 	
 	ld a, b ; Get accumulator value
 	and a ; For Z flag check
 	jr nz, .noZero
-	set 4, [hl]
+	set TEXT_ZERO_FLAG, [hl]
 .noZero
 	rrca
 	jr nc, .parityEven
-	set 5, [hl]
+	set TEXT_PARITY_FLAG, [hl]
 .parityEven
 	rlca
 	rlca
 	jr nc, .positive
-	set 6, [hl]
+	set TEXT_SIGN_FLAG, [hl]
 .positive
 	
 	ld a, 1

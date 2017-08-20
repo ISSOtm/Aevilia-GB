@@ -576,9 +576,9 @@ TestMap::
 	db MUSIC_OVERWORLD ; Music ID
 	
 	db TILESET_TEST ; Tileset
-	dw 0 ; Script (none)
+	dw NO_SCRIPT ; Script (none)
 	map_size 29, 17 ; Width, height
-	dw 0 ; Loading script (none)
+	dw NO_SCRIPT ; Loading script (none)
 	
 TestMapInteractions::
 	db 3
@@ -603,7 +603,7 @@ TestMapNPCs::
 	interact_box $0020, $0020, 16, 16
 	db 0 ; Interaction ID
 	db $01 << 2 | DIR_DOWN ; Sprite ID & direction
-	db 1 << 4 | 1, 1 << 4 | 1 ; Palette IDs
+	dn 1, 1, 1, 1 ; Palette IDs
 	db $F4 ; Movement permissions
 	db $01 ; Movement speed
 	
@@ -621,7 +621,7 @@ TestMapWarpToPoints::
 	db DIR_DOWN ; Direction
 	db NO_WALKING ; Flags
 	db 0 ; Cameraman ID
-	dw 0 ; Loading script (none)
+	dw NO_SCRIPT ; Loading script (none)
 	ds 7
 	
 	dw $FFF8
@@ -629,7 +629,7 @@ TestMapWarpToPoints::
 	db DIR_DOWN
 	db NO_WALKING
 	db 0
-	dw 0
+	dw NO_SCRIPT
 	ds 7
 	
 	dw $0055
@@ -637,7 +637,7 @@ TestMapWarpToPoints::
 	db DIR_RIGHT
 	db KEEP_WALKING
 	db 0
-	dw 0
+	dw NO_SCRIPT
 	ds 7
 	
 TestMapBlocks::
@@ -793,31 +793,25 @@ TestHouse::
 	db MUSIC_SAFE_PLACE ; Music ID
 	
 	db TILESET_TEST_HOUSE
-	dw 0 ; No map script
+	dw NO_SCRIPT ; No map script
 	map_size 9, 6
-	dw 0 ; No loading script
+	dw NO_SCRIPT ; No loading script
 	
 TestHouseInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	dw $004B
-	dw $002E
-	db 6
-	db 5
+	interact_box $004B, $002E, 6, 5
 	db 0
 	db 0
 	
 TestHouseNPCs::
 	db 1
 	
-	dw $0020
-	dw $0020
-	db 16
-	db 16
+	interact_box $0020, $0020, 16, 16
 	db 0
 	db $01 << 2 + DIR_LEFT
-	db $12, $12
+	dn 1, 2, 1, 2
 	db $00
 	db $00
 	
@@ -835,7 +829,7 @@ TestHouseWarpToPoints::
 	db DIR_UP ; Direction
 	db NO_WALKING ; Flags
 	db 0
-	dw 0 ; Loading script (none)
+	dw NO_SCRIPT ; Loading script (none)
 	ds 7
 	
 TestHouseBlocks::
@@ -1012,6 +1006,7 @@ TestHouseNPCTiles::
 	dw $88F8, $90F0, $E0E0, $90F0, $50F0, $A060, $E020, $E0E0
 	
 	; No walking sprites, he doesn't move
+	; That'll put some garbage data in VRAM bank 1, but who cares
 	
 	
 TestForestMap::
@@ -1020,18 +1015,15 @@ TestForestMap::
 	db MUSIC_OVERWORLD ; Music ID
 	
 	db TILESET_TEST
-	dw 0 ; Script (none)
+	dw NO_SCRIPT ; Script (none)
 	map_size 30, 18 ; Width, height
-	dw 0 ; Loading script (none)
+	dw NO_SCRIPT ; Loading script (none)
 	
-TestForestIneractions::
+TestForestInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	dw $0068
-	dw $01D1
-	db 25
-	db 4
+	interact_box $0068, $01C6, 25, 14
 	db 0
 	db 2
 	
@@ -1042,11 +1034,11 @@ TestForestWarpToPoints::
 	db 1
 	
 	dw $0074
-	dw $01C8
+	dw $01C2
 	db DIR_LEFT
 	db KEEP_WALKING
 	db 0
-	dw 0
+	dw NO_SCRIPT
 	ds 7
 	
 TestForestBlocks::

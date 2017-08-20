@@ -1377,9 +1377,10 @@ GetNPCOffsetFromCam::
 	ld [de], a ; Store it
 	ret
 	
+	
 ; Move all NPCs according to their structs
 MoveNPCs::
-	ld de, (wNPC1_ypos - wNPC0_ypos)
+	ld de, NPC_STRUCT_SIZE
 	ld a, [wNumOfNPCs]
 	call MultiplyDEByA
 	ld de, wNPC0_steps
@@ -1397,7 +1398,7 @@ MoveNPCs::
 	dec hl
 	dec a ; Decrement waiting counter
 	ld [hli], a ; Store
-	ret nz
+	jr nz, .gotoNextNPC
 	res 3, [hl] ; Unfreeze NPC if waiting is done
 	jr .gotoNextNPC
 	
@@ -1510,18 +1511,18 @@ MoveNPCs::
 	; Have NPC generate movement
 	ld a, [hl] ; Store flags
 	and $F4 ; Get only permissions & "enable" bit (which should be set by this point)
+	ld [hl], a ; Correct invalid states
 	ld d, a
 	and $C0 ; Get turning permissions
 	jr z, .nextNPC
 	
 	push hl
 	call RandInt
+	ld b, l ; Save the random int's low byte
 	pop hl
-	and $3F
+	and $3F ; a contains the high byte
 	jr nz, .nextNPC ; Some chance the NPC doesn't do anything, but eventually it should
 	
-	ldh a, [hRandIntLow]
-	ld b, a
 	ld a, d ; Get back flags
 	and $C0
 	rlca

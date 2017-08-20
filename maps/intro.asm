@@ -508,7 +508,7 @@ IntroMap::
 	db TILESET_INTRO
 	dw IntroMapScript
 	map_size 15, 18
-	dw 0
+	dw NO_SCRIPT
 	
 IntroMapInteractions::
 	db 0
@@ -516,65 +516,47 @@ IntroMapInteractions::
 IntroMapNPCs::
 	db 6
 	
-	dw $0128 ; Y pos
-	dw $0070 ; X pos
-	db 16 ; Y hitbox
-	db 16 ; X hitbox
+	interact_box $0128, $0070, 16, 16 ; X hitbox
 	db 0 ; Interaction ID
 	db 1 << 2 + DIR_DOWN ; Sprite ID & direction
-	db 1 << 4 + 1, 1 << 4 + 1 ; Palette IDs
+	dn 1, 1, 1, 1 ; Palette IDs
 	db 0 ; Movement permissions
 	db 0 ; Movement speed
 	
 	; Dummy NPC for the camera to focus on during gender selection
-	dw $00D0
-	dw $0000
-	db 0
-	db 0
+	interact_box $00D0, $0000, 0, 0
 	db 0
 	db 2 << 2 | DIR_DOWN
-	db 0, 0
+	dn 0, 0, 0, 0
 	db 0
 	db 0
 	
 	; Dummy NPCs to display some of the character's eye colors to override some palette limitations
-	dw $00C8
-	dw $0018
-	db 0
-	db 0
+	interact_box $00C8, $0018, 0, 0
 	db 0
 	db 3 << 2 | DIR_LEFT
-	db $11, $11
+	dn 1, 1, 1, 1
 	db 0
 	db 0
 	
-	dw $00C8
-	dw $0020
-	db 0
-	db 0
+	interact_box $00C8, $0020, 0, 0
 	db 0
 	db 4 << 2 | DIR_LEFT
-	db $11, $11
+	dn 1, 1, 1, 1
 	db 0
 	db 0
 	
-	dw $00C8
-	dw $0070
-	db 0
-	db 0
+	interact_box $00C8, $0070, 0, 0
 	db 0
 	db 4 << 2 | DIR_RIGHT
-	db $11, $11
+	dn 1, 1, 1, 1
 	db 0
 	db 0
 	
-	dw $00C8
-	dw $0078
-	db 0
-	db 0
+	interact_box $00C8, $0078, 0, 0
 	db 0
 	db 3 << 2 | DIR_RIGHT
-	db $11, $11
+	dn 1, 1, 1, 1
 	db 0
 	db 0
 	
@@ -598,8 +580,11 @@ IntroMapWarpToPoints::
 	dw CharSelectLoadingScript
 	ds 7
 	
-	dw $0028
-	dw $0010
+TUTORIAL_STARTING_YPOS = $0028
+TUTORIAL_STARTING_XPOS = $0010
+	
+	dw TUTORIAL_STARTING_YPOS
+	dw TUTORIAL_STARTING_XPOS
 	db DIR_RIGHT
 	db NO_WALKING
 	db 0
@@ -611,15 +596,7 @@ INCBIN "maps/intro.blk"
 	
 	
 InvisibleTiles::
-REPT 2 ; 1 "still" set + 1 "moving" set
-REPT 3 ; 3 directions
-REPT 4 ; 4 tiles
-REPT 8 ; 8 lines
-	dw $0000
-ENDR
-ENDR
-ENDR
-ENDR
+	dwfill 2 * 3 * 4 * 8, $0000 ; (1 "still" set + 1 "moving" set) * 3 directions * 4 tiles * 8 lines
 
 
 ; The NPCs that use these can't be interacted with, so only one side will be coded (two because it's both left and right, left for Evie and mirrored left = right for Tom)
@@ -662,8 +639,10 @@ IntroNPC0Script::
 	dstr "see someone here!"
 .line2
 	dstr "My name is Jo"
-
-
+	
+	
+; The caracter selection screen is actually part of the intro map (who would've known)
+; The first loading script basically resets the tutorial
 CharSelectLoadingScript::
 	ld a, BANK(wIntroMapStatus)
 	call SwitchRAMBanks
@@ -673,8 +652,10 @@ CharSelectLoadingScript::
 	ldh [hOverworldButtonFilter], a
 	inc a
 	call SwitchRAMBanks
-	jp PreventJoypadMovement ; Prevent player's movement
+	jp PreventJoypadMovement ; Prevent player's movement, joypad input will only be used for the charselect, not to move the player
 	
+; Second loading script ; using a warp is more practical (notably because it provides an automated fade with some code exec in the middle)
+; Also because it helps setting the map to a known state before the player is allowed to see the player even once
 IntroMapLoadingScript::
 	xor a ; Close the textbox that was left open by the previous script
 	ld [wTextboxStatus], a
@@ -692,7 +673,8 @@ IntroMapScript::
 	add a, a ; This is pretty standard, 2 bytes per pointer
 	add a, IntroScripts & $FF
 	ld l, a
-	ld h, IntroScripts >> 8 ; hl points 
+	ld h, IntroScripts >> 8 ; hl points to the next pointer (the purpose / usage of which differs based on index parity)
+	; Note : this assumes there's no carry. May not be true, if then move the pointer array around
 	
 	; Depending on status parity, the pointer should be interpreted differently
 	bit 0, b ; If it's an even status, it's a text pointer
@@ -710,15 +692,12 @@ IntroMapScript::
 	jpacross ProcessText_Hook
 	
 .runSpecificScript
-	ld a, [hli] ; Check if that's not a NULL
-	or [hl]
-	jr z, .switchBanks ; No script, skip the code to run it
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	or h ; Check if that's not a NULL
+	jr nz, @+1 ; No script, don't run it
 	
-	ld a, [hld] ; If it's not, run it.
-	ld l, [hl]
-	ld h, a
-	rst callHL
-.switchBanks ; Make sure to switch back for the main code
 	ld a, 1
 	jp SwitchRAMBanks
 	
@@ -847,7 +826,7 @@ IntroChooseGender::
 	and BUTTON_A | BUTTON_START | BUTTON_SELECT
 	ret z ; Don't advance status if A or START or SELECT aren't pressed
 	
-	; Gender has benn chosen !
+	; Gender has been chosen !
 	inc b
 	ld a, b
 	ld [wIntroMapStatus], a ; Advance status
@@ -903,11 +882,11 @@ IntroResetDelayStep::
 	; Check if player is still at its starting position
 	; If warp-to #1's position is modified, update these accordingly
 	ld a, [wYPos]
-	cp $28
+	cp TUTORIAL_STARTING_YPOS
 	jr nz, .playerMoved
 	
 	ld a, [wXPos]
-	cp $10
+	cp TUTORIAL_STARTING_XPOS
 	ret z
 	
 .playerMoved

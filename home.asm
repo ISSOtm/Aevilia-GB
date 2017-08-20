@@ -452,7 +452,7 @@ THE_CONSTANT = 42
 	call CopyToVRAMLite
 	
 	ld a, 1
-	ld [wLoadedMap], a
+	ld [wLoadedMap], a ; Tell the file select this is the first time it boots
 	
 FileSelect::
 	; Draws file select screen and waits until the user selects a file
@@ -471,7 +471,7 @@ FileSelect::
 	jr nz, .loadFile
 	
 .resetFileSelect
-	inc a ; ld a, 1
+	ld a, BANK(AeviliaStr)
 	rst bankswitch
 	
 	ld hl, AeviliaStr
@@ -700,15 +700,14 @@ OverworldLoop::
 	call z, MovePlayer
 .ignoreMovement	
 	
+	call MoveNPCs
 	call MoveNPC0ToPlayer
 	call MoveCamera
+	call ProcessNPCs
 	ld a, [wCameraYPos]
 	ld [wSCY], a
 	ld a, [wCameraXPos]
 	ld [wSCX], a
-	
-	call MoveNPCs
-	call ProcessNPCs
 	
 	call DoWalkingInteractions
 	
@@ -720,11 +719,11 @@ OverworldLoop::
 	and a
 	jr nz, OverworldLoop
 	
-	; Process button interactions, if any
 	ld a, [wUnlinkJoypad]
 	and a
 	jr nz, OverworldLoop
 	
+	; Process button interactions, if any
 	ld a, [hOverworldPressedButtons]
 	rrca ; A
 	jr c, .doButtonInteractions

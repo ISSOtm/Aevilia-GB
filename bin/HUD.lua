@@ -162,10 +162,10 @@ function drawHUD()
 		return readbyte
 	end
 	
-	function drawbox(xpos, ypos, xsize, ysize, color)
+	function drawbox(xpos, ypos, xsize, ysize, color, fillcolor)
 		if xsize > 0 then
 			if ysize > 0 then
-				gui.drawRectangle(xpos, ypos, xsize, ysize, color)
+				gui.drawRectangle(xpos, ypos, xsize, ysize, color, fillcolor)
 			else
 				gui.drawLine(xpos, ypos, xpos + xsize, ypos, color)
 			end
@@ -249,7 +249,7 @@ function drawHUD()
 			loadzoneybox = readmemory(baseaddr + 4, memory.read_u8)
 			loadzonexbox = readmemory(baseaddr + 5, memory.read_u8)
 			
-			drawbox(loadzonexpos - cameraxpos, loadzoneypos - cameraypos, loadzonexbox - 1, loadzoneybox - 1, 0xFF8000FF)
+			drawbox(loadzonexpos - cameraxpos, loadzoneypos - cameraypos, loadzonexbox - 1, loadzoneybox - 1, 0xFF8000FF, 0x808000FF)
 			
 			baseaddr = baseaddr + 8
 		end
@@ -262,7 +262,7 @@ function drawHUD()
 			loadzoneybox = readmemory(baseaddr + 4, memory.read_u8)
 			loadzonexbox = readmemory(baseaddr + 5, memory.read_u8)
 			
-			drawbox(loadzonexpos - cameraxpos, loadzoneypos - cameraypos, loadzonexbox - 1, loadzoneybox - 1, 0xFF8080FF)
+			drawbox(loadzonexpos - cameraxpos, loadzoneypos - cameraypos, loadzonexbox - 1, loadzoneybox - 1, 0xFF8080FF, 0x808080FF)
 			
 			baseaddr = baseaddr + 8
 		end
