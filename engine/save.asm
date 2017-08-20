@@ -428,20 +428,22 @@ DrawFileSelect::
 	
 	ld de, InvertedPalette + 3
 	ld c, 0
-	callacross LoadOBJPalette_Hook
+	callacross LoadOBJPalette_Hook ; Load the palette for the sprites
 	
 	; Print the "save file" texts
 	ld de, $9904
-	ld bc, (3 << 8) | "1"
 	ldh a, [hSRAM32kCompat]
 	and a
-	jr z, .printSaveFilesLoop
+	jr z, .printSaveFiles
 	
+	; SRAM32k has only one file
 	inc de
 	ld hl, SaveFileStr
 	call CopyStrToVRAM
 	jr .donePrinting
 	
+.printSaveFiles
+	ld bc, (3 << 8) | "1"
 .printSaveFilesLoop
 	ld hl, SaveFileStr
 	call CopyStrToVRAM
@@ -452,7 +454,7 @@ DrawFileSelect::
 	ld [de], a
 	inc c
 	
-	ld hl, $55
+	ld hl, $55 ; Offset from one ID to the next start (3 lines - 11 chars)
 	add hl, de
 	ld d, h
 	ld e, l
@@ -476,11 +478,13 @@ DrawFileSelect::
 	; Transfer sprites
 	ld a, 4 + 9
 	ld [wNumOfSprites], a
+	ld [wTransferSprites], a
 	
+	; Draw the console strings on-screen
 	ld a, [hConsoleType]
 	add a, a
 	ld hl, ConsoleTypes
-	add a, l
+	add a, l ; Assumed not to overflow (if needed move the pointer array around)
 	ld l, a
 	ld a, [hli]
 	ld h, [hl]
@@ -491,7 +495,6 @@ DrawFileSelect::
 	call CopyStrToVRAM
 	
 	ld a, 1
-	ld [wTransferSprites], a
 	ld [rVBK], a ; Load VRAM bank 1
 	
 	; Highlight first save file
@@ -499,6 +502,7 @@ DrawFileSelect::
 	ld hl, $98E3
 	call FileSelectHighlight
 	
+	; Make both console lines black instead of grey
 	ld hl, $9A24
 	ld a, 2
 	ld c, $30
@@ -521,7 +525,12 @@ DrawFileSelect::
 	
 	ldh a, [hSRAM32kCompat]
 	and a
+	jr z, SelectFile ; Don't display the text if this isn't SRAM32k
+	ld hl, wLoadedMap
+	ld a, [hl] ; Don't display the text if this is not the first time
+	and a
 	jr z, SelectFile
+	ld [hl], 0 ; Tell the game it's not the first time anymore
 	ld c, BANK(CompatExplanationText)
 	ld de, CompatExplanationText
 	callacross ProcessText_Hook
@@ -755,30 +764,35 @@ ENDR
 	jr .scrollLoop
 	
 .loadFile
-	ld d, e ; Save the file ID
-	
+	ld a, BANK(sNonVoidSaveFiles)
+	ld [SRAMBank], a
 	ld a, SRAM_UNLOCK
 	ld [SRAMEnable], a
-	ld a, 1
-	ld [SRAMBank], a
 	ld hl, sNonVoidSaveFiles - 1
 	ld a, l
-	add a, e
+	add a, e ; Get file's voidness ptr in array
 	ld l, a
-	ld d, [hl]
-	
-	ld a, e
-	ld [wSaveFileID], a
-	add a, a
-	add a, a
-	ld [SRAMBank], a
+	ld a, [hl] ; Get voidness
+	and a ; Check if void
+	ld a, e ; Get back file ID
+	ld [wSaveFileID], a ; Store it
 	ld hl, EmptyFileText
+	ret z ; It's void
 	
-	ld a, d
+	ldh a, [hSRAM32kCompat]
 	and a
-	ret z
+	jr z, .notSRAM32k
+	ld a, 2
+	jr .gotBank
+.notSRAM32k
+	ld a, e
+	add a, a ; Still equals file ID
+	add a, a
+.gotBank
+	ld c, a ; Save that bank
+	ld [SRAMBank], a ; Set SRAM bank
 	
-	; Calculate save file #d's validity
+	; Calculate save file #e's validity
 	ld de, sFile1MagicString0
 	ld hl, MagicString
 .compareMagicStrings
@@ -790,9 +804,7 @@ ENDR
 	and a
 	jr nz, .compareMagicStrings
 	
-	ld a, [wSaveFileID]
-	add a, a
-	add a, a
+	ld a, c ; Get back bank
 .calcOneBankSums
 	ld [SRAMBank], a
 	push af
@@ -835,11 +847,35 @@ ENDR
 .popAndEndTests
 	pop af
 .endTests
-	ld a, 1
+	ld a, 1 ; Let the loader know the file is corrupted
 	ld [wSaveA], a
+	
+	ldh a, [hSRAM32kCompat]
+	and a
 	ld hl, CorruptedFileText
+	ret z
+	ld hl, CompatFileCorruptedText ; SRAM32k doesn't have backups, thus uses a different text
 	ret
 	
+	
+SaveFileCornerTile::
+	dw $F0F0, $C0C0, $8080, $8080, $0000, $0000, $0000, $0000
+	; These two must follow each other !
+SaveFileSprites::
+	dspr 40, 24 , 1, $00
+	dspr 40, 128, 1, $20
+	dspr 56, 24 , 1, $40
+	dspr 56, 128, 1, $60
+	
+	dspr $70,  2,  2, 1
+	dspr $78,  2,  3, 1
+	dspr $80,  2,  4, 1
+	dspr $70, 10,  5, 1
+	dspr $78, 10,  6, 1
+	dspr $80, 10,  7, 1
+	dspr $70, 18,  8, 1
+	dspr $78, 18,  9, 1
+	dspr $80, 18, 10, 1
 	
 ConsoleTypes::
 	dw .crap
@@ -874,25 +910,6 @@ SaveFileStr::
 FileSelectHeights::
 	db $7C, $7C, $7D, $7E, $7F, $80, $81, $82
 	db $82, $82, $82, $81, $80, $7F, $7E, $7D
-	
-SaveFileCornerTile::
-	dw $F0F0, $C0C0, $8080, $8080, $0000, $0000, $0000, $0000
-	
-SaveFileSprites::
-	dspr 40, 24 , 1, $00
-	dspr 40, 128, 1, $20
-	dspr 56, 24 , 1, $40
-	dspr 56, 128, 1, $60
-	
-	dspr $70,  2,  2, 1
-	dspr $78,  2,  3, 1
-	dspr $80,  2,  4, 1
-	dspr $70, 10,  5, 1
-	dspr $78, 10,  6, 1
-	dspr $80, 10,  7, 1
-	dspr $70, 18,  8, 1
-	dspr $78, 18,  9, 1
-	dspr $80, 18, 10, 1
 	
 EraseWhichFileStr::
 	dstr "ERASE WHICH FILE ?"
@@ -1306,9 +1323,8 @@ LoadFile::
 	pop de
 	pop af
 	inc a
-	inc a
-	bit 1, a
-	jr z, .copyOneBank
+	bit 0, a ; See next function
+	jr nz, .copyOneBank
 	
 	; Calculate header...
 	
@@ -1393,16 +1409,17 @@ SaveFile::
 	pop hl
 	pop af
 	inc a
-	inc a
-	bit 1, a
-	jr z, .copyOneBank
+	bit 0, a ; We start at the even bank, so only re-loop if we have to process the odd bank
+	jr nz, .copyOneBank
+	
+	dec a ; That pointed to the bank following the odd one, we need one less
 	
 CalculateFileChecksums:
 	; Calculate header checksums
+	; Call with a = bank right after both "main" banks
 .calcOneBankSums
-	dec a
-	ld [SRAMBank], a
 	push af
+	ld [SRAMBank], a
 	ld hl, sFile1Data0Start
 	ld de, sFile1Checksums0
 .nextBlock
@@ -1430,13 +1447,12 @@ CalculateFileChecksums:
 	jr nz, .nextBlock
 	
 	pop af
-	bit 1, a
+	dec a
+	bit 0, a ; We started with the odd bank, re-loop for the even bank
 	jr z, .calcOneBankSums
 	
-	inc a
-	ld [SRAMBank], a
-	
-	; Finally, make file (potentially) valid. This is done last, so no cheating is possible... :)
+	; Finally, make file (potentially) valid by re-writing the string in the even bank
+	; This is done last, so no cheating is possible... :)
 	ld b, BANK(DefaultSaveMagicString0)
 	ld hl, DefaultSaveMagicString0
 	ld de, sFile1MagicString0
@@ -1444,19 +1460,20 @@ CalculateFileChecksums:
 	
 	xor a
 	ld [SRAMEnable], a
+	ld [SRAMBank], a
 	ret
 	
 CalculateFileChecksums_Hook::
 	ldh a, [hSRAM32kCompat]
 	and a
 	jr z, .notCompatMode
-	ld a, 4
+	ld a, 3 ; The second used bank
 	jr .compatMode
 .notCompatMode
 	ld a, [wSaveFileID]
 	add a, a
-	inc a
 	add a, a
+	inc a
 .compatMode
 	call CalculateFileChecksums
 	ld a, SRAM_UNLOCK

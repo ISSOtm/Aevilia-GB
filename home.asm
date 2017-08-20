@@ -288,7 +288,7 @@ THE_CONSTANT = 42
 	ld b, a
 	ld a, [rHDMA1]
 	cp b
-	ld a, CONSOLE_3DS
+	ld a, CONSOLE_3DS ; Closer to crap than decent
 	jr nz, .thisIsEmulator
 	
 	; This is decent emulator, but not perfect
@@ -451,26 +451,27 @@ THE_CONSTANT = 42
 	ld bc, VRAM_TILE_SIZE * 9
 	call CopyToVRAMLite
 	
+	ld a, 1
+	ld [wLoadedMap], a ; Tell the file select this is the first time it boots
+	
 FileSelect::
 	; Draws file select screen and waits until the user selects a file
 	homecall DrawFileSelect ; To save space in home bank, this is another bank
 	
+	; This function leaves SRAM open, close it
 	xor a
 	ld [SRAMEnable], a
 	ld [SRAMBank], a
 	
-	ldh a, [hSRAM32kCompat]
-	and a
-	jr nz, .loadFile
-	
+	; Display the text (they should all be in the same bank)
 	ld b, BANK(ConfirmLoadText)
 	homecall ProcessText
-	ld a, [wTextboxLine2]
-	and a
+	ld hl, wTextFlags
+	bit TEXT_ZERO_FLAG, [hl]
 	jr nz, .loadFile
 	
 .resetFileSelect
-	inc a ; ld a, 1
+	ld a, BANK(AeviliaStr)
 	rst bankswitch
 	
 	ld hl, AeviliaStr
@@ -699,15 +700,14 @@ OverworldLoop::
 	call z, MovePlayer
 .ignoreMovement	
 	
+	call MoveNPCs
 	call MoveNPC0ToPlayer
 	call MoveCamera
+	call ProcessNPCs
 	ld a, [wCameraYPos]
 	ld [wSCY], a
 	ld a, [wCameraXPos]
 	ld [wSCX], a
-	
-	call MoveNPCs
-	call ProcessNPCs
 	
 	call DoWalkingInteractions
 	
@@ -719,11 +719,11 @@ OverworldLoop::
 	and a
 	jr nz, OverworldLoop
 	
-	; Process button interactions, if any
 	ld a, [wUnlinkJoypad]
 	and a
 	jr nz, OverworldLoop
 	
+	; Process button interactions, if any
 	ld a, [hOverworldPressedButtons]
 	rrca ; A
 	jr c, .doButtonInteractions
