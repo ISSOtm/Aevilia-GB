@@ -744,6 +744,7 @@ TestNPCWalkingTiles::
 	
 	
 TestMapSignText:: ;lel, you're calling the test NPC a signpost? -P
+	; lolwut? this actually is a sign. you need to like actually play the game before you assume - DevEd
 	disp_box
 	print_line TestMapSignLine0
 	print_line TestMapSignLine1
