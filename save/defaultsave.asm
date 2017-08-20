@@ -3,7 +3,8 @@
 INCLUDE "macros.asm"
 INCLUDE "constants.asm"
 
-SECTION "Default save bank 0", ROMX
+SECTION "Default save", ROMX
+;SECTION "Default save bank 0", ROMX
 
 DefaultSaveBank0::
 

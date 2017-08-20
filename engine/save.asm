@@ -789,6 +789,26 @@ ENDR
 	add a, a ; Still equals file ID
 	add a, a
 .gotBank
+	call VerifyChecksums
+	jr nz, .fileValid
+	ld a, 1 ; Let the loader know the file is corrupted
+	ld [wSaveA], a
+	
+	ldh a, [hSRAM32kCompat]
+	and a
+	ld hl, CorruptedFileText
+	ret z
+	ld hl, CompatFileCorruptedText ; SRAM32k doesn't have backups, thus uses a different text
+	ret
+	
+.fileValid
+	ld hl, ConfirmLoadText
+	ret
+	
+; Call with a = 1st bank of save file
+; Returns a = 0 if file invalid (also Z set)
+; Otherwise file is valid
+VerifyChecksums::
 	ld c, a ; Save that bank
 	ld [SRAMBank], a ; Set SRAM bank
 	
@@ -841,20 +861,13 @@ ENDR
 	bit 1, a
 	jr nz, .calcOneBankSums
 	
-	ld hl, ConfirmLoadText
+	and a ; Should be non-zero
 	ret
 	
 .popAndEndTests
 	pop af
 .endTests
-	ld a, 1 ; Let the loader know the file is corrupted
-	ld [wSaveA], a
-	
-	ldh a, [hSRAM32kCompat]
-	and a
-	ld hl, CorruptedFileText
-	ret z
-	ld hl, CompatFileCorruptedText ; SRAM32k doesn't have backups, thus uses a different text
+	xor a
 	ret
 	
 	
@@ -1200,6 +1213,46 @@ CorruptedFileText::
 	dstr "restore it."
 .line6
 	dstr "Should I ?"
+	
+BackupCorruptedText::
+	print_pic GameTiles
+	print_name GameName
+	print_line .line0
+	print_line .line1
+	print_line .line2
+	wait_user
+	clear_box
+	print_line .line3
+	print_line .line4
+	print_line .line5
+	wait_user
+	clear_box
+	print_line .line6
+	print_line .line7
+	wait_user
+	print_line .line8
+	wait_user
+	done
+	
+.line0
+	dstr "YOU CERTAINLY"
+.line1
+	dstr "DID YOUR"
+.line2
+	dstr "WORST."
+.line3
+	dstr "EVEN THE"
+.line4
+	dstr "BACKUP"
+.line5
+	dstr "IS CORRUPTED!"
+.line6
+	db "SO, "
+	dstr "LET'S"
+.line7
+	dstr "START OVER."
+.line8
+	dstr "OKAY?"
 	
 EmptyFileText::
 	print_pic GameTiles

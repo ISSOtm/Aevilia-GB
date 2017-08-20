@@ -522,6 +522,16 @@ FileSelect::
 	bit 0, d
 	jr nz, .restoreBackupBank
 	
+	homecall VerifyChecksums
+	jr nz, .loadFile ; Backup is valid, move on
+	
+	ld hl, BackupCorruptedText
+	ld b, BANK(BackupCorruptedText)
+	homecall ProcessText
+	ld a, [wSaveFileID]
+	ld e, a
+	jr .corruptedBackupNewFile
+	
 .loadFile
 	xor a
 	ld [wFadeSpeed], a
@@ -552,6 +562,7 @@ FileSelect::
 	and a
 	ld a, 2
 	jr nz, .newFile
+.corruptedBackupNewFile
 	ld a, e
 	add a, a
 	add a, a
