@@ -743,10 +743,7 @@ TestNPCWalkingTiles::
 	dw $08F8, $08F8, $10F0, $20E0, $C0C0, $0000, $0000, $0000
 	
 	
-TestMapSignText:: ;lel, you're calling the test NPC a signpost? -P
-	; lolwut? this actually is a sign. you need to like actually play the game before you assume - DevEd
-	;Oh. Yeah. Okay. Fair enough. I mixed it up. It's odd formatting.
-	;It seems I've been bested in comment warfare. Nicely done. -P
+TestMapSignText::
 	disp_box
 	print_line TestMapSignLine0
 	print_line TestMapSignLine1
