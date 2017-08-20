@@ -901,6 +901,7 @@ ConsoleTypes::
 	dstr "GBA"
 	
 ; DO NOT CHANGE THE LENGTH OF THIS STRING
+; Also make sure it matches `DefaultSaveMagicString0/1`
 MagicString::
 	dstr "Aevilia"
 	

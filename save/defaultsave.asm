@@ -7,8 +7,9 @@ SECTION "Default save bank 0", ROMX
 
 DefaultSaveBank0::
 
+; MAKES SURE THIS MATCHES `MagicString` !!
 DefaultSaveMagicString0::
-	dstr "AEVILIA"
+	dstr "Aevilia"
 	
 DefaultSaveChecksums0::
 	ds $F8
@@ -76,8 +77,9 @@ DefaultSaveBank0End:
 ;SECTION "Default save bank 1", ROMX
 DefaultSaveBank1::
 
+; Also make sure this matches `MagicString`.
 DefaultSaveMagicString1::
-	dstr "AEVILIA"
+	dstr "Aevilia"
 	
 DefaultSaveChecksums1::
 	ds $F8
