@@ -1267,7 +1267,7 @@ EmptyFileText::
 	fake_b_choice YesNoCapsChoice
 	done
 EmptyFileLine0::
-	dstr "WELCOME TO
+	dstr "WELCOME TO"
 EmptyFileLine1::
 	dstr "A BRAND"
 EmptyFileLine2::
