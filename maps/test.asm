@@ -745,6 +745,8 @@ TestNPCWalkingTiles::
 	
 TestMapSignText:: ;lel, you're calling the test NPC a signpost? -P
 	; lolwut? this actually is a sign. you need to like actually play the game before you assume - DevEd
+	;Oh. Yeah. Okay. Fair enough. I mixed it up. It's odd formatting.
+	;It seems I've been bested in comment warfare. Nicely done. -P
 	disp_box
 	print_line TestMapSignLine0
 	print_line TestMapSignLine1
