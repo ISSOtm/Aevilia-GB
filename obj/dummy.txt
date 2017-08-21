@@ -1,0 +1,1 @@
+Please do not delete this file. Without it, this folder disappears from the repo and the build fails because of it. -DevEd
