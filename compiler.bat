@@ -1,5 +1,4 @@
 @echo off
-rem nope.
 set ROMVERSION=0
 title Compiling AEVILIA GB version 1.%ROMVERSION%
 echo === COMPILATION ===
