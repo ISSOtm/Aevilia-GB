@@ -271,45 +271,52 @@ BattleTextboxBorderTiles::
 BattleTransitions::
 	dw TestBattleTransition
 	
+BLOCK_SIZE = 4
 TestBattleTransition::
 	call GetCameraTopLeftPtr
 	ld h, d
 	ld l, e
-	ld b, SCREEN_HEIGHT + 2
-.clearScreen
-	ld c, (SCREEN_WIDTH + 2) / 2
-.clearRow
+	ld e, BLOCK_SIZE
+	ld b, SCREEN_HEIGHT + 1
 	rst waitVBlank
-	ld e, l
-	xor a
-	ld c, 4
-	rst fill
-	inc a
+.clearRow
+	ld c, SCREEN_WIDTH + 1
+.clearTile
+	ld a, 1
 	ld [rVBK], a
-	ld l, e
 	xor a
-	ld c, 4
-	rst fill
+	ld [hl], a ; Clear attribute
 	ld [rVBK], a
+	ld [hli], a ; Clear tile
 	ld a, l
-	and $1F
-	jr nz, .noWrap
+	and VRAM_ROW_SIZE - 1
+	jr nz, .dontWrapHoriz
 	ld a, l
-	sub $20
+	sub VRAM_ROW_SIZE
 	ld l, a
-	jr nc, .noWrap
+	jr nc, .dontWrapHoriz ; noCarry
 	dec h
-.noWrap
+.dontWrapHoriz
+	dec e ; Decrement "block counter"
+	jr nz, .dontWait ; If one block hasn't been written, repeat
+	rst waitVBlank
+	ld e, BLOCK_SIZE
+.dontWait
 	dec c
-	jr nz, .clearRow
+	jr nz, .clearTile
+	; Advance one row (minus what we did previously)
 	ld a, l
-	add a, $20 - SCREEN_WIDTH - 2
+	add a, VRAM_ROW_SIZE - (SCREEN_WIDTH + 1)
 	ld l, a
 	jr nc, .noCarry
 	inc h
+	ld a, h
+	cp $9C
+	jr nz, .noCarry ; .dontWrapVert
+	ld h, $98
 .noCarry
 	dec b
-	jr nz, .clearScreen
+	jr nz, .clearRow
 	
 	ld bc, 10
 	call DelayBCFrames
