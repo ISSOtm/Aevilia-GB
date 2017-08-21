@@ -1,8 +1,4 @@
 
-INCLUDE "macros.asm"
-INCLUDE "constants.asm"
-
-
 SECTION "Graphic funcs", ROMX[$4000],BANK[1]
 	
 InitGBPalAndSryScreen::
@@ -1304,6 +1300,15 @@ TestWarriorTopPalette::
 TestWarriorBottomPalette::
 	db $1F, $17, $13
 	db $1F, $00, $04
+	db $00, $00, $00
+	
+	
+; Interior tileset palettes
+	
+InteriorMainPalette::
+	db $1E, $1E, $1D
+	db $16, $0F, $09
+	db $11, $0B, $09
 	db $00, $00, $00
 	
 	

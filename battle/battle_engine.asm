@@ -1,8 +1,4 @@
 
-INCLUDE "macros.asm"
-INCLUDE "constants.asm"
-
-
 SECTION "Battle engine", ROMX,BANK[5]
 
 StartBattle::

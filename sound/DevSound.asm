@@ -25,9 +25,6 @@
 
 UseFXHammer	set	1
 
-include	"macros.asm"
-include	"constants.asm"
-
 SECTION	"DevSound netry points",ROM0
 
 DevSound_JumpTable:
@@ -2719,11 +2716,3 @@ DummyTable:	db	$ff
 
 DummyChannel:
 	db	EndChannel
-	
-; ================================================================
-; Song data
-; ================================================================
-
-SECTION "Song data", ROMX,BANK[5]
-
-INCLUDE	"sound/SongData.asm"

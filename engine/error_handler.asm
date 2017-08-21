@@ -1,7 +1,4 @@
 
-INCLUDE "macros.asm"
-INCLUDE "constants.asm"
-
 SECTION "Error handler", ROMX
 	
 	

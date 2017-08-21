@@ -47,6 +47,17 @@ dwfill: MACRO
 ENDM
 
 
+dbor: MACRO
+value = 0
+	REPT _NARG
+value = value | \1
+		shift
+	ENDR
+	
+	db value
+ENDM
+
+
 INCLUDE "macros/macros.asm"
 INCLUDE "macros/memory.asm"
 INCLUDE "macros/sound.asm"

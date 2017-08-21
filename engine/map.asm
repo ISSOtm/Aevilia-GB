@@ -1,7 +1,4 @@
 
-INCLUDE "macros.asm"
-INCLUDE "constants.asm"
-
 SECTION "Map pointers", ROMX[$4000]
 	
 MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED !!

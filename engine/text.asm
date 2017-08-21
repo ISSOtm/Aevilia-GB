@@ -1,7 +1,4 @@
 
-INCLUDE "macros.asm"
-INCLUDE "constants.asm"
-
 SECTION "Text engine", ROMX
 	
 EnableTextbox::

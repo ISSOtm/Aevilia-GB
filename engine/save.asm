@@ -1,8 +1,4 @@
 
-INCLUDE "macros.asm"
-INCLUDE "constants.asm"
-
-	
 HIGHLIGHT_LENGTH equ 14
 	
 SECTION "File select", ROMX
