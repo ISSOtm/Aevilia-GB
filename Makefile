@@ -1,6 +1,6 @@
 
 .SHELL: /bin/bash
-.PHONY: all rebuild
+.PHONY: all rebuild clean
 .SUFFIXES:
 .DEFAULT_GOAL: all
 
@@ -56,4 +56,3 @@ $(bindir)/aevilia.gbc: $(objdir)/main.o $(objdir)/battle.o $(objdir)/engine.o $(
 $(objdir)/%.o: %.asm constants.asm macros.asm constants/*.asm macros/*.asm %/*.asm $(%_deps)
 	if [ ! -d obj ]; then mkdir $(objdir); fi
 	$(RGBASM) $(CFLAGS) -o $@ $<
-
