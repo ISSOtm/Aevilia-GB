@@ -40,17 +40,20 @@ rebuild: clean all
 
 clean:
 	rm $(objdir)/*.o
-	rm $(bindir)/aevilia.gbc $(bindir)/aevilia.sym $(bindir)/aevilia.map
+	rm $(bindir)/aevilia.gbc $(bindir)/aevilia.map $(bindir)/aevilia.sym
 
 $(bindir)/aevilia.sym:
+	if [ ! -d bin ]; then mkdir $(bindir); fi
 	rm $(bindir)/aevilia.gbc
 	make $(bindir)/aevilia.gbc
 
 $(bindir)/aevilia.gbc: $(objdir)/main.o $(objdir)/battle.o $(objdir)/engine.o $(objdir)/home.o $(objdir)/gfx.o $(objdir)/maps.o $(objdir)/save.o $(objdir)/sound.o $(objdir)/tileset.o
+	if [ ! -d bin ]; then mkdir $(bindir); fi
 	$(RGBLINK) $(LFLAGS) -n $(bindir)/aevilia.sym -m $(bindir)/aevilia.map -o $@ $^
 	$(RGBFIX) $(FFLAGS) $@
 	
 	
 $(objdir)/%.o: %.asm constants.asm macros.asm constants/*.asm macros/*.asm %/*.asm $(%_deps)
+	if [ ! -d obj ]; then mkdir $(objdir); fi
 	$(RGBASM) $(CFLAGS) -o $@ $<
 
