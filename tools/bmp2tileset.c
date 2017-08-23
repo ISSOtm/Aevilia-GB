@@ -1,7 +1,4 @@
 
-// To have "qsort_r" defined. I guess.
-#define _GNU_SOURCE
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -220,13 +217,12 @@ int main(int argc, char** argv) {
 					printf("Vertical size positive, using down-top decompression.\n");
 				}
 				
-				int i = header.vertSize;
 				int ofs = imageSize;
-				for( ; i != 0; i--) {
+				while(ofs != 0) {
 					ofs -= header.horizSize;
 					numOfItemsRead = fread(decompressedImage + ofs, sizeof(char), header.horizSize, file);
 					if(numOfItemsRead != header.horizSize) {
-						printf("BMP is apparently corrupted, could only read %d lines out of %d.\n", header.vertSize - i, header.vertSize);
+						printf("BMP is apparently corrupted, could only read %d lines out of %d.\n", header.vertSize - ofs / header.horizSize, header.vertSize);
 						
 						free(decompressedImage);
 						fclose(file);
@@ -377,7 +373,7 @@ int main(int argc, char** argv) {
 		}
 		
 		// Sort the table of the colors that the tile uses.
-		int compareColors(const void* color1Ptr, const void* color2Ptr) {
+		int compareColors(/*int color1, int color2) {/*/const void* color1Ptr, const void* color2Ptr) {
 			int color1 = *(int*)color1Ptr;
 			int color2 = *(int*)color2Ptr;
 			
@@ -385,7 +381,7 @@ int main(int argc, char** argv) {
 			int color2Brightness = (colors[color2][0] + colors[color2][1] + colors[color2][2]) / 3;
 			return color1Brightness - color2Brightness;
 		}
-		// Somehow this line causes a segfault
+		// Somehow this line causes a segfault, so... instead, I'll use a custom function. I guess.
 		qsort(tileColors[tileID], numOfColors, sizeof(int), compareColors);
 	}
 	free(decompressedImage);
