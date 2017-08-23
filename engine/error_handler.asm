@@ -83,9 +83,7 @@ DebugFatalError::
 	
 	; Print all registers at time of fatal error
 	ld hl, FatalErrorScreenStrings
-	ld e, $7B
-	rst copyStr
-	ld e, $58
+	ld e, $60
 .printRegisters
 	rst copyStr
 	pop bc
@@ -264,8 +262,7 @@ FatalErrorString::
 	dstr "BAD THREAD 2 POINTER"
 	
 FatalErrorScreenStrings::
-	dstr "=D"
-	dstr "HI TCRF!AF ="
+	dstr "AF ="
 	dstr "BC ="
 	dstr "DE ="
 	dstr "HL ="
