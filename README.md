@@ -8,7 +8,7 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 # Source's contents
 
 - _aevilia.gbc_<br/>
-  The game's ROM. Load it in your favorite emulator to play.<br/>
+  The game's ROM. To obtain this, compile the source (refer further down)<br>Load it in your favorite emulator to play.<br/>
   Except if it's VBA, You already know the A doesn't stand for 'accuracy'.<br/>
 - _aevilia.sym_, _aevilia.map_<br/>
   Helper files for debugging. Not required if you just want to play the game.
@@ -19,8 +19,6 @@ Note : this is neither a tutorial nor a walkthrough for the game.
   To build the game on systems supporting _make_ and Linux ELFs. Includes Linux and Linux Subsystem for Windows.
 - _compiler.bat_, _rgbasm.exe_, _rgblink.exe_, _rgbfix.exe_<br/>
   To build the game on Windows. Wine is probably fine, too. But why doing thi--
-- _TODO.txt_<br/>
-  Peek at the """upcoming""" features of the game !
 - _tools/*_<br/>
   Stuff to help building and modifying Aevilia, such as a map editor.
 - _doc/*_<br/>
