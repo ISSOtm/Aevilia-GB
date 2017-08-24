@@ -25,7 +25,7 @@
 
 UseFXHammer	set	1
 
-SECTION	"DevSound netry points",ROM0
+SECTION	"DevSound entry points",ROM0
 
 DevSound_JumpTable:
 
