@@ -47,6 +47,7 @@ void showhelp() {
 	printf("\n");
 	printf("-i\tDisplays information from the image's header.\n");
 	printf("-v\tBe verbose, display info about what's being done.\n");
+	printf("\tImplies -i.\n");
 	printf("\n");
 }
 
@@ -131,7 +132,7 @@ int main(int argc, char** argv) {
 		printf("Successfully read header.\n");
 	}
 	
-	if(options & MASK_DISPHEADER) {
+	if(options & (MASK_DISPHEADER | MASK_BEVERBOSE)) {
 		printf("File size:\t\t%#010x\n", header.fileSize);
 		printf("Data offset:\t\t%#010x\n", header.dataOffset);
 		printf("Header size:\t\t%#010x\n", header.headerSize);
@@ -189,6 +190,10 @@ int main(int argc, char** argv) {
 	int colors[32][3];
 	int conversionTable[256];
 	
+	// "Decompress" the image :
+	// Put all the pixels in a left-to-right, top-to-down order,
+	// and build a color palette for the whole image.
+	// It will then be broken down into individual palettes.
 	if(header.numOfBpp == 8) {
 		if(options & MASK_BEVERBOSE) {
 			printf("Decompressing 8bpp image.\n");
@@ -292,6 +297,7 @@ int main(int argc, char** argv) {
 				allocatedColors++;
 				if(allocatedColors > 32) {
 					printf("The image contains more than 32 unique colors.\n");
+					printf("(If you want to do some palette swaps, please use two different images.)\n");
 					
 					free(decompressedImage);
 					fclose(file);
@@ -303,7 +309,7 @@ int main(int argc, char** argv) {
 		}
 		
 		if(options & MASK_BEVERBOSE) {
-			printf("Number of unique colors: %d.\n", allocatedColors);
+			printf("Number of unique colors:\t%d.\n", allocatedColors);
 		}
 		
 		// Perform conversion of all bytes.
@@ -326,11 +332,15 @@ int main(int argc, char** argv) {
 		printf("Successfully decompressed image.\n");
 	}
 	
+	fclose(file);
+	
 	const int numOfTiles = imageSize / 64; // One tile is 8x8 pixels, thus 64 pixels. (This works because we checked the dimensions of the image.)
 	// Array containing the tiles' data.
 	short tiles[numOfTiles][8][8];
 	// Contains the four color indexes for each tile. (Used to distribute colors across palettes.)
 	int tileColors[numOfTiles][4];
+	// Contains how many colors a tile uses.
+	int numOfColorsPerTIles[numOfTiles];
 	
 	// Generate the tile data.
 	int tileID = 0;
@@ -340,8 +350,15 @@ int main(int argc, char** argv) {
 	char* baseOfs; // Offset of the top-left pixel of the tile.
 	char* ofs;
 	int color;
+	
+	if(options & MASK_BEVERBOSE) {
+		printf("Number of tiles, total:\t\t%d\n", numOfTiles);
+		printf("Number of tiles per row:\t%d\n", tilesPerRow);
+	}
+	
 	for( ; tileID < numOfTiles; tileID++) {
 		int numOfColors = 0;
+		int i;
 		baseOfs = (/* Offset on a "tile grid" */ (/* Row */ tileID / tilesPerRow) * header.horizSize + (/* Column */ tileID % tilesPerRow)) /* Upscale by 8 to do tile->pixel conversion */ * 8 + decompressedImage;
 		for(row = 0; row < 8; row++) {
 			ofs = baseOfs + row * header.horizSize;
@@ -350,19 +367,18 @@ int main(int argc, char** argv) {
 				ofs++;
 				tiles[tileID][row][col] = color;
 				
-				// If the color wasn't in the table,
 				char isColorInTable = 0;
-				int i = 0;
-				for( ; i < numOfColors && !isColorInTable; i++) {
+				for(i = 0; i < numOfColors && !isColorInTable; i++) {
 					if(tileColors[tileID][i] == color) {
 						isColorInTable = 1;
 					}
 				}
+				// If the color wasn't in the table,
 				if(!isColorInTable) {
 					if(numOfColors > 3) {
-						printf("Tile #%d contains more than 4 colors!\n", tileID);
+						printf("Tile #%d contains more than 4 colors!\n", tileID+1);
+						printf("(Pixel (x:%d, y:%d) is the 5th color)\n", col, row);
 						free(decompressedImage);
-						fclose(file);
 						exit(1);
 					}
 					// Add it.
@@ -372,17 +388,32 @@ int main(int argc, char** argv) {
 			}
 		}
 		
-		// Sort the table of the colors that the tile uses.
-		int compareColors(/*int color1, int color2) {/*/const void* color1Ptr, const void* color2Ptr) {
-			int color1 = *(int*)color1Ptr;
-			int color2 = *(int*)color2Ptr;
+		// Sort the table of the colors that the tile uses (darkest to brightest), so palette allocation will be easier.
+		int compareColors(int color1, int color2) {// const void* color1Ptr, const void* color2Ptr) {
+//			int color1 = *(int*)color1Ptr;
+//			int color2 = *(int*)color2Ptr;
 			
 			int color1Brightness = (colors[color1][0] + colors[color1][1] + colors[color1][2]) / 3;
 			int color2Brightness = (colors[color2][0] + colors[color2][1] + colors[color2][2]) / 3;
 			return color1Brightness - color2Brightness;
 		}
 		// Somehow this line causes a segfault, so... instead, I'll use a custom function. I guess.
-		qsort(tileColors[tileID], numOfColors, sizeof(int), compareColors);
+//		qsort(tileColors[tileID], numOfColors, sizeof(int), compareColors);
+		char retry = 1;
+		while(retry) {
+			retry = 0;
+			for(i = 0; i < numOfColors - 1; i++) {
+				if(compareColors(tileColors[tileID][i], tileColors[tileID][i+1]) > 0) {
+					// If a color is "greater than" the next one, swap and mark table as dirty.
+					int tmp = tileColors[tileID][i];
+					tileColors[tileID][i] = tileColors[tileID][i+1];
+					tileColors[tileID][i+1] = tmp;
+					retry = 1;
+				}
+			}
+		}
+		
+		numOfColorsPerTiles[tileID] = numOfColors;
 	}
 	free(decompressedImage);
 	
@@ -390,14 +421,26 @@ int main(int argc, char** argv) {
 		printf("Successfully generated Stage 1 tile data.\n");
 	}
 	// 6 palettes of 4 colors each, one color being three R,G,B bytes.
-	char palettes[6][4][3];
-	char allocatedColors[6][4];
+	int palettes[6][4][3];
+	int allocatedColors[6][4];
+	int paletteID[tileID];
 	// Make sure nothing is allocated.
 	memset(&allocatedColors, 0, sizeof(allocatedColors));
+	// Set all palettes to "claiming palette".
+	memset(&paletteID, -1, sizeof(paletteID);
 	
 	// Build the palette array.
+	// The logic is to start by allocating palettes when they are absolutely needed (4 colors), then checking if some tiles use exactly these palettes.
+	// Then we'll allocate the other tiles (using 3 colors) trying to minimize the number of palettes.
+	// Note that this can produce unoptimized results. If the program fails, you might have to do the "paletting" by hand :/
 	
-	fclose(file);
+	// Allocate the global palette with the ID `globalPalette` in the `palettes` array. Returns 0 if success, returns 1 otherwise.
+	int allocatePalette(int globalPalette) {
+		
+	}
+	
+	// We'll start with all tiles using 4 colors ; they need their own palette anyway.
+	
 	
 	return 0;
 }
