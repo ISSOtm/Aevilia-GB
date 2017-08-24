@@ -7,7 +7,7 @@ TestHouseNew::
 	
 	db TILESET_INTERIOR
 	dw NO_SCRIPT ; No map script
-	map_size 9, 6
+	map_size 10, 9
 	dw NO_SCRIPT ; No loading script
 	
 TestHouseNewInteractions::
