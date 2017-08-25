@@ -55,6 +55,9 @@ DevSound:
 DevSound_Init_Hook:	
 	ld a, c
 DevSound_Init::
+	cp MUSIC_INVALIDTRACK ; Check if song ID is valid
+	jr nc, DevSound_Stop ; If song ID is invalid, mute.
+	
 	di ; Prevent DS_Play from happening
 	ld	b,a		; Preserve song ID
 
