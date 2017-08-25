@@ -1309,54 +1309,76 @@ MakeNPCWalk::
 	ld hl, wDigitBuffer + 1
 	ld a, [hli]
 	and 7 ; Max out ! Hehehe, no buffer overflow :D
-	ld de, wNPC0_ypos
-	inc a ; Go to next NPC (wait, what ???)
-	add a, a
-	add a, a
-	add a, a
-	add a, e
+	swap a
+	add a, wNPC1_sprite & $FF
 	ld e, a
-	dec de ; Direction of current NPC (aaah, okay)
-	
-	ld a, [hli]
-	ld b, a ; Save this for later
-	bit 2, a
+	adc a, wNPC1_sprite >> 8
+	sub e
+	ld d, a ; Now we're pointing at the NPC's facing direction
+	ld a, [hli] ; Get direction of movement
+	ld c, a ; Store movement direction in c
+	res 2, c ; Direction doesn't include this bit !
+	and 4 ; Check if "dont_move" has been applied
 	jr nz, .dontTurnNPC
-	and 3
-	ld [de], a
+	ld a, [de] ; Get NPC's sprite & direction
+	and $FC ; Remove direction
+	or c ; Set new direction
+	ld [de], a ; Write back
 .dontTurnNPC
-	bit 1, a ; Check which axis
-	ld a, -5
-	jr nz, .horizontalMovement
-	ld a, -7
-.horizontalMovement
-	add a, e
-	ld e, a ; de points to target value
+	ld a, [hli]
+	ld b, a ; Number of pixels to travel
+	ld h, [hl] ; Number of pixels per frame
+	ld a, e
+	sub wNPC1_sprite - wNPC1_xpos
+	ld l, a
+	ld e, h ; Transfer speed to e
+	ld h, d ; Transfer pointer to hl
 	
-	ld a, [hli] ; Get length of movement
-	ld c, a
-	ld a, [hl] ; Get speed of movement
-	ld l, b ; Movement direction, saved from above
-	ld b, a
-	
+	bit 1, c
+	jr nz, .moveHorizontally
+	dec hl
+	dec hl ; Move to ypos instead of xpos
+.moveHorizontally
+	; hl = pointer to coord that shall be modified
+	; e = speed (pixels/frame)
+	; b = number of pixels, total
+	; c = direction of movement
+	ld a, b
 .movementLoop
-	ld a, [de]
-	bit 0, l
-	jr nz, .subtract
+	; a should contain number of pixels
+	sub e ; Subtract one frame's worth of movement
+	jr nc, .moveFully
+	; We must move less than this, then.
+	ld e, b ; Set the speed for this final frame.
+	xor a ; Zero pixels will remain.
+.moveFully
+	ld b, a
+	rst waitVBlank
 	
-	jr .movementDone
-.subtract
-	
-.movementDone
+	ld a, [hli] ; Get coordinate's low byte, and repoint to high byte
+	bit 0, c
+	jr nz, .movePositively
+	sub e ; Move
+	jr nc, .doneMoving
+	dec [hl] ; If carry, change high byte
+	jr .doneMoving
+.movePositively
+	add a, e
+	jr nc, .doneMoving
+	inc [hl] ; If carry, change high byte
+.doneMoving
+	dec hl ; Repoint to low byte
+	ld [hl], a ; Write back low byte
 	
 	push bc
 	push de
 	push hl
-	call ProcessNPCs ; Update NPC sprite
+	call ProcessNPCs
 	pop hl
 	pop de
 	pop bc
-	dec c
+	ld a, b
+	and a
 	jr nz, .movementLoop
 	
 BattleDummy_5Bytes::

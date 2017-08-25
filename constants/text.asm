@@ -178,20 +178,18 @@ close_nodelay: MACRO
 	db CLOSE_WITHOUT_WAIT
 ENDM
 
-
-dir_down	equ $00
-dir_up		equ $01
-dir_left	equ $02
-dir_right	equ $03
-
-dont_turn	equ $04
+	
+DONT_TURN	equ $04
 
 ; make_npc_walk NPC_id dir len spd
-; apply "(dir | dont_turn)" to "dir" if the NPC shouldn't turn around
+; Apply "(dir | DONT_TURN)" to "dir" if the NPC shouldn't turn around
+
+; Note : ID 0 will target NPC 1, etc.
+; To target the player, use the dedicated command.
 make_npc_walk: MACRO
 	db MAKE_NPC_WALK
 	db \1
-	db \2 & 7
+	db \2 & %111
 	db \3
 	db \4
 ENDM
