@@ -706,6 +706,7 @@ PrintKnownPointer::
 	ld c, a
 	
 	ld a, [rLCDC]
+	and $FD ; Reset "OBJ ON" bit to make sure not do display sprites on the last 8 scanlines
 	ld e, a ; Save LCDC for later restoring
 	ld hl, rLYC ; Will be used for later writing
 	ld a, b
@@ -946,6 +947,7 @@ BattlePrintKnownPointer::
 	ld c, a
 	
 	ld a, [rLCDC]
+	and $FD ; Reset "OBJ ON" bit to make sure not do display sprites on the last 8 scanlines
 	ld e, a ; Save LCDC for later restoring
 	ld hl, rWY ; Will be used for later writing
 	ld a, b
