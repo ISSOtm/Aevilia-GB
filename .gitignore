@@ -1,15 +1,10 @@
-
 *.o
-
 *.gbc
 *.sym
 *.map
-
 *.sgm
 *.srm
 *.sav
 *.rtc
-
-
 TODO.txt
 *.zip
