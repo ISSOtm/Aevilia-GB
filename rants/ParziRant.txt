@@ -1,5 +1,5 @@
 ----------------------------------------------
--                      MAX WIDTH BAR                      -
+-               WRAP WIDTH BAR               -
 ----------------------------------------------
 8/22/17
 (MM/DD/YY)
@@ -7,7 +7,7 @@ Hey. I'm Parzival Wolfram.
 Parzival or Parzi for short. 
 I'm a new guy to the game-making scene, but I didn't want to start with
 a shitty Game Maker fangame or the
-like. :P
+like. So I signed up for this. :P
 Some of the glorious maps
 in this game were made by me.
 I'm also the mastermind behind the VC copy.
@@ -62,5 +62,5 @@ Official VC builds and anything else other than CGB builds will go for $15 more 
 
 Anyway, time for me to retire for today. I might shit out some more maps.
 ----------------------------------------------
--                      MAX WIDTH BAR                      -
+-               WRAP WIDTH BAR               -
 ----------------------------------------------
