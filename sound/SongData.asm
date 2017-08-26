@@ -657,17 +657,20 @@ PT_ScareChord	dw	ScareChord_CH1,ScareChord_CH1,ScareChord_CH3,ScareChord_CH4
 ScareChord_CH1:
 	db	SetInstrument,_ins_ScareChord
 	db	G_5,40
+	db	rest,1
 	db	EndChannel
 	
 ScareChord_CH3:
 	db	SetInstrument,_ins_ScareChordWave
 	db	fix,40
+	db	rest,1
 	db	EndChannel
 	
 ScareChord_CH4:
 	db	SetInstrument,_ins_ScareChordNoise
 	db	G_4,1,F#4,1,F_4,1,E_4,1,D#4,1,D_4,1,C#4,1,C_4,1,B_3,1,A#3,1,A_3,1,G#3,1
 	db	G_3,1,F#3,1,F_3,1,E_3,1,D#3,1,D_3,1,C#3,1,C_3,1,B_2,1,A#2,1,A_2,1,G#2,1
+	db	rest,1
 	db	EndChannel
 
 ; ================================================================
