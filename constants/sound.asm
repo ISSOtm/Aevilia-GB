@@ -8,6 +8,8 @@
 	enum_elem MUSIC_FILESELECT
 	enum_elem MUSIC_OVERWORLD
 	enum_elem MUSIC_CORRUPTION
+	enum_elem MUSIC_BOSS_1		; NOTE: Currently incomplete
+	enum_elem MUSIC_SCARECHORD
 	
 	enum_elem MUSIC_INVALIDTRACK ; IDs >= this are invalid (except $FF)
 	
