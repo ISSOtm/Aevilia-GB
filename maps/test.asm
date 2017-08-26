@@ -78,7 +78,6 @@ TestMapNPCScripts::
 	dw TestMapNPC0Script
 	
 TestMapNPC0Script::
-	make_npc_walk 0, DIR_DOWN, 60, 1
 	print_name .name
 	print_line .line0
 	print_line .line1
