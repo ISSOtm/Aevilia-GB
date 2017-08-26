@@ -17,8 +17,11 @@ LoadMap_FatalError::
 LoadMap::
 	ld [wLoadedMap], a ; Write the current map's ID to WRAM
 	ld d, a ; Save the ID
+	
+IF !DEF(GlitchMaps)
 	cp NB_OF_MAPS ; Check for validity
 	jr nc, LoadMap_FatalError ; Is not. ¯\_(ツ)_/¯
+ENDC
 	
 	xor a
 	ld [wChangeMusics], a ; By default, don't change musics
@@ -346,7 +349,11 @@ LoadMap::
 	ld c, a
 	ld a, [wTargetWarpID]
 	cp c
+IF !DEF(GlitchMaps)
 	jr nc, .checkWarpFF
+ELSE
+	jr nc, .doneWarping
+ENDC
 	
 	add a, a
 	add a, a

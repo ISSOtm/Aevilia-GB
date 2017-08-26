@@ -213,8 +213,10 @@ StartBattle::
 	ld [wTransferSprites], a
 	
 	ld a, [wBattleTransitionID]
+IF !DEF(GlitchMaps)
 	cp MAX_BATT_TRANS
 	jp nc, .invalidBattleTransition
+ENDC
 	ld hl, BattleTransitions
 	add a, a
 	add a, l

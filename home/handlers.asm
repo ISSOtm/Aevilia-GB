@@ -366,10 +366,12 @@ STATHandler::
 	call DevSound_Play ; Preserves all registers
 	
 .end
+IF !DEF(GlitchMaps)
 	; Check the handler's return address
 	ld hl, sp+$05
 	bit 7, [hl] ; Is that RAM ?
 	jr nz, .RAMNotX ; YES ?? OH GOD WHAT THE-
+ENDC
 	
 	ldh a, [hCurRAMBank]
 	push af
@@ -380,8 +382,10 @@ STATHandler::
 	ld a, [hl]
 	and a
 	jr z, .noThread2 ; Don't jump if the index is 0. There's nothing to see there anyways.
+IF !DEF(GlitchMaps)
 	cp THREAD2_MAX
 	jr nc, .badThread2 ; Forbid invalid Thread 2 indexes
+ENDC
 	dec a ; Indexing thus starts at 1...
 	
 	push bc
