@@ -342,6 +342,10 @@ STATHandler::
 	bit 2, [hl]
 	jr z, .musicTime ; not on LY=LYC
 	
+.waitHBlank
+	bit 1, [hl]
+	jr nz, .waitHBlank
+	
 	dec hl ; hl = rLCDC
 	res 1, [hl] ; Zero OBJ bit
 	
