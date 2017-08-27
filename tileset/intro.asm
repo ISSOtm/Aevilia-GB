@@ -479,6 +479,15 @@ REPT 7
 	tile_attr $00, 0, 1, 0, 0, 0, 0
 ENDR
 	
+	
+	; Path tile
+	db TILE_CANWALK
+	
+REPT $100 - 1
+	db 0
+ENDR
+	
+	
 	dw InvertedPalette
 	dw CharSelectTextPalette
 	dw CharSelectEviePalette0

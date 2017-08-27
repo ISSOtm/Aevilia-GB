@@ -11,18 +11,18 @@ function drawHUD()
 	wCameraYPos = 0xC249
 	wCameraXPos = 0xC24B
 	
-	wWalkInterCount = 0x01D400
-	wBtnInterCount = 0x01D401
-	wWalkingInteractions = 0x01D200
-	wButtonInteractions = 0x01D280
+	wWalkInterCount = 0x01D500
+	wBtnInterCount = 0x01D501
+	wWalkingInteractions = 0x01D300
+	wButtonInteractions = 0x01D380
 	
-	wWalkLoadZoneCount = 0x01D402
-	wBtnLoadZoneCount = 0x01D403
-	wWalkingLoadZones = 0x01D300
-	wButtonLoadZones = 0x01D380
+	wWalkLoadZoneCount = 0x01D502
+	wBtnLoadZoneCount = 0x01D503
+	wWalkingLoadZones = 0x01D400
+	wButtonLoadZones = 0x01D480
 	
-	wNumOfNPCs = 0x01D40F
-	wNPC0_ypos = 0x01D410
+	wNumOfNPCs = 0x01D50F
+	wNPC0_ypos = 0x01D510
 	NPCstructlength = 16
 	
 	wYPos = 0xC243
@@ -40,6 +40,8 @@ function drawHUD()
 	
 	wBlockMetadata = 0x01D000
 	blockstructlength = 8
+	wTileAttributes = 0x01D200
+	tileattriblength = 1
 	
 	
 	-- Utilities
@@ -309,6 +311,31 @@ function drawHUD()
 	--	gui.DrawFinish()
 	end
 	
+	function tileHasCollision(tileID, tileAttr)
+		if tileID < 0x80 then
+			return true
+		end
+		
+		if bit.band(tileAttr, 0x08) == 0 then
+			tileID = tileID - 0x80
+		end
+		
+		if bit.band(readmemory(wTileAttributes + tileID * tileattriblength, memory.read_u8), 0x80) == 0 then
+			return true
+		end
+		
+		return false
+	end
+	
+	function drawtilecollision(blockdata, coordX, coordY)
+		tileID = readmemory(blockdata, memory.read_u8)
+		tileAttr = readmemory(blockdata + 1, memory.read_u8)
+		
+		if tileHasCollision(tileID, tileAttr) then
+			gui.drawRectangle(coordX, coordY, 9, 9, 0, 0x80FF0000)
+		end
+	end
+	
 	function drawcollision()
 	--	gui.DrawNew("Collision")
 		
@@ -318,9 +345,12 @@ function drawHUD()
 			lineaddr = addr
 			for x = 0,11 do
 				blockID = readmemory(addr, memory.read_u8)
-				if bit.band(readmemory(wBlockMetadata + blockID * blockstructlength + 1, memory.read_u8), 0x10) == 0 then
-					gui.drawRectangle(x * 16 - (cameraxpos % 16) - 1, y * 16 - (cameraypos % 16) - 1, 17, 17, 0, 0x80FF0000)
-				end
+				blockdata = wBlockMetadata + blockID * blockstructlength
+				
+				drawtilecollision(blockdata    , x * 16 - (cameraxpos % 16) - 1, y * 16 - (cameraypos % 16) - 1)
+				drawtilecollision(blockdata + 2, x * 16 - (cameraxpos % 16) - 1, y * 16 - (cameraypos % 16) + 7)
+				drawtilecollision(blockdata + 4, x * 16 - (cameraxpos % 16) + 7, y * 16 - (cameraypos % 16) - 1)
+				drawtilecollision(blockdata + 6, x * 16 - (cameraxpos % 16) + 7, y * 16 - (cameraypos % 16) + 7)
 				addr = addr+1
 			end
 			addr = lineaddr + mapwidth -- Advance by 1 width

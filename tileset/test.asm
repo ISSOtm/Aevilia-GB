@@ -2,7 +2,7 @@
 SECTION "Test tileset", ROMX
 
 TestTileset::
-	db 40 ; Number of tiles
+	db 42 ; Number of tiles
 	
 	; Grass tiles (80-82)
 	dw $0062, $02B5, $004A, $40B5, $004A, $08B4, $004B, $0094
@@ -44,7 +44,7 @@ TestTileset::
 	dw $FF00, $8877, $8877, $FF00, $22DD, $FF00, $8877, $8877 ; Vertical
 	
 	; Sign (9B-9C)
-	dw $0000, $0000, $0000, $7F7F, $407F, $5F7F, $507F, $5777 ; Top-left
+	dw $0000, $0000, $0000, $7F7F, $407F, $5F7F, $507F, $577F ; Top-left
 	dw $5070, $5777, $5070, $5777, $5878, $5070, $507F, $207F ; Bottom-left
 	
 	; 9D
@@ -54,7 +54,9 @@ TestTileset::
 	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
 ;	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower frame 2
 	
-	; Tree (9F-A4)
+	; Tree (9F-A6)
+	dw $01A9, $0243, $0D2E, $1798, $243B, $D3EC, $5C63, $E19E ; Top-left (walkable)
+	dw $8092, $C048, $F033, $78AC, $FE16, $FF2B, $FE16, $FF69 ; Top-right (walkable)
 	dw $01A9, $0243, $0D2E, $1798, $243B, $D3EC, $5C63, $E19E ; Top-left
 	dw $8092, $C048, $F033, $78AC, $FE16, $FF2B, $FE16, $FF69 ; Top-right
 	dw $243B, $D3EC, $5C63, $E19E, $243B, $D3EC, $5CE3, $E19E ; Middle-left
@@ -62,14 +64,15 @@ TestTileset::
 	dw $24FB, $D3EC, $5CE3, $E19E, $7FFF, $057E, $0B7C, $0F3F ; Bottom-left
 	dw $FE17, $FF2B, $FE17, $FF69, $FF7F, $E0BC, $F018, $E0F0 ; Bottom-right
 	
-	; A5
+	; A7
 	dw $4200, $A542, $AB44, $D628, $4438, $2856, $38C7, $106E ; Tall grass
 	
-	; A6
+	; A8
 	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Door mat
 	
-	; A7
+	; A9
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Accesses the third color of a palette
+	
 	
 	; Grey border
 	tile_attr $A7, 0, 0, 0, 0, 0, 0
@@ -252,34 +255,34 @@ TestTileset::
 	tile_attr $96, 0, 7, 0, 0, 1, 0
 	
 	; Tree
-	tile_attr $9F, 0, 2, 0, 0, 0, 0
-	tile_attr $A3, 0, 2, 0, 0, 0, 0
-	tile_attr $A0, 0, 2, 0, 0, 0, 0
-	tile_attr $A4, 0, 2, 0, 0, 0, 0
+	tile_attr $A1, 0, 2, 0, 0, 0, 0
+	tile_attr $A5, 0, 2, 0, 0, 0, 0
+	tile_attr $A2, 0, 2, 0, 0, 0, 0
+	tile_attr $A6, 0, 2, 0, 0, 0, 0
 	
 	; Tree base
-	tile_attr $A1, 0, 2, 0, 0, 0, 0
 	tile_attr $A3, 0, 2, 0, 0, 0, 0
-	tile_attr $A2, 0, 2, 0, 0, 0, 0
+	tile_attr $A5, 0, 2, 0, 0, 0, 0
 	tile_attr $A4, 0, 2, 0, 0, 0, 0
+	tile_attr $A6, 0, 2, 0, 0, 0, 0
 	
 	; Tree middle
-	tile_attr $A1, 0, 2, 0, 0, 0, 0
-	tile_attr $A1, 0, 2, 0, 0, 0, 0
-	tile_attr $A2, 0, 2, 0, 0, 0, 0
-	tile_attr $A2, 0, 2, 0, 0, 0, 0
+	tile_attr $A3, 0, 2, 0, 0, 0, 0
+	tile_attr $A3, 0, 2, 0, 0, 0, 0
+	tile_attr $A4, 0, 2, 0, 0, 0, 0
+	tile_attr $A4, 0, 2, 0, 0, 0, 0
 	
 	; Tree top
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $9F, 0, 2, 0, 0, 0, 1
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $A0, 0, 2, 0, 0, 0, 1
 	
 	; Tall grass
-	tile_attr $A5, 1, 2, 0, 0, 0, 0
-	tile_attr $A5, 0, 2, 0, 0, 0, 0
-	tile_attr $A5, 0, 2, 0, 0, 0, 0
-	tile_attr $A5, 0, 2, 0, 0, 0, 0
+	tile_attr $A7, 1, 2, 0, 0, 0, 0
+	tile_attr $A7, 0, 2, 0, 0, 0, 0
+	tile_attr $A7, 0, 2, 0, 0, 0, 0
+	tile_attr $A7, 0, 2, 0, 0, 0, 0
 	
 	; Rock top-left
 	tile_attr $96, 0, 7, 0, 1, 0, 0
@@ -448,6 +451,66 @@ REPT 64 - 49
 	tile_attr $A7, 0, 0, 0, 0, 0, 0
 ENDR
 	
+	
+	; Grass tiles
+REPT 3
+	db TILE_CANWALK
+ENDR
+	
+	; House tiles
+REPT 9
+	db 0
+ENDR
+	; Roof tiles
+REPT 6
+	db TILE_CANWALK
+ENDR
+	
+	; Rock tiles
+REPT 6
+	db 0
+ENDR
+	
+	; Water tile
+	db 1 ; Has an animation
+	
+	; Bridge
+REPT 2
+	db TILE_CANWALK
+ENDR
+	
+	; Sign
+	db TILE_CANWALK
+	db 0
+	
+	; Path
+	db TILE_CANWALK
+	
+	; Flower
+	db TILE_CANWALK | 2
+	
+	; Tree
+	db TILE_CANWALK
+	db TILE_CANWALK
+REPT 6
+	db 0
+ENDR
+	
+	; Tall grass
+	db TILE_CANWALK
+	
+	; Door mat
+	db TILE_CANWALK
+	
+	; "Third color" tile
+	db 0
+	
+	; Unused tiles get nuffin'
+REPT $100 - 42
+	db 0
+ENDR
+	
+	
 	dw GrassPalette
 	dw HousePalette
 	dw DoorWindowPalette
@@ -467,7 +530,7 @@ ENDR
 SECTION "Test interior tileset", ROMX
 
 TestInteriorTileset::
-	db 9
+	db 10
 	
 	; $80 - $82
 	dw $80FF, $80FF, $80FF, $80FF, $80FF, $80FF, $80FF, $80FF ; House vertical edge
@@ -485,6 +548,9 @@ TestInteriorTileset::
 	
 	; $88
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Grey tile
+	
+	; $89
+	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Accesses the third color of a palette
 	
 	; $00 : Black void
 	tile_attr $88, 0, 0, 0, 0, 0, 0
@@ -529,10 +595,10 @@ TestInteriorTileset::
 	tile_attr $82, 0, 2, 0, 1, 0, 0
 	
 	; $07 : Floor
-	tile_attr $88, 1, 2, 0, 0, 0, 0
-	tile_attr $88, 0, 2, 0, 0, 0, 0
-	tile_attr $88, 0, 2, 0, 0, 0, 0
-	tile_attr $88, 0, 2, 0, 0, 0, 0
+	tile_attr $89, 1, 2, 0, 0, 0, 0
+	tile_attr $89, 0, 2, 0, 0, 0, 0
+	tile_attr $89, 0, 2, 0, 0, 0, 0
+	tile_attr $89, 0, 2, 0, 0, 0, 0
 	
 	; $08 : Door (can be walked "under")
 	tile_attr $83, 1, 3, 0, 0, 0, 1
@@ -547,6 +613,29 @@ REPT 64 - 9
 	tile_attr $88, 0, 0, 0, 0, 0, 0
 	tile_attr $88, 0, 0, 0, 0, 0, 0
 ENDR
+	
+	
+	; House tiles
+REPT 3
+	db 0
+ENDR
+	
+	; Door tiles
+REPT 3
+	db TILE_CANWALK
+ENDR
+	
+	; Decoration tiles
+REPT 3
+	db 0
+ENDR
+	
+	db TILE_CANWALK
+	
+REPT $100 - 10
+	db 0
+ENDR
+	
 	
 	dw HousePalette
 	dw InsideHousePalette

@@ -332,8 +332,13 @@ wBlockMetadata::
 	struct_blk 63
 wBlockMetadataEnd:
 	
+	; Make SURE this is 256-byte alighed, or modify GetCollisionAt
+wTileAttributes::
+	ds 256
+wTileAttributesEnd:
 	
-SECTION "Interaction table", WRAMX[$D200],BANK[1] ; ,ALIGN[8]
+	
+SECTION "Interaction table", WRAMX[$D300],BANK[1] ; ,ALIGN[8]
 	
 wWalkingInteractions::
 	walking_interaction 0
@@ -431,7 +436,7 @@ SECTION "NPC counter", WRAMX,BANK[1]
 wNumOfNPCs::
 	ds 1
 	
-SECTION "NPC array", WRAMX[$D410],BANK[1] ; ,ALIGN[8]
+SECTION "NPC array", WRAMX[$D510],BANK[1] ; ,ALIGN[8]
 	
 ; Contains data for all NPCs
 wNPCArray::

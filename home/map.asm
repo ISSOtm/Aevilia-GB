@@ -154,7 +154,7 @@ ENDC
 	ld a, BANK(wBlockMetadata)
 	call SwitchRAMBanks
 	ld de, wBlockMetadata
-	ld bc, (wBlockMetadataEnd - wBlockMetadata)
+	ld bc, (wTileAttributesEnd - wBlockMetadata)
 	call Copy ; Copy block metadata
 	
 	ld de, wBGPalette7_color0
@@ -1738,7 +1738,7 @@ GetNPCCollision::
 	
 	
 StopWalkingAnimation:
-	; xor a   No need, it's already zero when called
+	; xor a ; No need, it's already zero when called
 	ld [wNPC0_steps], a
 	ret
 	
@@ -2087,16 +2087,40 @@ NoOOB:
 	ret nz
 	
 	ld a, [de]
-	ld h, wBlockMetadata >> 8
+	ld d, wBlockMetadata >> 8
 	add a, a
 	add a, a
 	add a, a
 	jr nc, .noCarry1
-	inc h
+	inc d
 .noCarry1
-	inc a
+	ld e, a
+	bit 3, [hl] ; Check if on bottom row of tile of current block
+	jr z, .notBottomRow
+	inc de
+	inc de
+.notBottomRow
+	inc hl
+	inc hl
+	bit 3, [hl] ; Check if on right column of tile of current block
+	jr z, .notRightRow
+	inc de
+	inc de
+	inc de
+	inc de
+.notRightRow
+	ld h, d
+	ld l, e
+	ld a, [hli]
+	bit 7, a ; Check if tile is a tileset one
+	ret z ; Always collide with tiles not originating from tileset
+	bit 3, [hl]
+	jr nz, .tileIsBank1
+	res 7, a ; Bank 0's tiles have attributes 0-127, bank 1's have 128-255
+.tileIsBank1
 	ld l, a
-	bit 4, [hl]
+	ld h, wTileAttributes >> 8
+	bit 7, [hl]
 	ret ; Return with colliding with block status
 	
 	
