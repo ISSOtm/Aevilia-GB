@@ -88,14 +88,14 @@ VBlankHandler::
 	
 	; Transfer fixed map
 	ld bc, wTransferRows
+	ld d, wTextboxTileMap - wTransferRows
 	; We will look for any updated rows
 .fixedMapTransferLoop
 	ld a, [bc]
 	and a
 	jr nz, .rowUpdated
 	inc c ; Check next row
-	ld a, c
-	cp (wTextboxTileMap & $FF)
+	dec d
 	jr nz, .fixedMapTransferLoop
 	jr .doneTransferringFixedMap
 .rowUpdated ; This exits the loop, so only one row is transferred on each frame
