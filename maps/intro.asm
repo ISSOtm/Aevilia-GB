@@ -161,6 +161,22 @@ IntroMapLoadingScript::
 	ld [wTextboxStatus], a
 	jp AllowJoypadMovement ; Cancel above prevention
 	
+; MAKE SURE THIS DOES NOT CROSS A 256-BYTE BOUNDARY !!
+; (Except for the last byte, which is allowed to)
+IntroScripts::
+	dw IntroBoyGirlText
+	dw IntroChooseGender
+	dw IntroChoseGenderText
+	dw IntroFadeToNarrator
+	dw IntroGreetText
+	dw IntroResetDelayStep
+	dw IntroPressAText
+	dw IntroWaitNextState
+	dw IntroObjectNeededText
+	dw 0 ; Don't do anything, the NPC script advances the status by itself
+	dw IntroRemovedNPCText
+	dw IntroCheckStartMenu
+	
 ; The map script is basically a dispatcher, which either calls a function or processes some text depending on wIntroMapStatus
 IntroMapScript::
 	ld a, BANK(wIntroMapStatus)
@@ -200,22 +216,6 @@ IntroMapScript::
 	
 	ld a, 1
 	jp SwitchRAMBanks
-	
-; MAKE SURE THIS DOES NOT CROSS A 256-BYTE BOUNDARY !!
-; (Except for the last byte, which is allowed to)
-IntroScripts::
-	dw IntroBoyGirlText
-	dw IntroChooseGender
-	dw IntroChoseGenderText
-	dw IntroFadeToNarrator
-	dw IntroGreetText
-	dw IntroResetDelayStep
-	dw IntroPressAText
-	dw IntroWaitNextState
-	dw IntroObjectNeededText
-	dw 0 ; Don't do anything, the NPC script advances the status by itself
-	dw IntroRemovedNPCText
-	dw IntroCheckStartMenu
 	
 	
 ;SECTION "Intro map scripts", ROMX,ALIGN[5]
