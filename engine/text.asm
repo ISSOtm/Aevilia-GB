@@ -56,7 +56,7 @@ ClearTextbox::
 	dec a
 	ld [hl], a
 	
-	; a != 0
+	; a!= 0
 	ld hl, wTransferRows
 	ld c, 6
 	rst fill
@@ -164,7 +164,7 @@ ProcessText::
 	ld c, a
 	; Make b = 0 if c >= 0, and b = $FF if c < 0
 	rla ; Move MSB (sign bit) into carry
-	sbc a, a ; a <- a - a - carry : 0 if carry isn't set, $FF if set. Neat !
+	sbc a, a ; a <- a - a - carry : 0 if carry isn't set, $FF if set. Neat!
 	ld b, a
 	; bc now contains our movement offset
 	add hl, bc ; Move read pointer
@@ -249,7 +249,7 @@ TextCommandsPointers::
 	dw OverrideTextboxPalette
 	
 	
-; A clone of ProcessText, but for the battle engine !
+; A clone of ProcessText, but for the battle engine!
 ; Process the text pointed to by c:de
 ; Text stream is the same as ProcessText, but :
 ;  - Some commands will act differently
@@ -308,7 +308,7 @@ ProcessBattleText::
 	ld c, a
 	; Make b = 0 if c >= 0, and b = $FF if c < 0
 	rla ; Move MSB (sign bit) into carry
-	sbc a, a ; a <- a - a - carry : 0 if carry isn't set, $FF if set. Neat !
+	sbc a, a ; a <- a - a - carry : 0 if carry isn't set, $FF if set. Neat!
 	ld b, a
 	; bc now contains our movement offset
 	add hl, bc ; Move read pointer
@@ -1150,7 +1150,7 @@ TextDjnz::
 	ld a, 2 ; Consumed command byte + offset
 	ld hl, wTextLoopCounter
 	dec [hl]
-	ret z ; Done decrementing, no jr. Already set consumed bytes !
+	ret z ; Done decrementing, no jr. Already set consumed bytes!
 	
 TextJR::
 	ld a, [wDigitBuffer + 1] ; Get offset
@@ -1190,7 +1190,7 @@ DisplayNumber::
 	
 	ld h, 0
 	jr z, .byte ; Z hasn't changed since "and a"
-	ld a, [de] ; Word ? Get high byte !
+	ld a, [de] ; Word? Get high byte!
 	ld h, a ; Also overwrite b, which was 1
 	inc de
 .byte
@@ -1238,7 +1238,7 @@ BattleDisplayNumber::
 	
 	ld h, 0
 	jr z, .byte ; Z hasn't changed since "and a"
-	ld a, [de] ; Word ? Get high byte !
+	ld a, [de] ; Word? Get high byte!
 	ld h, a ; Also overwrite b, which was 1
 	inc de
 .byte
@@ -1310,7 +1310,7 @@ CloseTextboxWithoutWait::
 MakeNPCWalk::
 	ld hl, wDigitBuffer + 1
 	ld a, [hli]
-	and 7 ; Max out ! Hehehe, no buffer overflow :D
+	and 7 ; Max out! Hehehe, no buffer overflow :D
 	swap a
 	add a, wNPC1_sprite & $FF
 	ld e, a
@@ -1319,7 +1319,7 @@ MakeNPCWalk::
 	ld d, a ; Now we're pointing at the NPC's facing direction
 	ld a, [hli] ; Get direction of movement
 	ld c, a ; Store movement direction in c
-	res 2, c ; Direction doesn't include this bit !
+	res 2, c ; Direction doesn't include this bit!
 	and 4 ; Check if "dont_move" has been applied
 	jr nz, .dontTurnNPC
 	ld a, [de] ; Get NPC's sprite & direction

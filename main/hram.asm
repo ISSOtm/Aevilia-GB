@@ -17,7 +17,7 @@ hGFXFlags::
 	
 	
 ; Layout of these : DOWN-UP-LEFT-RIGHT-START-SELECT-B-A
-; Bit 1 = button active (unlike the port it is pulled from, eh ?)
+; Bit 1 = button active (unlike the port it is pulled from, eh?)
 ; Buttons currently held
 hHeldButtons::
 	ds 1

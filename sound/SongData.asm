@@ -238,7 +238,7 @@ InstrumentTable:
 	
 ; Instrument format: [no reset flag],[wave mode (ch3 only)],[voltable id],[arptable id],[pulsetable/wavetable id],[vibtable id]
 ; note that wave mode must be 0 for non-wave instruments
-; !!! REMEMBER TO ADD INSTRUMENTS TO THE INSTRUMENT POINTER TABLE !!!
+;!!! REMEMBER TO ADD INSTRUMENTS TO THE INSTRUMENT POINTER TABLE!!!
 ins_Kick:				Instrument	0,vol_Kick,noiseseq_Kick,DummyTable,DummyTable	; pulse/waveseq and vibrato unused by noise instruments
 ins_Snare:				Instrument	0,vol_Snare,noiseseq_Snare,DummyTable,DummyTable
 ins_CHH:				Instrument	0,vol_Kick,noiseseq_Hat,DummyTable,DummyTable

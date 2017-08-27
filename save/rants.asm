@@ -2,7 +2,7 @@
 SECTION "Rant #0", ROMX[$6000]
 	
 SRAMCommonPattern::
-	db "Well, I need to make a $1000 (minus 3 ! :p) byte long pattern. So I thought I would write some nice rant to fill that up, yeah?"
+	db "Well, I need to make a $1000 (minus 3! :p) byte long pattern. So I thought I would write some nice rant to fill that up, yeah?"
 	ds 16
 	db "First, let me give some credits to some guys who helped me quite a bit. "
 	db "DevEd has been a big help, giving me his sound driver free of charge, and with some sample music tracks to help test the implementation. "

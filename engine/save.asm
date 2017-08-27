@@ -298,7 +298,7 @@ FileSelectOptions_Erase:
 	jr z, .gotDaID
 	; 03 or 06
 	dec a ; 02 or 05
-	rrca ; 01 or 02 !
+	rrca ; 01 or 02!
 .gotDaID
 	add a, sNonVoidSaveFiles & $FF
 	ld l, a
@@ -388,7 +388,7 @@ FileSelectOptions_Copy:
 	jr z, .gotDaID
 	; 03 or 06
 	dec a ; 02 or 05
-	rrca ; 01 or 02 !
+	rrca ; 01 or 02!
 .gotDaID
 	add a, sNonVoidSaveFiles & $FF
 	ld l, a
@@ -673,7 +673,7 @@ FileSelected:
 	inc a
 	ld [wTransferSprites], a
 	
-	; A file has been selected !
+	; A file has been selected!
 	rst waitVBlank
 	ld a, 1
 	ld [rVBK], a
@@ -869,7 +869,7 @@ VerifyChecksums::
 	
 SaveFileCornerTile::
 	dw $F0F0, $C0C0, $8080, $8080, $0000, $0000, $0000, $0000
-	; These two must follow each other !
+	; These two must follow each other!
 SaveFileSprites::
 	dspr 40, 24 , 1, $00
 	dspr 40, 128, 1, $20
@@ -922,10 +922,10 @@ SaveFileStr::
 	dstr "Save file "
 	
 EraseWhichFileStr::
-	dstr "ERASE WHICH FILE ?"
+	dstr "ERASE WHICH FILE?"
 	
 CopyWhichFileStr::
-	dstr "COPY WHICH FILE ?"
+	dstr "COPY WHICH FILE?"
 	
 FileIDsStr::
 	dstr "1  2  3"
@@ -1173,7 +1173,7 @@ ConfirmLoadText::
 .line0
 	dstr "OK TO LOAD"
 .line1
-	dstr "THIS FILE ?"
+	dstr "THIS FILE?"
 	
 CorruptedFileText::
 	print_pic GameTiles
@@ -1197,7 +1197,7 @@ CorruptedFileText::
 .line0
 	dstr "THE SAVE WAS"
 .line1
-	dstr "CORRUPTED !"
+	dstr "CORRUPTED!"
 .line2
 	db "LUCKILY,"
 	dstr " I"
@@ -1208,7 +1208,7 @@ CorruptedFileText::
 .line5
 	dstr "RESTORE IT."
 .line6
-	dstr "SHOULD I ?"
+	dstr "SHOULD I?"
 	
 BackupCorruptedText::
 	print_pic GameTiles
@@ -1267,11 +1267,11 @@ EmptyFileLine0::
 EmptyFileLine1::
 	dstr "A BRAND"
 EmptyFileLine2::
-	dstr "NEW FILE !"
+	dstr "NEW FILE!"
 EmptyFileLine3::
 	dstr "SHOULD I"
 EmptyFileLine4::
-	dstr "LOAD IT ?"
+	dstr "LOAD IT?"
 
 
 DLCName::

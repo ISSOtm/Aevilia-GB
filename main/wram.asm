@@ -10,7 +10,7 @@ wFatalErrorCode::
 ; Parameters transferred to the corresponding registers on each VBlank
 ; The idea is that these can be edited anytime
 ; Also, this SCX is pre-screen shake, and WX and WY are ignored if wEnableWindow is zero
-; Please take note that the text box takes precedence over these !
+; Please take note that the text box takes precedence over these!
 wSCY::
 	ds 1
 wSCX::
@@ -22,7 +22,7 @@ wWX::
 	ds 1
 	
 ; Controls whether the window should be displayed or not
-; The window will be displayed anyways if the text box is active !
+; The window will be displayed anyways if the text box is active!
 wEnableWindow::
 	ds 1
 	
@@ -101,8 +101,8 @@ wPlayerGender::
 SECTION "GFX and text", WRAM0,ALIGN[8]
 ; Each of these bytes controls if the corresponding row of FixedTileMap should be transferred
 ; Note that only one row can be processed on each frame due to timing limitations (and code complexity)
-; WARNING : high byte of all 18 bytes must be the same ! (ie must not cross a 256-byte boundary)
-; If this has to be moved, make sure to change **ALL** instances where this is used !
+; WARNING : high byte of all 18 bytes must be the same! (ie must not cross a 256-byte boundary)
+; If this has to be moved, make sure to change **ALL** instances where this is used!
 wTransferRows::
 	ds SCREEN_HEIGHT + 8
 	
@@ -179,7 +179,7 @@ wTextAcc::
 ; Bit 6 - Sign
 ; Bit 5 - Parity
 ; Bit 4 - Zero
-; Bit 3 - Is pic present ?
+; Bit 3 - Is pic present?
 ; Bit 2 - Unused
 ; Bit 1 - Unused
 ; Bit 0 - Unused
@@ -234,7 +234,7 @@ SECTION "OAM", WRAM0,ALIGN[8]
 	
 ; The virtual OAM, dynamically transferred during each VBlank
 ; Make sure to update wNumOfSprites accordingly
-; !!! LOW BYTE OF THIS MUST BE ZERO !!!
+;!!! LOW BYTE OF THIS MUST BE ZERO!!!
 wVirtualOAM::
 	ds $A0
 	

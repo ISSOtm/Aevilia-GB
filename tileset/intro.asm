@@ -71,7 +71,7 @@ IntroTileset::
 	dw $C0C0, $A0A0, $CACA, $AAAA, $C4C4, $0404, $0404, $0000 ; These tiles were
 	dw $C600, $CC02, $D804, $F008, $F800, $DC20, $CE10, $00CE ; unused, so here's
 	dw $3800, $6C10, $C628, $C600, $FE00, $C638, $C600, $00C6 ; a little credit to Kai
-	dw $7E00, $1866, $1800, $1800, $1800, $1800, $7E00, $007E ; for these graphics ! :)
+	dw $7E00, $1866, $1800, $1800, $1800, $1800, $7E00, $007E ; for these graphics! :)
 	dw $0303, $0704, $0F08, $1F10, $3F20, $7F40, $7F41, $FF83 ; AB
 	dw $FF00, $FF00, $FF03, $FF1F, $FF7C, $FFE0, $FF80, $FF00 ; AC
 	dw $FF00, $FF7F, $FFFF, $FF80, $FF00, $FF00, $FF08, $FF08 ; AD

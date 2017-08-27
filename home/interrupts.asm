@@ -33,8 +33,8 @@ SwitchRAMBanks::
 DoNothing::
 	ret
 	
-; Do you need a pointer to $00, be it byte or word ?
-; WE GOT YOU COVERED RIGHT HERE !!1
+; Do you need a pointer to $00, be it byte or word?
+; WE GOT YOU COVERED RIGHT HERE!!1
 NullPtr::
 NullByte::
 	dw 0

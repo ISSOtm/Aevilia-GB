@@ -155,15 +155,15 @@ VBlankHandler::
 	ld a, [hli] ; Get number of sprites
 	cp NB_OF_SPRITES + 1 ; Make sure this number is valid
 	jr c, .numberOfSpritesValid
-	ld a, NB_OF_SPRITES ; This should never be reached, but... it might !
+	ld a, NB_OF_SPRITES ; This should never be reached, but... it might!
 	dec hl
 	ld [hli], a ; Force number of sprites to be valid
 .numberOfSpritesValid
 	ld c, a ; Save this
 	ld a, [hl] ; Subtract previous num of sprites
 	sub c ; Calc difference
-	jr c, .noSpritesToHide ; Negative ? Nothing to do !
-	jr z, .noSpritesToHide ; Zero ? Same !
+	jr c, .noSpritesToHide ; Negative? Nothing to do!
+	jr z, .noSpritesToHide ; Zero? Same!
 	
 	ld b, a ; Save this as a counter
 	dec hl
@@ -195,7 +195,7 @@ ENDR
 	ld a, [hli]
 	ld [$FF00+c], a
 	inc c
-	cp $C9 ; Copied the RET ?
+	cp $C9 ; Copied the RET?
 	jr nz, .copyDMARoutine
 	; b's value was determined through testing...
 	; less means returning before the CPU has access (crash),
@@ -463,11 +463,11 @@ STATHandler::
 	call DevSound_Play ; Preserves all registers
 	
 .end
-IF !DEF(GlitchMaps)
+IF!DEF(GlitchMaps)
 	; Check the handler's return address
 	ld hl, sp+$05
-	bit 7, [hl] ; Is that RAM ?
-	jr nz, .RAMNotX ; YES ?? OH GOD WHAT THE-
+	bit 7, [hl] ; Is that RAM?
+	jr nz, .RAMNotX ; YES?? OH GOD WHAT THE-
 ENDC
 	
 	ldh a, [hCurRAMBank]
@@ -479,7 +479,7 @@ ENDC
 	ld a, [hl]
 	and a
 	jr z, .noThread2 ; Don't jump if the index is 0. There's nothing to see there anyways.
-IF !DEF(GlitchMaps)
+IF!DEF(GlitchMaps)
 	cp THREAD2_MAX
 	jr nc, .badThread2 ; Forbid invalid Thread 2 indexes
 ENDC

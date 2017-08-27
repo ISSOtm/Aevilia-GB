@@ -18,7 +18,7 @@ LoadMap::
 	ld [wLoadedMap], a ; Write the current map's ID to WRAM
 	ld d, a ; Save the ID
 	
-IF !DEF(GlitchMaps)
+IF!DEF(GlitchMaps)
 	cp NB_OF_MAPS ; Check for validity
 	jr nc, LoadMap_FatalError ; Is not. ¯\_(ツ)_/¯
 ENDC
@@ -42,7 +42,7 @@ ENDC
 	add a, MapPointers & $FF
 	ld l, a
 	adc a, MapPointers >> 8 ; a = Hi + Lo + Carry
-	sub l ; a = Hi + Carry, OK !
+	sub l ; a = Hi + Carry, OK!
 	ld h, a
 	ld a, [hli] ; Set hl to map header's pointer
 	ld h, [hl]
@@ -60,7 +60,7 @@ ENDC
 	
 	push hl ; Save read pointer, it will be destroyed by later operations
 	ld a, [wCurrentMusicID] ; We will determine whether we have to fade the music out
-	cp $FF ; Is there any music ?
+	cp $FF ; Is there any music?
 	jr z, .forceMutedMusic ; If not, we have to start the new music
 	cp [hl] ; Compare to map's music ID
 	jr z, .sameMusic ; If we have the same music, do nothing
@@ -199,7 +199,7 @@ ENDC
 	push bc
 	
 	; Now, a slightly tricky part : we need to write the pointer before the copy (since that's where the base pointer is)
-	; but at the same time we need to retrieve the pointer that's the source of the copy !
+	; but at the same time we need to retrieve the pointer that's the source of the copy!
 	ld b, [hl]
 	ld [hl], e ; Write pointer to anim frames (which is big-endian)
 	dec hl
@@ -210,14 +210,14 @@ ENDC
 	dec hl
 	dec hl
 	ld a, [hli] ; Get num of frames
-	; Note : using hli when not necessary ? Yup, but if it happened to overflow, we skip a "noCarry", so it's good.
+	; Note : using hli when not necessary? Yup, but if it happened to overflow, we skip a "noCarry", so it's good.
 	
 	push hl ; Save the read pointer for later
 	ld h, b ; Get the source pointer into hl,
 	ld l, c ; which also frees bc.
 	
 	swap a ; Compute length of copy
-	ld c, a ; Save this because we can't read it again !
+	ld c, a ; Save this because we can't read it again!
 	and $0F
 	ld b, a
 	ld a, c ; Get back unmasked low byte
@@ -359,7 +359,7 @@ ENDC
 .noInteractions
 	
 	ld a, [hli] ; Get NPC count
-	and $07 ; Failsafe !
+	and $07 ; Failsafe!
 	ld [wNumOfNPCs], a
 	jr z, .noNPCs
 	ld de, wNPC1_ypos
@@ -440,7 +440,7 @@ ENDC
 	ld c, a
 	ld a, [wTargetWarpID]
 	cp c
-IF !DEF(GlitchMaps)
+IF!DEF(GlitchMaps)
 	jr nc, .checkWarpFF
 ELSE
 	jr nc, .doneWarping
@@ -628,11 +628,11 @@ RedrawMap::
 	and $0F
 	or e
 	swap a
-	ld e, a ; Divided by 16 : OK !
+	ld e, a ; Divided by 16 : OK!
 	ld a, [hli]
 	and $F0
 	swap a
-	ld d, a ; Divided by 16 : OK !
+	ld d, a ; Divided by 16 : OK!
 	; de now contains the vertical block position
 	
 	ld a, [hli]
@@ -642,11 +642,11 @@ RedrawMap::
 	and $0F
 	or c
 	swap a
-	ld c, a ; Divided by 16 : OK !
+	ld c, a ; Divided by 16 : OK!
 	ld a, [hli]
 	and $F0
 	swap a
-	ld b, a ; Divided by 16 : OK !
+	ld b, a ; Divided by 16 : OK!
 	; bc now contains the horizontal position
 	
 	ld a, [wMapWidth]
@@ -744,7 +744,7 @@ DrawBlock::
 	jr nc, .noCarry
 	inc h
 .noCarry
-	ld l, a ; 256-byte aligned : all's gewd here !
+	ld l, a ; 256-byte aligned : all's gewd here!
 	
 	xor a
 	ld [rVBK], a
@@ -914,7 +914,7 @@ MoveCamera::
 .lockCamUp
 	ld hl, 0 ; Lock camera at position 0
 .dontLockCamVert
-	ld a, h ; Write back (in reverse order !)
+	ld a, h ; Write back (in reverse order!)
 	ld [de], a
 	dec de
 	ld a, [de]
@@ -939,7 +939,7 @@ MoveCamera::
 	ld a, b
 	add a, a ; Get MSB of movement vector in carry
 	ld a, [hli]
-	jr nc, .drawBottomRow ; No carry = moved right -> redraw bottom !
+	jr nc, .drawBottomRow ; No carry = moved right -> redraw bottom!
 	ld [de], a
 	inc de
 	ld a, [hli]
@@ -1662,7 +1662,7 @@ MoveNPCs::
 	call RandInt
 	pop hl
 	ld [hli], a
-	; Process one frame of movement (if NPC bonks immediately, avoids a "stutter frame") ; also "hli" coincidentally placed hl just right ! :D
+	; Process one frame of movement (if NPC bonks immediately, avoids a "stutter frame") ; also "hli" coincidentally placed hl just right! :D
 	jp .NPCIsMoving ; Too far to jr, tho :/
 	
 .dontMove
@@ -1977,7 +1977,7 @@ MovePlayer::
 .noHorizontalMovement
 	pop bc
 	dec c
-	jp nz, .movementLoop ; Too far to jr !
+	jp nz, .movementLoop ; Too far to jr!
 	
 .cantMove
 	ld a, [wTempBuf + 4]
@@ -2225,11 +2225,11 @@ GetPointerFromCoords::
 	and $0F
 	or e
 	swap a
-	ld e, a ; Divided by 16 : OK !
+	ld e, a ; Divided by 16 : OK!
 	ld a, [hli]
 	and $F0
 	swap a
-	ld d, a ; Divided by 16 : OK !
+	ld d, a ; Divided by 16 : OK!
 	; de now contains the vertical block position
 	
 	ld a, [hli]
@@ -2239,11 +2239,11 @@ GetPointerFromCoords::
 	and $0F
 	or c
 	swap a
-	ld c, a ; Divided by 16 : OK !
+	ld c, a ; Divided by 16 : OK!
 	ld a, [hli]
 	and $F0
 	swap a
-	ld b, a ; Divided by 16 : OK !
+	ld b, a ; Divided by 16 : OK!
 	; bc now contains the horizontal position
 	
 	ld a, [wMapWidth]
@@ -2407,9 +2407,9 @@ ProcessInteraction:
 ; - Y hitbox size,	1 byte
 ; - X hitbox size,	1 byte
 ; Parameters :
-; hl = pointer to table (ELEMENTS MUST BE ALIGNED TO THEIR SIZE !!) (Otherwise  v )
+; hl = pointer to table (ELEMENTS MUST BE ALIGNED TO THEIR SIZE!!) (Otherwise  v )
 ; a = number of elements
-; e = length of one element (MUST BE A POWER OF 2 !!!) (Otherwise          rewrite code so it pushes base ptr, operates, pops it, and adds the size)
+; e = length of one element (MUST BE A POWER OF 2!!!) (Otherwise          rewrite code so it pushes base ptr, operates, pops it, and adds the size)
 ; wTempBuf = coords of scanned point
 ; Destroys all registers, preserves wTempBuf
 ; If an element can be interacted with, will return with C flag set and hl pointing to corresponding X hitbox size
@@ -2450,7 +2450,7 @@ ScanForInteraction::
 	
 .notThisOne
 	xor a
-	sub e ; Get alignment mask (this only works with powers of 2 !!!)
+	sub e ; Get alignment mask (this only works with powers of 2!!!)
 	and l ; Align read ptr
 	add a, e ; Advance 1 element
 	ld l, a

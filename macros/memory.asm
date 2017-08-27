@@ -41,7 +41,7 @@ wTileAnim\1_delayLength::	db ; When frameCount hits this, it resets, and one fra
 wTileAnim\1_currentFrame::	db ; Which frame of animation is being displayed
 wTileAnim\1_numOfFrames::	db ; Number of frames in the current animation
 wTileAnim\1_tileID::		db ; ID of the tile being animated
-wTileAnim\1_framesPtr::		dw ; Pointer to the frames (stored in WRAM)    /!\ THIS IS A BIG-ENDIAN POINTER !!!
+wTileAnim\1_framesPtr::		dw ; Pointer to the frames (stored in WRAM)    /!\ THIS IS A BIG-ENDIAN POINTER!!!
 wTileAnim\1_unused::		ds 1 ; Unused
 ENDM
 
@@ -50,7 +50,7 @@ ENDM
 ; Use to declare a tile's data in ROM.
 ; Use in groups of four to declare a block's data
 ; 0 2
-; 1 3 (in this order !)
+; 1 3 (in this order!)
 tile_attr: MACRO
 	; The tile ID
 	db \1

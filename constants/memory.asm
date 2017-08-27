@@ -60,7 +60,7 @@ rWX				equ $FF4B
 rKEY1			equ $FF4D ; Speed switch
 rVBK			equ $FF4F ; VRAM Bank
 rHDMA1			equ $FF51 ; GBC ("New") DMA source ptr
-rHDMA2			equ $FF52 ; WARNING : POINTERS ARE ***BIG-ENDIAN*** !!!!!
+rHDMA2			equ $FF52 ; WARNING : POINTERS ARE ***BIG-ENDIAN***!!!!!
 rHDMA3			equ $FF53 ; GBC DMA destination ptr
 rHDMA4			equ $FF54
 rHDMA5			equ $FF55 ; GBC DMA length

@@ -4,7 +4,7 @@ SECTION "Default save", ROMX
 
 DefaultSaveBank0::
 
-; MAKES SURE THIS MATCHES `MagicString` !!
+; MAKES SURE THIS MATCHES `MagicString`!!
 DefaultSaveMagicString0::
 	dstr "Aevilia"
 	

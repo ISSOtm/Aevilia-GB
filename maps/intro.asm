@@ -161,7 +161,7 @@ IntroMapLoadingScript::
 	ld [wTextboxStatus], a
 	jp AllowJoypadMovement ; Cancel above prevention
 	
-; MAKE SURE THIS DOES NOT CROSS A 256-BYTE BOUNDARY !!
+; MAKE SURE THIS DOES NOT CROSS A 256-BYTE BOUNDARY!!
 ; (Except for the last byte, which is allowed to)
 IntroScripts::
 	dw IntroBoyGirlText
@@ -198,7 +198,7 @@ IntroMapScript::
 	
 	inc b ; The text should only pop once
 	ld a, b
-	ld [wIntroMapStatus], a ; So we increment the status !
+	ld [wIntroMapStatus], a ; So we increment the status!
 	
 	; Now, we process the text
 	ld c, BANK(IntroTexts)
@@ -326,7 +326,7 @@ IntroChooseGender::
 	and BUTTON_A | BUTTON_START | BUTTON_SELECT
 	ret z ; Don't advance status if A or START or SELECT aren't pressed
 	
-	; Gender has been chosen !
+	; Gender has been chosen!
 	inc b
 	ld a, b
 	ld [wIntroMapStatus], a ; Advance status
@@ -480,29 +480,29 @@ IntroBoyGirlText::
 	done
 	
 .line0
-	dstr "Before you can"
+	dstr "BEFORE YOU CAN"
 .line1
-	dstr "embark on this"
+	dstr "EMBARK ON THIS"
 .line2
-	dstr "adventure..."
+	dstr "ADVENTURE..."
 .line3
-	dstr "I must ask"
+	dstr "I MUST ASK"
 .line4
-	dstr "A couple of"
+	dstr "A COUPLE OF"
 .line5
-	dstr "questions."
+	dstr "QUESTIONS."
 .line6
-	dstr "The topic?"
+	dstr "THE TOPIC?"
 .line7
-	dstr "You."
+	dstr "YOU."
 .line8
-	db "For example,", 0
+	db "FOR EXAMPLE,", 0
 .line9
-	dstr "I need to know"
+	dstr "I NEED TO KNOW"
 .line10
-	dstr "If you are a"
+	dstr "IF YOU ARE A"
 .line11
-	dstr "boy or girl."
+	dstr "BOY OR GIRL."
 	
 	
 IntroChoseGenderText::
@@ -666,13 +666,14 @@ IntroObjectNeededText::
 .line5
 	db "Well, yes,", 0
 .line6
-	dstr "Maybe you need"
+	dstr "maybe you need"
 .line7
 	dstr "something to"
 .line8
 	dstr "interact with."
 .line9
 	dstr "Okay. Now go."
+	
 .line10
 	dstr "Oooh."
 .line11

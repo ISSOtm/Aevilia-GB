@@ -63,7 +63,7 @@ ENDM
 
 ; Usage : callacross label
 ; Calls a function across ROM banks
-; WARNING : only de and c are passed to the function intact !
+; WARNING : only de and c are passed to the function intact!
 callacross: MACRO
 	ld b, BANK(\1)
 	ld hl, \1

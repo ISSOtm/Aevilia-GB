@@ -196,7 +196,7 @@ ENDM
 
 
 ; choose str_choice ofs_2
-; Remember to add the 5 of the MAKE_CHOICE command !
+; Remember to add the 5 of the MAKE_CHOICE command!
 choose: MACRO
 	db MAKE_CHOICE
 	db BANK(\1)
@@ -269,7 +269,7 @@ text_cmp: MACRO
 	db \1
 ENDM
 
-; Note that unlike the z80's `dec`, this updates the carry flag !
+; Note that unlike the z80's `dec`, this updates the carry flag!
 ; Also note that `inc` doesn't, otherwise C == Z (so it'd be pointless)
 text_dec: MACRO
 	db DEC_TEXT
@@ -343,7 +343,7 @@ text_update_flags: MACRO
 ENDM
 
 
-; Do a jr like the proc's one. Except the offset is calculated slightly differently, eg. text_jr $00 is an infinite loop !!
+; Do a jr like the proc's one. Except the offset is calculated slightly differently, eg. text_jr $00 is an infinite loop!!
 cond_nc	EQU 1
 cond_c	EQU 2
 cond_p	EQU 3

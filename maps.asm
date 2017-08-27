@@ -6,7 +6,7 @@ INCLUDE "constants.asm"
 
 SECTION "Map pointers", ROMX[$4000]
 	
-MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED !!
+MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(TestMap)
 	db BANK(TestHouse)
 	db BANK(IntroMap)
@@ -23,7 +23,7 @@ MapPointers::
 	
 SECTION "Tileset pointers", ROMX[$4300]
 
-TilesetROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED !!
+TilesetROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(TestTileset)
 	db BANK(TestInteriorTileset)
 	db BANK(IntroTileset)

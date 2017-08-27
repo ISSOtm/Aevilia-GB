@@ -2,7 +2,7 @@
 ; DevSound macros
 ; ================================================================
 
-if !def(incDSMacros)
+if!def(incDSMacros)
 incDSMacros	set	1
 
 Instrument:		macro

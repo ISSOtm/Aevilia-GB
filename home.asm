@@ -53,7 +53,7 @@ Init::
 	; Maybe I'm clearing too much, but heh, at least I won't get any unexpected errors
 	
 	ld hl, $C000
-	ld bc, $1000 - 4 ; The last four bytes are stack bytes, and this is the highest point `Fill` will reach. Clearing them would cause it to return to $0000, oopsies !
+	ld bc, $1000 - 4 ; The last four bytes are stack bytes, and this is the highest point `Fill` will reach. Clearing them would cause it to return to $0000, oopsies!
 	xor a
 	call Fill ; Clear WRAM bank 0
 	
@@ -180,7 +180,7 @@ Init::
 	xor a
 	ld hl, DefaultPalette
 	call LoadBGPalette
-	ld a, 1 ; Well, I guess palette 0 might be reloaded for other purposes, but palette 1, never !
+	ld a, 1 ; Well, I guess palette 0 might be reloaded for other purposes, but palette 1, never!
 	ld hl, GrayPalette
 	call LoadBGPalette
 	
@@ -204,16 +204,16 @@ THE_CONSTANT = 42
 	ld a, [wSaveA | $2000] ; Equivalent location in echo RAM
 	cp THE_CONSTANT ; Check is change has been reflected
 	jr z, .hasEchoRAM
-	; Echo RAM is not emulated ? Warn the user !
+	; Echo RAM is not emulated? Warn the user!
 	
-	; This will copy the full blob of text, which is only one string ! ^^
+	; This will copy the full blob of text, which is only one string! ^^
 	ld hl, VBAText
 	ld de, wFixedTileMap + SCREEN_WIDTH
 	rst copyStr
 	
 	inc a ; a = 1
 	ldh [hTilemapMode], a ; Switch to fixed tile map
-	ld hl, wTransferRows + 6 ; Transfer all of 'em rows !
+	ld hl, wTransferRows + 6 ; Transfer all of 'em rows!
 	ld c, SCREEN_HEIGHT - 1
 	rst fill
 	
@@ -268,11 +268,11 @@ THE_CONSTANT = 42
 	ld a, [hl]
 	cp $C0
 	; So, we're not on a CGB (otherwise banking would have kicked in)
-	; Wait, but... and the a register at startup ??
+	; Wait, but... and the a register at startup??
 	; Oooh. I get it.
 	; We've been spoofed.
 	jp nz, ScoldSpoofers
-	; So we're neither on a CGB nor on a DMG, huh ? :p
+	; So we're neither on a CGB nor on a DMG, huh? :p
 	ld [hl], b
 	ld a, 2
 	call SwitchRAMBanks
@@ -281,7 +281,7 @@ THE_CONSTANT = 42
 	call SwitchRAMBanks
 	
 	; 3DS VC doesn't flag rHDMA1 as readable, even though it should be
-	; What the fuck, Nintendo ?
+	; What the fuck, Nintendo?
 	ld a, [rHDMA1]
 	inc a
 	ld [rHDMA1], a
@@ -324,9 +324,9 @@ THE_CONSTANT = 42
 	xor a
 	ld [SRAMBank], a
 	ld a, [hl] ; Check bank 0's value again
-	cp b ; Did it change ?
+	cp b ; Did it change?
 	jr z, .coincidentalMatch
-	ld a, 1 ; It did !
+	ld a, 1 ; It did!
 	ldh [hSRAM32kCompat], a
 .coincidentalMatch
 	ld a, 4
@@ -362,7 +362,7 @@ THE_CONSTANT = 42
 .compareCommonPattern
 	ld a, [de]
 	cp [hl]
-	jr nz, .patternsDontMatch ; SRAM isn't correct ! Maybe an overflow, or bad SRAM bank write ?
+	jr nz, .patternsDontMatch ; SRAM isn't correct! Maybe an overflow, or bad SRAM bank write?
 	inc hl
 	inc de
 	dec bc
@@ -495,7 +495,7 @@ FileSelect::
 .notCompatMode
 	xor a
 	ld [wSaveA], a
-	; File is invalid !!
+	; File is invalid!!
 	; We now need to restore the backup
 	ld a, [wSaveFileID]
 	add a, a
@@ -595,7 +595,7 @@ FileSelect::
 	; 2. Save properly at least once
 	; 3. Without loading the file, corrupt it (easiest method : reset while saving, since the file is voluntarily corrupted while saving to prevent such abuse)
 	; 4. Accept to restore from backup
-	; 5. Done ! (Game will probably crash or load test map, as of writing these lines)
+	; 5. Done! (Game will probably crash or load test map, as of writing these lines)
 	; If the backup is invalid it will be trapped, but otherwise...
 	
 .backupFile
@@ -653,7 +653,7 @@ FileLoaded::
 .noCarry
 	
 	ld a, 1
-	call SwitchRAMBanks ; === CAUTION !! LOADED WRAM BANK MAY NOT BE 01 BEFORE THIS POINT !!! ===
+	call SwitchRAMBanks ; === CAUTION!! LOADED WRAM BANK MAY NOT BE 01 BEFORE THIS POINT!!! ===
 	
 	homecall LoadPlayerGraphics
 	

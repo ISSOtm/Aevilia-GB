@@ -45,7 +45,7 @@ FatalError::
 	ld [rLCDC], a ; Shut LCD down (don't call function because it uses b)
 	ld [rVBK], a ; Make sure to be in bank 0 for printing ; swap before saving SP for obvious reasons
 	
-	; Further things will be stored into VRAM, because it won't overwrite any WRAM !
+	; Further things will be stored into VRAM, because it won't overwrite any WRAM!
 	ld [$9BFE], sp ; Store the stack pointer twice in the upcoming stack
 	ld [$9BFC], sp
 	ld sp, $9BFC ; This will enable us to pop twice and get SP back
@@ -75,15 +75,15 @@ CopyAcross::
 	push bc ; Save bc, used to save data manipulation
 	ld b, a ; Save target bank to free a
 	ldh a, [hCurROMBank] ; Can only use a for this (otherwise code would have been much simpler)
-	ld c, a ; Ideally we would push af, but we must pop bc first ! So save value to swap with b
+	ld c, a ; Ideally we would push af, but we must pop bc first! So save value to swap with b
 	ld a, b ; Get target bank back
-	rst bankswitch ; And make it fulfill its purpose ! YEAH !!
-	ld a, c ; Now we can get the saved bank back, which ALSO frees bc ! Hooray !
+	rst bankswitch ; And make it fulfill its purpose! YEAH!!
+	ld a, c ; Now we can get the saved bank back, which ALSO frees bc! Hooray!
 	
 	pop bc ; Get back bc, freeing the stack...
 	push af ; ... so we can save the bank. Wow. Now THAT was some good register manipulation :P
 	
-	call Copy ; The correct bank is loaded, the correct parameters are set... We're golden !
+	call Copy ; The correct bank is loaded, the correct parameters are set... We're golden!
 	pop af
 	rst bankswitch
 	ret

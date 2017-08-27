@@ -38,7 +38,7 @@ SCREEN_HEIGHT	EQU 18
 TILE_SIZE		EQU 8 ; Size of a tile in pixels
 
 MAX_CAM_SPEED	EQU 15	; A row / column of tiles can be updated in a frame, but no more.
-						; Avoid making the camera faster than 16 px/frame ! I think 16 px looks weird, though, so it's 15.
+						; Avoid making the camera faster than 16 px/frame! I think 16 px looks weird, though, so it's 15.
 
 VRAM_TILE_SIZE	EQU 16 ; Size of a tile in VRAM
 VRAM_ROW_SIZE	EQU $20 ; Size of a row of tiles in VRAM

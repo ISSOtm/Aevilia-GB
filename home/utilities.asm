@@ -170,7 +170,7 @@ SwitchCPUSpeed:
 	ld [rJOYP], a
 	ld a, 1
 	ld [rKEY1], a ; Request speed switch
-	stop ; GO !!
+	stop ; GO!!
 	ret
 	
 

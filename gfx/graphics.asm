@@ -178,7 +178,7 @@ ScoldStr::
 	db "   THINK YOU CAN    "
 	db " SPOOF ME THAT WAY? "
 	db "                    "
-	db " Y O U   F O O L  ! "
+	db " Y O U   F O O L ! "
 	db "                    "
 	db "   WHEN I SAY YOU   "
 	db "  CANNOT PLAY THIS  "
@@ -252,7 +252,7 @@ LoadOBJPalette::
 	ld b, a
 	add a, a
 	add a, a
-	inc a ; [add a, 2], globally : skip color #0, it's never displayed anyways. Saves a whole loop iteration, huh ?
+	inc a ; [add a, 2], globally : skip color #0, it's never displayed anyways. Saves a whole loop iteration, huh?
 LoadPalette_Common:
 	add a, a
 	or $80 ; Enable auto-increment
@@ -1494,7 +1494,7 @@ GameName::
 SaveDestroyed0::
 	dstr "SAVE DATA IS"
 SaveDestroyed1::
-	dstr "DESTROYED !"
+	dstr "DESTROYED!"
 SaveDestroyed2::
 	dstr "ALL FILES WILL"
 SaveDestroyed3::
@@ -1559,7 +1559,7 @@ FirstTimeLoadingText::
 .line1
 	dstr "FIRST TIME"
 .line2
-	dstr "PLAYING ?"
+	dstr "PLAYING?"
 .line3
 	db "OKAY,"
 	dstr " HERE ARE"
