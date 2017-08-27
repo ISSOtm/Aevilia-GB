@@ -259,6 +259,99 @@ ENDR
 	ld l, rIF & $FF
 	res 1, [hl] ; Thus, we remove it.
 	
+	ld hl, wNumOfTileAnims
+	ld a, [hli]
+	and a
+	jr z, .noAnimators
+	ld b, a
+	ld a, [rVBK] ; Save VRAM bank
+	push af
+.runAnimator
+	push hl
+	ld a, [hl] ; Get current frame
+	inc a ; Increment
+	ld [hli], a
+	sub [hl] ; Try subtracting the max frame
+	jr c, .dontAnim ; If current < max, don't animate
+	
+	dec hl
+	ld [hli], a ; Write back (current - max)
+	inc hl
+	ld a, [hli] ; Get current anim frame
+	inc a ; Advance
+.getFrame
+	sub [hl]
+	jr nc, .getFrame
+	add [hl] ; Get modulo
+	dec hl
+	ld [hli], a ; Write back
+	inc hl
+	ld d, a ; Store this
+	
+	ld a, [hli] ; Get tile ID
+	ld e, a ; Store this
+	res 7, e ; We're editing tiles $80-$FF, sure, but we'll transpose to $00-$7F for simplicity.
+	; Calculate target VRAM bank :
+	; If tile ID < $80  (VRAM bank 0) : MSB = 0 -> Carry = 0 -> Carry = 1 -> a = $FF -> a = $00
+	; If tile ID >= $80 (VRAM bank 1) : MSB = 1 -> Carry = 1 -> Carry = 0 -> a = $00 -> a = $01
+	rlca ; Get MSB in carry
+	ccf ; Complement it
+	sbc a, a ; Perform ASM magic
+	inc a
+	ld [rVBK], a ; Switch to copy's dest bank
+	
+	ld c, rHDMA1 & $FF
+	; Write copy's source pointer
+	swap d
+	ld a, d ; Get back swap'd frame
+	and $0F
+	add a, [hl] ; Add base pointer's high byte
+	inc hl
+	ld [$FF00+c], a ; rHDMA1
+	inc c
+	ld a, d
+	and $F0
+	add a, [hl] ; Add base pointer's low byte
+	ld [$FF00+c], a ; rHDMA2
+	inc c
+	
+	swap e
+	ld a, e
+	and $0F
+	add a, v0Tiles1 >> 8
+	ld [$FF00+c], a ; rHDMA3
+	inc c
+	ld a, e
+	and $F0
+;	add a, v0Tiles1 & $FF ; This is $00
+	ld [$FF00+c], a ; rHDMA4
+	inc c
+	
+	; Switch to copy's source bank
+	ld a, BANK(wTileFrames)
+	ld [rSVBK], a
+	
+	; Transfer 16 bytes (one tile) via GDMA, all operations will cease in the meantime
+	xor a
+	ld [$FF00+c], a ; rHDMA5
+	
+	ld a, BANK(wVirtualOAM)
+	ld [rSVBK], a ; Restore WRAM bank.
+	
+.dontAnim
+	pop hl
+	ld a, l
+	add a, wTileAnim1_frameCount - wTileAnim0_frameCount
+	ld l, a
+	jr nc, .noCarryAnim
+	inc h
+.noCarryAnim
+	dec b
+	jr nz, .runAnimator
+	pop af
+	ld [rVBK], a ; Restore VRAM bank
+.noAnimators
+	
 	ldh a, [hCurRAMBank] ; Restore WRAM bank
 	ld [rSVBK], a
 	pop hl

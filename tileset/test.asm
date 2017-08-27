@@ -36,8 +36,6 @@ TestTileset::
 	
 	; 98
 	dw $FF00, $EF10, $FF00, $FF00, $BD42, $FF00, $EF10, $FF00 ; Water
-;	dw $FF00, $F700, $FF00, $FF00, $DE00, $FF00, $F700, $FF00 ; Water frame 2
-;	dw $FF00, $DF20, $FF00, $FF00, $7B84, $FF00, $DF20, $FF00 ; Water frame 3
 	
 	; Bridge (99-9A)
 	dw $FF00, $8877, $8877, $FF00, $22DD, $FF00, $FFFF, $1010 ; Horizontal
@@ -52,7 +50,6 @@ TestTileset::
 	
 	; 9E
 	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
-;	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower frame 2
 	
 	; Tree (9F-A6)
 	dw $01A9, $0243, $0D2E, $1798, $243B, $D3EC, $5C63, $E19E ; Top-left (walkable)
@@ -81,25 +78,25 @@ TestTileset::
 	tile_attr $A7, 0, 0, 0, 0, 0, 0
 	
 	; Grass
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $81, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; House top-left
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $81, 0, 2, 0, 0, 0, 0
 	tile_attr $8F, 0, 5, 0, 0, 0, 1
 	tile_attr $8D, 0, 5, 0, 0, 0, 1
 	
 	; House top
-	tile_attr $8C, 1, 5, 0, 0, 0, 1
+	tile_attr $8C, 0, 5, 0, 0, 0, 1
 	tile_attr $91, 0, 5, 0, 0, 0, 1
 	tile_attr $8C, 0, 5, 0, 0, 0, 1
 	tile_attr $91, 0, 5, 0, 0, 0, 1
 	
 	; House top-right
-	tile_attr $8F, 1, 5, 0, 1, 0, 1
+	tile_attr $8F, 0, 5, 0, 1, 0, 1
 	tile_attr $8D, 0, 5, 0, 1, 0, 1
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
@@ -177,7 +174,7 @@ TestTileset::
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; Path
-	tile_attr $9D, 1, 0, 0, 0, 0, 0
+	tile_attr $9D, 0, 0, 0, 0, 0, 0
 	tile_attr $9D, 0, 0, 0, 0, 0, 0
 	tile_attr $9D, 0, 0, 0, 0, 0, 0
 	tile_attr $9D, 0, 0, 0, 0, 0, 0
@@ -189,68 +186,68 @@ TestTileset::
 	tile_attr $9C, 0, 0, 0, 1, 0, 0
 	
 	; Water top-left
-	tile_attr $94, 0, 7, 0, 0, 0, 0
-	tile_attr $92, 1, 7, 0, 0, 0, 0
+	tile_attr $94, 1, 7, 0, 0, 0, 0
+	tile_attr $92, 0, 7, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 0, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	
 	; Water top
-	tile_attr $93, 0, 7, 0, 0, 0, 0
-	tile_attr $98, 1, 6, 0, 0, 0, 0
+	tile_attr $93, 1, 7, 0, 0, 0, 0
+	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 0, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	
 	; Water top-right
-	tile_attr $93, 0, 7, 0, 0, 0, 0
-	tile_attr $98, 1, 6, 0, 0, 0, 0
+	tile_attr $93, 1, 7, 0, 0, 0, 0
+	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $96, 0, 7, 0, 0, 0, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	
 	; Water left
-	tile_attr $92, 0, 7, 0, 0, 0, 0
 	tile_attr $92, 1, 7, 0, 0, 0, 0
+	tile_attr $92, 0, 7, 0, 0, 0, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	
 	; Water
-	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $98, 1, 6, 0, 0, 0, 0
+	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	
 	; Horizontal bridge
-	tile_attr $9A, 1, 3, 0, 0, 0, 0
+	tile_attr $9A, 0, 3, 0, 0, 0, 0
 	tile_attr $99, 0, 3, 0, 0, 0, 0
 	tile_attr $9A, 0, 3, 0, 0, 0, 0
 	tile_attr $99, 0, 3, 0, 0, 0, 0
 	
 	; Vertical bridge
-	tile_attr $9A, 1, 3, 0, 0, 0, 0
+	tile_attr $9A, 0, 3, 0, 0, 0, 0
 	tile_attr $9A, 0, 3, 0, 0, 0, 0
 	tile_attr $9A, 0, 3, 0, 0, 0, 0
 	tile_attr $9A, 0, 3, 0, 0, 0, 0
 	
 	; Water right
-	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $98, 1, 6, 0, 0, 0, 0
+	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	
 	; Water bottom-left
-	tile_attr $92, 0, 7, 0, 0, 1, 0
-	tile_attr $94, 1, 7, 0, 0, 1, 0
+	tile_attr $92, 1, 7, 0, 0, 1, 0
+	tile_attr $94, 0, 7, 0, 0, 1, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 1, 0
 	
 	; Water bottom
-	tile_attr $98, 0, 6, 0, 0, 0, 0
-	tile_attr $93, 1, 7, 0, 0, 1, 0
+	tile_attr $98, 1, 6, 0, 0, 0, 0
+	tile_attr $93, 0, 7, 0, 0, 1, 0
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 1, 0
 	
 	; Water bottom-right
-	tile_attr $98, 0, 6, 0, 0, 0, 0
-	tile_attr $93, 1, 7, 0, 0, 1, 0
+	tile_attr $98, 1, 6, 0, 0, 0, 0
+	tile_attr $93, 0, 7, 0, 0, 1, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	tile_attr $96, 0, 7, 0, 0, 1, 0
 	
@@ -279,7 +276,7 @@ TestTileset::
 	tile_attr $A0, 0, 2, 0, 0, 0, 1
 	
 	; Tall grass
-	tile_attr $A7, 1, 2, 0, 0, 0, 0
+	tile_attr $A7, 0, 2, 0, 0, 0, 0
 	tile_attr $A7, 0, 2, 0, 0, 0, 0
 	tile_attr $A7, 0, 2, 0, 0, 0, 0
 	tile_attr $A7, 0, 2, 0, 0, 0, 0
@@ -371,73 +368,73 @@ TestTileset::
 ; These blocks would requires special coding, maybe use them later
 IF 0
 	; Grass ledge down
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 0, 0
 	
 	; Grass ledge right
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	
 	; Grass ledge left
-	tile_attr $92, 1, 7, 0, 0, 0, 0
+	tile_attr $92, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $92, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; Grass ledge up
-	tile_attr $93, 1, 7, 0, 0, 1, 0
+	tile_attr $93, 0, 7, 0, 0, 1, 0
 	tile_attr $93, 0, 7, 0, 0, 1, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; Grass ledge corner upright
-	tile_attr $93, 1, 7, 0, 0, 0, 0
+	tile_attr $93, 0, 7, 0, 0, 0, 0
 	tile_attr $96, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	
 	; Grass ledge corner upleft
-	tile_attr $94, 1, 7, 0, 0, 0, 0
+	tile_attr $94, 0, 7, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 0, 0
 	tile_attr $92, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; Grass ledge corner downright
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $95, 0, 7, 0, 0, 0, 0
 	tile_attr $93, 0, 7, 0, 0, 1, 0
 	tile_attr $96, 0, 7, 0, 0, 1, 0
 	
 	; Grass ledge corner downleft
-	tile_attr $92, 1, 7, 0, 0, 1, 0
+	tile_attr $92, 0, 7, 0, 0, 1, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $94, 0, 7, 0, 0, 1, 0
 	tile_attr $93, 0, 7, 0, 0, 1, 0
 	
 	; Grass ledge inward upright
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $94, 0, 7, 0, 0, 1, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; Grass ledge inward upleft
-	tile_attr $96, 1, 7, 0, 0, 1, 0
+	tile_attr $96, 0, 7, 0, 0, 1, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; Grass ledge inward downright
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $94, 0, 7, 0, 0, 0, 0
 	
 	; Grass ledge inward downleft
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $96, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
@@ -472,12 +469,11 @@ REPT 6
 ENDR
 	
 	; Water tile
-	db 1 ; Has an animation
+	db 0
 	
 	; Bridge
-REPT 2
 	db TILE_CANWALK
-ENDR
+	db TILE_CANWALK
 	
 	; Sign
 	db TILE_CANWALK
@@ -487,7 +483,7 @@ ENDR
 	db TILE_CANWALK
 	
 	; Flower
-	db TILE_CANWALK | 2
+	db TILE_CANWALK
 	
 	; Tree
 	db TILE_CANWALK
@@ -511,6 +507,19 @@ REPT $100 - 42
 ENDR
 	
 	
+	db 2 ; Number of tile animations
+	
+	db 60 ; Refresh period
+	db 3 ; Number of frames
+	db $18 ; ID of animated tile
+	dw WaterFrames
+	
+	db 30
+	db 2
+	db $1E
+	dw FlowerFrames
+	
+	
 	dw GrassPalette
 	dw HousePalette
 	dw DoorWindowPalette
@@ -525,6 +534,16 @@ ENDR
 	dw 0
 	dw 0
 	dw 0
+	
+	
+WaterFrames::
+	dw $FF00, $EF10, $FF00, $FF00, $BD42, $FF00, $EF10, $FF00 ; Frame 1
+	dw $FF00, $F700, $FF00, $FF00, $DE00, $FF00, $F700, $FF00 ; Frame 2
+	dw $FF00, $DF20, $FF00, $FF00, $7B84, $FF00, $DF20, $FF00 ; Frame 3
+	
+FlowerFrames::
+	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
+	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower frame 2
 	
 	
 SECTION "Test interior tileset", ROMX
@@ -595,13 +614,13 @@ TestInteriorTileset::
 	tile_attr $82, 0, 2, 0, 1, 0, 0
 	
 	; $07 : Floor
-	tile_attr $89, 1, 2, 0, 0, 0, 0
+	tile_attr $89, 0, 2, 0, 0, 0, 0
 	tile_attr $89, 0, 2, 0, 0, 0, 0
 	tile_attr $89, 0, 2, 0, 0, 0, 0
 	tile_attr $89, 0, 2, 0, 0, 0, 0
 	
 	; $08 : Door (can be walked "under")
-	tile_attr $83, 1, 3, 0, 0, 0, 1
+	tile_attr $83, 0, 3, 0, 0, 0, 1
 	tile_attr $84, 0, 3, 0, 0, 0, 1
 	tile_attr $83, 0, 3, 0, 1, 0, 1
 	tile_attr $85, 0, 3, 0, 0, 0, 1
@@ -635,6 +654,9 @@ ENDR
 REPT $100 - 10
 	db 0
 ENDR
+	
+	
+	db 0 ; No tile animations
 	
 	
 	dw HousePalette

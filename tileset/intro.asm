@@ -183,7 +183,7 @@ IntroTileset::
 	tile_attr $20, 0, 2, 0, 0, 0, 0
 	
 	; $01 : Grey void (walkable)
-	tile_attr $80, 1, 2, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
@@ -486,6 +486,9 @@ ENDR
 REPT $100 - 1
 	db 0
 ENDR
+	
+	
+	db 0 ; Number of tile animations
 	
 	
 	dw InvertedPalette

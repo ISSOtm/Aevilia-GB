@@ -11,7 +11,7 @@ InteriorTileset::
 	dw $0033, $0033, $00CC, $00CC, $0033, $0033, $00CC, $00CC
 	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
 	dw $0A0A, $0505, $0A0A, $0505, $0A0A, $0505, $0A0A, $0505
-	dw $007F, $007F, $0000, $FF00, $01FE, $01FE, $0100, $FF00
+	dw $007F, $007F, $0000, $FF00, $01FE, $01FE, $0100, $FF00 ; Wooden floor
 	dw $01FE, $01FE, $0100, $FF00, $007F, $007F, $0000, $FF00
 	
 	; $86-89 : Rug tiles
@@ -25,42 +25,42 @@ InteriorTileset::
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	
-	tile_attr $82, 1, 2, 0, 0, 0, 0
+	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	
-	tile_attr $84, 1, 2, 0, 0, 0, 0
+	tile_attr $84, 0, 2, 0, 0, 0, 0
 	tile_attr $84, 0, 2, 0, 0, 0, 0
 	tile_attr $85, 0, 2, 0, 0, 0, 0
 	tile_attr $85, 0, 2, 0, 0, 0, 0
 	
-	tile_attr $82, 1, 2, 0, 0, 0, 0
+	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $87, 0, 2, 0, 0, 0, 0
 	tile_attr $88, 0, 2, 0, 0, 0, 0
 	
-	tile_attr $89, 1, 2, 0, 0, 0, 0
+	tile_attr $89, 0, 2, 0, 0, 0, 0
 	tile_attr $86, 0, 2, 0, 0, 0, 0
 	tile_attr $89, 0, 2, 0, 0, 0, 0
 	tile_attr $86, 0, 2, 0, 0, 0, 0
 	
-	tile_attr $87, 1, 2, 0, 1, 0, 0
+	tile_attr $87, 0, 2, 0, 1, 0, 0
 	tile_attr $88, 0, 2, 0, 1, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	
-	tile_attr $82, 1, 2, 0, 0, 0, 0
+	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $88, 0, 2, 0, 0, 0, 0
 	tile_attr $87, 0, 2, 0, 0, 1, 0
 	
-	tile_attr $86, 1, 2, 0, 0, 0, 0
+	tile_attr $86, 0, 2, 0, 0, 0, 0
 	tile_attr $89, 0, 2, 0, 0, 1, 0
 	tile_attr $86, 0, 2, 0, 0, 1, 0
 	tile_attr $89, 0, 2, 0, 0, 1, 0
 	
-	tile_attr $88, 1, 2, 0, 1, 0, 0
+	tile_attr $88, 0, 2, 0, 1, 0, 0
 	tile_attr $87, 0, 2, 0, 1, 1, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
@@ -71,6 +71,13 @@ REPT $37
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 ENDR
+	
+	
+	
+	
+	
+	db 0 ; No tile animations
+	
 	
 	dw InteriorMainPalette
 	dw 0

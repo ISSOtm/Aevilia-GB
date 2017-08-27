@@ -336,6 +336,38 @@ wBlockMetadataEnd:
 wTileAttributes::
 	ds 256
 wTileAttributesEnd:
+
+
+SECTION "Tile animations", WRAMX,BANK[1]
+	
+wNumOfTileAnims::
+	ds 1
+	
+wTileAnimations::
+	struct_tileanim 0
+	struct_tileanim 1
+	struct_tileanim 2
+	struct_tileanim 3
+	struct_tileanim 4
+	struct_tileanim 5
+	struct_tileanim 6
+	struct_tileanim 7
+	struct_tileanim 8
+	struct_tileanim 9
+	struct_tileanim 10
+	struct_tileanim 11
+	struct_tileanim 12
+	struct_tileanim 13
+	struct_tileanim 14
+	struct_tileanim 15
+wTileAnimationsEnd:
+	
+	
+SECTION "Animation frame storage", WRAMX,BANK[3]
+	
+wTileFrames::
+	ds VRAM_TILE_SIZE * 16 * 16 ; Allow 16 frames per tile (and there are a maxiumum of 16 tiles to be animated)
+wTileFramesEnd:
 	
 	
 SECTION "Interaction table", WRAMX[$D300],BANK[1] ; ,ALIGN[8]

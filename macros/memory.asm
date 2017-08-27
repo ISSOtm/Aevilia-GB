@@ -34,6 +34,18 @@ w\1Palette\2_color3::	ds 3
 ENDM
 
 
+; Use to declare a tile animation in RAM
+struct_tileanim: MACRO
+wTileAnim\1_frameCount::	db ; Number of frames elapsed since beginning
+wTileAnim\1_delayLength::	db ; When frameCount hits this, it resets, and one frame of anim is processed
+wTileAnim\1_currentFrame::	db ; Which frame of animation is being displayed
+wTileAnim\1_numOfFrames::	db ; Number of frames in the current animation
+wTileAnim\1_tileID::		db ; ID of the tile being animated
+wTileAnim\1_framesPtr::		dw ; Pointer to the frames (stored in WRAM)    /!\ THIS IS A BIG-ENDIAN POINTER !!!
+wTileAnim\1_unused::		ds 1 ; Unused
+ENDM
+
+
 ; tile_attr tile bit4 pal_id bank hflip vflip under_spr
 ; Use to declare a tile's data in ROM.
 ; Use in groups of four to declare a block's data
@@ -45,8 +57,8 @@ tile_attr: MACRO
 	; The attribute (transferred to VRAM bank 1), plus an extra bit (bit 4, unseen by the console) used for the block's metadata
 	db ((\7 & 1) << 7) | ((\6 & 1) << 6) | ((\5 & 1) << 5) | ((\2 & 1) << 4) | ((\4 & 1) << 3) | (\3 & $07)
 ENDM
-; Tile 0's bit 4 declares whether the player can walk on the block
-; Tile 1's bit 4 declares if the block is water
+; Tile 0's bit 4 declares if the block is water
+; Tile 1's bit 4 declares nothing (yet)
 ; Tile 2's bit 4 declares nothing (yet)
 ; Tile 3's bit 4 declares nothing (yet)
 

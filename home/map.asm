@@ -157,6 +157,96 @@ ENDC
 	ld bc, (wTileAttributesEnd - wBlockMetadata)
 	call Copy ; Copy block metadata
 	
+	ld a, [hli] ; Read number of tile animators
+	ld de, wNumOfTileAnims
+	ld [de], a
+	and $0F ; Cap that
+	jr z, .noAnimators
+	ld b, a
+	ld c, b
+.copyAnimators ; This loop is a bit of an oddball : de points to the byte *just before* the target
+	; It's no problem by any means, just not what you'd be used to.
+	xor a
+	inc de
+	ld [de], a ; Write frame count
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write max frame
+	xor a
+	inc de
+	ld [de], a ; Write current animation frame
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write max anim frame
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write tile ID
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write temporary pointer (real one will be computed after copies)
+	ld a, [hli]
+	inc de
+	ld [de], a
+	inc de ; Skip over unused byte
+	dec c
+	jr nz, .copyAnimators
+	
+	; Now, copy all animation frames to WRAM bank 3
+	push hl
+	ld hl, wTileAnim0_framesPtr + 1
+	ld de, wTileFrames
+.copyAnimationFrames
+	push bc
+	
+	; Now, a slightly tricky part : we need to write the pointer before the copy (since that's where the base pointer is)
+	; but at the same time we need to retrieve the pointer that's the source of the copy !
+	ld b, [hl]
+	ld [hl], e ; Write pointer to anim frames (which is big-endian)
+	dec hl
+	ld c, [hl]
+	ld [hl], d
+	; So, the source pointer is in bc.
+	
+	dec hl
+	dec hl
+	ld a, [hli] ; Get num of frames
+	; Note : using hli when not necessary ? Yup, but if it happened to overflow, we skip a "noCarry", so it's good.
+	
+	push hl ; Save the read pointer for later
+	ld h, b ; Get the source pointer into hl,
+	ld l, c ; which also frees bc.
+	
+	swap a ; Compute length of copy
+	ld c, a ; Save this because we can't read it again !
+	and $0F
+	ld b, a
+	ld a, c ; Get back unmasked low byte
+	and $F0
+	ld c, a ; Done calculating.
+	
+	ld a, BANK(wTileFrames)
+	call SwitchRAMBanks
+	call Copy ; Copy anim frames from ROM to WRAM
+	; This advances de, which is then set up for the next animator
+	
+	ld a, BANK(wTileAnimations)
+	call SwitchRAMBanks
+	
+	pop hl ; Get back read ptr
+	; Move to next tile
+	ld a, l
+	add a, (wTileAnim1_framesPtr + 1) - (wTileAnim0_numOfFrames + 1)
+	ld l, a
+	jr nc, .noCarryAnim
+	inc h
+.noCarryAnim
+	
+	pop bc
+	dec b
+	jr nz, .copyAnimationFrames
+	pop hl
+.noAnimators
+	
 	ld de, wBGPalette7_color0
 	ld c, 12
 	rst copy
@@ -185,8 +275,8 @@ ENDC
 	ld de, wOBJPalette7_color0
 	ld c, 14
 	rst copy
-	push hl
-	save_rom_bank
+;	push hl
+;	save_rom_bank
 	ld a, BANK(DefaultPalette)
 	rst bankswitch
 	
@@ -208,10 +298,11 @@ ENDC
 	cp wPalettesEnd & $FF
 	jr nz, .loadTilesetOBJPalettes
 	
-	restore_rom_bank
-	pop hl
+;	restore_rom_bank
+;	pop hl
 	
 	; Insert more code here
+	; (If so, uncomment the above block of code and the corresponding one above)
 	
 	restore_rom_bank
 	pop hl
