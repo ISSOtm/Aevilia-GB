@@ -373,7 +373,7 @@ STATHandler::
 	ld hl, wNumOfTileAnims
 	ld a, [hli]
 	and a
-	jr z, .noAnimators
+	jp z, .noAnimators
 	push de
 	push bc
 	ld b, a
@@ -418,7 +418,7 @@ STATHandler::
 	; Check is HDMA is currently in use
 	ld a, [rHDMA5]
 	inc a
-;	jr nz, .useStandardCopy
+	jr nz, .useStandardCopy
 	
 	ld c, rHDMA1 & $FF
 	; Write copy's source pointer
@@ -461,9 +461,32 @@ STATHandler::
 	jr .doneAnimating
 	
 .useStandardCopy
+	push hl
+	ld a, d
+	and $0F
+	add a, [hl]
+	inc hl
+	ld c, a
+	ld a, d
+	and $F0
+	add a, [hl]
+	ld l, a
+	ld h, c
+	
+	ld a, e
+	and $0F
+	add a, v0Tiles1 >> 8
+	ld d, a
+	ld a, e
+	and $F0
+	ld e, a
+	
+	ld a, BANK(wTileFrames)
+	ld [rSVBK], a
 	
 	ld c, VRAM_TILE_SIZE
 	call CopyToVRAMLite
+	pop hl
 	
 .doneAnimating
 	
