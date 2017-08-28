@@ -1,0 +1,3 @@
+
+*.bin  binary diff=hex
+*.blk  binary diff=hex
