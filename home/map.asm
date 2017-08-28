@@ -18,7 +18,7 @@ LoadMap::
 	ld [wLoadedMap], a ; Write the current map's ID to WRAM
 	ld d, a ; Save the ID
 	
-IF!DEF(GlitchMaps)
+IF !DEF(GlitchMaps)
 	cp NB_OF_MAPS ; Check for validity
 	jr nc, LoadMap_FatalError ; Is not. ¯\_(ツ)_/¯
 ENDC
@@ -440,7 +440,7 @@ ENDC
 	ld c, a
 	ld a, [wTargetWarpID]
 	cp c
-IF!DEF(GlitchMaps)
+IF !DEF(GlitchMaps)
 	jr nc, .checkWarpFF
 ELSE
 	jr nc, .doneWarping

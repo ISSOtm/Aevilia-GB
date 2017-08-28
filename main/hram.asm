@@ -54,6 +54,7 @@ hIgnorePlayerActions::
 hTilemapMode::
 	ds 1
 	
+	
 ; Set if the game's SRAM has been limited to 32k by the emulator
 ; Disables most SRAM features, and restricts saving to banks 2 and 3. Plus, no backup.
 hSRAM32kCompat::

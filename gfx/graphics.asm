@@ -178,7 +178,7 @@ ScoldStr::
 	db "   THINK YOU CAN    "
 	db " SPOOF ME THAT WAY? "
 	db "                    "
-	db " Y O U   F O O L ! "
+	db " Y O U   F O O L  ! "
 	db "                    "
 	db "   WHEN I SAY YOU   "
 	db "  CANNOT PLAY THIS  "
