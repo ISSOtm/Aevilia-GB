@@ -338,7 +338,7 @@ wTileAttributes::
 wTileAttributesEnd:
 
 
-SECTION "Tile animations", WRAMX,BANK[1]
+SECTION "Tile animations", WRAMX[$D5FF],BANK[1]
 	
 wNumOfTileAnims::
 	ds 1
