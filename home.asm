@@ -710,6 +710,11 @@ OverworldLoop::
 	and a
 	jr nz, .ignoreMovement
 	
+	; If a battle is about to strat, don't perform any operation
+	ldh a, [wBattleEncounterID]
+	and a
+	jr nz, .ignoreMovement
+	
 	; Move, if allowed to
 	ld a, [wUnlinkJoypad]
 	and a
