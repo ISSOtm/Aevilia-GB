@@ -73,7 +73,22 @@ REPT $37
 ENDR
 	
 	
+	; Blackness
+	db 0
 	
+	; Floor tiles
+REPT 5
+	db TILE_CANWALK
+ENDR
+	
+	; Rug tiles
+REPT 4
+	db TILE_CANWALK
+ENDR
+	
+REPT $100 - 10
+	db 0
+ENDR
 	
 	
 	db 0 ; No tile animations
