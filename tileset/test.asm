@@ -35,7 +35,7 @@ TestTileset::
 	dw $FF00, $AF10, $FE00, $FF00, $AD42, $FF00, $EF10, $FB00 ; Filler
 	
 	; 98
-	dw $FF00, $EF10, $FF00, $FF00, $BD42, $FF00, $EF10, $FF00 ; Water
+	dw $7E81, $7F80, $3FC0, $3FC0, $3FC0, $9F60, $C33C, $E01F ; Water
 	
 	; Bridge (99-9A)
 	dw $FF00, $8877, $8877, $FF00, $22DD, $FF00, $FFFF, $1010 ; Horizontal
@@ -72,10 +72,10 @@ TestTileset::
 	
 	
 	; Grey border
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
 	
 	; Grass
 	tile_attr $80, 0, 2, 0, 0, 0, 0
@@ -509,8 +509,8 @@ ENDR
 	
 	db 2 ; Number of tile animations
 	
-	db 60 ; Refresh period
-	db 3 ; Number of frames
+	db 30 ; Refresh period
+	db 8 ; Number of frames
 	db $18 ; ID of animated tile
 	dw WaterFrames
 	
@@ -537,9 +537,14 @@ ENDR
 	
 	
 WaterFrames::
-	dw $FF00, $EF10, $FF00, $FF00, $BD42, $FF00, $EF10, $FF00 ; Frame 1
-	dw $FF00, $F700, $FF00, $FF00, $DE00, $FF00, $F700, $FF00 ; Frame 2
-	dw $FF00, $DF20, $FF00, $FF00, $7B84, $FF00, $DF20, $FF00 ; Frame 3
+	dw $7E81, $7F80, $3FC0, $3FC0, $3FC0, $9F60, $C33C, $E01F ; Frame 1
+	dw $C13E, $FC03, $FE01, $7E81, $7E81, $7E81, $3FC0, $8778 ; Frame 2
+	dw $0FF0, $837C, $F906, $FD02, $FC03, $FC03, $FC03, $FE01 ; Frame 3
+	dw $FC03, $1EE1, $07F8, $F30C, $FB04, $F906, $F906, $F906 ; Frame 4
+	dw $F30C, $F906, $3CC3, $0EF1, $E718, $F708, $F30C, $F30C ; Frame 5
+	dw $E718, $E718, $F30C, $7887, $1CE3, $CF30, $EF10, $E718 ; Frame 6
+	dw $CF30, $CF30, $CF30, $E718, $F00F, $38C7, $9F60, $DF20 ; Frame 7
+	dw $BF40, $9F60, $9F60, $9F60, $CF30, $E11E, $708F, $3FC0 ; Frame 8
 	
 FlowerFrames::
 	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
