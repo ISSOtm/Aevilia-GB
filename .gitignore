@@ -7,3 +7,17 @@
 *.sav
 *.rtc
 TODO.txt
+*.tmp
+*.state
+*.ls0
+*.ls1
+*.ls2
+*.ls3
+*.ls4
+*.ls5
+*.ls6
+*.ls7
+*.ls8
+*.ls9
+*.time
+*.clk
