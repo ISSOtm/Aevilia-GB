@@ -206,6 +206,7 @@ TextCommandsPointers::
 	dw DisplayTextboxWithoutWait
 	dw CloseTextboxWithoutWait
 	dw MakeNPCWalk
+	dw MakePlayerWalk
 	dw MakeChoice
 	dw MakeChoice ; Difference between commands handled by function itself
 	dw SetFadeSpeed
@@ -347,6 +348,7 @@ BattleTextCommandsPointers::
 	dw BattleDummy_1Byte
 	dw BattleDummy_1Byte
 	dw BattleDummy_1Byte
+	dw BattleDummy_5Bytes
 	dw BattleDummy_5Bytes
 	dw BattleMakeChoice ; TODO
 	dw BattleMakeChoice ; Difference between commands handled by function itself
@@ -1307,6 +1309,8 @@ CloseTextboxWithoutWait::
 	ret
 	
 	
+MakePlayerWalk::
+	
 MakeNPCWalk::
 	ld hl, wDigitBuffer + 1
 	ld a, [hli]
@@ -1318,13 +1322,14 @@ MakeNPCWalk::
 	sub e
 	ld d, a ; Now we're pointing at the NPC's facing direction
 	ld a, [hli] ; Get direction of movement
-	ld c, a ; Store movement direction in c
-	res 2, c ; Direction doesn't include this bit!
-	and 4 ; Check if "dont_move" has been applied
+	ld c, a ; Store movement direction & flags in c
+	bit 2, c
 	jr nz, .dontTurnNPC
+	and $03
+	ld b, a ; Store direction only in b
 	ld a, [de] ; Get NPC's sprite & direction
 	and $FC ; Remove direction
-	or c ; Set new direction
+	or b ; Set new direction
 	ld [de], a ; Write back
 .dontTurnNPC
 	ld a, [hli]
@@ -1341,6 +1346,15 @@ MakeNPCWalk::
 	dec hl
 	dec hl ; Move to ypos instead of xpos
 .moveHorizontally
+	
+	; If bit 4 is set, diagonal movement shall rotate CCW instead of CW
+	bit 4, c
+	jr z, .dontSwitchRotations
+	ld a, c
+	xor 2
+	ld c, a
+.dontSwitchRotations
+	
 	; hl = pointer to coord that shall be modified
 	; e = speed (pixels/frame)
 	; b = number of pixels, total
@@ -1371,6 +1385,35 @@ MakeNPCWalk::
 .doneMoving
 	dec hl ; Repoint to low byte
 	ld [hl], a ; Write back low byte
+	
+	bit 3, c ; Check if should rotate by 45° CW
+	jr z, .dontMoveDiagonally
+	ld a, l
+	xor 2
+	ld l, a ; Switch directions
+	ld a, c ; Make a copy of c
+	rrca ; Roll bit 0 into carry
+	bit 1, c ; If we were moving on the vertical axis, we need to toggle directions
+	jr nz, .dontToggleDirection
+	ccf ; Toggle direction
+.dontToggleDirection
+	ld a, [hli]
+	jr c, .moveNegatively
+	add a, e
+	jr nc, .doneMovingDiagonally
+	inc [hl]
+	jr .doneMovingDiagonally
+.moveNegatively
+	sub e
+	jr nc, .doneMovingDiagonally
+	dec [hl]
+.doneMovingDiagonally
+	dec hl
+	ld [hl], a
+	ld a, l
+	xor 2
+	ld l, a
+.dontMoveDiagonally
 	
 	push bc
 	push de

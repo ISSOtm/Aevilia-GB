@@ -30,6 +30,7 @@
 	enum_elem DISP_WITHOUT_WAIT
 	enum_elem CLOSE_WITHOUT_WAIT
 	enum_elem MAKE_NPC_WALK
+	enum_elem MAKE_PLAYER_WALK
 	enum_elem MAKE_CHOICE
 	enum_elem MAKE_B_CHOICE
 	enum_elem SET_FADE_SPEED
@@ -180,16 +181,21 @@ ENDM
 
 	
 DONT_TURN	equ $04
+ROTATE_45	equ $08
+ROTATE_CW	equ $10
 
 ; make_npc_walk NPC_id dir len spd
-; Apply "(dir | DONT_TURN)" to "dir" if the NPC shouldn't turn around
+; Apply "| DONT_TURN" to "dir" if the NPC shouldn't turn around
+; Apply "| ROTATE_45" to "dir" if the NPC's movement direction should rotate by 45° counterclockwise
+; If you want the NPC's movement to rotate clockwise instead (so you can pick any of the two "logical" facing directions), apply "| ROTATE_CW"
+; Note : if ROTATE_CW is applied but not ROTATE_45, it won't have any effect (aside from wasting a couple cycles that do nothing)
 
 ; Note : ID 0 will target NPC 1, etc.
 ; To target the player, use the dedicated command.
 make_npc_walk: MACRO
 	db MAKE_NPC_WALK
 	db \1
-	db \2 & %111
+	db \2
 	db \3
 	db \4
 ENDM
