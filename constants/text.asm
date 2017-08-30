@@ -185,19 +185,31 @@ ROTATE_45	equ $08
 ROTATE_CW	equ $10
 
 ; make_npc_walk NPC_id dir len spd
+
 ; Apply "| DONT_TURN" to "dir" if the NPC shouldn't turn around
 ; Apply "| ROTATE_45" to "dir" if the NPC's movement direction should rotate by 45° counterclockwise
 ; If you want the NPC's movement to rotate clockwise instead (so you can pick any of the two "logical" facing directions), apply "| ROTATE_CW"
 ; Note : if ROTATE_CW is applied but not ROTATE_45, it won't have any effect (aside from wasting a couple cycles that do nothing)
 
 ; Note : ID 0 will target NPC 1, etc.
-; To target the player, use the dedicated command.
+; To target the player, use the dedicated command below.
 make_npc_walk: MACRO
 	db MAKE_NPC_WALK
 	db \1
 	db \2
 	db \3
 	db \4
+ENDM
+
+; make_player_walk dir len spd
+
+; Same remarks as the above.
+
+make_player_walk: MACRO
+	db MAKE_PLAYER_WALK
+	db \1
+	db \2
+	db \3
 ENDM
 
 

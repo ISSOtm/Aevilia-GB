@@ -349,7 +349,7 @@ BattleTextCommandsPointers::
 	dw BattleDummy_1Byte
 	dw BattleDummy_1Byte
 	dw BattleDummy_5Bytes
-	dw BattleDummy_5Bytes
+	dw BattleDummy_4Bytes
 	dw BattleMakeChoice ; TODO
 	dw BattleMakeChoice ; Difference between commands handled by function itself
 	dw SetFadeSpeed
@@ -1310,6 +1310,26 @@ CloseTextboxWithoutWait::
 	
 	
 MakePlayerWalk::
+	ld hl, wDigitBuffer + 3
+	ld a, [hld] ; Get speed
+	ld e, a ; Store that
+	ld a, [hld] ; Get length
+	ld b, a
+	
+	ld a, [hl] ; Get direction
+	ld hl, wPlayerDir
+	ld c, a
+	bit 2, c
+	jr nz, .dontTurnPlayer
+	and $03
+	ld [hl], a
+.dontTurnPlayer
+	dec hl
+	dec hl ; wXPos
+	ld d, wNPC0_steps & $FF
+	call TextMoveEntity_Common
+	dec a ; This command doesn't require the NPC ID byte
+	ret
 	
 MakeNPCWalk::
 	ld hl, wDigitBuffer + 1
@@ -1340,6 +1360,24 @@ MakeNPCWalk::
 	ld l, a
 	ld e, h ; Transfer speed to e
 	ld h, d ; Transfer pointer to hl
+	add wNPC1_steps - wNPC1_xpos
+	ld d, a
+	
+; hl = pointer to horiz coord
+; e = speed (pixels/frame)
+; b = number of pixels, total
+; c = direction of movement
+; d = low byte of pointer to entity's step counter
+TextMoveEntity_Common:
+	push hl
+	ld h, wNPCArray >> 8
+	ld l, d
+	ld [hl], b ; Reset entity's movement steps
+	inc hl
+	ld a, [hl]
+	and $F4 ; Clear entity's movement (put it in a waiting state)
+	ld [hl], a
+	pop hl
 	
 	bit 1, c
 	jr nz, .moveHorizontally
@@ -1355,10 +1393,6 @@ MakeNPCWalk::
 	ld c, a
 .dontSwitchRotations
 	
-	; hl = pointer to coord that shall be modified
-	; e = speed (pixels/frame)
-	; b = number of pixels, total
-	; c = direction of movement
 	ld a, b
 .movementLoop
 	; a should contain number of pixels
@@ -1418,13 +1452,28 @@ MakeNPCWalk::
 	push bc
 	push de
 	push hl
+	ld h, wNPCArray >> 8
+	ld l, d ; Get pointer to entity's steps in hl
+	dec [hl]
+	call MoveNPC0ToPlayer
+	call MoveCamera
 	call ProcessNPCs
+	ld a, [wCameraYPos]
+	ld [wSCY], a
+	ld a, [wCameraXPos]
+	ld [wSCX], a
 	pop hl
 	pop de
 	pop bc
 	ld a, b
 	and a
 	jr nz, .movementLoop
+	
+	; Reset entity's movement
+	ld h, wNPCArray >> 8
+	ld l, d
+	ld [hl], 0
+	call ProcessNPCs
 	
 BattleDummy_5Bytes::
 	ld a, 5
