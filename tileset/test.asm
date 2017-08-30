@@ -52,8 +52,8 @@ TestTileset::
 	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
 	
 	; Tree (9F-A6)
-	dw $01A9, $0243, $0D2E, $1798, $243B, $D3EC, $5C63, $E19E ; Top-left (walkable)
-	dw $8092, $C048, $F033, $78AC, $FE16, $FF2B, $FE16, $FF69 ; Top-right (walkable)
+	dw $0101, $0203, $0D0E, $1718, $243B, $D3EC, $5C63, $E19E ; Top-left (walkable)
+	dw $8080, $C040, $F030, $78A8, $FE16, $FF2B, $FE16, $FF69 ; Top-right (walkable)
 	dw $01A9, $0243, $0D2E, $1798, $243B, $D3EC, $5C63, $E19E ; Top-left
 	dw $8092, $C048, $F033, $78AC, $FE16, $FF2B, $FE16, $FF69 ; Top-right
 	dw $243B, $D3EC, $5C63, $E19E, $243B, $D3EC, $5CE3, $E19E ; Middle-left
@@ -216,16 +216,16 @@ TestTileset::
 	tile_attr $98, 0, 6, 0, 0, 0, 0
 	
 	; Horizontal bridge
-	tile_attr $9A, 0, 3, 0, 0, 0, 0
-	tile_attr $99, 0, 3, 0, 0, 0, 0
-	tile_attr $9A, 0, 3, 0, 0, 0, 0
-	tile_attr $99, 0, 3, 0, 0, 0, 0
+	tile_attr $9A, 0, 4, 0, 0, 0, 0
+	tile_attr $99, 0, 4, 0, 0, 0, 0
+	tile_attr $9A, 0, 4, 0, 0, 0, 0
+	tile_attr $99, 0, 4, 0, 0, 0, 0
 	
 	; Vertical bridge
-	tile_attr $9A, 0, 3, 0, 0, 0, 0
-	tile_attr $9A, 0, 3, 0, 0, 0, 0
-	tile_attr $9A, 0, 3, 0, 0, 0, 0
-	tile_attr $9A, 0, 3, 0, 0, 0, 0
+	tile_attr $9A, 0, 4, 0, 0, 0, 0
+	tile_attr $9A, 0, 4, 0, 0, 0, 0
+	tile_attr $9A, 0, 4, 0, 0, 0, 0
+	tile_attr $9A, 0, 4, 0, 0, 0, 0
 	
 	; Water right
 	tile_attr $98, 1, 6, 0, 0, 0, 0
