@@ -1208,6 +1208,9 @@ ProcessNPCs::
 	ld a, h
 	and a ; Check if NPC has a pixel on-screen
 	jp nz, .skipThisNPC ; Too far for a jr
+	ld a, l
+	cp SCREEN_HEIGHT * TILE_SIZE + TILE_SIZE * 2
+	jp nc, .skipThisNPC
 	
 	ld a, [bc]
 	add a, TILE_SIZE * 2
@@ -1216,6 +1219,9 @@ ProcessNPCs::
 	ld a, [bc]
 	adc a, 0
 	jp nz, .skipThisNPC ; Too far, too
+	ld a, h
+	cp SCREEN_WIDTH * TILE_SIZE + TILE_SIZE * 2
+	jp nc, .skipThisNPC
 	
 	; Write sprite coords
 	ld a, l
