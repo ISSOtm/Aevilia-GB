@@ -63,6 +63,7 @@ wBlockPointer::
 	ds 2
 	
 	
+SECTION "Player data", WRAM0,ALIGN[2]
 ; If non-zero, joypads inputs can't move the player
 wUnlinkJoypad::
 	ds 1
@@ -84,6 +85,10 @@ wXPos::
 wPlayerDir::
 	ds 1
 	
+wPlayerGender::
+	ds 1
+	
+	
 ; ID of the NPC the camera will try to focus on
 wCameramanID::
 	ds 1
@@ -92,9 +97,6 @@ wCameraYPos::
 	ds 2
 wCameraXPos::
 	ds 2
-	
-wPlayerGender::
-	ds 1
 	
 
 

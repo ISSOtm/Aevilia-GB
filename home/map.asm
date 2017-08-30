@@ -482,15 +482,18 @@ ENDC
 	; Now we're going to move the camera to the cameraman...
 	ld a, [hli]
 	inc de
+	inc de
 	ld [de], a ; wCameramanID
+	push hl
+	call MoveNPC0ToPlayer ; If camera is set to target player (ie. NPC0), move NPC0 to avoid camera moving incorrectly
+	pop hl
+	ld a, [wCameramanID]
 	ld de, wYPos
 	and $0F ; Somewhat of a failsafe, and also updates flags
-	jr z, .focusOnPlayer
 	ld de, wNPC0_ypos
 	swap a ; Mult by 16
 	add a, e
 	ld e, a
-.focusOnPlayer
 	ld bc, wCameraYPos
 	ld a, [de]
 	sub a, SCREEN_HEIGHT * 4 - 8
@@ -517,7 +520,6 @@ ENDC
 	; Now, call "MoveCamera" to snap the camera at the map's boundaries
 	; Otherwise redrawing gets screwed up
 	push hl ; Save loading script ptr
-	call MoveNPC0ToPlayer ; If camera is set to target player (ie. NPC0), move NPC0 to avoid camera moving incorrectly
 	call MoveCamera
 	pop hl ; get it back
 	ld a, l
