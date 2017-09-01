@@ -248,6 +248,7 @@ TextCommandsPointers::
 	dw TextPlayMusic
 	dw TextStopMusic
 	dw OverrideTextboxPalette
+	dw CloseTextbox
 	
 	
 ; A clone of ProcessText, but for the battle engine!
@@ -391,6 +392,7 @@ BattleTextCommandsPointers::
 	dw TextPlayMusic
 	dw TextStopMusic
 	dw OverrideTextboxPalette
+	dw CloseTextbox
 	
 TextErrorStr::
 	db "TEXT ERROR."
@@ -1997,4 +1999,9 @@ OverrideTextboxPalette::
 	ld c, 1
 	callacross LoadBGPalette
 	ld a, 3
+	ret
+	
+CloseTextbox::
+	callacross DisableTextbox
+	ld a, 1
 	ret
