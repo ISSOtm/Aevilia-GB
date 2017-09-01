@@ -95,6 +95,7 @@ ENDC
 	jp z, .tilesetAlreadyLoaded ; Too far for a jr...
 	push hl
 	ld c, a
+	ld [wLoadedTileset], a
 	
 	ld l, a
 	ld h, TilesetROMBanks >> 8
