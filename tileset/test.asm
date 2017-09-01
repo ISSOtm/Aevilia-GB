@@ -442,10 +442,10 @@ ENDC
 	
 	; These blocks aren't used
 REPT 64 - 49
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
-	tile_attr $A7, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 0, 0, 0, 0, 0
 ENDR
 	
 	
