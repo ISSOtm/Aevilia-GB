@@ -709,9 +709,6 @@ PrintKnownPointer::
 	jr nc, .effectIsOffscreen
 	ld c, a
 	
-	ld a, [rLCDC]
-	and $FD ; Reset "OBJ ON" bit to make sure not do display sprites on the last 8 scanlines
-	ld e, a ; Save LCDC for later restoring
 	ld hl, rLYC ; Will be used for later writing
 	ld a, b
 	sub [hl]
@@ -727,6 +724,7 @@ PrintKnownPointer::
 	; Values will be restored by VBlank handler (wSCY, wSCX, wTileMapMode, etc.)
 	xor a
 	ld [hld], a ; Write to SCX
+	ld e, [hl] ; Save current value
 	ld [hl], d ; Write precalc'd value to SCY
 	
 .waitUntilLineEnds
@@ -738,12 +736,6 @@ PrintKnownPointer::
 	ld [hli], a
 	ld [hli], a
 	ld [hli], a
-	
-	; Writing while the tilemap is transferred seems to cause graphical issues
-	ld a, $E9
-	ld [rLCDC], a
-	ld a, 7 + $9F
-	ld [rWX], a
 	
 	ld a, c
 	sub b
@@ -762,7 +754,7 @@ PrintKnownPointer::
 	
 	ld a, 120 + TILE_SIZE
 	add a, b
-	ld [hl], a ; Force current "window" line to be 16th
+	ld [hl], a ; Force current textbox line to be 16th
 	
 .blankUnderText
 	rst isVRAMOpen
@@ -776,20 +768,11 @@ PrintKnownPointer::
 	cp $8F - 7
 	jr c, .blankUnderText
 	
-	ld a, e
-	ld [rLCDC], a
-	ld a, 7
-	ld [rWX], a
-	dec [hl]
+	ld [hl], e ; Restore display
 	
 	; Transfer textbox row #2 to restore picture (if needed)
 	; a is non-zero
 	ld [wTransferRows + 1], a
-	
-	ld a, [wSCY]
-	ld [hli], a
-	ld a, [wSCX]
-	ld [hl], a
 	
 .effectIsOffscreen
 	ld a, b

@@ -343,20 +343,28 @@ STATHandler::
 	bit 2, [hl]
 	jr z, .musicTime ; not on LY=LYC
 	
+	; LY=LYC : it's textbox time !
 .waitHBlank
 	bit 1, [hl]
 	jr nz, .waitHBlank
 	
 	dec hl ; hl = rLCDC
 	res 1, [hl] ; Zero OBJ bit
+	set 3, [hl] ; Switch to textbox's tilemap
 	
-	ld l, rWY & $FF
+	ld l, rSCX & $FF
+	xor a
+	ld [hld], a ; Stick to left edge, go to rSCY
+	dec a
+	ld [rWX], a ; Put window off-screen
 	ld a, [rLY]
-;	sub 5  It would be nice if this worked. But it doesn't. Shame.
+	cpl
 	ld [hli], a
-	ld a, 7
-	ld [hl], a
-	jp .end
+	cp $8F ^ $FF ; Check if we were on last scanline ; if yes, we need to return quickly (VBlank is incoming)
+	jp nz, .end
+	pop hl
+	pop af
+	reti
 	
 .musicTime
 	res 5, [hl] ; Disable mode 2 interrupt
