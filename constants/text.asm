@@ -229,7 +229,7 @@ fake_choice: MACRO
 	db 5
 ENDM
 
-choose_b: MACRO
+b_choice: MACRO
 	db MAKE_B_CHOICE
 	db BANK(\1)
 	dw \1
@@ -343,6 +343,7 @@ ENDM
 ; text_asmcall funcptr
 text_asmcall: MACRO
 	db TEXT_CALL_FUNCTION
+	db BANK(\1)
 	dw \1
 ENDM
 
