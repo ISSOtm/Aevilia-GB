@@ -142,10 +142,121 @@ MoveNPCs:
 A couple of notes :
  - A resting NPC doesn't touch RNG.
  - A waiting NPC will poke RNG at least once, and if it starts moving, it will poke RNG a second time (note : this restricts the possible range of steps, but how exactly ?)
- - A moving NPC will only poke RNG if it stops. Note : if an NPC bonks on its last step, it will poke RNG twice instead (since the "last step" code still runs the following code.
- - A locked NPC draws its name from that it's "locked" in time ; as soon as it's "unlocked", it resumes all operations. It's more like a "pause" button, in a way.
+ - A moving NPC will only poke RNG if it stops. Note : if an NPC bonks on its last step, it will poke RNG twice instead (since the "last step" code will be run by both the bonking and the "last step" condition).
+ - A locked NPC draws its name from that it's "locked" in time ; as soon as it's "unlocked", it resumes all operations. The "locking" bit is more like a "pause" button, in a way.
  - A "waiting" NPC with its "resting" bit set is technically invalid, but actually corrected as soon as the function parses the NPC. Though, any "scripted" movement, ie. done by simply setting the step counter, will not correct the invalid state unless the NPC is processed at least once in its waiting state.
- - Collision is done at run-time and only using the target position, which means an NPC may not "bonk" into a wall if its speed is >1.
+ - Collision is done at run-time and only using the target position, which means an NPC may "bonk" into a wall from a distance if its speed is >1.
  - For the same reason, if the NPC is moving too fast, it may just zoom through solid things (even more since I optimized collision detection to only use the two "front" points)
  - Also, the collision detection only checks the two "edges" of the hitbox, meaning too large a hitbox will cause oddities.
  - NPCs assume a 16x16 collision box for the player, to sweep an issue under the carpet (if the NPC's hitbox "encompassed" the player's, NPCs could go straight through the player... which was much more prominent with horizontal movement)
+
+
+4. Tilesets
+
+A tileset is what defines how a map looks like ; this is to have maps share visuals and save ROM space (and also loading times, since a tileset doesn't need to be reloaded, normally).
+A tileset is comprised of :
+ - Tiles (in raw format)
+ - Blocks
+ - Tile attributes
+ - Tile animators
+ - Palette pointers
+When a tileset is loaded, the tiles are copied into VRAM (but the unused slots aren't reset !), the block data and tile metadata are directly copied to WRAM (they are immediately in the right format), the tile animators (if any) are decompressed to WRAM, and the palettes are loaded.
+
+4.i Data structure
+
+The first byte of a tileset is the number of tiles it contains. If this byte is 0, it will be interpreted as 256.
+Then follows the tile data, in the same format as stored in VRAM. There should be as many tiles as indicated.
+Then follows the block data, explained in section a).
+Then follows the tile attributes, explained in section b).
+Then follows a byte indicating how many tile animators the tileset contains. If that byte is 0, then there are none.
+Then follows the animator data, explained in section c).
+Lastly, there are 13 (6 + 7) pointers to the palettes used. The first 6 are pointers to BG palettes ; they are *ALL* dereferenced and loaded, even if they aren't used. (I recommend putting a 0 pointer). Then next 
+
+4.i.a) Block data
+
+Blocks are the smallest unit manipulated by the map engine. A block is a square of 2x2 tiles, and the block data defines what's transferred to VRAM when a block is drawn. There are 4 tiles per block, and 2 bytes per tile. One byte defines "which tile", and the other its metadata (color, bank, flipping, and sprite priority).
+The first two bytes define the upper-left tile, the next two lower-left tile, then the upper-right tile, THEN the lower-right tile.
+For each tile, the first byte determines which tile ID will be displayed (this uses BG addressing). IDs < $80 are supposed to be "static"; mostly font data (which takes slots $20-$7F). IDs >= $80 are tileset tiles (note : thanks to VRAM bank 1, this capacity is doubled, yay!).
+The second byte of each tile defines its VRAM attributes, which are defined like so [*in* the Pan Docs] :
+  Bit 0-2  Background Palette number  (BGP0-7)
+  Bit 3    Tile VRAM Bank number      (0=Bank 0, 1=Bank 1)
+  Bit 4    Not used
+  Bit 5    Horizontal Flip            (0=Normal, 1=Mirror horizontally)
+  Bit 6    Vertical Flip              (0=Normal, 1=Mirror vertically)
+  Bit 7    BG-to-OAM Priority         (0=Use OAM priority bit, 1=BG Priority)
+Bit 4 being ignored by the GBC, it's instead used by the game to define a properly of the block :
+  Bit 4 of the UL (upper-left...) tile defines... nothing. Yet. Leave it 0.
+  Bit 4 of the LL (lower-left) tile defines whether or not the block shall be considered water (1 = water)
+  Bit 4 of the UR tile defines... nothing.
+  Bit 4 of the LR tile defines... nothing.
+The source code uses the macro "tile_attr", which defines both bytes for one tile. Here's the argument list :
+  #1 - Tile ID
+  #2 - Bit 4 (for meaning, see above)
+  #3 - Palette ID (0-7)
+  #4 - VRAM bank
+  #5 - Horizontal flip
+  #6 - Vertical flip
+  #7 - Priority
+The macro computes both bytes from these arguments.
+
+4.i.b) Tile attributes
+
+Currently there's only one bit that matters ; bit 7 simply states if the player is allowed to walk on the tile. If the bit is set, the tile is walkable. (Use the constant TILE_CANWALK)
+
+4.i.c) Animator data
+
+Animator data only requires 4 arguments :
+The first one is the period (in frames) at which the tile will be refreshed. Basically, the higher this number, the slower the animation will be. Note : 0 is invalid, but will act as 1.
+The second one is the number of animation frames there are, ie. how many different tiles the animations sports. WARNING : Putting a $00 here will softlock the game as soon as the animation plays !
+The third one is the ID of the tile that the animation targets. Slight subtelty here : the animators only target tiles $80 through $FF, but in BOTH VRAM banks ! To target a tile in VRAM bank 0, just put the tile's ID minus $80 ($00-$7F maps to 0:$80-$FF), and to target a tile in bank 1 don't do anything ($80-$FF maps to 1:$80-$FF).
+The fourth one is a pointer to the animation frames, again stored in raw tile format. Remark : the animator doesn't initialize the tile immediately, so you have to put a duplicate of the first frame in the tile array... welp.
+
+4.i.d) Cheat sheet
+
+Tileset structure :
+ - BYTE : NumOfTiles (0 => 256)
+ - Repeated NumOfTiles times :
+   - Raw tile data (16 bytes)
+ - Repeated 64 times :
+   - Raw block data (4 * 2 = 8 bytes)
+ - Repeated 256 times :
+   - Raw tile attribute  (1 byte)
+ - BYTE : NumOfAnimators
+ - Repeated NumOfAnimators times :
+   - Animator data (5 bytes)
+ - Repeated 6 times :
+   - WORD : pointer to BG palette
+ - Repeated 7 times :
+   - WORD : pointer to OBJ palette
+
+Block data : (all bytes)
+ - ID of upper-left tile of block (using BG addressing)
+ - Metadata of upper-left tile (as in VRAM)
+ - Lower-left tile ID
+ - Metadata of lower-left tile
+ - Upper-right tile ID
+ - Metadata of upper-right tile
+ - Lower-right tile ID
+ - Metadata of lower-right tile
+
+tile_attr arguments :
+ - Tile ID
+ - Bit 4
+ - Palette
+ - VRAM bank
+ - HFlip
+ - VFlip
+ - Priority
+
+Tile attribute : (byte)
+7654 3210
+WXXX XXXX
+W = Walkable (1 = tile can be walked on)
+X = Unused
+
+Animator data :
+ - BYTE : refresh period (# of frames between each update)
+ - BYTE : nb of animation frames (0 will softlock the game)
+ - BYTE : target tile (BTTTTTTT, target tile is B:($80 | TTTTTTT), ie tile with ID (TTTTTTT | $80) in bank B
+ - WORD : pointer to animation frames (will copy [nb of frames] * 16 bytes)
+
