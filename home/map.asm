@@ -8,11 +8,12 @@ LoadMap_FatalError::
 	ld a, ERR_BAD_MAP
 	jp FatalError
 	
-; Loads map #a
+; If applicable, performs music fade-out
 ; Performs gfx fade-out,
 ; Loads map (meta-)data,
 ; Applies warp-to #[wTargetWarpID] (except if that's $FF),
 ; Performs gfx fade-in,
+; Loads map blocks,
 ; and returns.
 LoadMap::
 	ld [wLoadedMap], a ; Write the current map's ID to WRAM
@@ -92,222 +93,7 @@ ENDC
 	ld c, a
 	ld a, [hli]
 	cp c
-	jp z, .tilesetAlreadyLoaded ; Too far for a jr...
-	push hl
-	ld c, a
-	ld [wLoadedTileset], a
-	
-	ld l, a
-	ld h, TilesetROMBanks >> 8
-	save_rom_bank
-	ld a, BANK(TilesetROMBanks)
-	rst bankswitch
-	ld b, [hl] ; Save tileset's ROM bank
-	
-	ld a, c
-	add a, a
-	add a, TilesetPointers & $FF
-	ld l, a
-	adc a, TilesetPointers >> 8
-	sub l
-	ld h, a
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	
-	ld a, b
-	rst bankswitch
-	ld a, [hli] ; Get number of tiles
-	push af ; Save for bank 1 copy
-	dec a
-	bit 7, a ; If there are bank 1 tiles, this will be set
-	jr z, .onlyBank0Tiles
-	ld a, $7F
-.onlyBank0Tiles
-	inc a
-	push hl
-	ld de, VRAM_TILE_SIZE
-	call MultiplyDEByA
-	ld b, h ; Get copy length
-	ld c, l
-	pop hl
-	ld de, v0Tiles1
-	call CopyToVRAM ; Copy tiles
-	
-	pop af ; Get back number of tiles
-	sub $81
-	jr c, .noBank1Copy ; If < $81, there are only bank 0 tiles
-	inc a ; a = nb_tiles - $80
-	push hl
-	ld de, VRAM_TILE_SIZE
-	call MultiplyDEByA
-	ld b, h
-	ld c, l
-	pop hl
-	ld a, BANK(v1Tiles1)
-	ld [rVBK], a
-	ld de, v1Tiles1
-	call CopyToVRAM
-	xor a
-	ld [rVBK], a
-.noBank1Copy
-	
-	ld a, BANK(wBlockMetadata)
-	call SwitchRAMBanks
-	ld de, wBlockMetadata
-	ld bc, (wTileAttributesEnd - wBlockMetadata)
-	call Copy ; Copy block metadata
-	
-	ld a, [hli] ; Read number of tile animators
-	ld de, wNumOfTileAnims
-	ld [de], a
-	and $0F ; Cap that
-	jr z, .noAnimators
-	ld b, a
-	ld c, b
-.copyAnimators ; This loop is a bit of an oddball : de points to the byte *just before* the target
-	; It's no problem by any means, just not what you'd be used to.
-	xor a
-	inc de
-	ld [de], a ; Write frame count
-	ld a, [hli]
-	inc de
-	ld [de], a ; Write max frame
-	xor a
-	inc de
-	ld [de], a ; Write current animation frame
-	ld a, [hli]
-	inc de
-	ld [de], a ; Write max anim frame
-	ld a, [hli]
-	inc de
-	ld [de], a ; Write tile ID
-	ld a, [hli]
-	inc de
-	ld [de], a ; Write temporary pointer (real one will be computed after copies)
-	ld a, [hli]
-	inc de
-	ld [de], a
-	inc de ; Skip over unused byte
-	dec c
-	jr nz, .copyAnimators
-	
-	; Now, copy all animation frames to WRAM bank 3
-	push hl
-	ld hl, wTileAnim0_framesPtr + 1
-	ld de, wTileFrames
-.copyAnimationFrames
-	push bc
-	
-	; Now, a slightly tricky part : we need to write the pointer before the copy (since that's where the base pointer is)
-	; but at the same time we need to retrieve the pointer that's the source of the copy!
-	ld b, [hl]
-	ld [hl], e ; Write pointer to anim frames (which is big-endian)
-	dec hl
-	ld c, [hl]
-	ld [hl], d
-	; So, the source pointer is in bc.
-	
-	dec hl
-	dec hl
-	ld a, [hli] ; Get num of frames
-	; Note : using hli when not necessary? Yup, but if it happened to overflow, we skip a "noCarry", so it's good.
-	
-	push hl ; Save the read pointer for later
-	ld h, b ; Get the source pointer into hl,
-	ld l, c ; which also frees bc.
-	
-	swap a ; Compute length of copy
-	ld c, a ; Save this because we can't read it again!
-	and $0F
-	ld b, a
-	ld a, c ; Get back unmasked low byte
-	and $F0
-	ld c, a ; Done calculating.
-	
-	ld a, BANK(wTileFrames)
-	call SwitchRAMBanks
-	call Copy ; Copy anim frames from ROM to WRAM
-	; This advances de, which is then set up for the next animator
-	
-	ld a, BANK(wTileAnimations)
-	call SwitchRAMBanks
-	
-	pop hl ; Get back read ptr
-	; Move to next tile
-	ld a, l
-	add a, (wTileAnim1_framesPtr + 1) - (wTileAnim0_numOfFrames + 1)
-	ld l, a
-	jr nc, .noCarryAnim
-	inc h
-.noCarryAnim
-	
-	pop bc
-	dec b
-	jr nz, .copyAnimationFrames
-	pop hl
-.noAnimators
-	
-	ld de, wBGPalette7_color0
-	ld c, 12
-	rst copy
-	push hl
-	save_rom_bank
-	ld a, BANK(DefaultPalette)
-	rst bankswitch
-	
-	ld hl, wBGPalette7_color0
-	ld de, wBGPalette2_color0
-.loadTilesetBGPalettes
-	ld a, [hli]
-	push hl
-	ld h, [hl]
-	ld l, a
-	ld c, BG_PALETTE_STRUCT_SIZE
-	rst copy
-	pop hl
-	inc hl
-	ld a, e
-	cp wOBJPalettes & $FF
-	jr nz, .loadTilesetBGPalettes
-	
-	restore_rom_bank
-	pop hl
-	ld de, wOBJPalette7_color0
-	ld c, 14
-	rst copy
-;	push hl
-;	save_rom_bank
-	ld a, BANK(DefaultPalette)
-	rst bankswitch
-	
-	ld hl, wOBJPalette7_color0
-	ld de, wOBJPalette1_color0
-.loadTilesetOBJPalettes
-	inc de
-	inc de
-	inc de
-	ld a, [hli]
-	push hl
-	ld h, [hl]
-	ld l, a
-	ld c, OBJ_PALETTE_STRUCT_SIZE
-	rst copy
-	pop hl
-	inc hl
-	ld a, e
-	cp wPalettesEnd & $FF
-	jr nz, .loadTilesetOBJPalettes
-	
-;	restore_rom_bank
-;	pop hl
-	
-	; Insert more code here
-	; (If so, uncomment the above block of code and the corresponding one above)
-	
-	restore_rom_bank
-	pop hl
-.tilesetAlreadyLoaded
+	call nz, LoadTileset
 	
 	ld de, wMapScriptPtr ; Copy this data
 	ld c, 4
@@ -551,12 +337,21 @@ ENDC
 	inc h
 .noCarry4 ; Skipped over all warp entries
 	
-	ld de, wBlockPointer
-	ld a, l ; Get block pointer
-	ld [de], a
-	inc de
-	ld a, h
-	ld [de], a
+	push hl
+	ld a, [wMapWidth]
+	ld e, a
+	ld d, 0
+	ld a, [wMapHeight]
+	call MultiplyDEByA
+	ld b, h
+	ld c, l
+	ld a, BANK(wBlockData)
+	call SwitchRAMBanks
+	pop hl
+	ld de, wBlockData
+	call Copy
+	ld a, BANK(wChangeMusics)
+	call SwitchRAMBanks
 	
 	pop hl
 	ld a, l
@@ -596,6 +391,222 @@ ENDC
 	callacross Fadein
 	xor a
 	ld [wFadeSpeed], a
+	ret
+	
+	
+LoadTileset::
+	push hl
+	ld [wLoadedTileset], a
+	ld l, a
+	ld h, TilesetROMBanks >> 8
+	save_rom_bank
+	ld a, BANK(TilesetROMBanks)
+	rst bankswitch
+	ld b, [hl] ; Save tileset's ROM bank
+	
+	ld a, l
+	add a, a
+	add a, TilesetPointers & $FF
+	ld l, a
+	adc a, TilesetPointers >> 8
+	sub l
+	ld h, a
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	
+	ld a, b
+	rst bankswitch
+	ld a, [hli] ; Get number of tiles
+	push af ; Save for bank 1 copy
+	dec a
+	bit 7, a ; If there are bank 1 tiles, this will be set
+	jr z, .onlyBank0Tiles
+	ld a, $7F
+.onlyBank0Tiles
+	inc a
+	push hl
+	ld de, VRAM_TILE_SIZE
+	call MultiplyDEByA
+	ld b, h ; Get copy length
+	ld c, l
+	pop hl
+	ld de, v0Tiles1
+	call CopyToVRAM ; Copy tiles
+	
+	pop af ; Get back number of tiles
+	sub $81
+	jr c, .noBank1Copy ; If < $81, there are only bank 0 tiles
+	inc a ; a = nb_tiles - $80
+	push hl
+	ld de, VRAM_TILE_SIZE
+	call MultiplyDEByA
+	ld b, h
+	ld c, l
+	pop hl
+	ld a, BANK(v1Tiles1)
+	ld [rVBK], a
+	ld de, v1Tiles1
+	call CopyToVRAM
+	xor a
+	ld [rVBK], a
+.noBank1Copy
+	
+	ld a, BANK(wBlockMetadata)
+	call SwitchRAMBanks
+	ld de, wBlockMetadata
+	ld bc, (wTileAttributesEnd - wBlockMetadata)
+	call Copy ; Copy block metadata
+	
+	ld a, [hli] ; Read number of tile animators
+	ld de, wNumOfTileAnims
+	ld [de], a
+	and $0F ; Cap that
+	jr z, .noAnimators
+	ld b, a
+	ld c, b
+.copyAnimators ; This loop is a bit of an oddball : de points to the byte *just before* the target
+	; It's no problem by any means, just not what you'd be used to.
+	xor a
+	inc de
+	ld [de], a ; Write frame count
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write max frame
+	xor a
+	inc de
+	ld [de], a ; Write current animation frame
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write max anim frame
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write tile ID
+	ld a, [hli]
+	inc de
+	ld [de], a ; Write temporary pointer (real one will be computed after copies)
+	ld a, [hli]
+	inc de
+	ld [de], a
+	inc de ; Skip over unused byte
+	dec c
+	jr nz, .copyAnimators
+	
+	; Now, copy all animation frames to WRAM bank 3
+	push hl
+	ld hl, wTileAnim0_framesPtr + 1
+	ld de, wTileFrames
+.copyAnimationFrames
+	push bc
+	
+	; Now, a slightly tricky part : we need to write the pointer before the copy (since that's where the base pointer is)
+	; but at the same time we need to retrieve the pointer that's the source of the copy!
+	ld b, [hl]
+	ld [hl], e ; Write pointer to anim frames (which is big-endian)
+	dec hl
+	ld c, [hl]
+	ld [hl], d
+	; So, the source pointer is in bc.
+	
+	dec hl
+	dec hl
+	ld a, [hli] ; Get num of frames
+	; Note : using hli when not necessary? Yup, but if it happened to overflow, we skip a "noCarry", so it's good.
+	
+	push hl ; Save the read pointer for later
+	ld h, b ; Get the source pointer into hl,
+	ld l, c ; which also frees bc.
+	
+	swap a ; Compute length of copy
+	ld c, a ; Save this because we can't read it again!
+	and $0F
+	ld b, a
+	ld a, c ; Get back unmasked low byte
+	and $F0
+	ld c, a ; Done calculating.
+	
+	ld a, BANK(wTileFrames)
+	call SwitchRAMBanks
+	call Copy ; Copy anim frames from ROM to WRAM
+	; This advances de, which is then set up for the next animator
+	
+	ld a, BANK(wTileAnimations)
+	call SwitchRAMBanks
+	
+	pop hl ; Get back read ptr
+	; Move to next tile
+	ld a, l
+	add a, (wTileAnim1_framesPtr + 1) - (wTileAnim0_numOfFrames + 1)
+	ld l, a
+	jr nc, .noCarryAnim
+	inc h
+.noCarryAnim
+	
+	pop bc
+	dec b
+	jr nz, .copyAnimationFrames
+	pop hl
+.noAnimators
+	
+	ld de, wBGPalette7_color0
+	ld c, 12
+	rst copy
+	push hl
+	save_rom_bank
+	ld a, BANK(DefaultPalette)
+	rst bankswitch
+	
+	ld hl, wBGPalette7_color0
+	ld de, wBGPalette2_color0
+.loadTilesetBGPalettes
+	ld a, [hli]
+	push hl
+	ld h, [hl]
+	ld l, a
+	ld c, BG_PALETTE_STRUCT_SIZE
+	rst copy
+	pop hl
+	inc hl
+	ld a, e
+	cp wOBJPalettes & $FF
+	jr nz, .loadTilesetBGPalettes
+	
+	restore_rom_bank
+	pop hl
+	ld de, wOBJPalette7_color0
+	ld c, 14
+	rst copy
+;	push hl
+;	save_rom_bank
+	ld a, BANK(DefaultPalette)
+	rst bankswitch
+	
+	ld hl, wOBJPalette7_color0
+	ld de, wOBJPalette1_color0
+.loadTilesetOBJPalettes
+	inc de
+	inc de
+	inc de
+	ld a, [hli]
+	push hl
+	ld h, [hl]
+	ld l, a
+	ld c, OBJ_PALETTE_STRUCT_SIZE
+	rst copy
+	pop hl
+	inc hl
+	ld a, e
+	cp wPalettesEnd & $FF
+	jr nz, .loadTilesetOBJPalettes
+	
+;	restore_rom_bank
+;	pop hl
+	
+	; Insert more code here
+	; (If so, uncomment the above block of code and the corresponding one above)
+	
+	restore_rom_bank
+	pop hl
 	ret
 	
 	
@@ -657,10 +668,7 @@ RedrawMap::
 	add hl, bc
 	ld d, h
 	ld e, l
-	ld hl, wBlockPointer
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
+	ld hl, wBlockData
 	add hl, de
 	
 	
@@ -678,12 +686,18 @@ RedrawMap::
 	ld a, [wMapHeight]
 	dec a
 	cp b
+	ld a, BANK(wBlockData)
+	call SwitchRAMBanks
 	ld a, [hli] ; Get block ID
 	jr nc, .mapIsTallEnough
 .mapIsntWideEnough
 	xor a ; If drawing to the right or the bottom of the map, draw block 0 instead
 .mapIsTallEnough
 	push hl
+	ld l, a
+	ld a, BANK(wBlockMetadata)
+	call SwitchRAMBanks
+	ld a, l
 	call DrawBlock
 	pop hl
 	ld a, e
@@ -984,9 +998,15 @@ MoveCamera::
 	pop de
 	ld c, SCREEN_WIDTH / 2 + 1
 .drawRowLoop
+	ld a, BANK(wBlockData)
+	call SwitchRAMBanks
 	ld a, [hli]
 	push hl
 	push de
+	ld l, a
+	ld a, BANK(wBlockMetadata)
+	call SwitchRAMBanks
+	ld a, l
 	call DrawBlock
 	pop de
 	inc e
@@ -1144,8 +1164,14 @@ MoveCamera::
 	pop de
 	ld c, SCREEN_HEIGHT / 2 + 1
 .drawColumnLoop
+	ld a, BANK(wBlockData)
+	call SwitchRAMBanks
 	ld a, [hl]
 	push hl
+	ld l, a
+	ld a, BANK(wBlockMetadata)
+	call SwitchRAMBanks
+	ld a, l
 	call DrawBlock
 	ld a, VRAM_ROW_SIZE - 1
 	add a, e
@@ -2186,6 +2212,8 @@ NoOOB:
 	and a
 	ret nz
 	
+	ld a, BANK(wBlockData)
+	call SwitchRAMBanks
 	ld a, [de]
 	ld d, wBlockMetadata >> 8
 	add a, a
@@ -2195,6 +2223,8 @@ NoOOB:
 	inc d
 .noCarry1
 	ld e, a
+	ld a, BANK(wBlockMetadata)
+	call SwitchRAMBanks
 	bit 3, [hl] ; Check if on bottom row of tile of current block
 	jr z, .notBottomRow
 	inc de
@@ -2261,10 +2291,7 @@ GetPointerFromCoords::
 	ld d, h
 	ld e, l
 	
-	ld hl, wBlockPointer
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
+	ld hl, wBlockData
 	add hl, de
 	ld d, h
 	ld e, l

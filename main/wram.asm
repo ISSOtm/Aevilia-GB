@@ -59,8 +59,6 @@ wMapWidth::
 	ds 1
 wMapHeight::
 	ds 1
-wBlockPointer::
-	ds 2
 	
 	
 SECTION "Player data", WRAM0,ALIGN[2]
@@ -650,6 +648,12 @@ SECTION "NPC statuses", WRAMX,BANK[2]
 
 wTestWarriorFlags::
 	ds 1
+	
+	
+SECTION "Map block data", WRAMX
+
+wBlockData::
+	ds $1000
 	
 	
 	
