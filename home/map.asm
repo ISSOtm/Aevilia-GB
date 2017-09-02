@@ -2162,6 +2162,18 @@ GetNPCCollisionAt::
 	cp $10
 	jr c, CollideWithOOB
 .noPlayerCollision
+	
+	; Prevent NPCs from moving inside walking loading zones as to not get in the player's way
+	ld a, [wWalkLoadZoneCount]
+	and a
+	jr z, .dontScanLoadZones
+	ld hl, wWalkingLoadZones
+	ld e, wWalkingLoadZone1_ypos - wWalkingLoadZone0_ypos
+	call ScanForInteraction
+	ccf ; C reset if detection occured
+	sbc a, a ; Will set a to zero if...
+	ret z ; Return if interaction has been found
+.dontScanLoadZones
 	; Share rest of collision detection with player
 	
 ; Detect collision at pixel whose coordinates are given by wTempBuf
