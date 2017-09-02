@@ -219,6 +219,8 @@ StaffCreditsStrs::
 	db 0
 	
 	dstr "SPECIAL THANKS"
+	dstr "Torchickens"
+	dstr "GCL"
 	dstr "beware"
 	dstr "GBDev Discord"
 	dstr "Nintendo"
