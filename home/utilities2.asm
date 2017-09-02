@@ -203,3 +203,10 @@ DivideBy3::
 	jr nc, .divideBy3
 	dec c ; There was a remainder, we don't want that to count as a full 3
 	ret
+	
+	
+ClearMovableMap::
+	ld hl, vTileMap0
+	ld bc, vTileMap1 - vTileMap0
+	xor a
+	jp FillVRAM

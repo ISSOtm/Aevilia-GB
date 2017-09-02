@@ -451,12 +451,16 @@ TestForestMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 TestForestInteractions::
-	db 1
+	db 2
 	
 	db WALK_LOADZONE
 	interact_box $0068, $01C6, 25, 14
 	db 0
 	db 2
+	
+	db WALK_INTERACT
+	interact_box $0028, $0000, 8, 16
+	dw TestForestEndOfDemo
 	
 TestForestNPCs::
 	db 0
@@ -474,8 +478,38 @@ TestForestWarpToPoints::
 	
 TestForestBlocks::
 INCBIN "maps/test_forest.blk"
+
+TestForestEndOfDemo::
+	disp_box
+	print_line .line0
+	print_line .line1
+	print_line .line2
+	wait_user
+	clear_box
+	print_line .line3
+	print_line .line4
+	print_line .line5
+	wait_user
+	clear_box
+	print_line .line6
+	print_line .line7
+	wait_user
+	close_box
+	text_asmcall PlayCredits
 	
-;Like I said,
-;if I could understand this,
-;I'd have added 30 maps or
-;more, by now. -P
+.line0
+	dstr "Thank you for"
+.line1
+	dstr "playing this short"
+.line2
+	dstr "demo of Aevilia!"
+.line3
+	dstr "Unfortunately this"
+.line4
+	dstr "is as far as it"
+.line5
+	dstr "goes..."
+.line6
+	dstr "So we must bid you"
+.line7
+	dstr "farewell."
