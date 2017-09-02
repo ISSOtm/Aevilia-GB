@@ -70,7 +70,10 @@ PlayCredits::
 	ld de, $9A24
 	call CopyStrToVRAM ; Copy role str to VRAM
 	
-	ld e, $66
+	ld a, e
+	and -VRAM_ROW_SIZE
+	add VRAM_ROW_SIZE * 2 + 6
+	ld e, a
 .printStaff
 	ld c, e
 	call CopyStrToVRAM
@@ -182,10 +185,18 @@ CreditsFirstStrs::
 StaffCreditsStrs::
 	dstr "PROGRAMMING"
 	dstr "ISSOtm"
+	dstr "DevEd"
+	db 0
+	
+	dstr "LEAD GRAPHICS"
+	dstr "Kai"
 	db 0
 	
 	dstr "GRAPHICS"
-	dstr "Kai"
+	dstr "Alpha"
+	dstr "Mian"
+	dstr "Citx"
+	dstr "ISSOtm"
 	db 0
 	
 	dstr "MUSIC"
@@ -195,6 +206,22 @@ StaffCreditsStrs::
 	dstr "MAP DESIGN"
 	dstr "Parzival"
 	dstr "Charmy"
+	dstr "Kai"
+	dstr "Citx"
+	db 0
+	
+	dstr "3DS SUPPORT"
+	dstr "Parzival"
+	db 0
+	
+	dstr "ADDITIONAL                      PROGRAMMING"
+	dstr "Kai"
+	db 0
+	
+	dstr "SPECIAL THANKS"
+	dstr "beware"
+	dstr "GBDev Discord"
+	dstr "Nintendo"
 	db 0
 	
 	db 0
