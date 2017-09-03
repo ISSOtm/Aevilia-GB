@@ -12,7 +12,7 @@ TestMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 TestMapInteractions::
-	db 3
+	db 5
 	
 	db BTN_INTERACT
 	interact_box $0090, $0130, 16, 16
@@ -27,6 +27,14 @@ TestMapInteractions::
 	interact_box $0048, $0000, 25, 21
 	db 3
 	db 0
+	
+	db BTN_INTERACT
+	interact_box $0060, $00E0, 16, 16
+	dw StarthamHouseForSaleSign
+	
+	db BTN_INTERACT
+	interact_box $0050, $0050, 16, 16
+	dw StarthamHouseForSaleSign
 	
 TestMapNPCs::
 	db 1 ; Number of NPCs
@@ -77,69 +85,34 @@ INCBIN "maps/test.blk"
 TestMapNPCScripts::
 	dw TestMapNPC0Script
 	
+	set_text_prefix TestMapNPC0
 TestMapNPC0Script::
-	print_name .name
-	print_line .line0
-	print_line .line1
+	print_name
+	print_line_id 0
+	print_line_id 1
 	wait_user
-	print_line .line2
-	print_line .line3
-	print_line .line4
-	wait_user
-	clear_box
-	print_line .line5
-	wait_user
-	print_line .line6
-	print_line .line7
-	print_line .line8
+	print_line_id 2
+	print_line_id 3
+	print_line_id 4
 	wait_user
 	clear_box
-	print_line .line9
-	print_line .line10
-	print_line .line11
+	print_line_id 5
 	wait_user
-	print_line .line12
+	print_line_id 6
+	print_line_id 7
+	print_line_id 8
 	wait_user
 	clear_box
-	print_line .line13
+	print_line_id 9
+	print_line_id 10
+	print_line_id 11
+	wait_user
+	print_line_id 12
+	wait_user
+	clear_box
+	print_line_id 13
 	wait_user
 	done
-	
-.name
-	dstr "TEST #0"
-	
-.line0
-	dstr "Heya! Did you know"
-.line1
-	dstr "you are a NPC?"
-.line2
-	db "At least, "
-	dstr "what"
-.line3
-	dstr "that guy there is"
-.line4
-	dstr "seeing is."
-.line5
-	dstr "What guy?"
-.line6
-	dstr "That one watching"
-.line7
-	dstr "us through that"
-.line8
-	db "screen, there!",0
-.line9
-	db "Also, "
-	dstr "aside from"
-.line10
-	db "you, "
-	dstr "I am the"
-.line11
-	dstr "first NPC ever"
-.line12
-	dstr "created."
-.line13
-	db "Neat, "
-	dstr "huh?"
 
 TestNPCTiles::
 	dw $0000, $0000, $0202, $0404, $0000, $0303, $0407, $080F
@@ -174,47 +147,43 @@ TestNPCWalkingTiles::
 	dw $08F8, $08F8, $10F0, $20E0, $C0C0, $0000, $0000, $0000
 	
 	
+	set_text_prefix TestMapSign
 TestMapSignText::
 	disp_box
-	print_line TestMapSignLine0
-	print_line TestMapSignLine1
-	wait_user
-	print_line TestMapSignLine2
-	print_line TestMapSignLine3
-	empty_line
+	print_line_id 0
 	wait_user
 	clear_box
-	print_line TestMapSignLine4
-	print_line TestMapSignLine5
-	print_line TestMapSignLine6
+	print_line_id 1
+	print_line_id 2
+	print_line_id 3
 	wait_user
 	clear_box
-	delay 60
-	print_line TestMapSignLine7
-	print_line TestMapSignLine8
+	print_line_id 4
+	delay 20
+	print_line_id 5
 	wait_user
 	done
 	
-TestMapSignLine0::
-	db "Howdy, "
-	dstr "fellow"
-TestMapSignLine1::
-	dstr "traveler!"
-TestMapSignLine2::
-	dstr "Welcome to the"
-TestMapSignLine3::
-	dstr "Test Map!"
-TestMapSignLine4::
-	dstr "Enjoy your stay"
-TestMapSignLine5::
-	dstr "in this strange"
-TestMapSignLine6::
-	dstr "place."
-TestMapSignLine7::
-	db "Also, "
-	dstr "how on earth"
-TestMapSignLine8::
-	dstr "did you get here??"
+	
+	set_text_prefix StarthamHouseForSaleSign
+StarthamHouseForSaleSign::
+	disp_box
+	print_line_id 0
+	wait_user
+	print_line_id 1
+	print_line_id 2
+	wait_user
+	clear_box
+	print_line_id 3
+	delay 20
+	print_line_id 4
+	wait_user
+	clear_box
+	print_line_id 5
+	print_line_id 6
+	print_line_id 7
+	wait_user
+	done
 
 
 SECTION "Test house map", ROMX
@@ -269,156 +238,98 @@ INCBIN "maps/testhouse.blk"
 TestHouseNPCScripts::
 	dw TestHouseTestBattleScript
 	
+	set_text_prefix TestHouseTestBattleScript
 TestHouseTestBattleScript::
 	text_bankswitch BANK(wTestWarriorFlags)
 	text_lda wTestWarriorFlags
 	text_bankswitch 1
 	text_bit $80
-	print_name .name
+	print_name
 .source1
 	text_jr cond_nz, (.branch1 - .source1)
-	print_line .line0
+	print_line_id 0
 	delay 60
 	wait_user
 	clear_box
-	print_line .line1
+	print_line_id 1
 	delay 100
 	text_bankswitch BANK(wTestWarriorFlags)
 	text_lda_imm $80
 	text_sta wTestWarriorFlags
 	text_bankswitch 1
-	print_line .line2
+	print_line_id 2
 	empty_line
 	empty_line
 .source2
 	choose YesNoChoice, (.branch2 - .source2)
 	clear_box
-	print_line .line3
-	print_line .line4
+	print_line_id 3
+	print_line_id 4
 	wait_user
 	clear_box
-	print_line .line5
-	print_line .line6
-	print_line .line7
+	print_line_id 5
+	print_line_id 6
+	print_line_id 7
 	wait_user
 	done
 	
 .branch2
 	clear_box
-	print_line .line8
-	print_line .line9
+	print_line_id 8
+	print_line_id 9
 	wait_user
 	clear_box
-	print_line .line5
-	print_line .line6
-	print_line .line7
+	print_line_id 5
+	print_line_id 6
+	print_line_id 7
 	wait_user
 	clear_box
-	print_line .line10
-	print_line .line11
-	print_line .line12
+	print_line_id 10
+	print_line_id 11
+	print_line_id 12
 	wait_user
 	done
 	
 .branch1
-	print_line .line13
+	print_line_id 13
 	wait_user
 	clear_box
-	print_line .line1
+	print_line_id 1
 	delay 60
-	print_line .line14
+	print_line_id 14
 	wait_user
-	print_line .line15
-	print_line .line16
+	print_line_id 15
+	print_line_id 16
 	empty_line
 .source3
 	choose YesNoChoice, (.branch3 - .source3)
 	
 	clear_box
-	print_line .line17
+	print_line_id 17
 	delay 60
 	text_lda_imm 0
 	text_sta wBattleTransitionID
 	text_inc
 	text_sta wBattleEncounterID
 	text_sta wBattlePreservedNPCs
-	print_line .line18
-	print_line .line19
+	print_line_id 18
+	print_line_id 19
 	wait_user
 	done
 	
 .branch3
 	clear_box
-	print_line .line20
+	print_line_id 20
 	delay 60
-	print_line .line21
+	print_line_id 21
 	wait_user
 	clear_box
-	print_line .line22
+	print_line_id 22
 	delay 30
-	print_line .line23
-	print_line .line24
+	print_line_id 23
+	print_line_id 24
 	wait_user
 	done
-	
-.name
-	dstr "TEST WARRIOR"
-.line0
-	dstr "YARR!"
-.line1
-	dstr "..."
-.line2
-	dstr "Aren't you scared?"
-.line3
-	dstr "You don't look"
-.line4
-	dstr "very sincere..."
-.line5
-	dstr "I promise I won't"
-.line6
-	dstr "try to scare you"
-.line7
-	dstr "anymore."
-	
-.line8
-	dstr "Oh! I am very"
-.line9
-	dstr "sorry!"
-.line10
-	dstr "I hope I didn't"
-.line11
-	dstr "make you angry or"
-.line12
-	dstr "anything..."
-	
-.line13
-	db "Oh,"
-	dstr " you again?"
-.line14
-	dstr "That look..."
-.line15
-	dstr "Are you looking"
-.line16
-	dstr "for a fight?"
-	
-.line17
-	dstr "Well. Just..."
-.line18
-	dstr "Don't come crying"
-.line19
-	db "after, "
-	dstr "okay?"
-	
-.line20
-	dstr "Well."
-.line21
-	dstr "That's a relief."
-.line22
-	db "Actually,",0
-.line23
-	dstr "I don't like"
-.line24
-	dstr "to fight..."
 	
 TestHouseNPCTiles::
 	dw $1010, $3C2C, $3F23, $1F1C, $3F20, $3F23, $3F3C, $3F21
@@ -451,7 +362,7 @@ TestForestMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 TestForestInteractions::
-	db 2
+	db 4
 	
 	db WALK_LOADZONE
 	interact_box $0068, $01C6, 25, 14
@@ -459,8 +370,16 @@ TestForestInteractions::
 	db 2
 	
 	db WALK_INTERACT
-	interact_box $0028, $0000, 8, 16
+	interact_box $0028, $0000, 9, 16
 	dw TestForestEndOfDemo
+	
+	db BTN_INTERACT
+	interact_box $00B0, $01C0, 16, 16
+	dw TestForestEntranceSign
+	
+	db BTN_INTERACT
+	interact_box $0020, $0050, 16, 16
+	dw StarthamForestExitSign
 	
 TestForestNPCs::
 	db 0
@@ -479,37 +398,44 @@ TestForestWarpToPoints::
 TestForestBlocks::
 INCBIN "maps/test_forest.blk"
 
+	set_text_prefix TestForestEndOfDemo
 TestForestEndOfDemo::
 	disp_box
-	print_line .line0
-	print_line .line1
-	print_line .line2
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
 	wait_user
 	clear_box
-	print_line .line3
-	print_line .line4
-	print_line .line5
+	print_line_id 3
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	clear_box
-	print_line .line6
-	print_line .line7
+	print_line_id 6
+	print_line_id 7
 	wait_user
 	close_box
 	text_asmcall PlayCredits
 	
-.line0
-	dstr "Thank you for"
-.line1
-	dstr "playing this short"
-.line2
-	dstr "demo of Aevilia!"
-.line3
-	dstr "Unfortunately this"
-.line4
-	dstr "is as far as it"
-.line5
-	dstr "goes..."
-.line6
-	dstr "So we must bid you"
-.line7
-	dstr "farewell."
+	
+	set_text_prefix TestForestEntranceSign
+TestForestEntranceSign::
+	disp_box
+	print_line_id 0
+	wait_user
+	clear_box
+	print_line_id 1
+	print_line_id 2
+	print_line_id 3
+	wait_user
+	done
+	
+	
+	set_text_prefix StarthamForestExitSign
+StarthamForestExitSign::
+	disp_box
+	print_line_id 0
+	delay 30
+	print_line_id 1
+	wait_user
+	done

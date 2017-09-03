@@ -1,3 +1,5 @@
 
+INCLUDE "macros.asm"
+INCLUDE "constants.asm"
 
-INCLUDE "engine/text.asm"
+INCLUDE "text/startham.asm"

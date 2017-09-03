@@ -14,6 +14,7 @@ rgbasm -E -p 0xFF -o obj/gfx.o			 gfx.asm
 rgbasm -E -p 0xFF -o obj/maps.o			 maps.asm
 rgbasm -E -p 0xFF -o obj/save.o			 save.asm
 rgbasm -E -p 0xFF -o obj/sound.o		 sound.asm
+rgbasm -E -p 0xFF -o obj/text.o          text.asm
 rgbasm -E -p 0xFF -o obj/tileset.o		 tileset.asm
 echo.
 echo COMPILATION DONE
@@ -21,7 +22,7 @@ echo.
 echo.
 
 echo === LINKING ===
-rgblink -m bin/Aevilia.map -n bin/Aevilia.sym -o bin/aevilia.gbc obj/main.o obj/battle.o obj/engine.o obj/home.o obj/gfx.o obj/maps.o obj/save.o obj/sound.o obj/tileset.o
+rgblink -m bin/Aevilia.map -n bin/Aevilia.sym -o bin/aevilia.gbc obj/main.o obj/battle.o obj/engine.o obj/home.o obj/gfx.o obj/maps.o obj/save.o obj/sound.o obj/text.o obj/tileset.o
 echo.
 echo LINKING DONE
 echo.

@@ -20,7 +20,7 @@ SRAMSize = 0x04
 bindir = ./bin
 objdir = ./obj
 
-objlist = $(objdir)/main.o $(objdir)/battle.o $(objdir)/engine.o $(objdir)/home.o $(objdir)/gfx.o $(objdir)/maps.o $(objdir)/save.o $(objdir)/sound.o $(objdir)/tileset.o
+objlist = $(objdir)/main.o $(objdir)/battle.o $(objdir)/engine.o $(objdir)/home.o $(objdir)/gfx.o $(objdir)/maps.o $(objdir)/save.o $(objdir)/sound.o $(objdir)/text.o $(objdir)/tileset.o
 
 CFLAGS = -E -p $(FillValue)
 LFLAGS = 

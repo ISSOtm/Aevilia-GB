@@ -99,8 +99,13 @@ ENDM
 ; print_name ptr_to_name
 print_name: MACRO
 	db PRINT_NAME_AND_DISP
+IF _NARG == 0
+	db BANK(name_prefix)
+	dw name_prefix
+ELSE
 	db BANK(\1)
 	dw \1
+ENDC
 ENDM
 
 disp_box: MACRO
@@ -120,6 +125,12 @@ print_line: MACRO
 	db PRINT_STRING
 	db BANK(\1)
 	dw \1
+ENDM
+
+print_line_id: MACRO
+line_label EQUS STRCAT("{line_prefix}", "\1")
+	print_line {line_label}
+PURGE line_label
 ENDM
 
 empty_line: MACRO
