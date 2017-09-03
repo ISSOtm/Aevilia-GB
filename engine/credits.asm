@@ -67,6 +67,7 @@ PlayCredits::
 	ld hl, StaffCreditsStrs
 .doOneStaffCredits
 	
+	rst waitVBlank ; Make sure wSCY gets applied
 	ld de, $9A24
 	call CopyStrToVRAM ; Copy role str to VRAM
 	
@@ -89,31 +90,45 @@ PlayCredits::
 	
 	push hl
 	ld hl, $9980
-	ld e, 5
-.staff_goDownOneRow
-	ld b, 8
-.staff_goDownOnePixel
-	ld c, e
-.staff_delayNextPixel
-	rst waitVBlank
-	dec c
+	ld e, -8 ; If < 0 : number of frames beteen lines ; if >= 0 : number of pixels per frame
+	ld b, 8 ; Number of pixels until next refresh
+.staff_goDownOnce
+	ld d, 1 ; 1 line,
+	ld c, e ; Multiple frames
+	bit 7, c ; Check if < 1 lpf (line per frame)
 	jr nz, .staff_delayNextPixel
-	ld a, [wSCY]
-	inc a
-	ld [wSCY], a
-	dec b
+	ld c, $FF ; If not, 1 frame,
+	ld a, e ; multiple lines
+	and $F8
+	rrca ; Divide by 8 to avoid shooting away (this is safe because we're >= 8)
+	rrca
+	rrca
+	ld d, a
+.staff_delayNextPixel
+	rst waitVBlank ; Wait for a certain amount of frames
+	inc c
+	jr nz, .staff_delayNextPixel
+	inc e
 	jr nz, .staff_goDownOnePixel
+	ld e, 8 ; Being < 8 would make a 256-frame wait.
+.staff_goDownOnePixel
+	ld a, [wSCY]
+	inc a ; Scroll down by 1 pixel
+	ld [wSCY], a
+	dec b ; We scrolled by 1 line
+	jr nz, .staff_dontRefreshLine ; If that's not the 8th, don't refresh a line
 	
+	ld b, d ; Save the value of d
 	ld c, VRAM_ROW_SIZE
 	xor a
 	call FillVRAMLite
-	dec e
-	jr nz, .staff_dontCap
-	inc e
-.staff_dontCap
+	
+	ld d, b ; Restore d
+	ld b, 8 ; Reset to 8 lines
+	
 	ld a, h
 	cp $9C
-	jr nz, .staff_goDownOneRow
+	jr nz, .staff_dontRefreshLine ; If that's not the end, keep going down
 	ld a, $60
 	ld [wSCY], a
 	pop hl
@@ -122,6 +137,12 @@ PlayCredits::
 	ld a, [hl]
 	and a
 	jr nz, .doOneStaffCredits
+	jr .doneStaffCredits
+.staff_dontRefreshLine
+	dec d
+	jr nz, .staff_goDownOnePixel
+	jr .staff_goDownOnce
+.doneStaffCredits
 	
 	; Fade the screen for the final moment
 	ld a, 8
