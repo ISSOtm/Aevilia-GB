@@ -72,10 +72,10 @@ TestTileset::
 	
 	
 	; Grey border
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
 	
 	; Grass
 	tile_attr $80, 0, 2, 0, 0, 0, 0
@@ -174,16 +174,16 @@ TestTileset::
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	
 	; Path
-	tile_attr $9D, 0, 0, 0, 0, 0, 0
-	tile_attr $9D, 0, 0, 0, 0, 0, 0
-	tile_attr $9D, 0, 0, 0, 0, 0, 0
-	tile_attr $9D, 0, 0, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
 	
 	; Sign
-	tile_attr $9B, 0, 0, 0, 0, 0, 1
-	tile_attr $9C, 0, 0, 0, 0, 0, 0
-	tile_attr $9B, 0, 0, 0, 1, 0, 1
-	tile_attr $9C, 0, 0, 0, 1, 0, 0
+	tile_attr $9B, 0, 1, 0, 0, 0, 1
+	tile_attr $9C, 0, 1, 0, 0, 0, 0
+	tile_attr $9B, 0, 1, 0, 1, 0, 1
+	tile_attr $9C, 0, 1, 0, 1, 0, 0
 	
 	; Water top-left
 	tile_attr $94, 1, 7, 0, 0, 0, 0
@@ -442,10 +442,10 @@ ENDC
 	
 	; These blocks aren't used
 REPT 64 - 49
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
-	tile_attr $A9, 0, 0, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
 ENDR
 	
 	
@@ -520,6 +520,7 @@ ENDR
 	dw FlowerFrames
 	
 	
+	dw DefaultPalette
 	dw GrassPalette
 	dw HousePalette
 	dw DoorWindowPalette
@@ -577,10 +578,10 @@ TestInteriorTileset::
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Accesses the third color of a palette
 	
 	; $00 : Black void
-	tile_attr $88, 0, 0, 0, 0, 0, 0
-	tile_attr $88, 0, 0, 0, 0, 0, 0
-	tile_attr $88, 0, 0, 0, 0, 0, 0
-	tile_attr $88, 0, 0, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
 	
 	; $01 : House wall
 	tile_attr $88, 0, 3, 0, 0, 0, 0
@@ -632,10 +633,10 @@ TestInteriorTileset::
 	
 	; These blocks are unused
 REPT 64 - 9
-	tile_attr $88, 0, 0, 0, 0, 0, 0
-	tile_attr $88, 0, 0, 0, 0, 0, 0
-	tile_attr $88, 0, 0, 0, 0, 0, 0
-	tile_attr $88, 0, 0, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 0
 ENDR
 	
 	
@@ -664,6 +665,7 @@ ENDR
 	db 0 ; No tile animations
 	
 	
+	dw DefaultPalette
 	dw HousePalette
 	dw InsideHousePalette
 	dw 0

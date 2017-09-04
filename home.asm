@@ -147,13 +147,20 @@ Init::
 	ld c, 0
 	callacross LoadFont
 	
+	; Init tilemap
 	ld a, 1
 	ld [rVBK], a
+	ld hl, vTileMap0
+	ld c, TITLE_NAME_DEST - vTileMap0
+	call FillVRAMLite
 	; Put emphasis on the game's name (will be overwritten if we are on DMG)
-	ld hl, TITLE_NAME_DEST
-	ld a, %1000
 	ld c, 10 ; Name's length, make sure to update if needed
+	ld a, $09
 	rst fill
+	ld hl, TITLE_NAME_DEST + 10
+	ld bc, $9AD4 - (TITLE_NAME_DEST + 10)
+	ld a, 1
+	call FillVRAM
 	xor a
 	ld [rVBK], a
 	
@@ -176,16 +183,12 @@ Init::
 	pop af ; Only thing that matters here are flags (but a will also be the same as initial one)
 	jp nz, InitGBPalAndSryScreen
 	
-	; Load BG palettes 0 and 1, which aren't touched for the rest of the program (except when fading, and bugs :D)
 	xor a
-	ld hl, DefaultPalette
-	call LoadBGPalette
-	ld a, 1 ; Well, I guess palette 0 might be reloaded for other purposes, but palette 1, never!
 	ld hl, GrayPalette
 	call LoadBGPalette
-	
-	xor a
-	ld [rVBK], a ; Load "default" VRAM bank
+	ld a, 1
+	ld hl, DefaultPalette
+	call LoadBGPalette
 	
 	; Enable LCD, set window to $9C00, enable it, (don't care about BG location, it's set by VBlank anyways), set sprites to 8x8 and enable them, AND enable background & window
 	; That was one big comment.
@@ -213,7 +216,7 @@ THE_CONSTANT = 42
 	
 	inc a ; a = 1
 	ldh [hTilemapMode], a ; Switch to fixed tile map
-	ld hl, wTransferRows + 6 ; Transfer all of 'em rows!
+	ld hl, wTransferRows + 9 ; Transfer all of 'em rows!
 	ld c, SCREEN_HEIGHT - 1
 	rst fill
 	

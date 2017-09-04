@@ -66,13 +66,13 @@ ClearTextbox::
 	ld hl, vTextboxTileMap
 	ld b, 5
 .initRowAttr
-	ld a, 1
+	xor a
 	ld c, SCREEN_WIDTH - 1
 	call FillVRAMLite
 .waitVRAM1
 	rst isVRAMOpen
 	jr nz, .waitVRAM1
-	ld a, $21
+	ld a, $20
 	ld [hli], a
 	ld a, l
 	add a, VRAM_ROW_SIZE - SCREEN_WIDTH
@@ -80,13 +80,13 @@ ClearTextbox::
 	dec b
 	jr nz, .initRowAttr
 	; Init last row, which is the same but with a VFlip
-	ld a, $41
+	ld a, $40
 	ld c, SCREEN_WIDTH - 1
 	call FillVRAMLite
 .waitVRAM2
 	rst isVRAMOpen
 	jr nz, .waitVRAM2
-	ld a, $61
+	ld a, $60
 	ld [hl], a
 	xor a
 	ld [rVBK], a

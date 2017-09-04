@@ -1018,13 +1018,14 @@ LoadPlayerGraphics::
 	xor a
 .loadEvie2
 	call LoadOBJPalette
-	ld a, 1
+	xor a
 	jp LoadBGPalette
 	
 	
 StartMenu::
 	rst waitVBlank
 	ld a, 1
+	ld [rVBK], a
 	ld hl, wTransferRows
 	ld c, SCREEN_HEIGHT
 	rst fill
@@ -1046,8 +1047,7 @@ StartMenu::
 	ld a, "_"
 	rst fill
 	
-	ld a, 1
-	ld [rVBK], a
+	xor a
 	ld hl, vTileMap1
 	ld c, VRAM_ROW_SIZE * 6
 	call FillVRAMLite

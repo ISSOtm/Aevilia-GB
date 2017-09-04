@@ -191,9 +191,9 @@ IntroTileset::
 	; Character select blocks
 	; First row
 	tile_attr $81, 0, 3, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $82, 0, 3, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 
 	tile_attr $83, 0, 3, 0, 0, 0, 0
 	tile_attr $92, 0, 3, 0, 0, 0, 0
@@ -242,7 +242,7 @@ IntroTileset::
 	
 	; Second row, $0C onwards
 	tile_attr $93, 0, 3, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $95, 0, 3, 0, 0, 0, 0
 	tile_attr $A3, 0, 4, 0, 0, 0, 0
 	
@@ -254,15 +254,15 @@ IntroTileset::
 	tile_attr $95, 0, 3, 0, 0, 0, 0
 	tile_attr $A6, 0, 4, 0, 0, 0, 0
 	tile_attr $95, 0, 3, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	tile_attr $95, 0, 3, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $95, 0, 3, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	tile_attr $95, 0, 3, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $95, 0, 3, 0, 0, 0, 0
 	tile_attr $A6, 0, 6, 0, 1, 0, 0
 	
@@ -274,17 +274,17 @@ IntroTileset::
 	tile_attr $95, 0, 3, 0, 0, 0, 0
 	tile_attr $A3, 0, 6, 0, 1, 0, 0
 	tile_attr $93, 0, 3, 0, 1, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	; Third row
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $B4, 0, 4, 0, 0, 0, 0
 	
 	tile_attr $AB, 0, 4, 0, 0, 0, 0
@@ -302,14 +302,14 @@ IntroTileset::
 	tile_attr $B0, 0, 4, 0, 0, 0, 0
 	tile_attr $BA, 0, 4, 0, 0, 0, 0
 	
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $BB, 0, 4, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $BB, 0, 6, 0, 1, 0, 0
 	
 	tile_attr $B1, 0, 6, 0, 0, 0, 0
@@ -327,14 +327,14 @@ IntroTileset::
 	tile_attr $B3, 0, 6, 0, 0, 0, 0
 	tile_attr $C1, 0, 6, 0, 0, 0, 0
 	
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $C2, 0, 6, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	; Fourth row
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $C3, 0, 4, 0, 0, 0, 0
 	tile_attr $D3, 0, 4, 0, 0, 0, 0
 	
@@ -355,11 +355,11 @@ IntroTileset::
 	
 	tile_attr $CA, 0, 4, 0, 0, 0, 0
 	tile_attr $DA, 0, 4, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $CB, 0, 6, 0, 0, 0, 0
 	tile_attr $DB, 0, 6, 0, 0, 0, 0
 	
@@ -380,12 +380,12 @@ IntroTileset::
 	
 	tile_attr $D2, 0, 6, 0, 0, 0, 0
 	tile_attr $DF, 0, 6, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	; Fifth row
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $E0, 0, 4, 0, 0, 0, 0
 	tile_attr $EC, 0, 4, 0, 0, 0, 0
 	
@@ -406,13 +406,13 @@ IntroTileset::
 	
 	tile_attr $E7, 0, 4, 0, 0, 0, 0
 	tile_attr $F2, 0, 4, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $E8, 0, 6, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	tile_attr $E9, 0, 6, 0, 0, 0, 0
 	tile_attr $F3, 0, 6, 0, 0, 0, 0
@@ -430,10 +430,10 @@ IntroTileset::
 	tile_attr $F7, 0, 6, 0, 0, 0, 0
 	
 	; Sixth row
-	tile_attr $00, 0, 0, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $F8, 0, 4, 0, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	tile_attr $F9, 0, 4, 0, 0, 0, 0
 	tile_attr $82, 0, 4, 1, 0, 0, 0
@@ -450,7 +450,7 @@ IntroTileset::
 	tile_attr $FE, 0, 4, 0, 0, 0, 0
 	tile_attr $87, 0, 4, 1, 0, 0, 0
 	
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	tile_attr $88, 0, 6, 1, 0, 0, 0
 	tile_attr $FF, 0, 6, 0, 0, 0, 0
 	tile_attr $89, 0, 6, 1, 0, 0, 0
@@ -463,20 +463,20 @@ IntroTileset::
 	tile_attr $80, 0, 6, 1, 0, 0, 0
 	tile_attr $8B, 0, 6, 1, 0, 0, 0
 	tile_attr $81, 0, 6, 1, 0, 0, 0
-	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 1, 0, 0, 0, 0
 	
 	; Filling block
-	tile_attr $00, 0, 1, 0, 0, 0, 0
-	tile_attr $00, 0, 1, 0, 0, 0, 0
-	tile_attr $00, 0, 1, 0, 0, 0, 0
-	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
 	
 	; Unused blocks
 REPT 7
-	tile_attr $00, 0, 1, 0, 0, 0, 0
-	tile_attr $00, 0, 1, 0, 0, 0, 0
-	tile_attr $00, 0, 1, 0, 0, 0, 0
-	tile_attr $00, 0, 1, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
+	tile_attr $00, 0, 0, 0, 0, 0, 0
 ENDR
 	
 	
@@ -491,6 +491,7 @@ ENDR
 	db 0 ; Number of tile animations
 	
 	
+	dw DefaultPalette
 	dw InvertedPalette
 	dw CharSelectTextPalette
 	dw CharSelectEviePalette0

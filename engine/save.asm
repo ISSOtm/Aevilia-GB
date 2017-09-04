@@ -26,20 +26,21 @@ FileSelectOptions::
 	
 	ld hl, $9C00
 	ld c, $20
-	ld a, $41
+	ld a, $40
 	call FillVRAMLite
 	ld c, $20
-	ld a, 1
+	xor a
 	call FillVRAMLite
 	
 	ld c, 14
 	ld a, $42
 	call FillVRAMLite
 	
-	xor a
-	ld bc, $14B
+	ld a, 1
+	ld bc, $186
 	call FillVRAM
 	
+	xor a
 	ld [rVBK], a
 	
 	ld hl, $9C00
@@ -114,9 +115,9 @@ FileSelectOptions::
 	ld hl, $98C0
 	ld bc, 14 * VRAM_ROW_SIZE
 	call FillVRAM
-	dec a ; ld a, 1
+	; Returns with a = 0 !
+	inc a ; ld a, 1
 	ld [rVBK], a
-	inc a ; ld a, 2
 	ld hl, $98C0
 	ld bc, 14 * VRAM_ROW_SIZE
 	call FillVRAM
@@ -494,7 +495,7 @@ DrawFileSelect::
 	ld [rVBK], a ; Load VRAM bank 1
 	
 	; Highlight first save file
-	; a = 1
+	xor a
 	ld hl, $98E3
 	call FileSelectHighlight
 	
@@ -611,7 +612,7 @@ SelectFile:
 	jr nc, .noCarry2
 	inc h
 .noCarry2
-	xor a
+	ld a, 1
 	call FileSelectHighlight
 	
 	pop bc
@@ -659,7 +660,7 @@ SelectFile:
 	ld a, 1
 	ld [wTransferSprites], a
 	rst waitVBlank
-	ld a, 1
+	xor a
 	call FileSelectHighlight
 	
 .noScreenUpdate
@@ -677,7 +678,6 @@ FileSelected:
 	rst waitVBlank
 	ld a, 1
 	ld [rVBK], a
-	xor a
 	ld hl, $98E3
 	ld c, $AE
 	call FillVRAMLite
@@ -685,7 +685,7 @@ FileSelected:
 	ld c, $AE
 	call FillVRAMLite
 	
-	; a = 0
+	xor a
 	ld [rVBK], a
 	ld hl, $9865
 	ld c, 10
@@ -1112,6 +1112,7 @@ TechCrewName::
 	dstr "Tech crew"
 	
 ConfirmDeletionText::
+	display_quick
 	print_pic GameTiles
 	print_name GameName
 	text_lda_imm 0
@@ -1138,6 +1139,7 @@ ConfirmDeletionText::
 	dstr "DELETE"
 	
 ConfirmCopyText::
+	display_quick
 	print_pic GameTiles
 	print_name GameName
 	text_lda_imm 0

@@ -549,7 +549,7 @@ LoadTileset::
 .noAnimators
 	
 	ld de, wBGPalette7_color0
-	ld c, 12
+	ld c, 14
 	rst copy
 	push hl
 	save_rom_bank
@@ -557,7 +557,7 @@ LoadTileset::
 	rst bankswitch
 	
 	ld hl, wBGPalette7_color0
-	ld de, wBGPalette2_color0
+	ld de, wBGPalette1_color0
 .loadTilesetBGPalettes
 	ld a, [hli]
 	push hl

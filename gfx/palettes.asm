@@ -174,3 +174,9 @@ InteriorWallPalette::
 	db $0E, $17, $1C
 	db $00, $00, $00
 	
+InteriorGreenPalette::
+	db $1E, $1E, $1D
+	db $12, $18, $08
+	db $09, $10, $05
+	db $00, $00, $00
+	
