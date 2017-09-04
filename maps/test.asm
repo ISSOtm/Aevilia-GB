@@ -12,21 +12,26 @@ TestMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 TestMapInteractions::
-	db 5
-	
-	db BTN_INTERACT
-	interact_box $0090, $0130, 16, 16
-	dw TestMapSignText ; Text ptr
+	db 6
 	
 	db BTN_LOADZONE
 	interact_box $009F, $0052, 1, 12
-	db 1 ; Dest map
+	db 4 ; Dest map
 	db 0 ; Dest warp point
+	
+	db BTN_LOADZONE
+	interact_box $004F, $0092, 1, 12
+	db 1
+	db 0
 	
 	db WALK_LOADZONE
 	interact_box $0048, $0000, 25, 21
 	db 3
 	db 0
+	
+	db BTN_INTERACT
+	interact_box $0090, $0130, 16, 16
+	dw TestMapSignText ; Text ptr
 	
 	db BTN_INTERACT
 	interact_box $0060, $00E0, 16, 16
@@ -53,10 +58,10 @@ TestMapNPCs::
 	dw TestNPCTiles
 	
 TestMapWarpToPoints::
-	db 3 ; Number of warp-to points
+	db 4 ; Number of warp-to points
 	
-	dw $0098 ; Y pos
-	dw $0050 ; X pos
+	dw $0048 ; Y pos
+	dw $0090 ; X pos
 	db DIR_DOWN ; Direction
 	db NO_WALKING ; Flags
 	db 0 ; Cameraman ID
@@ -65,6 +70,14 @@ TestMapWarpToPoints::
 	
 	dw $FFF8
 	dw $0140
+	db DIR_DOWN
+	db NO_WALKING
+	db 0
+	dw NO_SCRIPT
+	ds 7
+	
+	dw $0098
+	dw $0050
 	db DIR_DOWN
 	db NO_WALKING
 	db 0
