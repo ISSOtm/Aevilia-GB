@@ -1176,13 +1176,13 @@ DisplayNumber::
 	ld d, [hl]
 	
 	ld h, 0
-	jr z, .byte ; Z hasn't changed since "and a"
-	ld a, [de] ; Word? Get high byte!
-	ld h, a ; Also overwrite b, which was 1
-	inc de
-.byte
 	ld a, [de]
 	ld l, a
+	jr z, .byte ; Z hasn't changed since "and a"
+	inc de
+	ld a, [de] ; Word? Get high byte!
+	ld h, a ; Also overwrite b, which was 1
+.byte
 	
 	xor a
 	ld de, wDigitBuffer + 4 ; Write destination
