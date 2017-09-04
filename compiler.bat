@@ -1,10 +1,12 @@
 @echo off
 set /p VER=<version.txt
 set /p BUILD=<build.txt
-title AEVILIA GB version %VERSION% build %BUILD%
+title AEVILIA GB version %VER% build %BUILD%
 
 if NOT exist bin/	mkdir bin
 if NOT exist obj/	mkdir obj
+
+echo AEVILIA GB version %VER% build %BUILD%
 
 echo === Compiling... ===
 rgbasm -E -p 0xFF -o obj/main.o			 main.asm
