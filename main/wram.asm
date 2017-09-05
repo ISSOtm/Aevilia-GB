@@ -187,7 +187,7 @@ wTextFlags::
 	ds 1
 	
 	
-SECTION "Larger buffer", WRAM0[$C2ED]
+SECTION "Larger buffer", WRAM0
 wLargerBuf::
 	ds $11
 	
