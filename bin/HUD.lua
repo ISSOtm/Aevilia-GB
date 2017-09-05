@@ -8,8 +8,8 @@
 function drawHUD()
 	-- Addresses and constants
 	
-	wCameraYPos = 0xC249
-	wCameraXPos = 0xC24B
+	wCameraYPos = 0xC236
+	wCameraXPos = 0xC238
 	
 	wWalkInterCount = 0x01D500
 	wBtnInterCount = 0x01D501
@@ -25,23 +25,21 @@ function drawHUD()
 	wNPC0_ypos = 0x01D510
 	NPCstructlength = 16
 	
-	wYPos = 0xC243
-	wXPos = 0xC245
-	wPlayerDir = 0xC247
-	
-	rVBK = 0xFF4F
-	rSVBK = 0xFF70
+	wYPos = 0xC22F
+	wXPos = 0xC231
+	wPlayerDir = 0xC233
 	
 	interactionoffsets = {{7, 7}, {16, 7}, {9, 1}, {9, 14}}
 	
-	wLoadedMapROMBank = 0xC238
-	wMapWidth = 0xC23C
-	wBlockPointer = 0xC23E
+	wLoadedMapROMBank = 0xC246
+	wMapWidth = 0xC24A
 	
 	wBlockMetadata = 0x01D000
 	blockstructlength = 8
 	wTileAttributes = 0x01D200
 	tileattriblength = 1
+	
+	wBlockData = 0x04D000
 	
 	
 	-- Utilities
@@ -76,7 +74,7 @@ function drawHUD()
 			-- ROM0
 			
 			if bank ~= 0 then
-				console.log("Warning : ROM0 is not bankable !")
+--				console.log("Warning : ROM0 is not bankable !")
 			end
 			
 			readbyte = func(busaddr)
@@ -98,10 +96,8 @@ function drawHUD()
 				bank = bank % 0x02
 			end
 			
-			oldbank = memory.readbyte(rVBK)
-			memory.writebyte(rVBK, bank)
-			readbyte = func(busaddr)
-			memory.writebyte(rVBK, oldbank)
+			memory.usememorydomain("VRAM")
+			readbyte = func(bank * 0x2000 + (busaddr - 0x8000))
 		elseif busaddr < 0xC000 then
 			-- SRAM (NYI)
 			
@@ -110,7 +106,8 @@ function drawHUD()
 				bank = bank % 0x10
 			end
 			
-			readbyte = func(busaddr)
+			memory.usememorydomain("CartRAM")
+			readbyte = func(bank * 0x2000 + (busaddr - 0xA000))
 		elseif busaddr < 0xD000 then
 			-- WRAM0
 			
@@ -118,10 +115,7 @@ function drawHUD()
 				console.log("Warning : WRAM0 is not bankable !")
 			end
 			
-			oldbank = memory.readbyte(rSVBK)
-			memory.writebyte(rSVBK, bank)
 			readbyte = func(busaddr)
-			memory.writebyte(rSVBK, oldbank)
 		elseif busaddr < 0xE000 then
 			-- WRAMX
 			
@@ -130,7 +124,8 @@ function drawHUD()
 				bank = bank % 0x08
 			end
 			
-			readbyte = func(busaddr)
+			memory.usememorydomain("WRAM")
+			readbyte = func(bank * 0x1000 + (busaddr - 0xD000))
 		elseif busaddr < 0xF000 then
 			-- ECH0
 			
@@ -147,6 +142,7 @@ function drawHUD()
 				bank = bank % 0x08
 			end
 			
+			-- Can't really do better, I need the emulator to do checks etc.
 			oldbank = memory.readbyte(rSVBK)
 			memory.writebyte(rSVBK, bank)
 			readbyte = func(busaddr)
@@ -188,7 +184,6 @@ function drawHUD()
 	
 	mapROMbank = 0
 	mapwidth = 0
-	blockpointer = 0
 	
 	function updateglobalvars()
 		cameraypos = readmemory(wCameraYPos, memory.read_u16_le)
@@ -200,7 +195,6 @@ function drawHUD()
 		
 		mapROMbank = readmemory(wLoadedMapROMBank, memory.read_u8)
 		mapwidth = readmemory(wMapWidth, memory.read_u8)
-		blockpointer = readmemory(wBlockPointer, memory.read_u16_le)
 	end
 	
 	updateglobalvars()
@@ -339,7 +333,7 @@ function drawHUD()
 	function drawcollision()
 	--	gui.DrawNew("Collision")
 		
-		addr = (mapROMbank * 0x10000) + blockpointer + (math.floor(cameraypos / 16) * mapwidth + math.floor(cameraxpos / 16))
+		addr = wBlockData + (math.floor(cameraypos / 16) * mapwidth + math.floor(cameraxpos / 16))
 		
 		for y = 0,10 do
 			lineaddr = addr
