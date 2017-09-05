@@ -417,6 +417,10 @@ LoadTileset::
 	
 	ld a, b
 	rst bankswitch
+	ld a, BANK(wNumOfTileAnims)
+	call SwitchRAMBanks
+	xor a
+	ld [wNumOfTileAnims], a ; Make sure no tile gets overwritten
 	ld a, [hli] ; Get number of tiles
 	push af ; Save for bank 1 copy
 	dec a
