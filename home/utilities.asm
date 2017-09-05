@@ -107,17 +107,6 @@ CopyAcrossLite::
 	rst bankswitch
 	ret
 	
-; Copy str from b:hl to de
-CopyStrAcross::
-	ldh a, [hCurROMBank]
-	push af
-	ld a, b
-	rst bankswitch
-	rst copyStr
-	pop af
-	rst bankswitch
-	ret
-	
 	
 ; Both of these functions have a failsafe that prevents underflows and overflows
 ; The first prevents allowing movement if permissions are $FF
@@ -170,7 +159,13 @@ SwitchCPUSpeed:
 	ld [rJOYP], a
 	ld a, 1
 	ld [rKEY1], a ; Request speed switch
+	ld a, [rIF] ; Save interrupts
+	ld b, a
+	xor a
+	ld [rIF], a ; Prevent any interrupt
 	stop ; GO!!
+	ld a, b
+	ld [rIF], a ; Restore ints
 	ret
 	
 

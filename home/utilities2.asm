@@ -1,6 +1,17 @@
 
 
 SECTION "Utilities 2", ROM0
+	
+; Copy str from b:hl to de
+CopyStrAcross::
+	ldh a, [hCurROMBank]
+	push af
+	ld a, b
+	rst bankswitch
+	rst copyStr
+	pop af
+	rst bankswitch
+	ret
 
 ; Returns hl divided by de in bc
 ; Remainder can be obtained in hl by "add hl, de"
