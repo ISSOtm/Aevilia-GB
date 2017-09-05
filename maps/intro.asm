@@ -203,6 +203,7 @@ IntroMapScript::
 	
 ; MAKE SURE THIS DOES NOT CROSS A 256-BYTE BOUNDARY!!
 ; (Except for the last byte, which is allowed to)
+	db 0
 IntroScripts::
 	dw IntroBoyGirlText
 	dw IntroChooseGender
