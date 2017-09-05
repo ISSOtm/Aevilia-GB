@@ -10,8 +10,7 @@ SECTION "Startham text strings", ROMX
 	dline 1
 	dstr "you are a NPC?"
 	dline 2
-	db "At least, "
-	dstr "what"
+	dstr "At least\, what"
 	dline 3
 	dstr "that guy there is"
 	dline 4
@@ -23,20 +22,17 @@ SECTION "Startham text strings", ROMX
 	dline 7
 	dstr "us through that"
 	dline 8
-	db "screen, there!",0
+	dstr "screen\, there!"
 	dline 9
-	db "Also, "
-	dstr "aside from"
+	dstr "Also\, aside from"
 	dline 10
-	db "you, "
-	dstr "I am the"
+	dstr "you\, I am the"
 	dline 11
 	dstr "first NPC ever"
 	dline 12
 	dstr "created."
 	dline 13
-	db "Neat, "
-	dstr "huh?"
+	dstr "Neat\, huh?"
 	
 	set_text_prefix TestMapSign
 	dname
@@ -46,8 +42,7 @@ SECTION "Startham text strings", ROMX
 	dline 1
 	dstr "We don't have"
 	dline 2
-	db "roads, "
-	dstr "but we have"
+	dstr "roads\, but we have"
 	dline 3
 	dstr "Wi-Fi!"
 	dline 4
@@ -109,8 +104,7 @@ SECTION "Test house text strings", ROMX
 	dstr "anything..."
 	
 	dline 13
-	db "Oh,"
-	dstr " you again?"
+	dstr "Oh\, you again?"
 	dline 14
 	dstr "That look..."
 	dline 15
@@ -123,15 +117,14 @@ SECTION "Test house text strings", ROMX
 	dline 18
 	dstr "Don't come crying"
 	dline 19
-	db "after, "
-	dstr "okay?"
+	dstr "after\, okay?"
 	
 	dline 20
 	dstr "Well."
 	dline 21
 	dstr "That's a relief."
 	dline 22
-	db "Actually,",0
+	dstr "Actually\,"
 	dline 23
 	dstr "I don't like"
 	dline 24
@@ -162,8 +155,7 @@ SECTION "Startham forest text strings", ROMX
 	dline 0
 	dstr "Startham Forest"
 	dline 1
-	db "Be careful,"
-	dstr " don't"
+	dstr "Be careful\, don't"
 	dline 2
 	dstr "get lost in the"
 	dline 3
