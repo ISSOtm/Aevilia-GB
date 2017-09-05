@@ -236,13 +236,15 @@ ROTATE_CW	equ $10
 
 ; make_npc_walk NPC_id dir len spd
 ; Moves a NPC in a straight line
-; Apply "| DONT_TURN" to "dir" if the NPC shouldn't turn around
-; Apply "| ROTATE_45" to "dir" if the NPC's movement direction should rotate by 45° counterclockwise
-; If you want the NPC's movement to rotate clockwise instead (so you can pick any of the two "logical" facing directions), apply "| ROTATE_CW"
-; Note : if ROTATE_CW is applied but not ROTATE_45, it won't have any effect (aside from wasting a couple cycles that do nothing)
-
-; Note : ID 0 will target NPC 1, etc.
-; To target the player, use the dedicated command below.
+; NPC_id : ID of the target NPC, minus 1 (because NPCs are 1-8 normally)
+;          To target the player instead, use "make_npc_walk"
+; dir : Direction of movement, and also the NPC's direction
+;       Apply "| DONT_TURN" if the NPC shouldn't turn around
+;       Apply "| ROTATE_45" if the NPC's movement direction should rotate by 45° counterclockwise
+;        If you want the NPC's movement to rotate clockwise instead (so you can pick any of the two "logical" facing directions), apply "| ROTATE_CW"
+;        Note : if ROTATE_CW is applied but not ROTATE_45, it won't have any effect (aside from wasting a couple cycles that do nothing)
+; len : How many pixels to travel (does not need to be a multiple of spd)
+; spd : How many pixels the NPC will move per frame (except on last step if len % spd != 0)
 make_npc_walk: MACRO
 	db MAKE_NPC_WALK
 	db \1
@@ -252,14 +254,15 @@ make_npc_walk: MACRO
 ENDM
 
 ; turn_npc NPC_id dir
+; Turns a NPC
+; Same arguments as above, except for len & spd
+; Note : using "DONT_TURN" essentialy turns this into a "delay 1"
 turn_npc: MACRO
 	make_npc_walk \1, \2, 0, 0
 ENDM
 
 ; make_player_walk dir len spd
-
-; Same remarks as the above.
-
+; Same as make_npc_walk, except there's no "NPC_id" because the player is the target
 make_player_walk: MACRO
 	db MAKE_PLAYER_WALK
 	db \1
@@ -268,12 +271,14 @@ make_player_walk: MACRO
 ENDM
 
 ; turn_player dir
+; Meh
 turn_player: MACRO
 	make_player_walk \1, 0, 0
 ENDM
 
 
 ; choose str_choice ofs_2
+; str_choice : Pointer to the strings to be written
 ; Remember to add the 5 of the MAKE_CHOICE command!
 choose: MACRO
 	db MAKE_CHOICE

@@ -2,7 +2,7 @@
 SECTION "Interior tileset", ROMX
 
 InteriorTileset::
-	db $3E
+	db $3F
 	
 	; $80
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00
@@ -101,6 +101,9 @@ InteriorTileset::
 	dw $81FE, $83FC, $86F9, $8CF3, $98E7, $B0CF, $E09F, $FFFF
 	dw $F0F0, $90F8, $BFDF, $FFB0, $E0DF, $9FEF, $F0BF, $C0FF
 	dw $FFFF, $80C0, $FF80, $FF80, $FF80, $FF80, $FF8F, $F090
+	
+	; $BE : Vertical wall bottom edge
+	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $00FF
 	
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
@@ -322,22 +325,42 @@ InteriorTileset::
 	tile_attr $BB, 0, 3, 0, 1, 0, 0
 	tile_attr $BA, 0, 2, 0, 1, 0, 0
 	
-	tile_attr $82, 0, 2, 0, 0, 0, 0
-	tile_attr $82, 0, 2, 0, 0, 0, 0
-	tile_attr $88, 0, 2, 0, 0, 0, 0
-	tile_attr $88, 0, 2, 0, 0, 0, 0
+    tile_attr $82, 0, 2, 0, 0, 0, 0
+    tile_attr $82, 0, 2, 0, 0, 0, 0
+    tile_attr $88, 0, 2, 0, 0, 0, 0
+    tile_attr $88, 0, 2, 0, 0, 0, 0
     
-	tile_attr $88, 0, 2, 0, 1, 0, 0
-	tile_attr $88, 0, 2, 0, 1, 0, 0
+    tile_attr $88, 0, 2, 0, 1, 0, 0
+    tile_attr $88, 0, 2, 0, 1, 0, 0
+    tile_attr $82, 0, 2, 0, 0, 0, 0
+    tile_attr $82, 0, 2, 0, 0, 0, 0
+    
+    tile_attr $86, 0, 2, 0, 0, 0, 0
+    tile_attr $86, 0, 2, 0, 0, 0, 0
+    tile_attr $86, 0, 2, 0, 0, 0, 0
+    tile_attr $86, 0, 2, 0, 0, 0, 0
+	
 	tile_attr $82, 0, 2, 0, 0, 0, 0
 	tile_attr $82, 0, 2, 0, 0, 0, 0
+	tile_attr $B5, 0, 3, 0, 0, 0, 0
+	tile_attr $B5, 0, 3, 0, 0, 0, 0
+	
+    tile_attr $B5, 0, 3, 0, 1, 0, 0
+    tile_attr $B5, 0, 3, 0, 1, 0, 0
+    tile_attr $82, 0, 2, 0, 0, 0, 0
+    tile_attr $82, 0, 2, 0, 0, 0, 0
     
-	tile_attr $86, 0, 2, 0, 0, 0, 0
-	tile_attr $86, 0, 2, 0, 0, 0, 0
-	tile_attr $86, 0, 2, 0, 0, 0, 0
-	tile_attr $86, 0, 2, 0, 0, 0, 0
+    tile_attr $80, 0, 3, 0, 0, 0, 0
+    tile_attr $80, 0, 3, 0, 0, 0, 0
+    tile_attr $80, 0, 3, 0, 0, 0, 0
+    tile_attr $80, 0, 3, 0, 0, 0, 0
     
-REPT 17
+    tile_attr $80, 0, 3, 0, 0, 0, 0
+    tile_attr $BE, 0, 3, 0, 0, 0, 0
+    tile_attr $80, 0, 3, 0, 0, 0, 0
+    tile_attr $BE, 0, 3, 0, 0, 0, 0
+	
+REPT 13
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
@@ -425,7 +448,10 @@ REPT 4
 	db 0
 ENDR
 	
-REPT $100 - $3E
+	; Vertical wall bottom edge
+	db 0
+	
+REPT $100 - $3F
 	db 0
 ENDR
 	

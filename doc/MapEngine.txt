@@ -260,3 +260,50 @@ Animator data :
  - BYTE : target tile (BTTTTTTT, target tile is B:($80 | TTTTTTT), ie tile with ID (TTTTTTT | $80) in bank B
  - WORD : pointer to animation frames (will copy [nb of frames] * 16 bytes)
 
+
+5. Maps
+
+5.i Interactions
+
+There are 5 types of interactions : walking interactors, button interactors, walking loading zones, button loading zones, and NPCs.
+
+
+5.i.a) Interaction box
+
+An interaction is defined by its box, plus some additional metadata, which is not taken into account by the interaction function itself. An interaction box is basically two coordinates, which define the top-left point, and two sizes (one per axis). 
+Interaction boxes are defined in the source by the macro "interact_box" (arguments : origin Y pos, origin X pos, box Y size, box X size).
+
+5.i.b) Interacting with stuff
+
+To interact with an interaction, the interaction point (which depends on the type of interaction) must be within that box. (You can view the boxes using HUD.lua in BizHawk)
+The interaction point for "walking" interactions (walking interactors and walking loading zones) is the player's origin (located top-left of the player's sprite). For "button" interactions (button interactors, button loading zones, NPCs), it's a point located in front of the player (thus that depends both on position and orientation).
+Walking interactions are always computed right after player movement, even if there was no movement.
+
+5.i.c) Stay still !
+
+The overworld code is programmed to use joypad input to move the player, etc. However, in some situations (such as the character selection screen) this is a hindrance more than anything else. Luckily there are mechanics just so you can freeze that pesky player in place !
+
+5.i.c1) Preventing movement
+Setting the player's speed to 0 will lock the player in place, but they'll still be able to turn and use the buttons (such as START or A).
+
+5.i.c2) Preventing use of buttons
+hOverworldButtonFilter is a mask applied to hOverworldPressedButtons ; using it, you can prevent the use of some of the buttons. Note that this DOES NOT affect hOverworldHeldButtons !
+
+5.i.c3) Preventing anything
+It's possible for the game to skip moving the player and processing button actions. There are two ways of doing this :
+wUnlinkJoypad, when non-zero, enables this mechanic. Note that you should avoid modifying it directly, but rather through the functions PreventJoypadMovement and AllowJoypadMovement.
+hIgnorePlayerActions also enables this mechanic, BUT is cleared at the beginning of each overworld frame (except in some cases, and always for a good reason :p).
+Basically : if you plan on using joypad input for several frames while locking the player, use wUnlinkJoypad. If you just need to stall the player for one frame, use hIgnorePlayerActions.
+
+5.ii Warping
+
+Warping from map to map is actually a complex process. You basically set wTargetWarpID and call LoadMap with the desired map ID in a. Note that an invalid map ID will generate an error !
+The game first reads the map's flags to determine whether to fade to and from white (going to an "exterior" map) or black (going to an "interior" map). Then it checks the map's track and compares it with the current track, to decide if it needs to change musics or not.
+Then, the map's tileset is compared with the current one, and if they differ, the map's tileset is loaded.
+Then game then copies the interactions and NPCs to their tables in RAM, and checks for warps. Basically, the game checks if the warp is warp $FF - which stands for "don't perform any warping operation", and keeps player position, etc (this is primarily used when loading your file) if so.
+If the warp isn't warp $FF, the game checks if the warp indeed exists ; if not, it generates an error.
+Warping is basically setting the player's position and direction, maybe resetting the walking animation, changing the cameraman, and maybe running a custom script.
+
+5.iii Map data
+
+MAKE SURE BLOCK DATA IS AT MOST $1000 BLOCKS LARGE !!!
