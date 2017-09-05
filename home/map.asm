@@ -927,9 +927,17 @@ MoveCamera::
 	; Lock camera to bottom
 	ld h, b
 	ld l, c
-	jr .dontLockCamVert
+	jr .cameraLockedVert
 .lockCamUp
 	ld hl, 0 ; Lock camera at position 0
+.cameraLockedVert ; Force no OoB redrawing if camera is locked
+	ld a, h
+	ld [de], a
+	dec de
+	ld a, l
+	ld [de], a
+	pop bc
+	jp .dontRedrawRow
 .dontLockCamVert
 	ld a, h ; Write back (in reverse order!)
 	ld [de], a
