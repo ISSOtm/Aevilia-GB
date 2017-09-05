@@ -44,5 +44,19 @@ INCBIN "maps/playerhouse.blk"
 PlayerHouseTVScript::
 	disp_box
 	print_line_id 0
+	print_line_id 1
+.source1
+	choose YesNoChoice, .branch1 - .source1
+	close_box
+	make_player_walk DIR_DOWN, 32, 1
+	turn_player DIR_UP
+	wait_user
+	make_player_walk DIR_UP, 32, 1
+	delay 30
+	turn_player DIR_DOWN
+	done
+	
+.branch1
+	print_line_id 2
 	wait_user
 	done

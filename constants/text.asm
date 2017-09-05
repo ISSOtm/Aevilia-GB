@@ -78,17 +78,28 @@
 
 
 ; -------- TEXT COMMAND MACROS ----------
+
+; Closes the textbox and ends all operations
 done: MACRO
 	db END_TEXT
 ENDM
 
 
+; Clears the textbox's contents
 clear_box: MACRO
 	db CLEAR_TEXT
 ENDM
 
 
 ; print_pic ptr_to_pic
+; Prints a picture on the left of the textbox,
+; and sets the corresponding text flag (so text doesn't occupy its space).
+; ptr_to_pic : Pointer to 9 tiles that will form the pic, in this order :
+; 1 4 7
+; 2 5 8
+; 3 6 9
+; WARNING : Do not use if text is already on-screen ! (Otherwise enjoy your overwrites)
+; WARNING : May cause graphical issues if the textbox is already displayed
 print_pic: MACRO
 	db PRINT_PIC
 	db BANK(\1)
@@ -97,48 +108,62 @@ ENDM
 
 
 ; print_name ptr_to_name
+; Prints a name on the textbox top border and displays the textbox
+; ptr_to_name : Pointer to the string to be printed
+; WARNING : Printing more than 16 characters will cause some overwrites !
+; Alternate syntax : Giving no argument will use the default name instead
+;   (done using `set_text_prefix` and `dname`)
 print_name: MACRO
-	db PRINT_NAME_AND_DISP
 IF _NARG == 0
-	db BANK(name_prefix)
-	dw name_prefix
+	print_name name_prefix
 ELSE
+	db PRINT_NAME_AND_DISP
 	db BANK(\1)
 	dw \1
 ENDC
 ENDM
 
+; Simply displays the textbox
 disp_box: MACRO
-	db PRINT_NAME_AND_DISP
-	db BANK(NULL)
-	dw NULL
+	print_name NULL
 ENDM
 
 
+; Waits until the user PRESSES the A or B button
 wait_user: MACRO
 	db WAIT_FOR_BUTTON
 ENDM
 
 
 ; print_str ptr_to_print
+; Prints a line of text, scrolling the textbox is required
+; ptr_to_print : Pointer to the string to be printed
+; NOTE : Max string size = (without pic) 18, (with pic) 15 characters
+; WARNING : Printing more characters than the limit will do some overwrites !
 print_line: MACRO
 	db PRINT_STRING
 	db BANK(\1)
 	dw \1
 ENDM
 
+; print_line_id line_id
+; Prints a string of the current block (done using `set_text_prefix` and `dline`)
+; line_id : ID of the string to be printed
 print_line_id: MACRO
 line_label EQUS STRCAT("{line_prefix}", "\1")
 	print_line {line_label}
 PURGE line_label
 ENDM
 
+; Prints an empty string, essentially dishing out en empty line
 empty_line: MACRO
 	db EMPTY_LINE
 ENDM
 
 
 ; delay nb_frames
+; Pauses processing for some time
+; nb_frames : Number of frames to wait
 delay: MACRO
 	db DELAY_FRAMES
 	dw \1
@@ -146,18 +171,24 @@ ENDM
 
 
 ; set_counter nb_iters
+; Sets the repetition counter to an immediate value
+; nb_iters : Value to set the counter
 set_counter: MACRO
 	db SET_COUNTER
 	db \1
 ENDM
 
-; copy_counter ptr_to_copy_from
+; copy_counter source_ptr
+; Sets the repetition counter from a memory address
+; source_ptr : Pointer to copy from
 copy_counter: MACRO
 	db COPY_COUNTER
 	dw \1
 ENDM
 
 ; djnz offset
+; Decrements the repetition counter, and if non-zero, jumps somewhere
+; offset : number of bytes to jump (relative jump)
 djnz: MACRO
 	db DECREMENT_AND_JUMP
 	db \1
@@ -165,9 +196,12 @@ ENDM
 
 
 ; disp_num type ptr
-; words are displayed low-endian
+; Display a number from a memory address (words are displayed low-endian)
+; type : Either
 byte equ 0
 word equ 1
+; to choose the length of the number you want to display
+; ptr : Pointer to the number you want to display
 disp_num: MACRO
 	db DISPLAY_NUMBER
 	db \1 & 1
@@ -175,18 +209,22 @@ disp_num: MACRO
 ENDM
 
 
+; Instantly displays the textbox (w/o animation)
 display_quick: MACRO
 	db INSTANT_DISPLAY
 ENDM
 
+; Instantly closes the textbox (w/o animation)
 close_quick: MACRO
 	db INSTANT_CLOSE
 ENDM
 
+; Starts displaying the textbox, and returns before the animation finishes
 display_nodelay: MACRO
 	db DISP_WITHOUT_WAIT
 ENDM
 
+; Starts closing the textbox, and returns before the animation finishes
 close_nodelay: MACRO
 	db CLOSE_WITHOUT_WAIT
 ENDM
@@ -197,7 +235,7 @@ ROTATE_45	equ $08
 ROTATE_CW	equ $10
 
 ; make_npc_walk NPC_id dir len spd
-
+; Moves a NPC in a straight line
 ; Apply "| DONT_TURN" to "dir" if the NPC shouldn't turn around
 ; Apply "| ROTATE_45" to "dir" if the NPC's movement direction should rotate by 45° counterclockwise
 ; If you want the NPC's movement to rotate clockwise instead (so you can pick any of the two "logical" facing directions), apply "| ROTATE_CW"
@@ -213,6 +251,11 @@ make_npc_walk: MACRO
 	db \4
 ENDM
 
+; turn_npc NPC_id dir
+turn_npc: MACRO
+	make_npc_walk \1, \2, 0, 0
+ENDM
+
 ; make_player_walk dir len spd
 
 ; Same remarks as the above.
@@ -222,6 +265,11 @@ make_player_walk: MACRO
 	db \1
 	db \2
 	db \3
+ENDM
+
+; turn_player dir
+turn_player: MACRO
+	make_player_walk \1, 0, 0
 ENDM
 
 

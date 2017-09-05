@@ -59,4 +59,4 @@ TilesetPointers::
 
 INCLUDE "maps/test.asm"
 INCLUDE "maps/intro.asm"
-INCLUDE "maps/interior.asm"
+INCLUDE "maps/playerhouse.asm"
