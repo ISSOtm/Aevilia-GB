@@ -83,13 +83,13 @@ TestNPCPalette::
 	
 EvieDefaultPalette:: ; Sprite palette : 3 colors per horizontal half
 	db $1F, $17, $13
-	db $1F, $0C, $1A
+	db $1F, $12, $1A
 	db $00, $00, $00
 EvieTextboxPalette::
 	db $1F, $1F, $1F
 	db $0A, $0A, $0A
 	db $00, $00, $00
-	db $1F, $0C, $1A
+	db $1F, $12, $1A
 	
 TomDefaultPalette::
 	db $1F, $17, $13
@@ -112,13 +112,13 @@ GrassPalette::
 	
 HousePalette::
 	db $1B, $1B, $11 ; Grass color
-	db $1F, $11, $0C ; Wall
-	db $1B, $0F, $09 ; Brick
+	db $1A, $10, $0C ; Wall
+	db $19, $0F, $09 ; Brick
 	db $00, $00, $00 ; Edges
 	
 DoorWindowPalette::
 	db $1F, $1F, $1F ; Glass
-	db $1F, $11, $0C ; Wall
+	db $1A, $10, $0C ; Wall
 	db $15, $0F, $09 ; Wood
 	db $00, $00, $00 ; Edges
 	
@@ -129,9 +129,9 @@ RoofPalette::
 	db $00, $00, $00 ; Edges
 	
 WaterPalette::
-	db $1A, $1F, $1F ; Lighter spots
-	db $15, $1E, $1F ; Darker spots
-	db $0B, $1A, $1C ; Water fill
+	db $00, $00, $00 ; Unused
+	db $0C, $15, $1F ; Darker spots
+	db $0B, $10, $1F ; Water fill
 	db $00, $00, $00 ; Unused
 	
 RockPalette::
@@ -163,7 +163,7 @@ TestWarriorBottomPalette::
 ; Interior tileset palettes
 	
 InteriorMainPalette::
-	db $1E, $1E, $1D
+	db $1A, $1A, $19
 	db $16, $0F, $09
 	db $11, $0B, $09
 	db $00, $00, $00
@@ -175,8 +175,14 @@ InteriorWallPalette::
 	db $00, $00, $00
 	
 InteriorGreenPalette::
-	db $1E, $1E, $1D
+	db $1A, $1A, $19
 	db $12, $18, $08
 	db $09, $10, $05
+	db $00, $00, $00
+	
+InteriorChairPalette::
+	db $1A, $1A, $19
+	db $16, $0F, $09
+	db $1F, $10, $1C
 	db $00, $00, $00
 	

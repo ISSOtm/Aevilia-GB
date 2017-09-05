@@ -14,9 +14,9 @@ TestHouseNewInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	interact_box $004B, $002E, 6, 5
+	interact_box $0077, $003E, 6, $14
 	db 0
-	db 0
+	db 3
 	
 TestHouseNewNPCs::
 	db 0
@@ -24,8 +24,8 @@ TestHouseNewNPCs::
 TestHouseNewWarpToPoints::
 	db 1 ; Number of warp-to points
 	
-	dw $0041 ; Y pos
-	dw $0030 ; X pos
+	dw $0076 ; Y pos
+	dw $0048 ; X pos
 	db DIR_UP ; Direction
 	db NO_WALKING ; Flags
 	db 0
