@@ -714,23 +714,18 @@ PrintKnownPointer::
 	sub [hl]
 	dec a
 	ld d, a ; Precalc target SCY value
-	ld l, rSCX & $FF ; hl = rSCX
+	ld l, rSCY & $FF ; hl = rSCY
 .waitUntilText
 	ld a, [rLY]
 	cp c
 	jr c, .waitUntilText
 	
-	; Scroll register writes will be ignored until next line
-	; Values will be restored by VBlank handler (wSCY, wSCX, wTileMapMode, etc.)
-	xor a
-	ld [hld], a ; Write to SCX
-	ld e, [hl] ; Save current value
-	ld [hl], d ; Write precalc'd value to SCY
-	
 .waitUntilLineEnds
 	rst isVRAMOpen
 	jr nz, .waitUntilLineEnds
 	
+	ld e, [hl] ; Save current value
+	ld [hl], d ; Write precalc'd value to SCY
 	ld hl, vTextboxPicRow0
 	xor a
 	ld [hli], a
