@@ -88,13 +88,12 @@ StartBattle::
 	ld a, 1
 	ld [rVBK], a
 	ld hl, vFixedMap
-	xor a
 	ld c, SCREEN_WIDTH - 1
 	call FillVRAMLite
 .waitVRAM1
 	rst isVRAMOpen
 	jr nz, .waitVRAM1
-	ld a, $20
+	ld a, $21
 	ld [hli], a
 	ld b, 3
 	ld a, l
@@ -103,15 +102,15 @@ StartBattle::
 .initTextboxAttributes
 	rst isVRAMOpen
 	jr nz, .initTextboxAttributes
-	xor a
+	ld a, 1
 	ld [hli], a
-	inc a
+	xor a
 	ld c, SCREEN_WIDTH - 2
 	call FillVRAMLite
 .waitVRAM2
 	rst isVRAMOpen
 	jr nz, .waitVRAM2
-	ld a, $20
+	ld a, $21
 	ld [hli], a
 	ld a, l
 	add a, $20 - SCREEN_WIDTH
@@ -121,10 +120,10 @@ StartBattle::
 .noCarry1
 	dec b
 	jr nz, .initTextboxAttributes
-	ld a, $40
+	ld a, $41
 	ld c, SCREEN_WIDTH - 1
 	call FillVRAMLite
-	ld [hl], $60
+	ld [hl], $61
 	inc hl
 	
 	ld b, 10
@@ -135,7 +134,7 @@ StartBattle::
 	jr nc, .noCarry2
 	inc h
 .noCarry2	
-	xor a
+	ld a, 1
 	ld c, SCREEN_WIDTH
 	call FillVRAMLite
 	dec b
@@ -145,7 +144,7 @@ StartBattle::
 .waitVRAM3
 	rst isVRAMOpen
 	jr nz, .waitVRAM3
-	ld a, $20
+	ld a, $21
 	ld [hli], a
 	
 	ld b, 2
@@ -158,15 +157,15 @@ StartBattle::
 .noCarry3
 	rst isVRAMOpen
 	jr nz, .noCarry3
-	xor a
+	ld a, 1
 	ld [hli], a
-	inc a
+	xor a
 	ld c, SCREEN_WIDTH - 2
 	call FillVRAMLite
 .waitVRAM4
 	rst isVRAMOpen
 	jr nz, .waitVRAM4
-	ld a, $20
+	ld a, $21
 	ld [hli], a
 	dec b
 	jr nz, .initStatusBoxAttributes
@@ -174,13 +173,13 @@ StartBattle::
 	ld a, l
 	add a, $20 - SCREEN_WIDTH
 	ld l, a
-	ld a, $40
+	ld a, $41
 	ld c, SCREEN_WIDTH - 1
 	call FillVRAMLite
 .waitVRAM5
 	rst isVRAMOpen
 	jr nz, .waitVRAM5
-	ld [hl], $60
+	ld [hl], $61
 	
 	xor a
 	ld [rVBK], a
