@@ -11,14 +11,14 @@ MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(TestHouse)
 	db BANK(IntroMap)
 	db BANK(TestForestMap)
-	db BANK(TestHouseNew)
+	db BANK(PlayerHouse)
 	
 MapPointers::
 	dw TestMap
 	dw TestHouse
 	dw IntroMap
 	dw TestForestMap
-	dw TestHouseNew
+	dw PlayerHouse
 	
 	
 SECTION "Tileset pointers", ROMX[$4300]

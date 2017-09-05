@@ -1,6 +1,6 @@
 
-SECTION "Test house map", ROMX
-TestHouseNew::
+SECTION "Player house map", ROMX
+PlayerHouse::
 	db $80 ; Interior map
 	
 	db MUSIC_SAFE_PLACE ; Music ID
@@ -10,18 +10,22 @@ TestHouseNew::
 	map_size 10, 9
 	dw NO_SCRIPT ; No loading script
 	
-TestHouseNewInteractions::
-	db 1
+PlayerHouseInteractions::
+	db 2
 	
 	db WALK_LOADZONE
 	interact_box $0077, $003E, 6, $14
 	db 0
 	db 3
 	
-TestHouseNewNPCs::
+	db BTN_INTERACT
+	interact_box $0008, $0080, 16, 16
+	dw PlayerHouseTVScript
+	
+PlayerHouseNPCs::
 	db 0
 	
-TestHouseNewWarpToPoints::
+PlayerHouseWarpToPoints::
 	db 1 ; Number of warp-to points
 	
 	dw $0076 ; Y pos
@@ -32,5 +36,13 @@ TestHouseNewWarpToPoints::
 	dw NO_SCRIPT ; Loading script (none)
 	ds 7
 	
-TestHouseNewBlocks::
-INCBIN "maps/testhousenew.blk"
+PlayerHouseBlocks::
+INCBIN "maps/playerhouse.blk"
+	
+	
+	set_text_prefix PlayerHouseTV
+PlayerHouseTVScript::
+	disp_box
+	print_line_id 0
+	wait_user
+	done
