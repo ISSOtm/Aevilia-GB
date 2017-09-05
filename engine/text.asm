@@ -1850,15 +1850,21 @@ TextFlagOpsCommon:
 TextCallFunc::
 	ld hl, wDigitBuffer + 1
 	ld a, [hli]
+	and a
 	ld b, a
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+	jr z, .bank0
 	
 	call CallAcrossBanks
 	
+.done
 	ld a, 4
 	ret
+.bank0
+	rst callHL
+	jr .done
 	
 	
 InstantPrintLines::
