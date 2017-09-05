@@ -76,18 +76,18 @@ TestMapWarpToPoints::
 	dw NO_SCRIPT
 	ds 7
 	
-	dw $0098
-	dw $0050
-	db DIR_DOWN
-	db NO_WALKING
-	db 0
-	dw NO_SCRIPT
-	ds 7
-	
 	dw $0055
 	dw $001E
 	db DIR_RIGHT
 	db KEEP_WALKING
+	db 0
+	dw NO_SCRIPT
+	ds 7
+	
+	dw $0098
+	dw $0050
+	db DIR_DOWN
+	db NO_WALKING
 	db 0
 	dw NO_SCRIPT
 	ds 7
