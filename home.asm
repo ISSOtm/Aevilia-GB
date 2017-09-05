@@ -152,15 +152,15 @@ Init::
 	ld [rVBK], a
 	ld hl, vTileMap0
 	ld c, TITLE_NAME_DEST - vTileMap0
-	call FillVRAMLite
+	rst fill
 	; Put emphasis on the game's name (will be overwritten if we are on DMG)
 	ld c, 10 ; Name's length, make sure to update if needed
 	ld a, $09
 	rst fill
 	ld hl, TITLE_NAME_DEST + 10
-	ld bc, $9AD4 - (TITLE_NAME_DEST + 10)
+	ld bc, vTileMap1 - (TITLE_NAME_DEST + 10)
 	ld a, 1
-	call FillVRAM
+	call Fill
 	xor a
 	ld [rVBK], a
 	
