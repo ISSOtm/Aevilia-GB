@@ -322,7 +322,22 @@ InteriorTileset::
 	tile_attr $BB, 0, 3, 0, 1, 0, 0
 	tile_attr $BA, 0, 2, 0, 1, 0, 0
 	
-REPT $14
+	tile_attr $82, 0, 2, 0, 0, 0, 0
+	tile_attr $82, 0, 2, 0, 0, 0, 0
+	tile_attr $88, 0, 2, 0, 0, 0, 0
+	tile_attr $88, 0, 2, 0, 0, 0, 0
+    
+	tile_attr $88, 0, 2, 0, 1, 0, 0
+	tile_attr $88, 0, 2, 0, 1, 0, 0
+	tile_attr $82, 0, 2, 0, 0, 0, 0
+	tile_attr $82, 0, 2, 0, 0, 0, 0
+    
+	tile_attr $86, 0, 2, 0, 0, 0, 0
+	tile_attr $86, 0, 2, 0, 0, 0, 0
+	tile_attr $86, 0, 2, 0, 0, 0, 0
+	tile_attr $86, 0, 2, 0, 0, 0, 0
+    
+REPT 17
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
