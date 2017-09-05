@@ -12,9 +12,11 @@ ENDM
 dline: MACRO
 line_label EQUS STRCAT("{line_prefix}", "\1")
 line_label::
+	dstr \2
 PURGE line_label ; Required, otherwise conflicts arise (!)
 ENDM
 
 dname: MACRO
 name_prefix::
+	dstr \1
 ENDM
