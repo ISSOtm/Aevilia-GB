@@ -2,7 +2,7 @@
 SECTION "Interior tileset", ROMX
 
 InteriorTileset::
-	db $3F
+	db $44
 	
 	; $80
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00
@@ -104,6 +104,15 @@ InteriorTileset::
 	
 	; $BE : Vertical wall bottom edge
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $00FF
+	
+	; $BF : Unused slot
+	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000
+	
+	; $C0-C3 : Checkerboard NPC tiles
+	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
+	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
+	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
+	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
 	
 	tile_attr $80, 0, 0, 0, 0, 0, 0
 	tile_attr $80, 0, 0, 0, 0, 0, 0
@@ -451,7 +460,15 @@ ENDR
 	; Vertical wall bottom edge
 	db 0
 	
-REPT $100 - $3F
+	; Unused slot
+	db 0
+	
+	; Checkerboard NPC tiles
+REPT 4
+	db TILE_CANWALK
+ENDR
+	
+REPT $100 - $44
 	db 0
 ENDR
 	
@@ -467,7 +484,7 @@ ENDR
 	dw 0
 	dw 0
 	
-	dw 0
+	dw InteriorMainPalette
 	dw 0
 	dw 0
 	dw 0
