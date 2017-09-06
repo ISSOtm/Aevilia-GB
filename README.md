@@ -35,6 +35,6 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 
 The game is open-source, you are allowed and actually encouraged to modify it. DO YOUR ROM HACKS, MAN ! Just take note that there is a license, and for a reason.
 
-You are not allowed to distribute your modified copy claiming it's the original. We (the Aevilia Dev Team) reserve the right to shut down any modified copy of the game infringing this.
+You are not allowed to distribute your modified copy claiming it's the original. We (the AeviDev Team) reserve the right to shut down any modified copy of the game infringing this.
 
 tl;dr : play by the rules and we'll support you.
