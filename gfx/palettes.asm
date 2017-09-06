@@ -83,13 +83,13 @@ TestNPCPalette::
 	
 EvieDefaultPalette:: ; Sprite palette : 3 colors per horizontal half
 	db $1F, $17, $13
-	db $1F, $12, $1A
+	db $1F, $0C, $1A
 	db $00, $00, $00
 EvieTextboxPalette::
 	db $1F, $1F, $1F
 	db $0A, $0A, $0A
 	db $00, $00, $00
-	db $1F, $12, $1A
+	db $1F, $0C, $1A
 	
 TomDefaultPalette::
 	db $1F, $17, $13
@@ -130,8 +130,8 @@ RoofPalette::
 	
 WaterPalette::
 	db $00, $00, $00 ; Unused
-	db $0C, $15, $1F ; Darker spots
-	db $0B, $10, $1F ; Water fill
+	db $08, $0F, $1F ; Darker spots
+	db $08, $0A, $1F ; Water fill
 	db $00, $00, $00 ; Unused
 	
 RockPalette::
