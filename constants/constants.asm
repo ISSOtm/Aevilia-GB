@@ -45,6 +45,8 @@ VRAM_ROW_SIZE	EQU $20 ; Size of a row of tiles in VRAM
 
 TITLE_NAME_DEST	EQU $9865
 
+TEXTBOX_MOVEMENT_SPEED	EQU 4
+
 ; -------------- MAP ----------------
 NB_OF_NPCS		EQU 8
 NO_SCRIPT		EQU $0000
