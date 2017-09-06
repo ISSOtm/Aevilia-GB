@@ -552,7 +552,7 @@ LoadTileset::
 	pop hl
 .noAnimators
 	
-	ld de, wBGPalette7_color0
+	ld de, wOBJPalette6_color2
 	ld c, 14
 	rst copy
 	push hl
@@ -577,7 +577,7 @@ LoadTileset::
 	
 	restore_rom_bank
 	pop hl
-	ld de, wOBJPalette7_color0
+	ld de, wOBJPalette6_color2
 	ld c, 14
 	rst copy
 ;	push hl
