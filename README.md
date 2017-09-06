@@ -16,9 +16,9 @@ Note : this is neither a tutorial nor a walkthrough for the game.
   Load it with the game in BizHawk to obtain a nice little HUD, showing collision, interaction boxes, etc.<br/>
   Again, useful for debugging, not for playing. Except maybe if TASing.
 - _Makefile_, _rgbasm_, _rgblink_, _rgbfix_<br/>
-  To build the game on systems supporting _make_ and Linux ELFs. Includes Linux and Linux Subsystem for Windows.
+  To build the game on systems supporting _make_ and Linux ELFs.
 - _compiler.bat_, _rgbasm.exe_, _rgblink.exe_, _rgbfix.exe_<br/>
-  To build the game on Windows. Wine is probably fine, too. But why doing thi--
+  To build the game on Windows.
 - _tools/*_<br/>
   Stuff to help building and modifying Aevilia, such as a map editor.
 - _doc/*_<br/>
