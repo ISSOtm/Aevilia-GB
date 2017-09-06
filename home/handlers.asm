@@ -211,15 +211,19 @@ ENDR
 	ld a, [wTextboxStatus]
 	and a
 	jr z, .noTextbox
+	ld b, TEXTBOX_MOVEMENT_SPEED
 	bit 7, a
 	jr z, .moveTextboxUpwards ; If bit 7 is reset, move upwards
 	and $7F
-	jr z, .skipSecondDec ; If status = $80, avoid decrementing (otherwise, causes a softlock)
+	jr z, .doneDecrementing ; If status = $80, avoid decrementing (otherwise, causes a softlock)
+.keepDecrementing
 	dec a ; Move downwards 1 pixel
-	jr z, .skipSecondDec ; Don't decrement if we reached the bottom
+	jr z, .doneDecrementing ; Don't decrement if we reached the bottom
+	dec b
+	jr nz, .keepDecrementing
 	or $80
 	dec a
-.skipSecondDec
+.doneDecrementing
 	ld [wTextboxStatus], a
 	and $7F
 	jr nz, .displayTextbox
@@ -229,11 +233,13 @@ ENDR
 .moveTextboxUpwards
 	cp TILE_SIZE * 6 + 1 ; If the textbox is fully deployed
 	jr z, .displayTextbox
+.keepIncrementing
 	inc a
 	cp TILE_SIZE * 6 + 1
-	jr z, .skipSecondInc
-	inc a
-.skipSecondInc
+	jr z, .doneIncrementing
+	dec b
+	jr nz, .keepIncrementing
+.doneIncrementing
 	ld [wTextboxStatus], a
 .displayTextbox
 	and $7F
