@@ -560,7 +560,7 @@ LoadTileset::
 	ld a, BANK(DefaultPalette)
 	rst bankswitch
 	
-	ld hl, wBGPalette7_color0
+	ld hl, wOBJPalette6_color2
 	ld de, wBGPalette1_color0
 .loadTilesetBGPalettes
 	ld a, [hli]
@@ -585,7 +585,7 @@ LoadTileset::
 	ld a, BANK(DefaultPalette)
 	rst bankswitch
 	
-	ld hl, wOBJPalette7_color0
+	ld hl, wOBJPalette6_color2
 	ld de, wOBJPalette1_color0
 .loadTilesetOBJPalettes
 	inc de
