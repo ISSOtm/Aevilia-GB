@@ -12,21 +12,26 @@ TestMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 TestMapInteractions::
-	db 6
+	db 7
 	
 	db BTN_LOADZONE
 	interact_box $009F, $0052, 1, 12
-	db 4 ; Dest map
+	db MAP_PLAYER_HOUSE ; Dest map
 	db 0 ; Dest warp point
 	
 	db BTN_LOADZONE
 	interact_box $004F, $0092, 1, 12
-	db 1
+	db MAP_TEST_HOUSE
+	db 0
+	
+	db BTN_LOADZONE
+	interact_box $004F, $0042, 1, 12
+	db MAP_STARTHAM_HOUSE_2
 	db 0
 	
 	db WALK_LOADZONE
 	interact_box $0048, $0000, 25, 21
-	db 3
+	db MAP_STARTHAM_FOREST
 	db 0
 	
 	db BTN_INTERACT
@@ -58,7 +63,7 @@ TestMapNPCs::
 	dw TestNPCTiles
 	
 TestMapWarpToPoints::
-	db 4 ; Number of warp-to points
+	db 5 ; Number of warp-to points
 	
 	dw $0048 ; Y pos
 	dw $0090 ; X pos
@@ -86,6 +91,14 @@ TestMapWarpToPoints::
 	
 	dw $0098
 	dw $0050
+	db DIR_DOWN
+	db NO_WALKING
+	db 0
+	dw NO_SCRIPT
+	ds 7
+	
+	dw $0048
+	dw $0040
 	db DIR_DOWN
 	db NO_WALKING
 	db 0

@@ -12,6 +12,8 @@ MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(IntroMap)
 	db BANK(TestForestMap)
 	db BANK(PlayerHouse)
+	db 0
+	db BANK(StarthamHouse2)
 	
 MapPointers::
 	dw TestMap
@@ -19,6 +21,8 @@ MapPointers::
 	dw IntroMap
 	dw TestForestMap
 	dw PlayerHouse
+	dw 0
+	dw StarthamHouse2
 	
 	
 SECTION "Tileset pointers", ROMX[$4300]
@@ -60,3 +64,4 @@ TilesetPointers::
 INCLUDE "maps/test.asm"
 INCLUDE "maps/intro.asm"
 INCLUDE "maps/playerhouse.asm"
+INCLUDE "maps/starthamhouse2.asm"
