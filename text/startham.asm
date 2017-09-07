@@ -2,7 +2,7 @@
 
 SECTION "Startham text strings", ROMX
 	
-	set_text_prefix TestMapNPC0
+	set_text_prefix StarthamNPC0
 	dname "TEST #0"
 	dline 0, "Heya! Did you know"
 	dline 1, "you are a NPC?"
@@ -19,7 +19,7 @@ SECTION "Startham text strings", ROMX
 	dline 12, "created."
 	dline 13, "Neat\, huh?"
 	
-	set_text_prefix TestMapSign
+	set_text_prefix StarthamSign
 	dname "Test sign"
 	dline 0, "Startham village"
 	dline 1, "We don't have"
