@@ -1,7 +1,4 @@
-
 SECTION "Error handler", ROMX
-	
-	
 ; Prints b as hex to de
 ; Advances de as well
 PrintHex::
@@ -25,9 +22,6 @@ PrintHex::
 	ld [de], a
 	inc de
 	ret
-	
-	
-	
 ; Function to print the fatal error handler
 ; Also in this bank since there's lotsa room for this
 DebugFatalError::
@@ -38,7 +32,6 @@ DebugFatalError::
 	ld hl, vTileMap1
 	ld bc, 32 * SCREEN_HEIGHT
 	call Fill
-	
 	; Make sure the user will see something
 	ld a, 1
 	ld [rVBK], a
@@ -60,11 +53,9 @@ DebugFatalError::
 	ld c, 0
 	ld de, InvertedPalette
 	callacross LoadBGPalette_Hook
-	
 	ld hl, FatalErrorString
 	ld de, vTileMap1
 	rst copyStr
-	
 	ld a, [wFatalErrorCode]
 	and a
 	jr z, .unknownError
@@ -80,7 +71,6 @@ DebugFatalError::
 .unknownError ; Jump here to skip looking for error name
 	ld e, $20
 	rst copyStr ; Print error name
-	
 	; Print all registers at time of fatal error
 	ld hl, FatalErrorScreenStrings
 	ld e, $60
@@ -95,7 +85,6 @@ DebugFatalError::
 	add a, $20
 	ld e, a
 	jr nz, .printRegisters
-	
 	; Print loaded ROM bank at time of error (obviously bank 3 is loaded now)
 	ld de, $9D20
 	rst copyStr
@@ -108,7 +97,6 @@ DebugFatalError::
 	ldh a, [hCurRAMBank]
 	ld b, a
 	call PrintHex
-	
 	; Print IE register
 	ld e, $80
 	rst copyStr
@@ -122,7 +110,6 @@ DebugFatalError::
 	and $3C
 	ld b, a
 	call PrintHex
-	
 	ld de, $9E00
 	rst copyStr
 	ld e, $22
@@ -188,11 +175,9 @@ DebugFatalError::
 	jr .dumpStack
 .doneDumping
 	ld sp, $9C00
-	
 	; Display something for the user
 	ld a, $89
 	ld [rLCDC], a
-	
 	ld de, 0
 .scrollAround
 	; Update scroll
@@ -200,7 +185,6 @@ DebugFatalError::
 	ld [rSCX], a
 	ld a, e
 	ld [rSCY], a
-	
 .waitVBlankEnd
 	ld a, [rSTAT]
 	and $03
@@ -211,7 +195,6 @@ DebugFatalError::
 	and $03
 	dec a
 	jr nz, .waitForVBlank
-	
 	call UpdateJoypadState
 	ldh a, [hHeldButtons]
 	rla
@@ -248,7 +231,6 @@ DebugFatalError::
 	jr z, .scrollAround
 	inc d
 	jr .scrollAround
-	
 FatalErrorString::
 	dstr "FATAL ERROR!"
 	dstr "UNKNOWN ERROR!!!"
@@ -260,7 +242,6 @@ FatalErrorString::
 	dstr "INVALID BATTLE TRANSITION"
 	dstr "NONEXISTANT ENEMY"
 	dstr "BAD THREAD 2 POINTER"
-	
 FatalErrorScreenStrings::
 	dstr "AF ="
 	dstr "BC ="
@@ -272,5 +253,3 @@ FatalErrorScreenStrings::
 	dstr "IE ="
 	dstr "STAT ="
 	dstr "STACK DUMP :"
-	
-	
