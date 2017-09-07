@@ -14,17 +14,19 @@ Note : this is neither a tutorial nor a walkthrough for the game.
   Helper files for debugging. Not required if you just want to play the game.
 - _HUD.lua_<br/>
   Load it with the game in BizHawk to obtain a nice little HUD, showing collision, interaction boxes, etc.<br/>
-  Again, useful for debugging, not for playing. Except maybe if TASing.
+  Again, useful for debugging, not for playing. Except maybe if TASing, as the game slows down dramatically while using it.
 - _Makefile_, _rgbasm_, _rgblink_, _rgbfix_<br/>
-  To build the game on systems supporting _make_ and Linux ELFs. Includes Linux and Linux Subsystem for Windows.
+  To build the game on systems supporting _make_ and Linux ELFs.
 - _compiler.bat_, _rgbasm.exe_, _rgblink.exe_, _rgbfix.exe_<br/>
-  To build the game on Windows. Wine is probably fine, too. But why doing thi--
+  To build the game on Windows.
 - _tools/*_<br/>
   Stuff to help building and modifying Aevilia, such as a map editor.
 - _doc/*_<br/>
   Incomplete (largely so) documentation on the game engine.
 - _images/*_<br/>
   Resources, be it original copies before they are encoded in the game, or concept art.
+- _corruptions/*_<br/>
+Some fun the team had while messing with some corruptors and this very game. Note that all of these are older bulids and ~90% are unplayable.
 - _obj/_<br/>
   Intermediate files for compilation. No touchy.
 - The rest<br/>
