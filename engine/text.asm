@@ -1264,7 +1264,7 @@ BattleDisplayNumber::
 	
 	
 DisplayTextboxInstant::
-	ld a, $28
+	ld a, $31
 	ld [wTextboxStatus], a
 	
 	ld a, 1 ; Consumed command byte
@@ -1279,21 +1279,20 @@ CloseTextboxInstant::
 	
 	
 DisplayTextboxWithoutWait::
-	ld a, 1
-	ld [wTextboxStatus], a
-	
-	; Consumed bytes : OK
+	ld hl, wTextboxStatus
+	ld a, [hl]
+	and $7F
+	ld a, 1 ; Consumed bytes : OK
+	ret nz
+	ld [hl], a
 	ret
 	
 CloseTextboxWithoutWait::
-	xor a
-	ld [wTextboxStatus], a
-	
-	inc a ; Consumed command byte
+	ld hl, wTextboxStatus
+	set 7, [hl]
+	ld a, 1 ; Consumed command byte
 	ret
 	
-	
-MakeEntityWalkTo_Common::
 	
 MakePlayerWalkTo::
 	ld hl, wDigitBuffer + 4
@@ -1329,18 +1328,17 @@ MakePlayerWalkTo::
 	inc hl ; positive
 	set 0, c ; Flip direction
 .moveNegatively
+	inc h ; Make high byte 1 more than actual offset
 .moveLoop
 	ld e, b ; Shove speed into e
-	ld a, h
-	and a
+	dec h ; After this, hl will contain actual offset, and Z will be set if it's < 256
 	ld a, c ; MakePlayerWalk_Hook expects a to be a copy of c to turn the player
 	jr z, .finalWalk ; If there are <$100 steps remaining, that's handled in one go.
-	dec h ; sub hl, $FF
-	inc l
+	inc hl ; Increment to subtract only $FF from hl, instead of the 256 from "dec h"
 	push bc ; Save our registers
 	push hl
-	ld b, $FF
-	call MakePlayerWalk_Hook ; And move 255 pixels ('cause that's the longest we can do in one go)
+	ld b, $FF ; And move 255 pixels ('cause that's the longest we can do in one go)
+	call MakePlayerWalk_Hook
 	pop hl ; Restore
 	pop bc
 	jr .moveLoop
@@ -1386,7 +1384,7 @@ MakeNPCWalkTo::
 .wroteDirection
 	inc hl
 	ld d, [hl]
-	swap a ; Get pointer to coord
+	swap a ; Get pointer to coord ; a "| HORIZONTAL_AXIS << 4" will select the proper coord (offsetting by 2)
 	add a, wNPC1_ypos & $FF
 	ld c, a
 	adc a, HIGH(wNPC1_ypos)
@@ -1412,18 +1410,17 @@ MakeNPCWalkTo::
 	set 0, [hl] ; Switch directions
 	inc hl
 .moveNegatively
+	; hl points to the "len" parameter in wDigitBuffer
+	inc d ; Now, de = offset + 256
 .moveLoop
-	ld a, d
-	and a
-	jr z, .finalWalk
-	dec d ; Subtract 255
-	inc e
+	dec d ; Subtract 256, so de contains the offset minus the "256" compensation
+	jr z, .finalWalk ; MakeNPCWalk cannot handle more than 255 steps, so if there are 256 or extra steps are required
+	inc de ; Increment de to only subtract 255
 	ld [hl], $FF
 	push de
-	push hl
-	call MakeNPCWalk
-	pop hl
+	call MakeNPCWalk ; Luckily this preserves all of wDigitBuffer
 	pop de
+	ld hl, wDigitBuffer + 3 ; Repoint to "len" argument
 	jr .moveLoop
 .finalWalk
 	ld [hl], e
