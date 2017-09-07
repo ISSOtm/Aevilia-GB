@@ -33,10 +33,10 @@ PlayerHouseNPCs::
 	db $00 ; Movement speed
 	
 	db $01 ; Number of NPC scripts
-	dw TestMapNPCScripts
+	dw 0
 	
 	db $01 ; Number of NPC tile sets
-	dw TestNPCTiles
+	dw 0
 	
 PlayerHouseWarpToPoints::
 	db 1 ; Number of warp-to points

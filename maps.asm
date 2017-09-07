@@ -7,7 +7,7 @@ INCLUDE "constants.asm"
 SECTION "Map pointers", ROMX[$4000]
 	
 MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
-	db BANK(TestMap)
+	db BANK(StarthamMap)
 	db BANK(TestHouse)
 	db BANK(IntroMap)
 	db BANK(TestForestMap)
@@ -16,7 +16,7 @@ MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(StarthamHouse2)
 	
 MapPointers::
-	dw TestMap
+	dw StarthamMap
 	dw TestHouse
 	dw IntroMap
 	dw TestForestMap
@@ -28,13 +28,13 @@ MapPointers::
 SECTION "Tileset pointers", ROMX[$4300]
 
 TilesetROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
-	db BANK(TestTileset)
+	db BANK(OverworldTileset)
 	db BANK(TestInteriorTileset)
 	db BANK(IntroTileset)
 	db BANK(InteriorTileset)
 	
 TilesetPointers::
-	dw TestTileset
+	dw OverworldTileset
 	dw TestInteriorTileset
 	dw IntroTileset
 	dw InteriorTileset
@@ -61,7 +61,7 @@ TilesetPointers::
 ; palette	- Pointers to BG Palettes 2-8
 
 
-INCLUDE "maps/test.asm"
+INCLUDE "maps/startham.asm"
 INCLUDE "maps/intro.asm"
 INCLUDE "maps/playerhouse.asm"
 INCLUDE "maps/starthamhouse2.asm"

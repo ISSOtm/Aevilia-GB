@@ -1,7 +1,7 @@
 
 SECTION "Test tileset", ROMX
 
-TestTileset::
+OverworldTileset::
 	db 42 ; Number of tiles
 	
 	; Grass tiles (80-82)

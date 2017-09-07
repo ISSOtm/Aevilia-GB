@@ -1,7 +1,7 @@
 	
 SECTION "Test map", ROMX
 	
-TestMap::
+StarthamMap::
 	db 0 ; Exterior map
 	
 	db MUSIC_OVERWORLD ; Music ID
@@ -11,7 +11,7 @@ TestMap::
 	map_size 29, 17 ; Width, height
 	dw NO_SCRIPT ; Loading script (none)
 	
-TestMapInteractions::
+StarthamInteractions::
 	db 7
 	
 	db BTN_LOADZONE
@@ -36,7 +36,7 @@ TestMapInteractions::
 	
 	db BTN_INTERACT
 	interact_box $0090, $0130, 16, 16
-	dw TestMapSignText ; Text ptr
+	dw StarthamSignText ; Text ptr
 	
 	db BTN_INTERACT
 	interact_box $0060, $00E0, 16, 16
@@ -46,7 +46,7 @@ TestMapInteractions::
 	interact_box $0050, $0050, 16, 16
 	dw StarthamHouseForSaleSign
 	
-TestMapNPCs::
+StarthamNPCs::
 	db 1 ; Number of NPCs
 	
 	interact_box $0020, $0020, 16, 16
@@ -57,12 +57,12 @@ TestMapNPCs::
 	db $01 ; Movement speed
 	
 	db $01 ; Number of NPC scripts
-	dw TestMapNPCScripts
+	dw StarthamNPCScripts
 	
 	db $01 ; Number of NPC tile sets
 	dw TestNPCTiles
 	
-TestMapWarpToPoints::
+StarthamWarpToPoints::
 	db 5 ; Number of warp-to points
 	
 	dw $0048 ; Y pos
@@ -105,14 +105,14 @@ TestMapWarpToPoints::
 	dw NO_SCRIPT
 	ds 7
 	
-TestMapBlocks::
-INCBIN "maps/test.blk"
+StarthamBlocks::
+INCBIN "maps/startham.blk"
 
-TestMapNPCScripts::
-	dw TestMapNPC0Script
+StarthamNPCScripts::
+	dw StarthamNPC0Script
 	
-	set_text_prefix TestMapNPC0
-TestMapNPC0Script::
+	set_text_prefix StarthamNPC0
+StarthamNPC0Script::
 	print_name
 	print_line_id 0
 	print_line_id 1
@@ -173,8 +173,8 @@ TestNPCWalkingTiles::
 	dw $08F8, $08F8, $10F0, $20E0, $C0C0, $0000, $0000, $0000
 	
 	
-	set_text_prefix TestMapSign
-TestMapSignText::
+	set_text_prefix StarthamSign
+StarthamSignText::
 	disp_box
 	print_line_id 0
 	wait_user
