@@ -14,8 +14,8 @@ PlayerHouseInteractions::
 	db 2
 	
 	db WALK_LOADZONE
-	interact_box $0077, $003E, 6, $14
-	db 0
+	interact_box $0077, $003E, 10, $15
+	db MAP_STARTHAM
 	db 3
 	
 	db BTN_INTERACT
@@ -48,7 +48,8 @@ PlayerHouseTVScript::
 .source1
 	choose YesNoChoice, .branch1 - .source1
 	close_box
-	make_player_walk DIR_DOWN, 32, 1
+	make_player_walk_to VERTICAL_AXIS, $30, 1
+	make_player_walk_to HORIZONTAL_AXIS, $0080, 1
 	turn_player DIR_UP
 	wait_user
 	make_player_walk DIR_UP, 32, 1
