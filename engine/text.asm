@@ -206,7 +206,9 @@ TextCommandsPointers::
 	dw DisplayTextboxWithoutWait
 	dw CloseTextboxWithoutWait
 	dw MakeNPCWalk
+	dw MakeNPCWalkTo
 	dw MakePlayerWalk
+	dw MakePlayerWalkTo
 	dw MakeChoice
 	dw MakeChoice ; Difference between commands handled by function itself
 	dw SetFadeSpeed
@@ -350,7 +352,9 @@ BattleTextCommandsPointers::
 	dw BattleDummy_1Byte
 	dw BattleDummy_1Byte
 	dw BattleDummy_5Bytes
+	dw BattleDummy_5Bytes
 	dw BattleDummy_4Bytes
+	dw BattleDummy_5Bytes
 	dw BattleMakeChoice ; TODO
 	dw BattleMakeChoice ; Difference between commands handled by function itself
 	dw SetFadeSpeed
@@ -1289,6 +1293,63 @@ CloseTextboxWithoutWait::
 	ret
 	
 	
+MakeEntityWalkTo_Common::
+	
+MakePlayerWalkTo::
+	ld hl, wDigitBuffer + 4
+	ld a, [hld]
+	and $02 ; Will modify Z...
+	ld c, a
+	ld b, [hl] ; Get speed
+	dec hl
+	ld d, [hl] ; Get target coord
+	dec hl
+	ld e, [hl]
+	ld hl, wYPos
+	; ... and Z is still the same !
+	jr z, .verticalAxis
+	inc hl
+	inc hl
+.verticalAxis
+	ld a, [hli] ; Get current coord
+	ld h, [hl]
+	sub e ; Subtract
+	ld l, a ; target
+	ld a, h ; coord
+	sbc d ; from
+	ld h, a ; current
+	rlca ; Is that negative ?
+	jr nc, .moveNegatively ; If not, we need to move in the "negative" direction - thus we're fine.
+	rrca ; Get back a
+	cpl ; And
+	ld h, a ; negate
+	ld a, l ; hl
+	cpl ; to
+	ld l, a ; become
+	inc hl ; positive
+	set 0, c ; Flip direction
+.moveNegatively
+.moveLoop
+	ld e, b ; Shove speed into e
+	ld a, h
+	and a
+	ld a, c ; MakePlayerWalk_Hook expects a to be a copy of c to turn the player
+	jr z, .finalWalk ; If there are <$100 steps remaining, that's handled in one go.
+	dec h ; sub hl, $FF
+	inc l
+	push bc ; Save our registers
+	push hl
+	ld b, $FF
+	call MakePlayerWalk_Hook ; And move 255 pixels ('cause that's the longest we can do in one go)
+	pop hl ; Restore
+	pop bc
+	jr .moveLoop
+.finalWalk
+	ld b, l
+	call MakePlayerWalk_Hook
+	inc a
+	ret
+	
 MakePlayerWalk::
 	ld hl, wDigitBuffer + 3
 	ld a, [hld] ; Get speed
@@ -1297,8 +1358,9 @@ MakePlayerWalk::
 	ld b, a
 	
 	ld a, [hl] ; Get direction
-	ld hl, wPlayerDir
 	ld c, a
+MakePlayerWalk_Hook:
+	ld hl, wPlayerDir
 	bit 2, c
 	jr nz, .dontTurnPlayer
 	and $03
@@ -1310,6 +1372,61 @@ MakePlayerWalk::
 	call TextMoveEntity_Common
 	dec a ; This command doesn't require the NPC ID byte
 	ret
+	
+MakeNPCWalkTo::
+	ld hl, wDigitBuffer + 1
+	ld a, [hli] ; Get NPC id & direction
+	; No need to alter NPC id due to failsafe
+	ld e, [hl]
+	ld [hl], VERTICAL_AXIS ; Set defzult dir
+	bit 5, a
+	jr z, .wroteDirection
+	ld [hl], HORIZONTAL_AXIS ; Re-write if horiz
+.wroteDirection
+	inc hl
+	ld d, [hl]
+	swap a ; Get pointer to coord
+	add a, wNPC1_ypos & $FF
+	ld c, a
+	adc a, HIGH(wNPC1_ypos)
+	sub c
+	ld b, a
+	ld a, [bc] ; Read coord and subtract to get offset
+	inc bc
+	sub e
+	ld e, a
+	ld a, [bc]
+	sbc d
+	ld d, a
+	rlca ; Is that negative ?
+	jr nc, .moveNegatively
+	rrca ; Negate offset
+	cpl
+	ld d, a
+	ld a, e
+	cpl
+	ld e, a
+	inc de
+	dec hl ; Point to direction
+	set 0, [hl] ; Switch directions
+	inc hl
+.moveNegatively
+.moveLoop
+	ld a, d
+	and a
+	jr z, .finalWalk
+	dec d ; Subtract 255
+	inc e
+	ld [hl], $FF
+	push de
+	push hl
+	call MakeNPCWalk
+	pop hl
+	pop de
+	jr .moveLoop
+.finalWalk
+	ld [hl], e
+	; Slide for the last one
 	
 MakeNPCWalk::
 	ld hl, wDigitBuffer + 1

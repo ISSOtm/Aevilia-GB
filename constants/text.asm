@@ -30,7 +30,9 @@
 	enum_elem DISP_WITHOUT_WAIT
 	enum_elem CLOSE_WITHOUT_WAIT
 	enum_elem MAKE_NPC_WALK
+	enum_elem MAKE_NPC_WALK_TO
 	enum_elem MAKE_PLAYER_WALK
+	enum_elem MAKE_PLAYER_WALK_TO
 	enum_elem MAKE_CHOICE
 	enum_elem MAKE_B_CHOICE
 	enum_elem SET_FADE_SPEED
@@ -261,6 +263,21 @@ turn_npc: MACRO
 	make_npc_walk \1, \2, 0, 0
 ENDM
 
+VERTICAL_AXIS	equ $00
+HORIZONTAL_AXIS	equ $02
+
+; make_npc_walk_to NPC_id dir coord spd
+; NPC_id is obvious
+; dir should be either VERTICAL_AXIS or HORIZONTAL_AXIS
+; coord is the target coord on that axis
+; spd is obvious
+make_npc_walk_to: MACRO
+	db MAKE_NPC_WALK_TO
+	db \1 | ((\2 & $02) << 4) ; Because the command's length cannot be more than 5 bytes, a little compression here...
+	dw \3
+	db \4
+ENDM
+
 ; make_player_walk dir len spd
 ; Same as make_npc_walk, except there's no "NPC_id" because the player is the target
 make_player_walk: MACRO
@@ -274,6 +291,16 @@ ENDM
 ; Meh
 turn_player: MACRO
 	make_player_walk \1, 0, 0
+ENDM
+
+; make_player_walk_to dir coord spd
+; Refer to make_npc_walk
+; Rather unorthodox ordering of arguments, but that's to avoid as much work as possible when passing to make_player_walk (internally)
+make_player_walk_to: MACRO
+	db MAKE_PLAYER_WALK_TO
+	dw \2
+	db \3
+	db \1
 ENDM
 
 
