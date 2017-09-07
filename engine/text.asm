@@ -1376,6 +1376,7 @@ MakePlayerWalk_Hook:
 MakeNPCWalkTo::
 	ld hl, wDigitBuffer + 1
 	ld a, [hli] ; Get NPC id & direction
+	and $27 ; Sanitize
 	; No need to alter NPC id due to failsafe
 	ld e, [hl]
 	ld [hl], VERTICAL_AXIS ; Set defzult dir
