@@ -1,9 +1,12 @@
+
 SECTION "Staff credits", ROMX
+
 PlayCredits::
 	; Start by fading the screen slowly
 	ld a, 8
 	ld [wFadeSpeed], a
-	callacross Fadeout	
+	callacross Fadeout
+	
 	; Clear the whole map
 	ld a, 1
 	ld [rVBK], a
@@ -18,11 +21,13 @@ PlayCredits::
 	ld [wSCY], a
 	ld [wSCX], a
 	ldh [hTilemapMode], a
+	
 	; Let text appear by loading a palette
 	ld de, DefaultPalette
 ;	ld c, 0
 	ld c, a
 	callacross LoadBGPalette_Hook
+	
 	; Display the first few lines
 	ld hl, CreditsFirstStrs
 	ld de, $98C5
@@ -32,8 +37,10 @@ PlayCredits::
 ;	ld de, $98E4
 	ld e, $E4
 	call CopyStrToVRAM
+	
 	ld bc, 60
 	call DelayBCFrames
+	
 	ld bc, 19
 	ld d, 1
 .scrollDownToStaff
@@ -53,13 +60,17 @@ PlayCredits::
 	ld [wSCY], a
 	cp $60
 	jr nz, .scrollDownToStaff
+	
 	call ClearMovableMap
+	
 	; Roll the staff credits
 	ld hl, StaffCreditsStrs
 .doOneStaffCredits
+	
 	rst waitVBlank ; Make sure wSCY gets applied
 	ld de, $9A24
 	call CopyStrToVRAM ; Copy role str to VRAM
+	
 	ld a, e
 	and -VRAM_ROW_SIZE
 	add VRAM_ROW_SIZE * 2 + 6
@@ -73,8 +84,10 @@ PlayCredits::
 	ld a, [hl]
 	and a
 	jr nz, .printStaff
+	
 	ld bc, 120
 	call DelayBCFrames
+	
 	push hl
 	ld hl, $9980
 	ld e, -8 ; If < 0 : number of frames beteen lines ; if >= 0 : number of pixels per frame
@@ -104,18 +117,22 @@ PlayCredits::
 	ld [wSCY], a
 	dec b ; We scrolled by 1 line
 	jr nz, .staff_dontRefreshLine ; If that's not the 8th, don't refresh a line
+	
 	ld b, d ; Save the value of d
 	ld c, VRAM_ROW_SIZE
 	xor a
 	call FillVRAMLite
+	
 	ld d, b ; Restore d
 	ld b, 8 ; Reset to 8 lines
+	
 	ld a, h
 	cp $9C
 	jr nz, .staff_dontRefreshLine ; If that's not the end, keep going down
 	ld a, $60
 	ld [wSCY], a
 	pop hl
+	
 	inc hl
 	ld a, [hl]
 	and a
@@ -126,6 +143,7 @@ PlayCredits::
 	jr nz, .staff_goDownOnePixel
 	jr .staff_goDownOnce
 .doneStaffCredits
+	
 	; Fade the screen for the final moment
 	ld a, 8
 	ld [wFadeSpeed], a
@@ -145,10 +163,12 @@ PlayCredits::
 ;	ld de, $9924
 	ld e, $24
 	call CopyStrToVRAM
+	
 	; Fade the text in
 	ld a, 4
 	ld [wFadeSpeed], a
 	callacross Fadein
+	
 	; Set the speed for the next fadeout
 	ld a, 16
 	ld [wFadeSpeed], a
@@ -158,6 +178,7 @@ PlayCredits::
 	ldh a, [hPressedButtons]
 	and BUTTON_A
 	jr z, .finalLoop
+	
 	; Print a message to tell we'll be back
 	ld hl, CreditsFinalStr
 	ld de, $99A2
@@ -168,6 +189,7 @@ PlayCredits::
 	inc de
 	and a
 	jr nz, .printFinalStr
+	
 	ld bc, 30
 	call DelayBCFrames
 	; Fade out, then restart the game
@@ -176,38 +198,47 @@ PlayCredits::
 	callacross Fadeout
 	ld a, $11
 	jp Start
+	
 CreditsFirstStrs::
 	dstr "AEVILIA GB"
 	dstr "STAFF CREDITS"
+	
 StaffCreditsStrs::
 	dstr "PROGRAMMING"
 	dstr "ISSOtm"
 	dstr "DevEd"
 	db 0
+	
 	dstr "LEAD GRAPHICS"
 	dstr "Kai"
 	db 0
+	
 	dstr "GRAPHICS"
 	dstr "Alpha"
 	dstr "Mian"
 	dstr "Citx"
 	dstr "ISSOtm"
 	db 0
+	
 	dstr "MUSIC"
 	dstr "DevEd"
 	db 0
+	
 	dstr "MAP DESIGN"
 	dstr "Parzival"
 	dstr "Charmy"
 	dstr "Kai"
 	dstr "Citx"
 	db 0
+	
 	dstr "3DS SUPPORT"
 	dstr "Parzival"
 	db 0
+	
 	dstr "ADDITIONAL                      PROGRAMMING"
 	dstr "Kai"
 	db 0
+	
 	dstr "SPECIAL THANKS"
 	dstr "Torchickens"
 	dstr "GCL"
@@ -215,11 +246,14 @@ StaffCreditsStrs::
 	dstr "GBDev Discord"
 	dstr "Nintendo"
 	db 0
+	
 	db 0
+	
 CreditsThanksStrs::
 	dstr "THE DEV TEAM"
 	dstr "WOULD LIKE TO"
 	dstr "THANK YOU"
 	dstr "FOR PLAYING!"
+	
 CreditsFinalStr::
 	dstr "SEE YOU LATER..."
