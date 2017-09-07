@@ -23,7 +23,20 @@ PlayerHouseInteractions::
 	dw PlayerHouseTVScript
 	
 PlayerHouseNPCs::
-	db 0
+	db 1
+	
+	interact_box $0060, $0000, 0, 0
+	db 0 ; Interaction ID
+	db $10 << 2 | DIR_UP ; Sprite ID & direction
+	dn 1, 1, 1, 1 ; Palette IDs
+	db $00 ; Movement permissions
+	db $00 ; Movement speed
+	
+	db $01 ; Number of NPC scripts
+	dw TestMapNPCScripts
+	
+	db $01 ; Number of NPC tile sets
+	dw TestNPCTiles
 	
 PlayerHouseWarpToPoints::
 	db 1 ; Number of warp-to points

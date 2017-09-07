@@ -46,10 +46,10 @@ InteriorTileset::
 	dw $0000, $8080, $E060, $F030, $78A8, $FC14, $FC2C, $FE16
 	dw $5768, $4D72, $A7D8, $BBC4, $C8B7, $DBE7, $7A77, $0E0F
 	dw $FE1E, $FE16, $FF2B, $FF17, $FF29, $FFD7, $FCDC, $E060
-	dw $2334, $2038, $101D, $1718, $101D, $080D, $0707, $0000
-	dw $C43C, $041C, $08F8, $E818, $08F8, $10F0, $E0E0, $0000
-	dw $0202, $0202, $0203, $0E0F, $141E, $0C2D, $2C2E, $2637
-	dw $40C0, $40C0, $4040, $70F0, $28F8, $30BC, $34FC, $64FC
+	dw $2334, $2038, $101D, $1718, $10FD, $08FD, $07F7, $00F0
+	dw $C43F, $041F, $08FF, $E81F, $08F8, $10F0, $E0F0, $00F0
+	dw $020E, $020E, $020F, $0E0F, $14FE, $0CED, $2CEE, $26F7
+	dw $40CF, $40CF, $404F, $70FF, $28F8, $30BC, $34FC, $64FC
 	
 	; $9F-A0 : Wall picture
 	dw $00FF, $7FFF, $40C0, $48D7, $4CD3, $5EC1, $5FC0, $5FC0
@@ -484,7 +484,7 @@ ENDR
 	dw 0
 	dw 0
 	
-	dw InteriorMainPalette
+	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
 	dw 0
 	dw 0
 	dw 0
