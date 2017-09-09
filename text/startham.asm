@@ -38,6 +38,11 @@ SECTION "Startham text strings", ROMX
 	dline 6, "too high to be"
 	dline 7, "affordable..."
 	
+	set_text_prefix StarthamEmptySign
+	dline 0, "There's nothing"
+	dline 1, "written here."
+	dline 2, "(Why?)"
+	
 	
 SECTION "Test house text strings", ROMX
 	
