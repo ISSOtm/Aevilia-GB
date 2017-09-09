@@ -15,20 +15,16 @@ BUTTON_B		EQU (1 << 1)
 BUTTON_A		EQU (1 << 0)
 
 ; ---------- ERROR CODES ------------
-ERR_UNKNOWN		EQU 0
-ERR_PC_IN_RAM	EQU 1
-ERR_DIV_BY_ZERO	EQU 2
-ERR_WRONG_WARP	EQU 3
-ERR_BAD_MAP		EQU 4
-ERR_BATT_TRANS	EQU 5
-ERR_BAD_ENEMY	EQU 6
-ERR_BAD_THREAD2	EQU 7
-ERR_MAX			EQU 8
-
-; ---------- THREAD 2 IDS -----------
-THREAD2_DISABLED	EQU 0
-THREAD2_OPENDOOR	EQU 1
-THREAD2_MAX			EQU 2
+	enum_start
+	enum_elem ERR_UNKNOWN
+	enum_elem ERR_PC_IN_RAM
+	enum_elem ERR_DIV_BY_ZERO
+	enum_elem ERR_WRONG_WARP
+	enum_elem ERR_BAD_MAP
+	enum_elem ERR_BATT_TRANS
+	enum_elem ERR_BAD_ENEMY
+	enum_elem ERR_BAD_THREAD2
+	enum_elem ERR_MAX
 
 ; -------------- GFX ----------------
 LY_VBLANK		EQU $90
