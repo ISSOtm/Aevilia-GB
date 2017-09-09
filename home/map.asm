@@ -390,6 +390,8 @@ ENDC
 	callacross Fadein
 	xor a
 	ld [wFadeSpeed], a
+	inc a
+	ldh [hIgnorePlayerActions], a
 	ret
 	
 	
@@ -2439,7 +2441,8 @@ DoWalkingInteractions::
 	
 ProcessLoadZone:
 	inc hl
-	inc hl
+	ld a, [hli]
+	ldh [hThread2ID], a
 	ld a, [hli]
 	ld [wTargetWarpID], a
 	ld a, [hl]

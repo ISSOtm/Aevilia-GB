@@ -15,7 +15,7 @@ TestForestInteractions::
 	
 	db WALK_LOADZONE
 	interact_box $0068, $01C6, 25, 14
-	db THREAD2_DISABLED
+	db THREAD2_LOADINGWALKRIGHT
 	db 2
 	db MAP_STARTHAM
 	ds 7

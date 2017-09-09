@@ -15,7 +15,7 @@ StarthamHouse2Interactions::
 	
 	db WALK_LOADZONE
 	interact_box $0087, $002E, 10, $15
-	db THREAD2_DISABLED
+	db THREAD2_LOADINGWALKDOWN
 	db 4
 	db MAP_STARTHAM
 	ds 7

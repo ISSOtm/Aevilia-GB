@@ -15,7 +15,7 @@ PlayerHouseInteractions::
 	
 	db WALK_LOADZONE
 	interact_box $0077, $003E, 10, $15
-	db THREAD2_DISABLED
+	db THREAD2_LOADINGWALKDOWN
 	db 3
 	db MAP_STARTHAM
 	ds 7

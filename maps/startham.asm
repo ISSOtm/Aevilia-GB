@@ -37,7 +37,7 @@ StarthamInteractions::
 	
 	db WALK_LOADZONE
 	interact_box $0048, $0000, 25, 21
-	db THREAD2_DISABLED
+	db THREAD2_LOADINGWALKLEFT
 	db 0
 	db MAP_STARTHAM_FOREST
 	ds 7
