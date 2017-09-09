@@ -62,6 +62,8 @@ TilesetPointers::
 
 
 INCLUDE "maps/startham.asm"
+INCLUDE "maps/testhouse.asm"
 INCLUDE "maps/intro.asm"
+INCLUDE "maps/startham_forest.asm"
 INCLUDE "maps/playerhouse.asm"
 INCLUDE "maps/starthamhouse2.asm"

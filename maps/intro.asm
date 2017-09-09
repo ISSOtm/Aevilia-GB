@@ -1,5 +1,23 @@
 
-SECTION "Intro map", ROMX
+SECTION "Intro map", ROMX, ALIGN[5]
+	
+; MAKE SURE THIS DOES NOT CROSS A 256-BYTE BOUNDARY!!
+; (Except for the last byte, which is allowed to)
+IntroScripts::
+	dw IntroBoyGirlText
+	dw IntroChooseGender
+	dw IntroChoseGenderText
+	dw IntroFadeToNarrator
+	dw IntroGreetText
+	dw IntroResetDelayStep
+	dw IntroPressAText
+	dw IntroWaitNextState
+	dw IntroObjectNeededText
+	dw 0 ; Don't do anything, the NPC script advances the status by itself
+	dw IntroRemovedNPCText
+	dw IntroCheckStartMenu
+	
+	
 IntroMap::
 	db $80
 	
@@ -160,22 +178,6 @@ IntroMapLoadingScript::
 	xor a ; Close the textbox that was left open by the previous script
 	ld [wTextboxStatus], a
 	jp AllowJoypadMovement ; Cancel above prevention
-	
-; MAKE SURE THIS DOES NOT CROSS A 256-BYTE BOUNDARY!!
-; (Except for the last byte, which is allowed to)
-IntroScripts::
-	dw IntroBoyGirlText
-	dw IntroChooseGender
-	dw IntroChoseGenderText
-	dw IntroFadeToNarrator
-	dw IntroGreetText
-	dw IntroResetDelayStep
-	dw IntroPressAText
-	dw IntroWaitNextState
-	dw IntroObjectNeededText
-	dw 0 ; Don't do anything, the NPC script advances the status by itself
-	dw IntroRemovedNPCText
-	dw IntroCheckStartMenu
 	
 ; The map script is basically a dispatcher, which either calls a function or processes some text depending on wIntroMapStatus
 IntroMapScript::
