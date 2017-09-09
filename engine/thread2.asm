@@ -45,11 +45,17 @@ LoadingWalk::
 	inc hl
 .moveVertically
 	rrca
+	ld e, [hl]
+	inc hl
+	ld d, [hl]
 	jr c, .movePositively
-	dec [hl]
-	dec [hl]
+	dec de
+	dec de
 .movePositively
-	inc [hl]
+	inc de
+	ld [hl], d
+	dec hl
+	ld [hl], e
 	call MoveNPC0ToPlayer
 	ld hl, wNPC0_steps
 	dec [hl]
