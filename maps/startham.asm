@@ -16,35 +16,46 @@ StarthamInteractions::
 	
 	db BTN_LOADZONE
 	interact_box $009F, $0052, 1, 12
-	db MAP_PLAYER_HOUSE ; Dest map
+	db THREAD2_DISABLED
 	db 0 ; Dest warp point
+	db MAP_PLAYER_HOUSE ; Dest map
+	ds 7
 	
 	db BTN_LOADZONE
 	interact_box $004F, $0092, 1, 12
-	db MAP_TEST_HOUSE
+	db THREAD2_DISABLED
 	db 0
+	db MAP_TEST_HOUSE
+	ds 7
 	
 	db BTN_LOADZONE
 	interact_box $004F, $0042, 1, 12
-	db MAP_STARTHAM_HOUSE_2
+	db THREAD2_DISABLED
 	db 0
+	db MAP_STARTHAM_HOUSE_2
+	ds 7
 	
 	db WALK_LOADZONE
 	interact_box $0048, $0000, 25, 21
-	db MAP_STARTHAM_FOREST
+	db THREAD2_DISABLED
 	db 0
+	db MAP_STARTHAM_FOREST
+	ds 7
 	
 	db BTN_INTERACT
 	interact_box $0090, $0130, 16, 16
 	dw StarthamSignText ; Text ptr
+	ds 8
 	
 	db BTN_INTERACT
 	interact_box $0060, $00E0, 16, 16
 	dw StarthamHouseForSaleSign
+	ds 8
 	
 	db BTN_INTERACT
 	interact_box $0050, $0050, 16, 16
 	dw StarthamEmptySign
+	ds 8
 	
 StarthamNPCs::
 	db 1 ; Number of NPCs

@@ -125,18 +125,17 @@ ENDC
 	inc a
 	ld [de], a
 	dec a
-	add a, a
-	add a, a
-	add a, a
+	swap a
 	ld e, a
-	dec d ; de points to wWalkingLoadZones + struct offset
+	dec d ; de points to wButtonLoadZones + struct offset
 	ld a, [hli]
 	rra
-	jr nc, .walkingThingy
-	set 7, e
-.walkingThingy
+	jr c, .buttonThingy
+	dec d
+.buttonThingy
 	and a
 	jr nz, .loadZone
+	dec d
 	dec d
 .loadZone
 	ld c, INTERACTION_STRUCT_SIZE
@@ -2441,7 +2440,7 @@ DoWalkingInteractions::
 ProcessLoadZone:
 	inc hl
 	inc hl
-	ld a, [hld]
+	ld a, [hli]
 	ld [wTargetWarpID], a
 	ld a, [hl]
 	jp LoadMap

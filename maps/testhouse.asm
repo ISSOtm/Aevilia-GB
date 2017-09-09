@@ -16,8 +16,10 @@ TestHouseInteractions::
 	
 	db WALK_LOADZONE
 	interact_box $004B, $002E, 6, 5
+	db THREAD2_DISABLED
 	db 0
-	db 0
+	db MAP_STARTHAM
+	ds 7
 	
 TestHouseNPCs::
 	db 1

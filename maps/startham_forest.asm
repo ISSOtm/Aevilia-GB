@@ -15,20 +15,25 @@ TestForestInteractions::
 	
 	db WALK_LOADZONE
 	interact_box $0068, $01C6, 25, 14
-	db 0
+	db THREAD2_DISABLED
 	db 2
+	db MAP_STARTHAM
+	ds 7
 	
 	db WALK_INTERACT
 	interact_box $0028, $0000, 9, 16
 	dw TestForestEndOfDemo
+	ds 8
 	
 	db BTN_INTERACT
 	interact_box $00B0, $01C0, 16, 16
 	dw TestForestEntranceSign
+	ds 8
 	
 	db BTN_INTERACT
 	interact_box $0020, $0050, 16, 16
 	dw StarthamForestExitSign
+	ds 8
 	
 TestForestNPCs::
 	db 0

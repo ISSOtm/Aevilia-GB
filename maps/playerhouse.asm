@@ -15,12 +15,15 @@ PlayerHouseInteractions::
 	
 	db WALK_LOADZONE
 	interact_box $0077, $003E, 10, $15
-	db MAP_STARTHAM
+	db THREAD2_DISABLED
 	db 3
+	db MAP_STARTHAM
+	ds 7
 	
 	db BTN_INTERACT
 	interact_box $0008, $0080, 16, 16
 	dw PlayerHouseTVScript
+	ds 8
 	
 PlayerHouseNPCs::
 	db 1

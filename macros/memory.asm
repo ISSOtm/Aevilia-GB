@@ -83,6 +83,7 @@ wWalkingInter\1_xpos::		dw
 wWalkingInter\1_ybox::		db
 wWalkingInter\1_xbox::		db
 wWalkingInter\1_textptr::	dw
+wWalkingInter\1_unused::	ds 8
 ENDM
 
 button_interaction: MACRO
@@ -91,6 +92,7 @@ wButtonInter\1_xpos::		dw
 wButtonInter\1_ybox::		db
 wButtonInter\1_xbox::		db
 wButtonInter\1_textptr::	dw
+wButtonInter\1_unused::		ds 8
 ENDM
 
 walking_loadzone: MACRO
@@ -98,8 +100,10 @@ wWalkingLoadZone\1_ypos::		dw
 wWalkingLoadZone\1_xpos::		dw
 wWalkingLoadZone\1_ybox::		db
 wWalkingLoadZone\1_xbox::		db
-wWalkingLoadZone\1_destMap::	db
+wWalkingLoadZone\1_thread2ID::	db
 wWalkingLoadZone\1_destWarp::	db
+wWalkingLoadZone\1_destMap::	db
+wWalkingLoadZone\1_unused::		ds 7
 ENDM
 
 button_loadzone: MACRO
@@ -107,8 +111,10 @@ wButtonLoadZone\1_ypos::		dw
 wButtonLoadZone\1_xpos::		dw
 wButtonLoadZone\1_ybox::		db
 wButtonLoadZone\1_xbox::		db
-wButtonLoadZone\1_destMap::		db
+wButtonLoadZone\1_thread2ID::	db
 wButtonLoadZone\1_destWarp::	db
+wButtonLoadZone\1_destMap::		db
+wButtonLoadZone\1_unused::		ds 7
 ENDM
 
 

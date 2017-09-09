@@ -15,8 +15,10 @@ StarthamHouse2Interactions::
 	
 	db WALK_LOADZONE
 	interact_box $0087, $002E, 10, $15
-	db MAP_STARTHAM
+	db THREAD2_DISABLED
 	db 4
+	db MAP_STARTHAM
+	ds 7
 	
 StarthamHouse2NPCs::
 	db 0

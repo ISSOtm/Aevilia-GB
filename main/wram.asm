@@ -338,7 +338,7 @@ wTileAttributes::
 wTileAttributesEnd:
 
 
-SECTION "Tile animations", WRAMX[$D5FF],BANK[1]
+SECTION "Tile animations", WRAMX[$D7FF],BANK[1]
 	
 wNumOfTileAnims::
 	ds 1
@@ -468,7 +468,7 @@ SECTION "NPC counter", WRAMX,BANK[1]
 wNumOfNPCs::
 	ds 1
 	
-SECTION "NPC array", WRAMX[$D510],BANK[1] ; ,ALIGN[8]
+SECTION "NPC array", WRAMX[$D710],BANK[1] ; ,ALIGN[8]
 	
 ; Contains data for all NPCs
 wNPCArray::
