@@ -25,22 +25,22 @@ TestInteriorTileset::
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Accesses the third color of a palette
 	
 	; $00 : Black void
-	tile_attr $88, 0, 1, 0, 0, 0, 0
-	tile_attr $88, 0, 1, 0, 0, 0, 0
-	tile_attr $88, 0, 1, 0, 0, 0, 0
-	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 1
+	tile_attr $88, 0, 1, 0, 0, 0, 1
+	tile_attr $88, 0, 1, 0, 0, 0, 1
+	tile_attr $88, 0, 1, 0, 0, 0, 1
 	
 	; $01 : House wall
-	tile_attr $88, 0, 3, 0, 0, 0, 0
-	tile_attr $88, 0, 3, 0, 0, 0, 0
-	tile_attr $88, 0, 3, 0, 0, 0, 0
-	tile_attr $88, 0, 3, 0, 0, 0, 0
+	tile_attr $88, 0, 3, 0, 0, 0, 1
+	tile_attr $88, 0, 3, 0, 0, 0, 1
+	tile_attr $88, 0, 3, 0, 0, 0, 1
+	tile_attr $88, 0, 3, 0, 0, 0, 1
 	
 	; $02 : House bottom wall
-	tile_attr $88, 0, 3, 0, 0, 0, 0
-	tile_attr $81, 0, 2, 0, 0, 0, 0
-	tile_attr $88, 0, 3, 0, 0, 0, 0
-	tile_attr $81, 0, 2, 0, 0, 0, 0
+	tile_attr $88, 0, 3, 0, 0, 0, 1
+	tile_attr $81, 0, 2, 0, 0, 0, 1
+	tile_attr $88, 0, 3, 0, 0, 0, 1
+	tile_attr $81, 0, 2, 0, 0, 0, 1
 	
 	; $03 : House left wall
 	tile_attr $80, 0, 2, 0, 0, 0, 0
@@ -80,10 +80,10 @@ TestInteriorTileset::
 	
 	; These blocks are unused
 REPT 64 - 9
-	tile_attr $88, 0, 1, 0, 0, 0, 0
-	tile_attr $88, 0, 1, 0, 0, 0, 0
-	tile_attr $88, 0, 1, 0, 0, 0, 0
-	tile_attr $88, 0, 1, 0, 0, 0, 0
+	tile_attr $88, 0, 1, 0, 0, 0, 1
+	tile_attr $88, 0, 1, 0, 0, 0, 1
+	tile_attr $88, 0, 1, 0, 0, 0, 1
+	tile_attr $88, 0, 1, 0, 0, 0, 1
 ENDR
 	
 	
