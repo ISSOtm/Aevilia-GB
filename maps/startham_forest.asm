@@ -46,7 +46,7 @@ TestForestWarpToPoints::
 	db DIR_LEFT
 	db KEEP_WALKING
 	db 0
-	db THREAD2_DISABLED
+	db THREAD2_AFTERLOADINGWALKLEFT
 	dw NO_SCRIPT
 	ds 6
 	

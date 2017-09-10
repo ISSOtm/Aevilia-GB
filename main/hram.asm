@@ -74,4 +74,6 @@ hThread2ID::
 	ds 1
 hLoadingWalkDirection::
 	ds 1
+hLoadingFinalCount::
+	ds 1
 	

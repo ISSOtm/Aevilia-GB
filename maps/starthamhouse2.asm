@@ -31,7 +31,7 @@ StarthamHouse2WarpToPoints::
 	db DIR_UP ; Direction
 	db NO_WALKING ; Flags
 	db 0
-	db THREAD2_DISABLED
+	db THREAD2_AFTERLOADINGWALKUP
 	dw NO_SCRIPT ; Loading script (none)
 	ds 6
 	
