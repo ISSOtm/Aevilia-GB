@@ -81,40 +81,45 @@ StarthamWarpToPoints::
 	db DIR_DOWN ; Direction
 	db NO_WALKING ; Flags
 	db 0 ; Cameraman ID
+	db THREAD2_DISABLED
 	dw NO_SCRIPT ; Loading script (none)
-	ds 7
+	ds 6
 	
 	dw $FFF8
 	dw $0140
 	db DIR_DOWN
 	db NO_WALKING
 	db 0
+	db THREAD2_DISABLED
 	dw NO_SCRIPT
-	ds 7
+	ds 6
 	
 	dw $0055
 	dw $001E
 	db DIR_RIGHT
 	db KEEP_WALKING
 	db 0
+	db THREAD2_DISABLED
 	dw NO_SCRIPT
-	ds 7
+	ds 6
 	
 	dw $0098
 	dw $0050
 	db DIR_DOWN
 	db NO_WALKING
 	db 0
+	db THREAD2_DISABLED
 	dw NO_SCRIPT
-	ds 7
+	ds 6
 	
 	dw $0048
 	dw $0040
 	db DIR_DOWN
 	db NO_WALKING
 	db 0
+	db THREAD2_DISABLED
 	dw NO_SCRIPT
-	ds 7
+	ds 6
 	
 StarthamBlocks::
 INCBIN "maps/startham.blk"

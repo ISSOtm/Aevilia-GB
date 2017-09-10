@@ -46,8 +46,9 @@ TestForestWarpToPoints::
 	db DIR_LEFT
 	db KEEP_WALKING
 	db 0
+	db THREAD2_DISABLED
 	dw NO_SCRIPT
-	ds 7
+	ds 6
 	
 TestForestBlocks::
 INCBIN "maps/startham_forest.blk"

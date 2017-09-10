@@ -45,8 +45,9 @@ TestHouseWarpToPoints::
 	db DIR_UP ; Direction
 	db NO_WALKING ; Flags
 	db 0
+	db THREAD2_DISABLED
 	dw NO_SCRIPT ; Loading script (none)
-	ds 7
+	ds 6
 	
 TestHouseBlocks::
 INCBIN "maps/testhouse.blk"

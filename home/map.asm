@@ -300,6 +300,9 @@ ENDC
 	sbc a, 0
 	ld [bc], a ; Camera X pos, high
 	
+	ld a, [hli] ; Thread 2 ID
+	ldh [hThread2ID], a
+	
 	ld a, [hli] ; Loading script...
 	ld h, [hl]
 	ld l, a

@@ -95,8 +95,9 @@ IntroMapWarpToPoints::
 	db DIR_RIGHT
 	db NO_WALKING
 	db 2
+	db THREAD2_DISABLED
 	dw CharSelectLoadingScript
-	ds 7
+	ds 6
 	
 TUTORIAL_STARTING_YPOS = $0028
 TUTORIAL_STARTING_XPOS = $0010
@@ -106,8 +107,9 @@ TUTORIAL_STARTING_XPOS = $0010
 	db DIR_RIGHT
 	db NO_WALKING
 	db 0
+	db THREAD2_DISABLED
 	dw IntroMapLoadingScript
-	ds 7
+	ds 6
 	
 IntroMapBlocks::
 INCBIN "maps/intro.blk"
