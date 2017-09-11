@@ -11,18 +11,18 @@ function drawHUD()
 	wCameraYPos = 0xC236
 	wCameraXPos = 0xC238
 	
-	wWalkInterCount = 0x01D500
-	wBtnInterCount = 0x01D501
+	wWalkInterCount = 0x01D700
+	wBtnInterCount = 0x01D701
 	wWalkingInteractions = 0x01D300
-	wButtonInteractions = 0x01D380
+	wButtonInteractions = 0x01D400
 	
-	wWalkLoadZoneCount = 0x01D502
-	wBtnLoadZoneCount = 0x01D503
-	wWalkingLoadZones = 0x01D400
-	wButtonLoadZones = 0x01D480
+	wWalkLoadZoneCount = 0x01D702
+	wBtnLoadZoneCount = 0x01D703
+	wWalkingLoadZones = 0x01D500
+	wButtonLoadZones = 0x01D600
 	
-	wNumOfNPCs = 0x01D50F
-	wNPC0_ypos = 0x01D510
+	wNumOfNPCs = 0x01D70F
+	wNPC0_ypos = 0x01D710
 	NPCstructlength = 16
 	
 	wYPos = 0xC22F
@@ -112,7 +112,7 @@ function drawHUD()
 			-- WRAM0
 			
 			if bank ~= 0 then
-				console.log("Warning : WRAM0 is not bankable !")
+				-- console.log("Warning : WRAM0 is not bankable !")
 			end
 			
 			readbyte = func(busaddr)
@@ -130,7 +130,7 @@ function drawHUD()
 			-- ECH0
 			
 			if bank ~= 0 then
-				console.log("Warning : ECH0 is not bankable !")
+				-- console.log("Warning : ECH0 is not bankable !")
 			end
 			
 			readbyte = func(busaddr)
