@@ -384,13 +384,33 @@ OverworldTileset::
 	tile_attr $AA, 0, 1, 0, 0, 0, 0
 	tile_attr $AE, 0, 1, 0, 0, 0, 0
 	
-	; Vertical fence and path
+	; Vertical fence and path (left)
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $AC, 0, 1, 0, 0, 0, 0
+	tile_attr $AC, 0, 1, 0, 0, 0, 0
+	
+	; Vertical fence and path (right)
 	tile_attr $AC, 0, 1, 0, 0, 0, 0
 	tile_attr $AC, 0, 1, 0, 0, 0, 0
 	tile_attr $9D, 0, 1, 0, 0, 0, 0
 	tile_attr $9D, 0, 1, 0, 0, 0, 0
 	
+	; Horizontal fence end and path
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $AB, 0, 1, 0, 0, 0, 0
+	tile_attr $AE, 0, 1, 0, 0, 0, 0
+	
+REPT 10
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+ENDR
+	
 ; These blocks would requires special coding, maybe use them later
+; (Note : currently they don't fit in the block space)
 IF 0
 	; Grass ledge down
 	tile_attr $80, 0, 2, 0, 0, 0, 0
@@ -463,13 +483,6 @@ IF 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $96, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
-ELSE
-REPT 12
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-ENDR
 ENDC
 	
 	
