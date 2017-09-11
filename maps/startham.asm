@@ -60,7 +60,7 @@ StarthamInteractions::
 StarthamNPCs::
 	db 1 ; Number of NPCs
 	
-	interact_box $0020, $0020, 16, 16
+	interact_box $00A3, $00D8, 16, 16
 	db 0 ; Interaction ID
 	db $01 << 2 | DIR_DOWN ; Sprite ID & direction
 	dn 1, 1, 1, 1 ; Palette IDs
@@ -71,7 +71,7 @@ StarthamNPCs::
 	dw StarthamNPCScripts
 	
 	db $01 ; Number of NPC tile sets
-	dw TestNPCTiles
+	dw GenericBoyATiles
 	
 StarthamWarpToPoints::
 	db 5 ; Number of warp-to points
@@ -156,37 +156,37 @@ StarthamNPC0Script::
 	wait_user
 	done
 
-TestNPCTiles::
-	dw $0000, $0000, $0202, $0404, $0000, $0303, $0407, $080F
-	dw $101F, $101F, $101F, $101F, $080F, $0407, $0303, $0000
-	dw $0000, $0000, $8080, $4040, $0000, $C0C0, $20E0, $10F0
-	dw $08F8, $08F8, $08F8, $08F8, $10F0, $20E0, $C0C0, $0000
+GenericBoyATiles::
+	dw $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $3F3F, $3F3F
+	dw $3F3F, $191F, $263D, $2D3A, $1B1C, $0F0E, $0D0B, $0606
+	dw $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $FCFC, $FCFC
+	dw $FCFC, $98F8, $64BC, $B45C, $D838, $F070, $B0D0, $6060
 	
-	dw $0000, $0000, $0202, $0404, $0000, $0303, $0407, $0A0F
-	dw $121F, $121F, $101F, $101F, $090F, $0407, $0303, $0000
-	dw $0000, $0000, $8080, $4040, $0000, $C0C0, $20E0, $90F0
-	dw $88F8, $88F8, $08F8, $48F8, $90F0, $20E0, $C0C0, $0000
+	dw $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $393F, $2A3F
+	dw $223F, $181F, $273F, $2E35, $1F18, $0F0E, $0D0B, $0606
+	dw $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $9CFC, $54FC
+	dw $44FC, $18F8, $E4FC, $74AC, $F818, $F070, $B0D0, $6060
 	
-	dw $0000, $0000, $0404, $0202, $0000, $0303, $0407, $080F
-	dw $141F, $141F, $141F, $101F, $0A0F, $0407, $0303, $0000
-	dw $0000, $0000, $0000, $0000, $0000, $C0C0, $20E0, $10F0
-	dw $08F8, $08F8, $08F8, $08F8, $10F0, $20E0, $C0C0, $0000
+	dw $0303, $0F0F, $1F1F, $3F3F, $3F3F, $131F, $151F, $141F
+	dw $101F, $080F, $0707, $0704, $0605, $0203, $0704, $0303
+	dw $C0C0, $F0F0, $F8F8, $FCFC, $FCFC, $FCFC, $FCFC, $F8F8
+	dw $38F8, $30F0, $E0E0, $90F0, $D070, $20E0, $E020, $E0E0
 	
-TestNPCWalkingTiles::
-	dw $0202, $0404, $0000, $0303, $0407, $080F, $101F, $101F
-	dw $101F, $101F, $080F, $0407, $0303, $0000, $0000, $0000
-	dw $8080, $4040, $0000, $C0C0, $20E0, $10F0, $08F8, $08F8
-	dw $08F8, $08F8, $10F0, $20E0, $C0C0, $0000, $0000, $0000
+GenericBoyAWalkingTiles::
+	dw $0000, $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $3F3F
+	dw $3F3F, $3F3F, $1A1F, $171C, $0F0A, $0B0C, $0D0B, $0606
+	dw $0000, $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $FCFC
+	dw $FCFC, $FCFC, $78F8, $E818, $C878, $B070, $C0C0, $0000
 	
-	dw $0202, $0404, $0000, $0303, $0407, $0A0F, $121F, $101F
-	dw $131F, $121F, $090F, $0407, $0303, $0000, $0000, $0000
-	dw $8080, $4040, $0000, $C0C0, $20E0, $90F0, $88F8, $08F8
-	dw $C8F8, $48F8, $90F0, $20E0, $C0C0, $0000, $0000, $0000
+	dw $0000, $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $393F
+	dw $2A3F, $223F, $181F, $171F, $1E19, $1F1E, $0D0B, $0606
+	dw $0000, $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $FCFC
+	dw $54FC, $44FC, $38F8, $C8F8, $68D8, $F070, $8080, $0000
 	
-	dw $0404, $0202, $0000, $0303, $0407, $080F, $141F, $141F
-	dw $101F, $181F, $0407, $0407, $0303, $0000, $0000, $0000
-	dw $0000, $0000, $0000, $C0C0, $20E0, $10F0, $08F8, $08F8
-	dw $08F8, $08F8, $10F0, $20E0, $C0C0, $0000, $0000, $0000
+	dw $0000, $0303, $0F0F, $1F1F, $3F3F, $3F3F, $131F, $151F
+	dw $141F, $101F, $080F, $0707, $1D1F, $342F, $1F13, $0C0C
+	dw $0000, $C0C0, $F0F0, $F8F8, $FCFC, $FCFC, $FCFC, $FCFC
+	dw $F8F8, $38F8, $30F0, $E0E0, $F838, $E8B8, $F8C8, $3030
 	
 	
 	set_text_prefix StarthamSign

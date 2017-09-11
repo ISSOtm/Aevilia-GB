@@ -438,10 +438,17 @@ IF 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $96, 0, 7, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
+ELSE
+REPT 12
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+	tile_attr $A9, 0, 1, 0, 0, 0, 0
+ENDR
 ENDC
 	
 	; These blocks aren't used
-REPT 64 - 49
+REPT 64 - 61
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
@@ -528,7 +535,7 @@ ENDR
 	dw WaterPalette
 	dw RockPalette
 	
-	dw TestNPCPalette
+	dw GenericBoyAPalette
 	dw 0
 	dw 0
 	dw 0

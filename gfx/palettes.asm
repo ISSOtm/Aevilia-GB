@@ -101,6 +101,11 @@ TomTextboxPalette::
 	db $00, $00, $00
 	db $09, $00, $03
 	
+GenericBoyAPalette::
+	db $1F, $17, $13
+	db $00, $1B, $06
+	db $00, $00, $00
+	
 	
 ; A few test exterior palettes
 	
