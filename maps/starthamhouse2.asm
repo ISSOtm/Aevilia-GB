@@ -21,6 +21,25 @@ StarthamHouse2Interactions::
 	ds 7
 	
 StarthamHouse2NPCs::
+	db 2
+	
+	interact_box $0040, $0000, 0, 0
+	db 0
+	db $10 << 2 | DIR_UP
+	dn 1, 1, 1, 1
+	db $00
+	db $00
+	
+	interact_box $0070, $0090, 0, 0
+	db 0
+	db $10 << 2 | DIR_UP
+	dn 1, 1, 1, 1
+	db $00
+	db $00
+	
+	db 0
+	dw 0
+	
 	db 0
 	
 StarthamHouse2WarpToPoints::
