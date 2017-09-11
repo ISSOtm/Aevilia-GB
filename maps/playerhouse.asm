@@ -35,11 +35,10 @@ PlayerHouseNPCs::
 	db $00 ; Movement permissions
 	db $00 ; Movement speed
 	
-	db $01 ; Number of NPC scripts
-	dw 0
+	db 0 ; Number of NPC scripts
+	dw 0 ; Obligatory no matter the above value
 	
-	db $01 ; Number of NPC tile sets
-	dw 0
+	db 0 ; Number of NPC tile sets
 	
 PlayerHouseWarpToPoints::
 	db 1 ; Number of warp-to points
