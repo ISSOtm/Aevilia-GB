@@ -47,6 +47,7 @@ AfterLoadingFirstWalk:
 	
 	; First frame, offset player so it lands at the warp-to after the after-loading movement
 	ld a, b
+	ld [wPlayerDir], a
 	ld bc, wYPos
 	bit 1, a
 	jr z, .moveVertically
@@ -79,8 +80,9 @@ AfterLoadingFirstWalk:
 	ldh [hLoadingFinalCount], a
 	
 	; Start the actual movement
-	ldh a, [hLoadingWalkDirection]
-	jr LoadingWalks_CommonFirst ; Skip the load to HRAM
+	ld a, THREAD2_LOADINGWALK
+	ldh [hThread2ID], a
+	ret ; Delay by 1 frame to avoid a sprite count conflict that causes a graphical issue
 	
 	
 LoadingWalkUp::
