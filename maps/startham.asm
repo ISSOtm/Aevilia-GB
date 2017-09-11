@@ -60,7 +60,7 @@ StarthamInteractions::
 StarthamNPCs::
 	db 1 ; Number of NPCs
 	
-	interact_box $00A3, $00D8, 16, 16
+	interact_box $00B3, $00D8, 16, 16
 	db 0 ; Interaction ID
 	db $01 << 2 | DIR_DOWN ; Sprite ID & direction
 	dn 1, 1, 1, 1 ; Palette IDs

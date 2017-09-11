@@ -2,7 +2,7 @@
 SECTION "Overworld tileset", ROMX
 
 OverworldTileset::
-	db 42 ; Number of tiles
+	db 47 ; Number of tiles
 	
 	; Grass tiles (80-82)
 	dw $0062, $02B5, $004A, $40B5, $004A, $08B4, $004B, $0094
@@ -69,6 +69,13 @@ OverworldTileset::
 	
 	; A9
 	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Accesses the third color of a palette
+	
+	; Fence (AA-AE)
+	dw $2222, $5577, $FFFF, $00FF, $FFFF, $5577, $55FF, $77FF ; Horizontal
+	dw $2222, $5577, $7F7F, $007F, $7F7F, $5577, $55FF, $77FF ; Horizontal, end
+	dw $2038, $5078, $5078, $2038, $5078, $5078, $2038, $5078 ; Vertical
+	dw $2038, $5078, $5078, $2038, $5078, $5078, $2030, $0000 ; Vertical, end
+	dw $0077, $0077, $00FF, $00EE, $0044, $0000, $0011, $0044 ; Shadow
 	
 	
 	; Grey border
@@ -365,6 +372,24 @@ OverworldTileset::
 	tile_attr $89, 0, 4, 0, 1, 0, 0
 	tile_attr $8A, 0, 4, 0, 1, 0, 0
 	
+	; Horizontal fence and path
+	tile_attr $AA, 0, 1, 0, 0, 0, 0
+	tile_attr $AE, 0, 1, 0, 0, 0, 0
+	tile_attr $AA, 0, 1, 0, 0, 0, 0
+	tile_attr $AE, 0, 1, 0, 0, 0, 0
+	
+	; Horizontal fence end and path
+	tile_attr $AB, 0, 1, 0, 0, 0, 0
+	tile_attr $AE, 0, 1, 0, 0, 0, 0
+	tile_attr $AA, 0, 1, 0, 0, 0, 0
+	tile_attr $AE, 0, 1, 0, 0, 0, 0
+	
+	; Vertical fence and path
+	tile_attr $AC, 0, 1, 0, 0, 0, 0
+	tile_attr $AC, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	
 ; These blocks would requires special coding, maybe use them later
 IF 0
 	; Grass ledge down
@@ -447,14 +472,6 @@ REPT 12
 ENDR
 ENDC
 	
-	; These blocks aren't used
-REPT 64 - 61
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-	tile_attr $A9, 0, 1, 0, 0, 0, 0
-ENDR
-	
 	
 	; Grass tiles
 REPT 3
@@ -508,8 +525,14 @@ ENDR
 	; "Third color" tile
 	db 0
 	
+	; Fence tiles
+REPT 4
+	db 0
+ENDR
+	db TILE_CANWALK
+	
 	; Unused tiles get nuffin'
-REPT $100 - 42
+REPT $100 - 47
 	db 0
 ENDR
 	
