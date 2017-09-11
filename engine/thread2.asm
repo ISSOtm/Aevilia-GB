@@ -40,6 +40,7 @@ AfterLoadingFirstWalk:
 	
 	ld de, $20
 	ld a, [wFadeSpeed]
+	and $7F ; Ignore color bit
 	inc a
 	call MultiplyDEByA ; The slower the fade, the more we have to compensate !
 	; (Preserves bc)
