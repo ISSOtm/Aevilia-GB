@@ -43,6 +43,7 @@ AfterLoadingFirstWalk:
 	and $7F ; Ignore color bit
 	inc a
 	call MultiplyDEByA ; The slower the fade, the more we have to compensate !
+	dec hl ; There's an additional 1 frame delay, account for it.
 	; (Preserves bc)
 	
 	; First frame, offset player so it lands at the warp-to after the after-loading movement
