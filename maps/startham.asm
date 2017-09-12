@@ -8,7 +8,7 @@ StarthamMap::
 	
 	db TILESET_TEST ; Tileset
 	dw NO_SCRIPT ; Script (none)
-	map_size 29, 17 ; Width, height
+	map_size 29, 18 ; Width, height
 	dw NO_SCRIPT ; Loading script (none)
 	
 StarthamInteractions::
@@ -58,16 +58,23 @@ StarthamInteractions::
 	ds 8
 	
 StarthamNPCs::
-	db 1 ; Number of NPCs
+	db 2 ; Number of NPCs
 	
 	interact_box $00B3, $00D8, 16, 16
-	db 0 ; Interaction ID
+	db 1 ; Interaction ID
 	db $01 << 2 | DIR_DOWN ; Sprite ID & direction
 	dn 1, 1, 1, 1 ; Palette IDs
 	db $F4 ; Movement permissions
 	db $01 ; Movement speed
 	
-	db $01 ; Number of NPC scripts
+	interact_box $0110, $01C0, 16, 16
+	db 0 ; Interaction ID
+	db $01 << 2 | DIR_DOWN
+	dn 1, 1, 1, 1
+	db 0
+	db 0
+	
+	db $02 ; Number of NPC scripts
 	dw StarthamNPCScripts
 	
 	db $01 ; Number of NPC tile sets
@@ -126,10 +133,42 @@ INCBIN "maps/startham.blk"
 
 StarthamNPCScripts::
 	dw StarthamNPC0Script
+	dw StarthamGenericBoyAScript
 	
-	set_text_prefix StarthamNPC0
+	set_text_prefix StarthamParzival
 StarthamNPC0Script::
 	print_name
+	print_line_id 0
+	wait_user
+	print_line_id 1
+	wait_user
+	print_line_id 2
+	print_line_id 3
+	wait_user
+	print_line_id 4
+	print_line_id 5
+	wait_user
+	clear_box
+	delay 60
+	print_line_id 6
+	delay 60
+	print_line_id 7
+	print_line_id 8
+	print_line_id 9
+	wait_user
+	clear_box
+	print_line_id 10
+	delay 60
+	print_line_id 11
+	print_line_id 12
+	wait_user
+	print_line_id 13
+	wait_user
+	done
+	
+	set_text_prefix StarthamGenericBoyAScript
+StarthamGenericBoyAScript::
+	disp_box
 	print_line_id 0
 	print_line_id 1
 	wait_user
@@ -139,20 +178,7 @@ StarthamNPC0Script::
 	wait_user
 	clear_box
 	print_line_id 5
-	wait_user
 	print_line_id 6
-	print_line_id 7
-	print_line_id 8
-	wait_user
-	clear_box
-	print_line_id 9
-	print_line_id 10
-	print_line_id 11
-	wait_user
-	print_line_id 12
-	wait_user
-	clear_box
-	print_line_id 13
 	wait_user
 	done
 
