@@ -294,16 +294,24 @@ It's possible for the game to skip moving the player and processing button actio
 wUnlinkJoypad, when non-zero, enables this mechanic. Note that you should avoid modifying it directly, but rather through the functions PreventJoypadMovement and AllowJoypadMovement.
 hIgnorePlayerActions also enables this mechanic, BUT is cleared at the beginning of each overworld frame (except in some cases, and always for a good reason :p).
 Basically : if you plan on using joypad input for several frames while locking the player, use wUnlinkJoypad. If you just need to stall the player for one frame, use hIgnorePlayerActions.
+Note that a non-zero battle encounter has the same effect as hIgnorePlayerActions.
 
 5.ii Warping
 
 Warping from map to map is actually a complex process. You basically set wTargetWarpID and call LoadMap with the desired map ID in a. Note that an invalid map ID will generate an error !
-The game first reads the map's flags to determine whether to fade to and from white (going to an "exterior" map) or black (going to an "interior" map). Then it checks the map's track and compares it with the current track, to decide if it needs to change musics or not.
+The game first reads the map's flags to determine whether to fade to and from white (going to an "exterior" map) or black (going to an "interior" map). Then it checks the map's track and compares it with the current track, to decide if it needs to change musics or not. Then it performs a fade-out.
 Then, the map's tileset is compared with the current one, and if they differ, the map's tileset is loaded.
 Then game then copies the interactions and NPCs to their tables in RAM, and checks for warps. Basically, the game checks if the warp is warp $FF - which stands for "don't perform any warping operation", and keeps player position, etc (this is primarily used when loading your file) if so.
 If the warp isn't warp $FF, the game checks if the warp indeed exists ; if not, it generates an error.
-Warping is basically setting the player's position and direction, maybe resetting the walking animation, changing the cameraman, and maybe running a custom script.
+Warping is basically setting the player's position and direction, maybe resetting the walking animation, changing the cameraman, setting Thread 2, and maybe running a custom script.
+The game then copies the block data to WRAM, and maybe runs a custom script (which is global to the map, not the warp !).
+Then the camera is moved, the player is copied to NPC 0, and NPC sprites are updated.
+Once all is done, the game performs a fade-in, both graphical and musical, using the same parameter as the fade-out, then returns.
+Note that hIgnorePlayerActions is set before returning.
 
 5.iii Map data
 
-MAKE SURE BLOCK DATA IS AT MOST $1000 BLOCKS LARGE !!!
+Block data is the bulk of the map. It's basically an array of bytes, stored (in the source) in .blk files. The array is obviously 2D, with the same dimensions as specified in the map header. (Note : this makes the width more important than the height, sure.)
+The format is the most straightforward, so the best you can do is get AeviMap and a good AeviMap.ini, and start editing those .blk's.
+
+Notee : block data is copied to a WRAM bank ; thus, MAKE SURE BLOCK DATA IS AT MOST $1000 (4096) BLOCKS LARGE !!!
