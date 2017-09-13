@@ -11,7 +11,7 @@ SECTION "Startham text strings", ROMX
 	dline 4, "Including the"
 	dline 5, "map to the left."
 	dline 6, "..."
-	dline 7, "How friggin LONG"
+	dline 7, "How friggin' LONG"
 	dline 8, "does it take to"
 	dline 9, "build a ROM?"
 	dline 10, "Oh!"
