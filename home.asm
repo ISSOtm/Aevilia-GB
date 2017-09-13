@@ -236,7 +236,7 @@ THE_CONSTANT = 42
 	dec a
 	call Fill
 	inc a
-	ld hl, wTransferRows + 6
+	ld hl, wTransferRows + 9
 	ld c, SCREEN_HEIGHT - 1
 	rst fill
 	
