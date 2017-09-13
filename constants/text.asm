@@ -305,7 +305,10 @@ ENDM
 
 
 ; choose str_choice ofs_2
-; str_choice : Pointer to the strings to be written
+; Lets the user choose between two options
+; str_choice : Pointer to the strings to be written (both must be consecutive)
+; ofs_2 : number of bytes to "consume" if the second choice has been selected
+; (First choice keeps going "as normal")
 ; Remember to add the 5 of the MAKE_CHOICE command!
 choose: MACRO
 	db MAKE_CHOICE
@@ -321,6 +324,7 @@ fake_choice: MACRO
 	db 5
 ENDM
 
+; Same as "choose", but the B button automatically selects the second option
 b_choice: MACRO
 	db MAKE_B_CHOICE
 	db BANK(\1)
@@ -337,59 +341,77 @@ ENDM
 
 
 ; set_fade_speed gfx_fade_speed
+; Sets the graphics fade speed
+; gfx_fade_speed : byte to be written to wFadeSpeed (raw, including bit 7)
 set_fade_speed: MACRO
 	db SET_FADE_SPEED
 	db \1
 ENDM
 
+; Calls Fadein
 gfx_fadein: MACRO
 	db GFX_FADE_IN
 ENDM
 
+; Calls Fadeout
 gfx_fadeout: MACRO
 	db GFX_FADE_OUT
 ENDM
 
+; Calls ReloadPalettes (reloads palettes from WRAM to palette RAM)
 reload_palettes: MACRO
 	db RELOAD_PALETTES
 ENDM
 
 
 ; text_lda src_ptr
+; Indirectly loads a byte into the text accumulator
+; src_ptr : Pointer to load the byte from
+; Note : banking is straight up ignored
 text_lda: MACRO
 	db LDA_TEXT
 	dw \1
 ENDM
 
-; text_sta imm8
+; text_lda_imm imm8
+; Loads a 8-bit value into the text accumulator
+; imm8 : Value to load
 text_lda_imm: MACRO
 	db LDAIMM_TEXT
 	db \1
 ENDM
 
 ; text_sta dest_ptr
+; Stores the text accumulator's contents to a byte in memory
+; dest_ptr : Pointer to load the byte to
 text_sta: MACRO
 	db STA_TEXT
 	dw \1
 ENDM
 
 ; text_cmp imm8
+; Compares the value of the text accumulator with a value and updates the flags
+; imm8 : The value to compare to
 text_cmp: MACRO
 	db CMP_TEXT
 	db \1
 ENDM
 
+; Decrements the text accumulator
 ; Note that unlike the z80's `dec`, this updates the carry flag!
 ; Also note that `inc` doesn't, otherwise C == Z (so it'd be pointless)
 text_dec: MACRO
 	db DEC_TEXT
 ENDM
 
+; Increments the text accumulator
 text_inc: MACRO
 	db INC_TEXT
 ENDM
 
 ; text_add imm8
+; Adds a value to the text accumulator
+; imm8 : The value to add
 text_add: MACRO
 	db ADD_TEXT
 	db \1
@@ -402,6 +424,8 @@ text_adc: MACRO
 ENDM
 
 ; text_add_mem ptr
+; Adds an indirect value to the text accumulator
+; ptr : Pointer to the 8-bit value to be added
 text_add_mem: MACRO
 	db ADDMEM_TEXT
 	dw \1
@@ -420,12 +444,17 @@ text_sub_mem: MACRO
 ENDM
 
 ; text_set_flags mask
+; ORs the text flags with the given mask
+; mask : bitfield of the masks to set
+; (To reset, combine with a "toggle")
 text_set_flags: MACRO
 	db SET_TEXT_FLAGS
 	db \1
 ENDM
 
 ; text_toggle_flags mask
+; XORs the text flags with the given mask
+; mask : bitfield of the masks to toggle
 text_toggle_flags: MACRO
 	db TOGGLE_TEXT_FLAGS
 	db \1
@@ -433,6 +462,8 @@ ENDM
 
 
 ; text_asmcall funcptr
+; Calls a function directly (must be in ROM)
+; funcptr : label of the function to be called
 text_asmcall: MACRO
 	db TEXT_CALL_FUNCTION
 	db BANK(\1)
@@ -442,6 +473,7 @@ ENDM
 
 ; instant_str ptr
 ; Instantly prints all three strings pointed to (contiguous)
+; ptr : pointer to the first string
 instant_str: MACRO
 	db INSTANT_PRINT_STRS
 	db BANK(\1)
@@ -449,6 +481,7 @@ instant_str: MACRO
 ENDM
 
 
+; Reloads the text flags according to the accumulator (only exception is C, which is preserved)
 text_update_flags: MACRO
 	db UPDATE_TEXT_FLAGS
 ENDM
@@ -474,58 +507,80 @@ text_jr: MACRO
 ENDM
 
 
+; text_bankswitch bank
+; Switches WRAM banks
+; bank : target bank
 text_bankswitch: MACRO
 	db TEXT_RAM_BANKSWITCH
 	db \1
 ENDM
 
 
+; text_and mask
+; ANDS the text accumulator with the given mask
 text_and: MACRO
 	db TEXT_AND
 	db \1
 ENDM
 
+; text_or mask
 text_or: MACRO
 	db TEXT_OR
 	db \1
 ENDM
 
+; test_xor mask
 text_xor: MACRO
 	db TEXT_XOR
 	db \1
 ENDM
 
-
+; test_bit bit_num
+; ANDs the text accumulator with the given mask, but only updates flags (doesn't write back)
 text_bit: MACRO
 	db TEXT_BIT
 	db \1
 ENDM
 
+
+; Ends the text stream (just like "done" would) but doesn't close the text box
 end_with_box: MACRO
 	db END_TEXT_LEAVE_BOX
 ENDM
 
 
+; fade_music fade_type
+; Fades music out/in/out fully
+; fade_type : Use DevSound's fade types
 fade_music: MACRO
 	db TEXT_MUSIC_FADE
 	db \1
 ENDM
 
+; play_music music_id
+; Plays a music track
+; music_id : ID of the song to be played
 play_music: MACRO
 	db TEXT_MUSIC_PLAY
 	db \1
 ENDM
 
+; Instantly stops the music (use DS_Fade beforehand !)
 stop_music: MACRO
 	db TEXT_MUSIC_STOP
 ENDM
 
 
+; color_textbox ptr_to_palette
+; Overrides the textbox's color palette
+; ptr_to_palette : pointer to the palette to be loaded
 color_textbox: MACRO
 	db OVERRIDE_TEXBOX_PAL
 	dw \1
 ENDM
 
+
+; Closes the textbox without ending the stream
 close_box: MACRO
 	db CLOSE_TEXTBOX
 ENDM
