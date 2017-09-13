@@ -135,10 +135,11 @@ RightEyeTiles::
 IntroMapNPCScripts::
 	dw IntroNPC0Script
 	
+	set_text_prefix IntroNPC
 IntroNPC0Script::
-	print_name .name
-	print_line .line0
-	print_line .line1
+	print_name
+	print_line_id 0
+	print_line_id 1
 	delay 100
 	text_bankswitch BANK(wIntroMapStatus)
 	text_lda wIntroMapStatus
@@ -146,19 +147,9 @@ IntroNPC0Script::
 	text_sta wIntroMapStatus
 	text_bankswitch 1
 	clear_box
-	print_line .line2
+	print_line_id 2
 	close_quick
 	done
-	
-.name
-	dstr "FRIENDLY NPC"
-	
-.line0
-	dstr "Hi! It's rare to"
-.line1
-	dstr "see someone here!"
-.line2
-	dstr "My name is Jo"
 
 TestNPCTiles::
 	dw $0000, $0000, $0202, $0404, $0000, $0303, $0407, $080F
@@ -489,162 +480,106 @@ SECTION "Intro map texts", ROMX
 	
 IntroTexts::
 
+	set_text_prefix IntroBoyGirl
 IntroBoyGirlText::
 	print_pic GameTiles
 	print_name GameName
-	print_line .line0
-	print_line .line1
-	print_line .line2
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
 	wait_user
 	clear_box
-	print_line .line3
-	print_line .line4
-	print_line .line5
+	print_line_id 3
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	clear_box
-	print_line .line6
+	print_line_id 6
 	delay 60
-	print_line .line7
+	print_line_id 7
 	wait_user
 	clear_box
-	print_line .line8
+	print_line_id 8
 	wait_user
-	print_line .line9
-	print_line .line10
-	print_line .line11
+	print_line_id 9
+	print_line_id 10
+	print_line_id 11
 	wait_user
 	done
 	
-.line0
-	dstr "BEFORE YOU CAN"
-.line1
-	dstr "EMBARK ON THIS"
-.line2
-	dstr "ADVENTURE..."
-.line3
-	dstr "I MUST ASK"
-.line4
-	dstr "A COUPLE OF"
-.line5
-	dstr "QUESTIONS."
-.line6
-	dstr "THE TOPIC?"
-.line7
-	dstr "YOU."
-.line8
-	db "FOR EXAMPLE,", 0
-.line9
-	dstr "I NEED TO KNOW"
-.line10
-	dstr "IF YOU ARE A"
-.line11
-	dstr "BOY OR GIRL."
 	
-	
+	set_text_prefix IntroChoseGender
 IntroChoseGenderText::
 	print_pic GameTiles
 	print_name GameName
-	print_line .line0
+	print_line_id 0
 	wait_user
 	clear_box
-	print_line .line1
-	print_line .line2
-	print_line .line3
+	print_line_id 1
+	print_line_id 2
+	print_line_id 3
 	wait_user
 	clear_box
-	print_line .line4
-	print_line .line5
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	end_with_box
 	
-.line0
-	dstr "OKAY!"
-.line1
-	dstr "I'LL LEAVE YOU"
-.line2
-	dstr "WITH THE"
-.line3
-	dstr "NARRATOR."
-.line4
-	dstr "SEE YOU AND"
-.line5
-	dstr "HAVE FUN!"
 	
-	
+	set_text_prefix IntroGreet
 IntroGreetText::
 	disp_box
 	delay 60
-	print_line .line0
+	print_line_id 0
 	wait_user
 	clear_box
-	print_line .line1
-	print_line .line2
+	print_line_id 1
+	print_line_id 2
 	wait_user
 	clear_box
-	print_line .line3
+	print_line_id 3
 	wait_user
 	clear_box
-	print_line .line4
-	print_line .line5
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	done
 	
-.line0
-	dstr "Ah."
-.line1
-	dstr "Someone has"
-.line2
-	dstr "arrived."
-.line3
-	dstr "Then hello."
-.line4
-	dstr "Use the d-pad"
-.line5
-	dstr "to move around."
 	
-	
+	set_text_prefix IntroPressA
 IntroPressAText::
 	delay 5
 	disp_box
-	print_line .line0
+	print_line_id 0
 	delay 60
-	print_line .line1
-	print_line .line2
-	print_line .line3
+	print_line_id 1
+	print_line_id 2
+	print_line_id 3
 	wait_user
 	done
 	
-.line0
-	db "Okay, "
-	dstr "good."
-.line1
-	dstr "Press A to"
-.line2
-	dstr "interact with"
-.line3
-	dstr "other things."
 	
-	
+	set_text_prefix IntroObjectNeeded
 IntroObjectNeededText::
 	disp_box
-	print_line .line0
-	print_line .line1
+	print_line_id 0
+	print_line_id 1
 	wait_user
 	clear_box
-	print_line .line2
-	print_line .line3
+	print_line_id 2
+	print_line_id 3
 	delay 20
 .source1
 	choose YesNoChoice, (.branch1 - .source1)
 	clear_box
-	print_line .line4
+	print_line_id 4
 	delay 60
 	clear_box
-	print_line .line5
+	print_line_id 5
 	wait_user
-	print_line .line6
-	print_line .line7
-	print_line .line8
+	print_line_id 6
+	print_line_id 7
+	print_line_id 8
 	wait_user
 	delay 30
 	text_lda_imm $00
@@ -660,133 +595,71 @@ IntroObjectNeededText::
 	text_lda_imm $F1
 	text_sta hOverworldButtonFilter
 	delay 30
-	print_line .line9
+	print_line_id 9
 	wait_user
 	done
 	
 .branch1
 	clear_box
 	delay 20
-	print_line .line10
+	print_line_id 10
 	delay 50
-	print_line .line11
+	print_line_id 11
 	delay 50
 	wait_user
 	clear_box
-	print_line .line12
-	print_line .line13
-	print_line .line14
+	print_line_id 12
+	print_line_id 13
+	print_line_id 14
 	wait_user
 	clear_box
-	print_line .line15
+	print_line_id 15
 	text_bankswitch BANK(wIntroMapStatus)
 	text_lda_imm $8B ; Set bit 7 to flag player as "too smart" and advance to last status
 	text_sta wIntroMapStatus
 	text_bankswitch 1
 	delay 60
-	print_line .line16
+	print_line_id 16
 	wait_user
 	done
 	
 	
-.line0
-	dstr "Why aren't you"
-.line1
-	dstr "interacting?"
-.line2
-	dstr "Are you even"
-.line3
-	dstr "trying?"
-.line4
-	dstr "..."
-.line5
-	db "Well, yes,", 0
-.line6
-	dstr "maybe you need"
-.line7
-	dstr "something to"
-.line8
-	dstr "interact with."
-.line9
-	dstr "Okay. Now go."
 	
-.line10
-	dstr "Oooh."
-.line11
-	dstr "I get it!"
-.line12
-	dstr "So you think"
-.line13
-	dstr "you're smarter"
-.line14
-	dstr "than ME?"
-.line15
-	dstr "Very well."
-.line16
-	dstr "Get outta here."
-	
-	
+	set_text_prefix IntroRemovedNPC
 IntroRemovedNPCText::
 	text_lda_imm $FF
 	text_sta wNPC1_ypos
 	text_asmcall ProcessNPCs
 	delay 20
 	disp_box
-	print_line .line0
-	print_line .line1
+	print_line_id 0
+	print_line_id 1
 	wait_user
 	clear_box
-	print_line .line2
-	print_line .line3
+	print_line_id 2
+	print_line_id 3
 	wait_user
 	done
 	
-.line0
-	db "Okay, "
-	dstr "enough"
-.line1
-	dstr "shenanigans."
-.line2
-	dstr "Press START to"
-.line3
-	dstr "open your menu."
 	
-	
+	set_text_prefix IntroStartMenu
 IntroStartMenuText::
 	disp_box
-	print_line .line0
-	print_line .line1
-	print_line .line2
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
 	wait_user
-	print_line .line3
-	print_line .line4
-	print_line .line5
+	print_line_id 3
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	clear_box
-	print_line .line6
-	print_line .line7
+	print_line_id 6
+	print_line_id 7
 	wait_user
 	instant_str .endingLines
 	done
 	
-.line0
-	db "Okay, "
-	dstr "you know"
-.line1
-	dstr "what the START"
-.line2
-	dstr "button is."
-.line3
-	dstr "It's not my job to"
-.line4
-	dstr "explain this"
-.line5
-	dstr "crappy menu."
-.line6
-	dstr "You're on your"
-.line7
-	db "own, "
-	dstr "get it?"
 .endingLines
 	dstr "Man I hate"
 	dstr "this job."

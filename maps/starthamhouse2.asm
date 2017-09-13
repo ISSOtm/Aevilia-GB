@@ -1,5 +1,5 @@
 
-SECTION "Player house map", ROMX
+SECTION "Startham house #2 map", ROMX
 StarthamHouse2::
 	db $80 ; Interior map
 	
