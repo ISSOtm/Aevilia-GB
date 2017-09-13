@@ -896,13 +896,19 @@ InterleaveFromMovableToFixed::
 	cp LY_VBLANK - 1
 	jr nz, .oneScanline
 	ld a, e
-	add a, INTERLEAVE_SPEED
-	cp INTERLEAVE_LAST
+	cp INTERLEAVE_LAST - INTERLEAVE_SPEED
 	jr z, .displayFullWindow
+	add a, INTERLEAVE_SPEED
 	ld e, a
 	jr .interleaveLoop
 .displayFullWindow
-	rst waitVBlank ; Make sure we override VBlank's sprite settings (which is "display")
+	; VBlank re-enables sprites, make sure that doesn't override our sprite settings
+	; Can't use waitVBlank, too timing-sensitive
+.waitVBlank
+	ld a, [rSTAT]
+	and 3
+	dec a
+	jr nz, .waitVBlank
 	ld a, d
 	add a, INTERLEAVE_SPEED
 	ld d, a
@@ -977,9 +983,16 @@ InterleaveFromFixedToMovable::
 	ld a, d
 	and a
 	jr z, .displayPartialWindow
+	; VBlank re-enables sprites, make sure that doesn't override our sprite settings
+	; Can't use waitVBlank, too timing-sensitive
+.waitVBlank
+	ld a, [rSTAT]
+	and 3
+	dec a
+	jr nz, .waitVBlank
+	ld a, d
 	sub a, INTERLEAVE_SPEED
 	ld d, a
-	rst waitVBlank ; VBlank re-enables sprites, make sure that doesn't override our sprite settings
 	jr .interleaveLoop
 .displayPartialWindow
 	ld a, e
@@ -988,6 +1001,8 @@ InterleaveFromFixedToMovable::
 	jr nz, .interleaveLoop
 	
 	ld [wEnableWindow], a
+	dec a
+	ld [rWX], a
 	ld l, rIE & $FF
 	ld [hl], b
 	ret
