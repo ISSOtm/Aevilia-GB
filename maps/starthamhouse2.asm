@@ -25,14 +25,14 @@ StarthamHouse2NPCs::
 	
 	interact_box $0040, $0000, 0, 0
 	db 0
-	db $10 << 2 | DIR_UP
+	db $0A << 2 | DIR_LEFT
 	dn 1, 1, 1, 1
 	db $00
 	db $00
 	
 	interact_box $0070, $0090, 0, 0
 	db 0
-	db $10 << 2 | DIR_UP
+	db $0A << 2 | DIR_LEFT
 	dn 1, 1, 1, 1
 	db $00
 	db $00

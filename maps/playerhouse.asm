@@ -30,7 +30,7 @@ PlayerHouseNPCs::
 	
 	interact_box $0060, $0000, 0, 0
 	db 0 ; Interaction ID
-	db $10 << 2 | DIR_UP ; Sprite ID & direction
+	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
 	dn 1, 1, 1, 1 ; Palette IDs
 	db $00 ; Movement permissions
 	db $00 ; Movement speed
