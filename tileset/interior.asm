@@ -385,7 +385,17 @@ InteriorTileset::
 	tile_attr $C7, 0, 2, 0, 0, 0, 0
 	tile_attr $C9, 0, 2, 0, 0, 0, 0
 	
-REPT 11
+	tile_attr $C3, 0, 2, 0, 1, 0, 0
+	tile_attr $C5, 0, 2, 0, 1, 0, 0
+	tile_attr $C2, 0, 2, 0, 1, 0, 0
+	tile_attr $C4, 0, 2, 0, 1, 0, 0
+	
+	tile_attr $C7, 0, 2, 0, 1, 0, 0
+	tile_attr $C9, 0, 2, 0, 1, 0, 0
+	tile_attr $C6, 0, 2, 0, 1, 0, 0
+	tile_attr $C8, 0, 2, 0, 1, 0, 0
+	
+REPT 9
 	tile_attr $84, 0, 0, 0, 0, 0, 0
 	tile_attr $84, 0, 0, 0, 0, 0, 0
 	tile_attr $84, 0, 0, 0, 0, 0, 0
@@ -482,7 +492,12 @@ REPT 4
 ENDR
 	
 	; Stairs
-REPT 8
+REPT 2
+	db TILE_CANWALK
+	db 0
+ENDR
+REPT 2
+	db 0
 	db TILE_CANWALK
 ENDR
 	
