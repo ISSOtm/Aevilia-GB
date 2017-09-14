@@ -1225,7 +1225,7 @@ ProcessNPCs::
 	call SwitchRAMBanks
 	
 	ld hl, wNPCArray
-	ld de, wVirtualOAM
+	ld de, wVirtualOAM + 4 * OAM_SPRITE_SIZE
 	ld a, [wNumOfNPCs]
 	inc a ; Add player to the count, also makes sure this is not 0
 	ld c, a
