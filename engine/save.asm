@@ -65,8 +65,12 @@ FileSelectOptions::
 	ld e, $C4
 	call CopyStrToVRAM
 	
-	call WaitForTextbox ; This will begin to rise the window
 	ld hl, wTextboxStatus
+.waitTextboxRose
+	rst waitVBlank
+	ld a, [hl]
+	cp $31
+	jr nz, .waitTextboxRose
 	inc [hl] ; Go past the window's normal boundary, which will make it continue rising
 	
 	; Perform rest of scrolling animation
