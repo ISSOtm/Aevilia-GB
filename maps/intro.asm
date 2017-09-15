@@ -204,8 +204,25 @@ CharSelectLoadingScript::
 ; Second loading script ; using a warp is more practical (notably because it provides an automated fade with some code exec in the middle)
 ; Also because it helps setting the map to a known state before the player is allowed to see the player even once
 IntroMapLoadingScript::
+	callacross LoadPlayerGraphics ; Load the correct graphics
+	
+	; Problem is, BG and OBJ palettes 0 is now non-black ! We need to fix this.
+	ld a, $80
+	ld [rBGPI], a
+	ld [rOBPI], a
+	ld b, 8
+.writeBlackPalette
+	rst isVRAMOpen
+	jr nz, .writeBlackPalette
+	xor a
+	ld [rBGPD], a
+	ld [rOBPD], a
+	dec b
+	jr nz, .writeBlackPalette
+	
 	xor a ; Close the textbox that was left open by the previous script
 	ld [wTextboxStatus], a
+	
 	jp AllowJoypadMovement ; Cancel above prevention
 	
 ; The map script is basically a dispatcher, which either calls a function or processes some text depending on wIntroMapStatus
@@ -402,11 +419,7 @@ IntroChooseGender::
 	rst fill
 	dec b
 	jr nz, .grayOneColor
-	
-	ld a, [wPlayerGender]
-	and a
-	ret nz ; Tom's gfx are loaded by default, don't reload if it's still Tom
-	jpacross LoadPlayerGraphics
+	ret
 	
 IntroFadeToNarrator::
 	inc b

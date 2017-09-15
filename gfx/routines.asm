@@ -1012,8 +1012,10 @@ LoadPlayerGraphics::
 	ld a, [wPlayerGender]
 	and a
 	jr z, .loadEvie1
-	ld hl, TomTiles
+	ld hl, TomTiles	
+	xor a
 .loadEvie1
+	ld [rVBK], a
 	ld de, vPlayerTiles
 	ld bc, VRAM_TILE_SIZE * 4 * 3
 	call CopyToVRAM
