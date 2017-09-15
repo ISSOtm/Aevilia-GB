@@ -195,6 +195,10 @@ CharSelectLoadingScript::
 	ldh [hOverworldButtonFilter], a
 	inc a
 	call SwitchRAMBanks
+	ld hl, GrayPalette
+	ld de, wBGPalette0_color0
+	ld bc, (BANK(GrayPalette) << 8) | (wBGPalette1_color0 - wBGPalette0_color0)
+	call CopyAcrossLite
 	jp PreventJoypadMovement ; Prevent player's movement, joypad input will only be used for the charselect, not to move the player
 	
 ; Second loading script ; using a warp is more practical (notably because it provides an automated fade with some code exec in the middle)
@@ -249,12 +253,22 @@ IntroMapScript::
 	
 IntroChooseGender::
 	ld a, [wIntroMapDelayStep]
-	cp 20 ; Delay for a few frames to avoid A button spam
+	cp 20 ; Delay for a few frames to avoid A button spam skipping the sequence
 	jr z, .doneDelaying
+	ld b, a
+	ldh a, [hPressedButtons]
+	and BUTTON_A
+	ld a, b
+	jr z, .aNotPressed
+	xor a ; If A is pressed, reset the count : this makes spamming A less likely to accidentally skip the whole sequence
+.aNotPressed
 	inc a ; Acknowledge one frame of delay
 	ld [wIntroMapDelayStep], a
 	cp 10 ; Halfway through, apply gray to a player
 	ret nz
+	ld a, [wPlayerGender]
+	and a
+	ret z ; Don't gray out Evie (this could happen if pressing A after graying out once)
 	; Gray out Tom
 	xor a
 	ld [hOverworldPressedButtons], a ; Make sure no action will be taken
