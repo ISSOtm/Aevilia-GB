@@ -80,38 +80,38 @@ OverworldTileset::
 	; Door animation frames (AF-DA)
 	dw $00FF, $00FF, $3FFF, $3FE0, $3FE7, $38E8, $38E8, $3FEF ; Top-left
 	dw $00FF, $00FF, $3FFF, $3FE0, $3FE7, $38E8, $38E8, $3FEF ; Top-right (H-flipped !)
-	dw $FC07, $FCF7, $7C17, $7C17, $1C17, $FCFF, $FDFF, $06FF ; Bottom-right
-	dw $3FE0, $3FEF, $37E1, $37E1, $31E1, $3FE0, $BFFF, $60FF ; Bottom-left
+	dw $FC07, $FCF7, $7C17, $7C17, $1C17, $FCFF, $FDFF, $06FE ; Bottom-right
+	dw $3FE0, $3FEF, $37E1, $37E1, $31E1, $3FE0, $BFFF, $607F ; Bottom-left
 	
 	dw $00FF, $00FF, $3FFF, $3FE7, $38E8, $38E8, $3FEF, $3FE0 ; Same ordering
 	dw $00FF, $00FF, $3FFF, $3CF4, $3CF4, $3FF7, $3FF0, $3FF0
-	dw $FCEF, $3C2F, $7C0F, $FC0F, $FC7F, $FCFF, $FDFF, $06FF
-	dw $3FE0, $3FEE, $33E2, $37E0, $3FE0, $3FE7, $BFFF, $60FF
+	dw $FCEF, $3C2F, $7C0F, $FC0F, $FC7F, $FCFF, $FDFF, $06FE
+	dw $3FE0, $3FEE, $33E2, $37E0, $3FE0, $3FE7, $BFFF, $607F
 	
 	dw $00FF, $00FF, $3FFF, $38E8, $38E8, $3FEF, $3FE0, $3FE0
 	dw $00FF, $00FF, $3FFF, $3EFA, $3FFB, $3FF8, $3FFF, $3CFC
-	dw $7C1F, $FC1F, $FC3F, $FCFF, $FCFF, $FCFF, $FDFF, $06FF
-	dw $3FEE, $33E2, $37E0, $3FE0, $3FE3, $3FEF, $BFFF, $60FF
+	dw $7C1F, $FC1F, $FC3F, $FCFF, $FCFF, $FCFF, $FDFF, $06FE
+	dw $3FEE, $33E2, $37E0, $3FE0, $3FE3, $3FEF, $BFFF, $607F
 	
 	dw $00FF, $00FF, $3FFF, $3BEA, $3FEC, $3FE1, $3EE0, $3EEC
 	dw $00FF, $00FF, $3FFF, $3FFC, $3FFC, $3FFD, $3EFC, $3FFC
-	dw $FC3F, $FC7F, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FF
-	dw $33E0, $37E0, $3FE0, $3FE3, $3FE7, $3FEF, $BFFF, $60FF
+	dw $FC3F, $FC7F, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FE
+	dw $33E0, $37E0, $3FE0, $3FE3, $3FE7, $3FEF, $BFFF, $607F
 	
 	dw $00FF, $00FF, $3FFF, $3FEC, $3FE2, $3DE0, $3DE1, $3FE9
 	dw $00FF, $00FF, $3FFF, $3FFE, $3FFE, $3FFF, $3FFF, $3FFF
-	dw $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FF
-	dw $37E3, $37E3, $3FE7, $3FE7, $3FEF, $3FEF, $BFFF, $60FF
+	dw $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FE
+	dw $37E3, $37E3, $3FE7, $3FE7, $3FEF, $3FEF, $BFFF, $607F
 	
 	dw $00FF, $00FF, $3FFF, $3FEB, $37E3, $37E3, $3FE3, $3FF7
 	dw $00FF, $00FF, $3FFF, $3FFF, $3FFF, $3FFF, $3FFF, $3FFF
-	dw $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FF
-	dw $2FE7, $2FE7, $3FE7, $3FEF, $3FEF, $3FEF, $BFFF, $60FF
+	dw $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FE
+	dw $2FE7, $2FE7, $3FE7, $3FEF, $3FEF, $3FEF, $BFFF, $607F
 	
 	dw $00FF, $00FF, $3FFF, $3FEF, $3FEF, $3FEF, $3FEF, $3FEF
 	dw $00FF, $00FF, $3FFF, $3FFF, $3FFF, $3FFF, $3FFF, $3FFF
-	dw $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FF
-	dw $3FEF, $3FEF, $3FEF, $3FEF, $3FEF, $3FEF, $BFFF, $60FF
+	dw $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FCFF, $FDFF, $06FE
+	dw $3FEF, $3FEF, $3FEF, $3FEF, $3FEF, $3FEF, $BFFF, $607F
 	
 	
 	; Grey border
