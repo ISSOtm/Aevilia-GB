@@ -2526,3 +2526,27 @@ ScanForInteraction::
 	jr nz, .lookForInteraction
 	and a ; Clear carry
 	ret
+	
+	
+GetPlayerTopLeftPtr::
+	ld d, vTileMap0 >> 8
+	ld a, [wYPos]
+	and $F0
+	add a, a
+	jr nc, .noCarry2
+	inc d
+	inc d
+.noCarry2
+	add a, a
+	jr nc, .noCarry3
+	inc d
+.noCarry3
+	ld b, a
+	ld a, [wXPos]
+	and $F0
+	rra
+	rra
+	rra
+	add a, b ; Cannot overflow
+	ld e, a
+	ret

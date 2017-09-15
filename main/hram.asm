@@ -72,6 +72,7 @@ hRandIntHigh::
 	
 hThread2ID::
 	ds 1
+hLoadingDoorAnimCount::
 hLoadingWalkDirection::
 	ds 1
 hLoadingFinalCount::

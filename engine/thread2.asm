@@ -11,6 +11,7 @@ Thread2Ptrs::
 	dw AfterLoadingWalkDown
 	dw AfterLoadingWalkLeft
 	dw AfterLoadingWalkRight
+	dw OpenDoorMovement
 	dw OpenDoorAnim
 	
 	
@@ -144,6 +145,115 @@ LoadingWalk::
 	jp ProcessNPCs
 	
 	
+OpenDoorMovement::
+	ld hl, wXPos
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a ; Get current X position in de
+	
+	add a, 8
+	ld h, d
+	jr nc, .noCarry
+	inc h
+.noCarry
+	and $F0
+	cpl
+	ld l, a ; Got target X position in hl
+	ld a, h
+	cpl
+	ld h, a
+	inc hl ; Negate target pos
+	
+	add hl, de ; Get offset (target - current)
+	ld a, h
+	or l
+	
+	ld a, 1
+	ld [rSVBK], a
+	jr nz, .move
+	
+	ld [wNPC0_steps], a ; Make sure the player doesn't get stuck in his walking animation
+	ld a, THREAD2_OPENDOORANIMATION
+	ldh [hThread2ID], a
+	ld a, -3 ; Wait a few frames after this
+	ldh [hLoadingDoorAnimCount], a
+	xor a ; ld a, DIR_UP
+	jr .doneMoving
+	
+.move
+	bit 7, h
+	jr nz, .moveRight
+	dec de
+	ld a, DIR_LEFT
+	jr .doneMoving
+	
+.moveRight
+	inc de
+	ld a, DIR_RIGHT
+	
+.doneMoving
+	ld [wPlayerDir], a
+	ld hl, wXPos
+	ld [hl], e
+	inc hl
+	ld [hl], d
+	call MoveNPC0ToPlayer
+	ld hl, wNPC0_steps
+	dec [hl]
+	jp ProcessNPCs
+	
 OpenDoorAnim::
+	ldh a, [hLoadingDoorAnimCount]
+	rlca
+	ld c, a ; If no carry, then this is essentially `add a, a`
+	jr nc, .playAnim
+	
+	; Add a short delay
+	rrca
+	inc a
+	ldh [hLoadingDoorAnimCount], a
+	ret
+	
+.playAnim
+	ldh a, [hFrameCounter]
+	and $03
+	ret nz ; Slow the animation down to 30fps
+	
+	ld a, 1
+	ld [rSVBK], a
+	
+	call GetPlayerTopLeftPtr
+	ld h, d
+	ld l, e
+	ld a, c ; Get back anim count
+;	add a, a ; Already done by `rlca`
+	add a, a ; 4 tiles per frame
+	add a, $AF
+	ld b, a
+	call .drawTile
+	inc hl
+	inc b
+	call .drawTile
+	ld de, VRAM_ROW_SIZE
+	add hl, de
+	inc b
+	call .drawTile
+	dec hl
+	inc b
+	call .drawTile
+	
+	ldh a, [hLoadingDoorAnimCount]
+	inc a
+	ldh [hLoadingDoorAnimCount], a
+	sub 7
+	ret nz
+	ldh [hThread2ID], a
+	ret
+	
+.drawTile
+	ld a, [rSTAT]
+	and 2
+	jr nz, .drawTile
+	ld [hl], b
 	ret
 

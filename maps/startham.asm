@@ -16,21 +16,21 @@ StarthamInteractions::
 	
 	db BTN_LOADZONE
 	interact_box $009F, $0052, 1, 12
-	db THREAD2_DISABLED
+	db THREAD2_OPENDOOR
 	db 0 ; Dest warp point
 	db MAP_PLAYER_HOUSE ; Dest map
 	ds 7
 	
 	db BTN_LOADZONE
 	interact_box $004F, $0092, 1, 12
-	db THREAD2_DISABLED
+	db THREAD2_OPENDOOR
 	db 0
 	db MAP_TEST_HOUSE
 	ds 7
 	
 	db BTN_LOADZONE
 	interact_box $004F, $0042, 1, 12
-	db THREAD2_DISABLED
+	db THREAD2_OPENDOOR
 	db 0
 	db MAP_STARTHAM_HOUSE_2
 	ds 7
