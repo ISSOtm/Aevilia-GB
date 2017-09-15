@@ -72,6 +72,8 @@ hRandIntHigh::
 	
 hThread2ID::
 	ds 1
+hHDMALength:: ; Used by Thread 2 to know if HDMA can be used
+	ds 1
 hLoadingDoorAnimCount::
 hLoadingWalkDirection::
 	ds 1

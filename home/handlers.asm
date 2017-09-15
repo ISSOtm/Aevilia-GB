@@ -378,6 +378,16 @@ STATHandler::
 	ld l, rIF & $FF
 	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
 	
+	ld a, [rHDMA5]
+	rlca
+	jr c, .HDMAInactive
+	rrca
+	ld [rHDMA5], a ; Write a value with bit 7 reset, which stops the transfer
+	db $21 ; Absorbs the next two bytes, which trashes hl but we don't care
+.HDMAInactive
+	ld a, $FF
+	ldh [hHDMALength], a
+	
 	ld a, BANK(DevSound_Play)
 	ld [ROMBankLow], a
 	ld a, BANK(DSVarsStart)
@@ -430,9 +440,9 @@ STATHandler::
 	ld [rVBK], a ; Switch to copy's dest bank
 	
 	; Check is HDMA is currently in use
-	ld a, [rHDMA5]
+	ldh a, [hHDMALength]
 	inc a
-	jr nz, .useStandardCopy
+	jr z, .useStandardCopy
 	
 	ld c, rHDMA1 & $FF
 	; Write copy's source pointer
@@ -572,6 +582,13 @@ ENDC
 	ld [ROMBankLow], a
 	pop af
 	ld [rSVBK], a
+	
+	ldh a, [hHDMALength] ; Check if HDMA was active
+	inc a
+	jr z, .end
+	dec a ; If so, restart it
+	or $80
+	ld [rHDMA5], a
 	
 	
 .end
