@@ -1,6 +1,6 @@
 ----------------------------------------------
 -               WRAP WIDTH BAR               -
-----------------------------------------------
+[000000
 8/22/17
 (MM/DD/YY)
 Hey. I'm Parzival Wolfram.
@@ -82,5 +82,5 @@ Make sure to look for my secret room!
 Hint: I messed with collision to make it.
 
 ----------------------------------------------
--               WRAP WIDTH BAR               -
+-               WRAP WIDTH BAR               -  
 ----------------------------------------------
