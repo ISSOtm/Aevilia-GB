@@ -11,9 +11,9 @@ restore_rom_bank: MACRO
 ENDM
 
 
-; Usage : BankAndLabel label
+; Usage : full_ptr label
 ; Places a label and its bank into memory
-BankAndLabel: MACRO
+full_ptr: MACRO
 	db BANK(\1) ; Throws an error if not in bank 0 to 255 (would fuck up otherwise)
 	dw \1
 ENDM

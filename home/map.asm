@@ -419,47 +419,86 @@ LoadTileset::
 	ld h, [hl]
 	ld l, a
 	
-	ld a, b
-	rst bankswitch
 	ld a, BANK(wNumOfTileAnims)
 	call SwitchRAMBanks
 	xor a
-	ld [wNumOfTileAnims], a ; Make sure no tile gets overwritten
-	ld a, [hli] ; Get number of tiles
-	push af ; Save for bank 1 copy
-	dec a
-	bit 7, a ; If there are bank 1 tiles, this will be set
-	jr z, .onlyBank0Tiles
-	ld a, $7F
-.onlyBank0Tiles
-	inc a
-	push hl
-	ld de, VRAM_TILE_SIZE
-	call MultiplyDEByA
-	ld b, h ; Get copy length
-	ld c, l
-	pop hl
+	ld [wNumOfTileAnims], a ; Make sure no tile gets overwritten during init
+.copyOneBank
 	ld de, v0Tiles1
-	call CopyToVRAM ; Copy tiles
+.copyTiles
+	ld a, b
+	rst bankswitch ; Switch to the tileset's ROM bank
+	ld a, [hli] ; Get the number of tiles
+	and a
+	jr nz, .copyMoreTiles ; 0 indicates the bank's tiles are all copied
+	ld a, [rVBK] ; Get bank | $FE
+	inc a ; If bank 1, we read $FF, so this will overflow to 0
+	ld [rVBK], a ; Note that this also flipped the significant bit, which we'll write back (0->1, 1->0)
+	jr z, .doneCopyingTiles ; If so, we're done
+	jr .copyOneBank ; So, we're not done ! Let's copy the Bank 1 tiles.
 	
-	pop af ; Get back number of tiles
-	sub $81
-	jr c, .noBank1Copy ; If < $81, there are only bank 0 tiles
-	inc a ; a = nb_tiles - $80
+.copyMoreTiles
+	ld c, a ; Save the number of tiles
+	push bc ; Save the tileset's ROM bank
+	
+	ld a, [hli] ; Get the source ROM bank
+	ld b, a ; Save it
+	ld a, [hli] ; Get the source pointer
 	push hl
-	ld de, VRAM_TILE_SIZE
-	call MultiplyDEByA
-	ld b, h
-	ld c, l
-	pop hl
-	ld a, BANK(v1Tiles1)
-	ld [rVBK], a
-	ld de, v1Tiles1
-	call CopyToVRAM
-	xor a
-	ld [rVBK], a
-.noBank1Copy
+	ld h, [hl]
+	ld l, a
 	
+	ld a, b
+	rst bankswitch ; Switch to the source bank
+	
+	ld a, [rHDMA5]
+	rlca
+	jr nc, .useStandardCopy ; If HDMA is busy, use the standard copy function instead
+	
+	ld a, h
+	ld [rHDMA1], a
+	ld a, l
+	ld [rHDMA2], a
+	ld a, d
+	ld [rHDMA3], a
+	ld a, e
+	ld [rHDMA4], a
+	ld a, c ; Get the number of tiles back
+	dec a ; Must write (numOfTiles - 1) !
+	ld c, rHDMA5 & $FF
+	or $80 ; Add HDMA flag
+	ld [$FF00+c], a
+.waitTransferComplete
+	ld a, [$FF00+c]
+	rlca ; Roll bit 7 into carry
+	jr nc, .waitTransferComplete ; Transfer is inactive => bit is reset
+	dec c
+	ld a, [$FF00+c] ; Get destination pointer
+	ld e, a
+	dec c
+	ld a, [$FF00+c]
+	or $80 ; This bit is reset...
+	ld d, a
+	jr .copiedTileBlock
+	
+.useStandardCopy
+	swap c
+	ld a, c
+	and $0F
+	ld b, a
+	ld a, c
+	and $F0
+	ld c, a
+	call CopyToVRAM
+	; de has been updated
+	
+.copiedTileBlock
+	pop hl
+	inc hl
+	pop bc
+	jr .copyTiles
+	
+.doneCopyingTiles
 	ld a, BANK(wBlockMetadata)
 	call SwitchRAMBanks
 	ld de, wBlockMetadata

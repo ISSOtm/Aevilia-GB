@@ -1,124 +1,12 @@
 
 SECTION "Interior tileset", ROMX
-
+	
 InteriorTileset::
 	db $4A
+	full_ptr InteriorTilesetTiles
+	db 0
 	
-	; $80-83 : Checkerboard NPC tiles
-	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
-	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
-	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
-	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $00F0, $00F0
-	
-	; $84
-	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00
-	
-	; $85 : Vertical wall bottom edge
-	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $00FF
-	
-	; $86-89 : Floor tiles
-	dw $0033, $0033, $00CC, $00CC, $0033, $0033, $00CC, $00CC
-	dw $0A0A, $0505, $0A0A, $0505, $0A0A, $0505, $0A0A, $0505
-	dw $007F, $007F, $0000, $FF00, $01FE, $01FE, $0100, $FF00 ; Wooden floor
-	dw $01FE, $01FE, $0100, $FF00, $007F, $007F, $0000, $FF00
-	
-	; $8A-8D : Rug tiles
-	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00
-	dw $FFFF, $A480, $FF80, $B080, $AE80, $ED80, $A980, $A780
-	dw $A780, $A780, $EF80, $A780, $A780, $EF80, $A780, $A780
-	dw $FFFF, $2400, $FF00, $0000, $2400, $FF00, $FF00, $FF00
-	
-	; $8E-92 : Wall tiles
-	dw $FFFF, $00FF, $5AA5, $A55A, $A55A, $5AA5, $5AA5, $A55A
-	dw $00FF, $00FF, $00FF, $FFFF, $00FF, $FF00, $FF00, $FF00
-	dw $A55A, $A55A, $5AA5, $A55A, $A55A, $5AA5, $5AA5, $A55A
-	dw $FFFF, $80FF, $DAA5, $A5DA, $A5DA, $DAA5, $DAA5, $A5DA
-	dw $80FF, $80FF, $80FF, $FFFF, $80FF, $FF80, $FF80, $FF80
-	
-	; $93-96 : Shelf tiles
-	dw $FFFF, $80FF, $BFFF, $BAF4, $BAEC, $B5F8, $BFFF, $80FF
-	dw $80FF, $BFFF, $BEF4, $BCE9, $B8F3, $B1E6, $B2ED, $FFFF
-	dw $01FF, $FDFF, $25DF, $4DB7, $9D6F, $3DD7, $7DAF, $FFFF
-	dw $FFFF, $01FF, $FDFF, $5DAF, $5DB7, $2DDF, $FDFF, $01FF
-	
-	; $97-98 : Shelf top tiles
-	dw $BF00, $BF00, $803F, $803F, $8000, $FF00, $807F, $807F
-	dw $FF00, $FF00, $00FF, $00FF, $0000, $FF00, $00FF, $00FF
-	
-	; $99-9A : Computer tiles
-	dw $FF7F, $80FF, $FFBF, $E0BF, $E0BF, $E0BF, $E0BF, $E0BF
-	dw $E0BF, $E0BF, $FFBF, $FF80, $FFFF, $FF07, $FF07, $FF3F
-	
-	; $9B-A2 : Potted plant
-	dw $0000, $0101, $0607, $090E, $3B34, $6C73, $2738, $2C33
-	dw $0000, $8080, $E060, $F030, $78A8, $FC14, $FC2C, $FE16
-	dw $5768, $4D72, $A7D8, $BBC4, $C8B7, $DBE7, $7A77, $0E0F
-	dw $FE1E, $FE16, $FF2B, $FF17, $FF29, $FFD7, $FCDC, $E060
-	dw $2334, $2038, $101D, $1718, $10FD, $08FD, $07F7, $00F0
-	dw $C43F, $041F, $08FF, $E81F, $08F8, $10F0, $E0F0, $00F0
-	dw $020E, $020E, $020F, $0E0F, $14FE, $0CED, $2CEE, $26F7
-	dw $40CF, $40CF, $404F, $70FF, $28F8, $30BC, $34FC, $64FC
-	
-	; $A3-A4 : Wall picture
-	dw $00FF, $7FFF, $40C0, $48D7, $4CD3, $5EC1, $5FC0, $5FC0
-	dw $5FC0, $5FC0, $5FC0, $5FC0, $40C0, $7FFF, $00FF, $00FF
-	
-	; $A5-A8 : Chair
-	dw $202F, $505F, $505F, $505F, $50D0, $50D0, $5FDF, $5FD0
-	dw $5F50, $5F50, $5F50, $5F50, $5FDF, $50D0, $50D0, $20F0
-	dw $F01F, $F01F, $F01F, $F01F, $F0F0, $50D0, $50D0, $20F0
-	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $E0F0, $F010
-	
-	; $A9-AE : Table
-	dw $3F3F, $4040, $9881, $B083, $A087, $808F, $809F, $80BF
-	dw $FFFF, $0000, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF
-	dw $80BF, $80BF, $809F, $808F, $A087, $B083, $9881, $FFFF
-	dw $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $FFFF
-	dw $BFC0, $BFC0, $BFC0, $BFCF, $B0D5, $A0EA, $A0F5, $C0EA
-	dw $FF00, $FF00, $FF00, $FFFF, $0055, $00AA, $0055, $00AA
-	
-	; $AF
-	dw $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF
-	
-	; $B0-B7 : Large shelf
-	dw $7F7F, $8080, $80BF, $80BF, $80BF, $80BF, $80BF, $80BF
-	dw $FEFE, $0101, $03FD, $03FD, $03FD, $03FD, $03FD, $03FD
-	dw $FF80, $FFBF, $FFAA, $FFAA, $EBBE, $EBAA, $FFBF, $FF80
-	dw $FF01, $FFBD, $E7BD, $FFA5, $F7A5, $EFA5, $FFBD, $FF01
-	dw $FF80, $FFBE, $FFA2, $FFA2, $F7AA, $FFAA, $FFBE, $FF80
-	dw $FF80, $FF80, $FF80, $FF80, $FFBF, $E0AA, $E0B5, $C0EA
-	dw $FFBF, $E0BF, $FFBF, $FF80, $FFBF, $E0AA, $E0B5, $C0EA
-	dw $7F7F, $8080, $80BF, $80AF, $80AF, $80B7, $80B7, $80BF
-	
-	; $B8 : Table part (oops xP  -Kai)
-	dw $80BF, $80BF, $80BF, $80BF, $80BF, $80BF, $80BF, $80BF
-	
-	; $B9-BA : "Vertical" walls
-	dw $BFC0, $BFC0, $BFC0, $BFC0, $BFC0, $BFC0, $BFC0, $BFC0
-	dw $BFC0, $BFC0, $BFC0, $BFC0, $BFC0, $BFC0, $BFC0, $80FF
-	
-	; $BB : Small wood shelf - top-right tile
-	dw $FEFE, $0101, $03FD, $0BF5, $03F5, $03F5, $03F5, $03FD
-	
-	; $BC-BD : Green rugs
-	dw $22DD, $54AB, $8A75, $54AB, $2AD5, $50AF, $AA55, $44BB
-	dw $007F, $00AE, $00D5, $00BB, $00DD, $00AB, $0075, $00FE
-	
-	; $BE-C1 : Bed
-	dw $80C0, $FF80, $FF80, $FF80, $FF80, $FF80, $FF80, $FFFF
-	dw $81FE, $83FC, $86F9, $8CF3, $98E7, $B0CF, $E09F, $FFFF
-	dw $F0F0, $90F8, $BFDF, $FFB0, $E0DF, $9FEF, $F0BF, $C0FF
-	dw $FFFF, $80C0, $FF80, $FF80, $FF80, $FF80, $FF8F, $F090
-	
-	; $C2-C9 : Stairs
-	dw $C0C0, $30F0, $CCFC, $F33F, $FC0F, $1F13, $1F10, $1111
-	dw $0000, $0000, $0000, $0000, $C0C0, $30F0, $CCFC, $F33F
-	dw $D1D1, $31F1, $CDFD, $F3FF, $FCFF, $FFFF, $FFFF, $FFFF
-	dw $FD0F, $1F13, $1F11, $1111, $D1D1, $31F1, $CDFD, $F3FF
-	dw $FF55, $3FEA, $CFF5, $F3FE, $FCFF, $FF1F, $9F1F, $9F11
-	dw $FF57, $FFFF, $FF5F, $FFFF, $FF7F, $3FFF, $CFFF, $F3FF
-	dw $9F11, $9F11, $9F11, $D9D1, $39F1, $CDFD, $F3FF, $FCFF
-	dw $FCFF, $FFDF, $DF5F, $DF9F, $DF5B, $DF95, $DF5B, $FFB7
+	db 0
 	
 	tile_attr $84, 0, 0, 0, 0, 0, 0
 	tile_attr $84, 0, 0, 0, 0, 0, 0
