@@ -231,7 +231,7 @@ StaffCreditsStrs::
 	dstr "Citx"
 	db 0
 	
-	dstr "3DS SUPPORT"
+	dstr "3DS & WII U SUPPORT"
 	dstr "Parzival"
 	db 0
 	
