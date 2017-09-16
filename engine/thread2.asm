@@ -39,13 +39,27 @@ AfterLoadingFirstWalk:
 	cp $20
 	ret z ; Wait until the fade starts
 	
-	ld de, $20
 	ld a, [wFadeSpeed]
 	and $7F ; Ignore color bit
 	inc a
-	call MultiplyDEByA ; The slower the fade, the more we have to compensate !
-	dec hl ; There's an additional 1 frame delay, account for it.
+	swap a ; Multiply by 16
+	ld l, a
+	and $0F
+	ld h, a
+	ld a, l
+	and $F0
+	ld l, a
+	add hl, hl ; hl = fade speed * $20 = nb of frames fade will take
 	; (Preserves bc)
+	
+	; !!!!!!!! WEIRD BUG FIX !!!!!!!!
+	; For some reason, non-null fade speeds (not counting $80) trigger one time too much
+	; Compensate it until a fix is found
+	ld a, [wFadeSpeed]
+	and a
+	jr z, .dontCompensate
+	inc hl
+.dontCompensate
 	
 	; First frame, offset player so it lands at the warp-to after the after-loading movement
 	ld a, b
@@ -78,7 +92,7 @@ AfterLoadingFirstWalk:
 	ld a, l
 	ld [bc], a
 	
-	xor a
+	ld a, $FF
 	ldh [hLoadingFinalCount], a
 	
 	; Start the actual movement
