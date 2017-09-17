@@ -15,6 +15,7 @@ PlayCredits::
 	ld [wTransferSprites], a
 	xor a
 	ld [wNumOfSprites], a
+	ld [wNumOfTileAnims], a ; Also clear all tile animators
 	call FillVRAM
 	ld [rVBK], a
 	call ClearMovableMap
@@ -27,6 +28,9 @@ PlayCredits::
 ;	ld c, 0
 	ld c, a
 	callacross LoadBGPalette_Hook
+	ld de, GrayPalette + 3
+	ld c, 0
+	callacross LoadOBJPalette_Hook
 	
 	; Display the first few lines
 	ld hl, CreditsFirstStrs
@@ -63,32 +67,122 @@ PlayCredits::
 	
 	call ClearMovableMap
 	
+	
+	
 	; Roll the staff credits
+	ld a, [rLCDC]
+	set 2, a ; Set sprites in 8x16 mode
+	ld [rLCDC], a
+	
+	ld a, 8 + 4 * 7
+	ld [wNumOfSprites], a
+	
 	ld hl, StaffCreditsStrs
 .doOneStaffCredits
+	; Hide all until tiles are properly copied
+	ld a, [rLCDC]
+	res 1, a
+	ld [rLCDC], a
 	
+	; Init OAM
+	push hl
+	ld hl, wVirtualOAM
+	ld de, $26
+	ld bc, (5 << 8) | 8
+	ld a, $18
+.initSpriteLine
+	ld [hl], e
+	inc hl
+	ld [hli], a
+	add a, 16
+	ld [hl], d
+	inc d
+	inc d
+	inc d
+	inc d
+	inc hl
+	ld [hl], 0
+	inc hl
+	dec c
+	jr nz, .initSpriteLine
+	ld a, d
+	dec a
+	and $F0
+	add a, $10
+	ld d, a
+	rrca
+	add a, $30
+	ld e, a
+	ld a, $28
+	ld c, 7
+	dec b
+	jr nz, .initSpriteLine
+	
+	; Clear all tiles
+	xor a
+	ld hl, v0Tiles0
+	ld bc, $A00
+	call FillVRAM
+	ld [wTransferSprites], a
 	rst waitVBlank ; Make sure wSCY gets applied
-	ld de, $9A24
-	call CopyStrToVRAM ; Copy role str to VRAM
 	
-	ld a, e
-	and -VRAM_ROW_SIZE
-	add VRAM_ROW_SIZE * 2 + 6
+	pop hl
+	ld de, v0Tiles0 + VRAM_TILE_SIZE
+	ld b, 0 ; Current mode
+.initTitleTiles
+	ld a, [hli] ; Read one char
+	and a ; String end ?
+	jr z, .titleInitDone ; Done.
+	; "Print" char
+	push hl ; Save read ptr
+	swap a ; Get source ptr
+	ld l, a
+	and $0F
+	add a, HIGH(v0Tiles2)
+	ld h, a
+	ld a, l
+	and $F0
+	ld l, a
+	ld c, VRAM_TILE_SIZE
+	call CopyToVRAMLite ; Copy tile from font to title
+	pop hl ; Retrieve read ptr
+	ld a, e ; Skip next tile
+	add a, VRAM_TILE_SIZE
 	ld e, a
-.printStaff
-	ld c, e
-	call CopyStrToVRAM
-	ld a, c
-	add VRAM_ROW_SIZE
-	ld e, a
+	jr nc, .initTitleTiles
+	inc d
+	jr .initTitleTiles
+.titleInitDone
+	inc b
+	ld a, b ; Retrieve next mode
+	dec a ; Mode 1 : top title line
+	ld de, v0Tiles0
+	jr z, .initTitleTiles
+	; Mode 2+ : any name str
+	inc a
+	rra ; Carry is always clear
+	ld e, 0
+	jr nc, .topLine
+	ld e, VRAM_TILE_SIZE
+.topLine
+	add a, a
+	add a, HIGH(v0Tiles0)
+	ld d, a ; $8200 onwards
 	ld a, [hl]
 	and a
-	jr nz, .printStaff
+	jr nz, .initTitleTiles
 	
-	ld bc, 120
-	call DelayBCFrames
+	ld a, [rLCDC]
+	set 1, a
+	ld [rLCDC], a
 	
 	push hl
+	ld c, 120
+.delayBetween
+	call DelayFrameFlickerSprites
+	dec c
+	jr nz, .delayBetween
+	
 	ld hl, $9980
 	ld e, -8 ; If < 0 : number of frames beteen lines ; if >= 0 : number of pixels per frame
 	ld b, 8 ; Number of pixels until next refresh
@@ -105,7 +199,10 @@ PlayCredits::
 	rrca
 	ld d, a
 .staff_delayNextPixel
-	rst waitVBlank ; Wait for a certain amount of frames
+	push hl
+	call DelayFrameFlickerSprites ; Wait for a certain amount of frames
+	call DelayFrameFlickerSprites ; Make sure all sprites move together
+	pop hl
 	inc c
 	jr nz, .staff_delayNextPixel
 	inc e
@@ -115,6 +212,21 @@ PlayCredits::
 	ld a, [wSCY]
 	inc a ; Scroll down by 1 pixel
 	ld [wSCY], a
+	push hl
+	ld hl, wVirtualOAM + 1
+.scrollSpritesRight
+	ld a, [hl]
+	cp $A9
+	jr z, .lock
+	inc a
+	ld [hl], a
+.lock
+	ld a, l
+	add a, 4
+	ld l, a
+	cp $A1
+	jr nz, .scrollSpritesRight
+	pop hl
 	dec b ; We scrolled by 1 line
 	jr nz, .staff_dontRefreshLine ; If that's not the 8th, don't refresh a line
 	
@@ -136,13 +248,15 @@ PlayCredits::
 	inc hl
 	ld a, [hl]
 	and a
-	jr nz, .doOneStaffCredits
+	jp nz, .doOneStaffCredits
 	jr .doneStaffCredits
 .staff_dontRefreshLine
 	dec d
 	jr nz, .staff_goDownOnePixel
 	jr .staff_goDownOnce
 .doneStaffCredits
+	
+	
 	
 	; Fade the screen for the final moment
 	ld a, 8
@@ -151,6 +265,9 @@ PlayCredits::
 	xor a
 	ld [wSCY], a
 	ld [wSCX], a
+	ld [wNumOfSprites], a
+	inc a
+	ld [wTransferSprites], a
 	; Print "thank you for playing"
 	ld hl, CreditsThanksStrs
 	ld de, $98C3
@@ -205,15 +322,18 @@ CreditsFirstStrs::
 	
 StaffCreditsStrs::
 	dstr "PROGRAMMING"
+	db 0
 	dstr "ISSOtm"
 	dstr "DevEd"
 	db 0
 	
 	dstr "LEAD GRAPHICS"
+	db 0
 	dstr "Kai"
 	db 0
 	
 	dstr "GRAPHICS"
+	db 0
 	dstr "Alpha"
 	dstr "Mian"
 	dstr "Citx"
@@ -221,25 +341,30 @@ StaffCreditsStrs::
 	db 0
 	
 	dstr "MUSIC"
+	db 0
 	dstr "DevEd"
 	db 0
 	
 	dstr "MAP DESIGN"
+	db 0
 	dstr "Parzival"
 	dstr "Charmy"
 	dstr "Kai"
 	dstr "Citx"
 	db 0
 	
-	dstr "3DS & WII U                     SUPPORT"
+	dstr "SUPPORT"
+	dstr "3DS & WII U"
 	dstr "Parzival"
 	db 0
 	
-	dstr "ADDITIONAL                      PROGRAMMING"
+	dstr "PROGRAMMING"
+	dstr "ADDITIONAL"
 	dstr "Kai"
 	db 0
 	
 	dstr "SPECIAL THANKS"
+	db 0
 	dstr "Torchickens"
 	dstr "GCL"
 	dstr "beware"
@@ -257,3 +382,28 @@ CreditsThanksStrs::
 	
 CreditsFinalStr::
 	dstr "SEE YOU LATER..."
+	
+DelayFrameFlickerSprites::
+	push bc
+	ld hl, wVirtualOAM + 2
+	ld b, 8 + 4 * 7
+.toggleOneSprite
+	ld a, [hl] ; Get tile ID
+	xor 2 ; Toggle
+	ld [hld], a
+	and 2 ; Check if it's now the RIGHT tile
+	ld a, 8
+	jr nz, .moveRight
+	ld a, -8
+.moveRight
+	add [hl] ; Add to current pos
+	ld [hli], a
+	ld a, l
+	add a, OAM_SPRITE_SIZE
+	ld l, a
+	dec b
+	jr nz, .toggleOneSprite
+	pop bc
+	ld [wTransferSprites], a
+	rst waitVBlank
+	ret
