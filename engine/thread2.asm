@@ -52,14 +52,12 @@ AfterLoadingFirstWalk:
 	add hl, hl ; hl = fade speed * $20 = nb of frames fade will take
 	; (Preserves bc)
 	
-	; !!!!!!!! WEIRD BUG FIX !!!!!!!!
-	; For some reason, non-null fade speeds (not counting $80) trigger one time too much
-	; Compensate it until a fix is found
-	ld a, [wFadeSpeed]
-	and a
-	jr z, .dontCompensate
-	inc hl
-.dontCompensate
+	; !!!!!!!! WEIRD BUG HERE !!!!!!!!
+	; For some reason, non-null fade speeds (not counting $80) may trigger one time too much, hence moving the player one pixel too much
+	; going left : bug
+	; going right : no bug
+	; going up : bug
+	; going down : no bug
 	
 	; First frame, offset player so it lands at the warp-to after the after-loading movement
 	ld a, b
