@@ -36,8 +36,8 @@ all: $(bindir)/aevilia.gbc $(bindir)/aevilia_glitchmaps.gbc
 rebuild: clean all
 
 clean:
-	rm $(objdir)/*.o
-	rm $(bindir)/aevilia.gbc $(bindir)/aevilia.map $(bindir)/aevilia.sym
+	rm -f $(objdir)/*.o
+	rm -f $(bindir)/aevilia.gbc $(bindir)/aevilia.map $(bindir)/aevilia.sym
 
 $(bindir)/%.sym:
 	if [ ! -d bin ]; then mkdir $(bindir); fi
