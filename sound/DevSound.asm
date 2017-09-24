@@ -147,8 +147,8 @@ DevSound_Init::
 	ldh	[rNR52],a
 	ld	a,$FF
 	ldh	[rNR51],a
-	ld	a,$77
-	ldh	[rNR50],a
+	ld	a,7
+	ld	[GlobalVolume],a
 	reti
 
 ; ================================================================
