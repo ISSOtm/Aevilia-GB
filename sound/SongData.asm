@@ -74,6 +74,9 @@ vol_CorruptionFade:	db	$90,$ff
 
 vol_WaveTrill:		db	w3,w3,w3,w3,w3,w2,w2,w2,w2,w2,w1,w1,w1,w1,w1,w1,w1,w1,w1,w1,w0,$ff
 vol_PulseTrill:		db	$1f,$ff
+vol_Boss1Instr8:	db	$5f,$ff
+vol_Boss1Instr8Vol6:db	$56,$ff
+vol_Boss1Instr0:	db	$3f,$ff
 
 vol_LongFade:
 	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
@@ -131,6 +134,8 @@ arp_Pluck:			db	12,0,$ff
 arp_Trill5:			db	5,5,0,0,$80,0
 arp_Trill6:			db	6,6,0,0,$80,0
 arp_Trill7:			db	7,7,0,0,$80,0
+arp_Boss1Instr0:	db	12,0,$ff
+arp_Boss1Instr8:	db	12,0,$ff
 
 arp_ScareChordTom:	db	22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,$ff
 
@@ -231,6 +236,10 @@ InstrumentTable:
 	dw	ins_WaveTrill
 	dw	ins_PulseTrill5
 	dw	ins_PulseTrill7
+	dw	ins_Boss1Lead
+	dw	ins_Boss1Echo1
+	dw	ins_Boss1Echo2
+	dw	ins_Boss1Bass
 	
 	dw	ins_ScareChord
 	dw	ins_ScareChordWave
@@ -267,6 +276,10 @@ ins_WaveTrill:			Instrument	0,vol_WaveTrill,arp_Trill5,waveseq_Buffer,vib_Dummy
 
 ins_PulseTrill5:		Instrument	0,vol_PulseTrill,arp_Trill5,pulse_25,vib_Dummy
 ins_PulseTrill7:		Instrument	0,vol_PulseTrill,arp_Trill7,pulse_25,vib_Dummy
+ins_Boss1Lead:			Instrument	0,vol_Boss1Instr8,arp_Boss1Instr8,pulse_25,vib_Dummy
+ins_Boss1Echo1:			Instrument	0,vol_Boss1Instr8,arp_Boss1Instr8,pulse_50,vib_Dummy
+ins_Boss1Echo2:			Instrument	0,vol_Boss1Instr8Vol6,arp_Boss1Instr8,pulse_50,vib_Dummy
+ins_Boss1Bass:			Instrument	0,vol_Boss1Instr0,arp_Boss1Instr0,pulse_12,vib_Dummy
 
 ins_ScareChord:			Instrument	0,vol_ScareChord,arp_Trill6,pulse_ScareChord,vib_Dummy
 ins_ScareChordWave:		Instrument	0,vol_ScareChordWave,arp_ScareChordTom,waveseq_ScareChord,vib_Dummy
@@ -297,10 +310,14 @@ _ins_CorruptionWave		equ	18
 _ins_WaveTrill			equ	19
 _ins_PulseTrill5		equ	20
 _ins_PulseTrill7		equ	21
+_ins_Boss1Lead			equ	22
+_ins_Boss1Echo1			equ 23
+_ins_Boss1Echo2			equ 24
+_ins_Boss1Instr0		equ 25
 
-_ins_ScareChord			equ	22
-_ins_ScareChordWave		equ	23
-_ins_ScareChordNoise	equ	24
+_ins_ScareChord			equ	25
+_ins_ScareChordWave		equ	26
+_ins_ScareChordNoise	equ	27
 
 Kick				equ	_ins_Kick
 Snare				equ	_ins_Snare
@@ -572,7 +589,48 @@ Corruption_CH4:
 PT_Boss1:	dw	Boss1_CH1,Boss1_CH2,Boss1_CH3,Boss1_CH4
 
 Boss1_CH1:
-	db	EndChannel
+	db	SetInstrument,_ins_Boss1Instr0
+	
+rept 4
+	db	CallSection
+	dw	.block0
+endr
+	db	SetLoopPoint
+rept 2
+	db	CallSection
+	dw	.block1
+endr
+	db	CallSection
+	dw	.block3
+rept 3
+	db	CallSection
+	dw	.block2
+endr
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
+	
+	db	GotoLoopPoint
+	
+.block0
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
+	db	E_3,4,E_2,4,E_2,4,E_3,4,D_2,4,D_3,4,D#2,4,D#3,4
+	ret
+	
+.block1
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_3,4
+	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
+	db	C_2,4,C_2,4,C_3,4,C_2,4,C_2,4,C_3,4,C_2,4,C_3,4
+	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
+	ret
+	
+.block2
+	db	D#2,4,D#2,4,D#3,4,D#2,4,D#2,4,D#3,4,D#2,4,D#3,4
+	db	E_2,4,E_2,4,E_3,4,E_2,4,D_2,4,D_3,4,D_2,4,D_3,4
+	
+.block3
+	db	C_2,4,C_2,4,C_3,4,C_2,4,C_2,4,C_3,4,C_2,4,C_3,4
+	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
+	ret
 	
 Boss1_CH2:
 	db	SetInstrument,_ins_PulseTrill5
@@ -595,7 +653,27 @@ Boss1_CH2:
 	db	D_6,4,A_4,4
 	db	D#6,4,A#4,4
 	
-	db	EndChannel
+	db	SetLoopPoint
+	db	SetInstrument,_ins_Boss1Lead
+	
+	db	E_4,24,G_4,8,F_4,2,F#4,10,E_4,12,D_4,8
+	db	E_4,32,D_4,12,F#4,12,D_4,8
+	db	D_4,2,E_4,22,G_4,8,A_4,8,G_4,4,F#4,8,G_4,4,F#4,8
+	db	G_4,32,A_4,12,F#4,12,D_4,8
+	db	SetInsAlternate,_ins_Boss1Echo1,_ins_Boss1Echo2
+	db	CallSection
+	dw	.block2
+	db	E_4,8,E_4,4,G_4,8,G_4,4,E_4,2,G_4,2,G_4,2,E_4,2
+	db	A_4,6,A_4,2,G_4,2,G_4,2,F#4,6,F#4,2,G_4,2,F#4,2,F#4,2,G_4,2,E_4,2,F#4,2
+	db	B_3,2,E_4,2,D#4,2,B_3,2,B_3,2,D#4,2,F#4,6,F#4,2,G_4,2,F#4,2,F#4,2,G_4,2,D_4,2,F#4,2
+	db	E_4,16,E_4,4,G_4,2,E_4,2,F#4,2,G_4,2,D_4,2,F#4,2
+	db	CallSection
+	dw	.block2
+	db	E_4,8,E_4,4,G_4,8,G_4,4,E_4,2,G_4,2,G_4,2,E_4,2
+	db	A_4,6,A_4,2,G_4,2,G_4,2,F#4,6,F#4,2,G_4,2,F#4,2,F#4,2,G_4,2,D_4,2,F#4,2
+	db	SetInstrument,_ins_Boss1Echo1
+	db	D_4,2,E_4,62
+	db	GotoLoopPoint
 	
 .block1
 	db	B_5,8,B_4,4
@@ -604,6 +682,32 @@ Boss1_CH2:
 	db	B_5,8,B_4,4
 	db	A_5,4,A_4,4
 	db	A#5,4,A#4,4
+	ret
+	
+.block2
+	db	E_4,2,E_4,2
+	db	F#4,2,E_4,2
+	db	G_4,2,F#4,2
+	db	E_4,2,G_4,2
+	db	F#4,2,E_4,2
+	db	G_4,2,F#4,2
+	db	E_4,2,E_4,2
+	db	G_4,2,G_4,2
+	db	A_4,6,A_4,2
+	db	G_4,2,A_4,2
+	db	F#4,6,F#4,2
+	db	E_4,10,E_4,2
+	
+	db	B_3,8,B_3,4
+	db	D#4,8,D#4,4
+	db	B_3,2,B_3,2
+	db	D#4,2,D#4,2
+	db	F#4,2,F#4,2
+	db	G_4,2,F#4,2
+	db	F#4,2,G_4,2
+	db	E_4,4,E_4,4
+	db	D_4,4,D_4,4
+	db	B_3,2,B_3,2
 	ret
 	
 Boss1_CH3:
