@@ -587,52 +587,8 @@ Corruption_CH4:
 ; ================================================================
 
 PT_Boss1:	dw	Boss1_CH1,Boss1_CH2,Boss1_CH3,Boss1_CH4
-
+	
 Boss1_CH1:
-	db	SetInstrument,_ins_Boss1Instr0
-	
-rept 4
-	db	CallSection
-	dw	.block0
-endr
-	db	SetLoopPoint
-rept 2
-	db	CallSection
-	dw	.block1
-endr
-	db	CallSection
-	dw	.block3
-rept 3
-	db	CallSection
-	dw	.block2
-endr
-	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
-	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
-	
-	db	GotoLoopPoint
-	
-.block0
-	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
-	db	E_3,4,E_2,4,E_2,4,E_3,4,D_2,4,D_3,4,D#2,4,D#3,4
-	ret
-	
-.block1
-	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_3,4
-	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
-	db	C_2,4,C_2,4,C_3,4,C_2,4,C_2,4,C_3,4,C_2,4,C_3,4
-	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
-	ret
-	
-.block2
-	db	D#2,4,D#2,4,D#3,4,D#2,4,D#2,4,D#3,4,D#2,4,D#3,4
-	db	E_2,4,E_2,4,E_3,4,E_2,4,D_2,4,D_3,4,D_2,4,D_3,4
-	
-.block3
-	db	C_2,4,C_2,4,C_3,4,C_2,4,C_2,4,C_3,4,C_2,4,C_3,4
-	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
-	ret
-	
-Boss1_CH2:
 	db	SetInstrument,_ins_PulseTrill5
 	
 	db	CallSection
@@ -708,6 +664,50 @@ Boss1_CH2:
 	db	E_4,4,E_4,4
 	db	D_4,4,D_4,4
 	db	B_3,2,B_3,2
+	ret
+
+Boss1_CH2:
+	db	SetInstrument,_ins_Boss1Instr0
+	
+rept 4
+	db	CallSection
+	dw	.block0
+endr
+	db	SetLoopPoint
+rept 2
+	db	CallSection
+	dw	.block1
+endr
+	db	CallSection
+	dw	.block3
+rept 3
+	db	CallSection
+	dw	.block2
+endr
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
+	
+	db	GotoLoopPoint
+	
+.block0
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
+	db	E_3,4,E_2,4,E_2,4,E_3,4,D_2,4,D_3,4,D#2,4,D#3,4
+	ret
+	
+.block1
+	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_3,4
+	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
+	db	C_2,4,C_2,4,C_3,4,C_2,4,C_2,4,C_3,4,C_2,4,C_3,4
+	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
+	ret
+	
+.block2
+	db	D#2,4,D#2,4,D#3,4,D#2,4,D#2,4,D#3,4,D#2,4,D#3,4
+	db	E_2,4,E_2,4,E_3,4,E_2,4,D_2,4,D_3,4,D_2,4,D_3,4
+	
+.block3
+	db	C_2,4,C_2,4,C_3,4,C_2,4,C_2,4,C_3,4,C_2,4,C_3,4
+	db	D_2,4,D_2,4,D_3,4,D_2,4,D_2,4,D_3,4,D_2,4,D_3,4
 	ret
 	
 Boss1_CH3:
