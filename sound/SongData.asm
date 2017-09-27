@@ -285,39 +285,40 @@ ins_ScareChord:			Instrument	0,vol_ScareChord,arp_Trill6,pulse_ScareChord,vib_Du
 ins_ScareChordWave:		Instrument	0,vol_ScareChordWave,arp_ScareChordTom,waveseq_ScareChord,vib_Dummy
 ins_ScareChordNoise:	Instrument	0,vol_Dummy,noiseseq_S7,DummyTable,DummyTable
 
-_ins_Kick				equ	0
-_ins_Snare				equ	1
-_ins_CHH				equ	2
-_ins_OHH				equ	3
-_ins_CymbQ				equ	4
-_ins_CymbL				equ	5
-
-_ins_WaveBass			equ	6
-_ins_Echo1a				equ	7
-_ins_Echo1b				equ	8
-_ins_Echo2				equ	9
-_ins_QuietLead			equ	10
-_ins_QuietLeadFade		equ	11
-
-_ins_Arp1				equ	12
-_ins_PulseLead1a		equ	13
-_ins_PulseLead1b		equ	14
-_ins_WaveBass2a			equ	15
-_ins_WaveBass2b			equ	16
-_ins_CorruptionFade		equ	17
-_ins_CorruptionWave		equ	18
-
-_ins_WaveTrill			equ	19
-_ins_PulseTrill5		equ	20
-_ins_PulseTrill7		equ	21
-_ins_Boss1Lead			equ	22
-_ins_Boss1Echo1			equ 23
-_ins_Boss1Echo2			equ 24
-_ins_Boss1Instr0		equ 25
-
-_ins_ScareChord			equ	25
-_ins_ScareChordWave		equ	26
-_ins_ScareChordNoise	equ	27
+	enum_start
+	enum_elem	_ins_Kick
+	enum_elem	_ins_Snare
+	enum_elem	_ins_CHH
+	enum_elem	_ins_OHH
+	enum_elem	_ins_CymbQ
+	enum_elem	_ins_CymbL
+	
+	enum_elem	_ins_WaveBass
+	enum_elem	_ins_Echo1a
+	enum_elem	_ins_Echo1b
+	enum_elem	_ins_Echo2
+	enum_elem	_ins_QuietLead
+	enum_elem	_ins_QuietLeadFade
+	
+	enum_elem	_ins_Arp1
+	enum_elem	_ins_PulseLead1a
+	enum_elem	_ins_PulseLead1b
+	enum_elem	_ins_WaveBass2a
+	enum_elem	_ins_WaveBass2b
+	enum_elem	_ins_CorruptionFade
+	enum_elem	_ins_CorruptionWave
+	
+	enum_elem	_ins_WaveTrill
+	enum_elem	_ins_PulseTrill5
+	enum_elem	_ins_PulseTrill7
+	enum_elem	_ins_Boss1Lead
+	enum_elem	_ins_Boss1Echo1
+	enum_elem	_ins_Boss1Echo2
+	enum_elem	_ins_Boss1Instr0
+	
+	enum_elem	_ins_ScareChord
+	enum_elem	_ins_ScareChordWave
+	enum_elem	_ins_ScareChordNoise
 
 Kick				equ	_ins_Kick
 Snare				equ	_ins_Snare
