@@ -36,11 +36,12 @@ AfterLoadingFirstWalk:
 	ld b, a
 	
 	ld a, [wFadeCount]
-	cp $20
-	ret z ; Wait until the fade starts
+	cp $1F
+	ret nz ; Wait until the fade has started
 	
 	ld a, [wFadeSpeed]
 	and $7F ; Ignore color bit
+	ld c, a
 	inc a
 	swap a ; Multiply by 16
 	ld l, a
@@ -49,15 +50,15 @@ AfterLoadingFirstWalk:
 	ld a, l
 	and $F0
 	ld l, a
-	add hl, hl ; hl = fade speed * $20 = nb of frames fade will take
-	; (Preserves bc)
-	
-	; !!!!!!!! WEIRD BUG HERE !!!!!!!!
-	; For some reason, non-null fade speeds (not counting $80) may trigger one time too much, hence moving the player one pixel too much
-	; going left : bug
-	; going right : no bug
-	; going up : bug
-	; going down : no bug
+	add hl, hl ; hl = (fade speed + 1) * $20 = nb of frames fade will take
+	ld a, l
+	sub c
+	ld l, a
+	jr nc, .noCarry
+	dec h
+.noCarry ; hl = (fade speed + 1) * $1F = number of pixels the player will move, total
+	dec hl ; Account for the one frame of delay
+	; (Preserves b)
 	
 	; First frame, offset player so it lands at the warp-to after the after-loading movement
 	ld a, b
@@ -90,7 +91,7 @@ AfterLoadingFirstWalk:
 	ld a, l
 	ld [bc], a
 	
-	ld a, $FF
+	xor a
 	ldh [hLoadingFinalCount], a
 	
 	; Start the actual movement
