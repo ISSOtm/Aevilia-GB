@@ -77,6 +77,7 @@ vol_PulseTrill:		db	$1f,$ff
 vol_Boss1Instr8:	db	$5f,$ff
 vol_Boss1Instr8Vol6:db	$56,$ff
 vol_Boss1Instr0:	db	$3f,$ff
+vol_WaveEcho:		db	w1,$ff
 
 vol_LongFade:
 	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
@@ -280,6 +281,8 @@ ins_Boss1Lead:			Instrument	0,vol_Boss1Instr8,arp_Boss1Instr8,pulse_25,vib_Dummy
 ins_Boss1Echo1:			Instrument	0,vol_Boss1Instr8,arp_Boss1Instr8,pulse_50,vib_Dummy
 ins_Boss1Echo2:			Instrument	0,vol_Boss1Instr8Vol6,arp_Boss1Instr8,pulse_50,vib_Dummy
 ins_Boss1Bass:			Instrument	0,vol_Boss1Instr0,arp_Boss1Instr0,pulse_12,vib_Dummy
+ins_Boss1Wave:			Instrument	0,vol_WaveBass,DummyTable,waveseq_Pulse,vib_Dummy
+ins_Boss1WaveEcho:		Instrument	0,vol_WaveEcho,DummyTable,waveseq_Pulse,vib_Dummy
 
 ins_ScareChord:			Instrument	0,vol_ScareChord,arp_Trill6,pulse_ScareChord,vib_Dummy
 ins_ScareChordWave:		Instrument	0,vol_ScareChordWave,arp_ScareChordTom,waveseq_ScareChord,vib_Dummy
@@ -315,6 +318,8 @@ ins_ScareChordNoise:	Instrument	0,vol_Dummy,noiseseq_S7,DummyTable,DummyTable
 	enum_elem	_ins_Boss1Echo1
 	enum_elem	_ins_Boss1Echo2
 	enum_elem	_ins_Boss1Instr0
+	enum_elem	_ins_Boss1Wave
+	enum_elem	_ins_Boss1Echo
 	
 	enum_elem	_ins_ScareChord
 	enum_elem	_ins_ScareChordWave
