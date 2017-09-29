@@ -11,13 +11,20 @@ PlayerHouse::
 	dw NO_SCRIPT ; No loading script
 	
 PlayerHouseInteractions::
-	db 2
+	db 3
 	
 	db WALK_LOADZONE
 	interact_box $0077, $003E, 10, $15
 	db THREAD2_LOADINGWALKDOWN
 	db 3
 	db MAP_STARTHAM
+	ds 7
+	
+	db WALK_LOADZONE
+	interact_box $0008, $0006, 10, 9
+	db THREAD2_DISABLED
+	db 0
+	db MAP_PLAYER_HOUSE_2F
 	ds 7
 	
 	db BTN_INTERACT
@@ -41,7 +48,7 @@ PlayerHouseNPCs::
 	db 0 ; Number of NPC tile sets
 	
 PlayerHouseWarpToPoints::
-	db 1 ; Number of warp-to points
+	db 2 ; Number of warp-to points
 	
 	dw $0076 ; Y pos
 	dw $0048 ; X pos
@@ -50,6 +57,15 @@ PlayerHouseWarpToPoints::
 	db 0
 	db THREAD2_AFTERLOADINGWALKUP
 	dw NO_SCRIPT ; Loading script (none)
+	ds 6
+	
+	dw $000C
+	dw $000F
+	db DIR_RIGHT
+	db NO_WALKING
+	db 0
+	db THREAD2_DISABLED
+	dw NO_SCRIPT
 	ds 6
 	
 PlayerHouseBlocks::

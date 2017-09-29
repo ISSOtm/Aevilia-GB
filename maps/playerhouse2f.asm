@@ -14,37 +14,25 @@ PlayerHouse2FInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	interact_box $0077, $003E, 10, $15
-	db THREAD2_LOADINGWALKDOWN
-	db 3
-	db MAP_STARTHAM
+	interact_box $0008, $0006, 10, 9
+	db THREAD2_DISABLED
+	db 1
+	db MAP_PLAYER_HOUSE
 	ds 7
 	
 PlayerHouse2FNPCs::
-	db 1
-	
-	interact_box $0060, $0000, 0, 0
-	db 0 ; Interaction ID
-	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
-	dn 1, 1, 1, 1 ; Palette IDs
-	db $00 ; Movement permissions
-	db $00 ; Movement speed
-	
-	db 0 ; Number of NPC scripts
-	dw 0 ; Obligatory no matter the above value
-	
-	db 0 ; Number of NPC tile sets
+	db 0
 	
 PlayerHouse2FWarpToPoints::
 	db 1 ; Number of warp-to points
 	
-	dw $0076 ; Y pos
-	dw $0048 ; X pos
-	db DIR_UP ; Direction
-	db NO_WALKING ; Flags
+	dw $000C
+	dw $000F
+	db DIR_RIGHT
+	db NO_WALKING
 	db 0
-	db THREAD2_AFTERLOADINGWALKUP
-	dw NO_SCRIPT ; Loading script (none)
+	db THREAD2_DISABLED
+	dw NO_SCRIPT
 	ds 6
 	
 PlayerHouse2FBlocks::
