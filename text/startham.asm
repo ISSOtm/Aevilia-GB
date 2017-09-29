@@ -52,3 +52,13 @@ SECTION "Startham text strings", ROMX
 	dline 1, "written here."
 	dline 2, "(Why?)"
 	
+	set_text_prefix StarthamLockedHouseText
+	dline 0, "The house is"
+	dline 1, "locked."
+	dline 2, "You'd need the key"
+	dline 3, "from the estate"
+	dline 4, "agency."
+	dline 5, "It's not like you"
+	dline 6, "already own a"
+	dline 7, "house already..."
+	

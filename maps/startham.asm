@@ -12,7 +12,14 @@ StarthamMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 StarthamInteractions::
-	db 7
+	db 8
+	
+	db WALK_LOADZONE
+	interact_box $0048, $0000, 25, 21
+	db THREAD2_LOADINGWALKLEFT
+	db 0
+	db MAP_STARTHAM_FOREST
+	ds 7
 	
 	db BTN_LOADZONE
 	interact_box $009F, $0052, 1, 12
@@ -35,12 +42,10 @@ StarthamInteractions::
 	db MAP_STARTHAM_HOUSE_2
 	ds 7
 	
-	db WALK_LOADZONE
-	interact_box $0048, $0000, 25, 21
-	db THREAD2_LOADINGWALKLEFT
-	db 0
-	db MAP_STARTHAM_FOREST
-	ds 7
+	db BTN_INTERACT
+	interact_box $005F, $00D2, 1, 12
+	dw StarthamLockedHouseText
+	ds 8
 	
 	db BTN_INTERACT
 	interact_box $0090, $0130, 16, 16
@@ -213,6 +218,24 @@ GenericBoyAWalkingTiles::
 	dw $141F, $101F, $080F, $0707, $1D1F, $342F, $1F13, $0C0C
 	dw $0000, $C0C0, $F0F0, $F8F8, $FCFC, $FCFC, $FCFC, $FCFC
 	dw $F8F8, $38F8, $30F0, $E0E0, $F838, $E8B8, $F8C8, $3030
+	
+	
+	set_text_prefix StarthamLockedHouseText
+StarthamLockedHouseText::
+	disp_box
+	print_line_id 0
+	print_line_id 1
+	wait_user
+	print_line_id 2
+	print_line_id 3
+	print_line_id 4
+	wait_user
+	clear_box
+	print_line_id 5
+	print_line_id 6
+	print_line_id 7
+	wait_user
+	done
 	
 	
 	set_text_prefix StarthamSign
