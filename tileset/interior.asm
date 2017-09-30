@@ -283,7 +283,37 @@ InteriorTileset::
 	tile_attr $C6, 0, 2, 0, 1, 0, 0
 	tile_attr $C8, 0, 2, 0, 1, 0, 0
 	
-REPT 9
+	tile_attr $80, 0, 2, 0, 0, 0, 0
+	tile_attr $99, 0, 3, 0, 0, 0, 0
+	tile_attr $80, 0, 2, 0, 0, 0, 0
+	tile_attr $99, 0, 3, 0, 1, 0, 0
+	
+	tile_attr $A8, 0, 1, 0, 1, 0, 0
+	tile_attr $A7, 0, 1, 0, 1, 0, 0
+	tile_attr $A5, 0, 1, 0, 1, 0, 0
+	tile_attr $A6, 0, 1, 0, 1, 0, 0
+	
+	tile_attr $AA, 0, 2, 0, 0, 0, 0
+	tile_attr $AF, 0, 2, 0, 0, 0, 0
+	tile_attr $AA, 0, 2, 0, 0, 0, 0
+	tile_attr $AF, 0, 2, 0, 0, 0, 0
+	
+	tile_attr $AF, 0, 2, 0, 0, 0, 0
+	tile_attr $AE, 0, 2, 0, 0, 0, 0
+	tile_attr $AF, 0, 2, 0, 0, 0, 0
+	tile_attr $AE, 0, 2, 0, 0, 0, 0
+	
+	tile_attr $B0, 0, 2, 0, 0, 0, 0
+	tile_attr $B2, 0, 2, 0, 0, 0, 0
+	tile_attr $B1, 0, 2, 0, 0, 0, 0
+	tile_attr $B3, 0, 2, 0, 0, 0, 0
+	
+	tile_attr $B4, 0, 2, 0, 0, 0, 0
+	tile_attr $B6, 0, 2, 0, 0, 0, 0
+	tile_attr $B4, 0, 2, 0, 1, 0, 0
+	tile_attr $B6, 0, 2, 0, 1, 0, 0
+	
+REPT 3
 	tile_attr $84, 0, 0, 0, 0, 0, 0
 	tile_attr $84, 0, 0, 0, 0, 0, 0
 	tile_attr $84, 0, 0, 0, 0, 0, 0
