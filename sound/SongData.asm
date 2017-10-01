@@ -74,9 +74,9 @@ vol_CorruptionFade:	db	$90,$ff
 
 vol_WaveTrill:		db	w3,w3,w3,w3,w3,w2,w2,w2,w2,w2,w1,w1,w1,w1,w1,w1,w1,w1,w1,w1,w0,$ff
 vol_PulseTrill:		db	$1f,$ff
-vol_Boss1Instr8:	db	$5f,$ff
-vol_Boss1Instr8Vol6:db	$56,$ff
-vol_Boss1Instr0:	db	$3f,$ff
+vol_Boss1Echo1:	db	$5f,$ff
+vol_Boss1Echo2:db	$56,$ff
+vol_Boss1Bass:	db	$3f,$ff
 vol_WaveEcho:		db	w1,$ff
 
 vol_LongFade:
@@ -135,8 +135,8 @@ arp_Pluck:			db	12,0,$ff
 arp_Trill5:			db	5,5,0,0,$80,0
 arp_Trill6:			db	6,6,0,0,$80,0
 arp_Trill7:			db	7,7,0,0,$80,0
-arp_Boss1Instr0:	db	12,0,$ff
-arp_Boss1Instr8:	db	12,0,$ff
+arp_Boss1Bass:	db	12,0,$ff
+arp_Boss1Echo1:	db	12,0,$ff
 
 arp_ScareChordTom:	db	22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,$ff
 
@@ -241,6 +241,8 @@ InstrumentTable:
 	dw	ins_Boss1Echo1
 	dw	ins_Boss1Echo2
 	dw	ins_Boss1Bass
+	dw	ins_Boss1Wave
+	dw	ins_Boss1WaveEcho
 	
 	dw	ins_ScareChord
 	dw	ins_ScareChordWave
@@ -277,10 +279,10 @@ ins_WaveTrill:			Instrument	0,vol_WaveTrill,arp_Trill5,waveseq_Buffer,vib_Dummy
 
 ins_PulseTrill5:		Instrument	0,vol_PulseTrill,arp_Trill5,pulse_25,vib_Dummy
 ins_PulseTrill7:		Instrument	0,vol_PulseTrill,arp_Trill7,pulse_25,vib_Dummy
-ins_Boss1Lead:			Instrument	0,vol_Boss1Instr8,arp_Boss1Instr8,pulse_25,vib_Dummy
-ins_Boss1Echo1:			Instrument	0,vol_Boss1Instr8,arp_Boss1Instr8,pulse_50,vib_Dummy
-ins_Boss1Echo2:			Instrument	0,vol_Boss1Instr8Vol6,arp_Boss1Instr8,pulse_50,vib_Dummy
-ins_Boss1Bass:			Instrument	0,vol_Boss1Instr0,arp_Boss1Instr0,pulse_12,vib_Dummy
+ins_Boss1Lead:			Instrument	0,vol_Boss1Echo1,arp_Boss1Echo1,pulse_25,vib_Dummy
+ins_Boss1Echo1:			Instrument	0,vol_Boss1Echo1,arp_Boss1Echo1,pulse_50,vib_Dummy
+ins_Boss1Echo2:			Instrument	0,vol_Boss1Echo2,arp_Boss1Echo1,pulse_50,vib_Dummy
+ins_Boss1Bass:			Instrument	0,vol_Boss1Bass,arp_Boss1Bass,pulse_12,vib_Dummy
 ins_Boss1Wave:			Instrument	0,vol_WaveBass,DummyTable,waveseq_Pulse,vib_Dummy
 ins_Boss1WaveEcho:		Instrument	0,vol_WaveEcho,DummyTable,waveseq_Pulse,vib_Dummy
 
@@ -317,7 +319,7 @@ ins_ScareChordNoise:	Instrument	0,vol_Dummy,noiseseq_S7,DummyTable,DummyTable
 	enum_elem	_ins_Boss1Lead
 	enum_elem	_ins_Boss1Echo1
 	enum_elem	_ins_Boss1Echo2
-	enum_elem	_ins_Boss1Instr0
+	enum_elem	_ins_Boss1Bass
 	enum_elem	_ins_Boss1Wave
 	enum_elem	_ins_Boss1Echo
 	
@@ -673,7 +675,7 @@ Boss1_CH1:
 	ret
 
 Boss1_CH2:
-	db	SetInstrument,_ins_Boss1Instr0
+	db	SetInstrument,_ins_Boss1Bass
 	
 rept 4
 	db	CallSection
@@ -724,10 +726,57 @@ Boss1_CH3:
 	dw	.block1
 	endr
 	
-	db	EndChannel
+	db	SetLoopPoint
+	db	SetInsAlternate,_ins_Boss1Wave,_ins_Boss1Echo
+rept 2
+	db	CallSection
+	dw	.block2
+endr
+	db	SetInstrument,_ins_Boss1Wave
+	db	CallSection
+	dw	.block4
+rept 3
+	db	CallSection
+	dw	.block3
+endr
+rept 4
+	db	CallSection
+	dw	.block5
+endr
+	
+	db	GotoLoopPoint
 	
 .block1
 	db	B_5,12,B_5,12,B_5,12,B_5,12,A_5,8,A#5,8
+	ret
+	
+.block2
+	db	E_7,2,E_2,2,B_6,2,E_7,2,G_6,2,B_6,2,E_6,2,G_6,2
+	db	E_7,2,E_6,2,B_6,2,E_7,2,G_6,2,B_6,2,E_6,2,G_6,2
+	db	D_7,2,E_6,2,A_6,2,D_7,2,F#6,2,A_6,2,D_6,2,F#6,2
+	db	D_7,2,D_6,2,A_6,2,D_7,2,F#6,2,A_6,2,D_6,2,F#6,2
+	
+	db	C_7,2,D_6,2,G_6,2,C_7,2,E_6,2,G_6,2,C_6,2,E_6,2
+	db	C_7,2,C_6,2,G_6,2,C_7,2,E_6,2,G_6,2,C_6,2,E_6,2
+	db	D_7,2,C_6,2,A_6,2,D_7,2,F#6,2,A_6,2,D_6,2,F#6,2
+	db	D_7,2,D_6,2,A_6,2,D_7,2,F#6,2,A_6,2,D_6,2,F#6,2
+	ret
+	
+.block3
+	db	F#6,2,D#6,2,F#6,2,B_6,2,D#7,2,B_6,2,F#6,2,D#6,2
+	db	F#6,2,D#6,2,F#6,2,B_6,2,D#7,2,B_6,2,F#6,2,D#6,2
+	db	E_6,2,B_5,2,E_6,2,B_6,2,E_7,2,B_6,2,E_6,2,B_5,2
+	db	D_6,2,A_5,2,D_6,2,A_6,2,D_7,2,A_6,2,D_5,2,A_5,2
+	
+.block4
+	db	E_6,2,C_6,2,E_6,2,G_6,2,C_7,2,G_6,2,E_6,2,C_6,2
+	db	E_6,2,C_6,2,E_6,2,G_6,2,C_7,2,G_6,2,E_6,2,C_6,2
+	db	F#6,2,D_6,2,F#6,2,A_6,2,D_7,2,A_6,2,F#6,2,D_6,2
+	db	F#6,2,D_6,2,F#6,2,A_6,2,D_7,2,A_6,2,F#6,2,D_6,2
+	ret
+	
+.block5
+	db	E_6,2,B_5,2,E_6,2,B_6,2,E_7,2,B_6,2,E_6,2,B_5,2
 	ret
 	
 Boss1_CH4:
