@@ -410,12 +410,7 @@ REPT 4
 ENDR
 	
 	; Stairs
-REPT 2
-	db 0
-	db TILE_CANWALK
-ENDR
-REPT 2
-	db TILE_CANWALK
+REPT 8
 	db 0
 ENDR
 	

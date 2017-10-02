@@ -13,6 +13,9 @@ Thread2Ptrs::
 	dw AfterLoadingWalkRight
 	dw OpenDoorMovement
 	dw OpenDoorAnim
+	dw LoadingStairs
+	dw LoadingStairsUpLeft
+	dw LoadingStairsUpRight
 	
 	
 AfterLoadingWalkUp::
@@ -269,4 +272,105 @@ OpenDoorAnim::
 	jr nz, .drawTile
 	ld [hl], b
 	ret
+	
+	
+LoadingStairsUpLeft::
+	ld hl, wNPC0_steps
+	dec [hl]
+	
+	ld hl, wYPos
+	ld a, [hl]
+	sub 8
+	and $0F
+	cp $10 - 8
+	jr nz, AlignToUpStairs
+	
+	ld a, DIR_LEFT
+	jr FirstLoadingStairs
+
+	
+LoadingStairsUpRight::
+	ld hl, wNPC0_steps
+	dec [hl]
+	
+	ld hl, wYPos
+	ld a, [hl]
+	sub 8
+	and $0F
+	cp $10 - 8
+	jr z, StartMovingUpRight
+	
+	
+AlignToUpStairs:
+	jr nc, .moveUp
+	ld a, DIR_DOWN
+	ld [wPlayerDir], a
+	inc [hl]
+	jr nz, .noCarry
+	inc hl
+	inc [hl]
+	jr .noCarry
+	
+.moveUp
+	xor a ; ld a, DIR_UP
+	ld [wPlayerDir], a
+	dec [hl]
+	ld a, [hl]
+	inc a
+	jr nz, .noCarry
+	inc hl
+	dec [hl]
+.noCarry
+	call MoveNPC0ToPlayer
+	jp ProcessNPCs
+	
+	
+StartMovingUpRight: ; Part of LoadingStairsUpRight
+	ld a, DIR_RIGHT
+	
+	
+FirstLoadingStairs:
+	ldh [hLoadingWalkDirection], a
+	ld a, THREAD2_LOADINGSTAIRS
+	ldh [hThread2ID], a
+	
+LoadingStairs::
+	ld hl, wNPC0_steps
+	dec [hl]
+	
+	; Don't move too much, looks spazzy
+	ldh a, [hFrameCounter]
+	and 1
+	ret nz
+	
+	ldh a, [hLoadingWalkDirection]
+	ld [wPlayerDir], a
+	cp DIR_LEFT
+	ld hl, wXPos
+	ld a, [hl]
+	jr z, .moveLeft
+	inc [hl]
+	jr .doneMoving
+	
+.moveLeft
+	dec [hl]
+	
+.doneMoving
+	and 3
+	jr nz, .dontMoveUp
+	dec hl
+	dec hl
+	ld a, [hl]
+	sub 8
+	jr nz, .keepMoving
+	; Once the player has gone up enough, make it disappear and stop moving it
+	ldh [hThread2ID], a ; Stop moving it next time
+	ld [hl], a ; We'll put the player far away ($FEXX should be fine)
+.keepMoving
+	dec [hl]
+	dec [hl]
+	
+.dontMoveUp
+	call MoveNPC0ToPlayer
+	jp ProcessNPCs
 

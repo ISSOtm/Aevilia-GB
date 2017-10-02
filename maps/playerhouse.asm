@@ -21,8 +21,8 @@ PlayerHouseInteractions::
 	ds 7
 	
 	db WALK_LOADZONE
-	interact_box $0008, $0006, 10, 9
-	db THREAD2_DISABLED
+	interact_box $0008, $000E, 16, 1
+	db THREAD2_LOADINGSTAIRSUP_LEFT
 	db 0
 	db MAP_PLAYER_HOUSE_2F
 	ds 7
@@ -59,7 +59,7 @@ PlayerHouseWarpToPoints::
 	dw NO_SCRIPT ; Loading script (none)
 	ds 6
 	
-	dw $000C
+	dw $0010
 	dw $000F
 	db DIR_RIGHT
 	db NO_WALKING

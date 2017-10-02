@@ -14,7 +14,7 @@ PlayerHouse2FInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	interact_box $0008, $0006, 10, 9
+	interact_box $0008, $000E, 16, 1
 	db THREAD2_DISABLED
 	db 1
 	db MAP_PLAYER_HOUSE
