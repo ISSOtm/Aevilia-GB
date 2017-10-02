@@ -1,0 +1,12 @@
+;Textboxes, NPC locations, etc. will go here. All coordinates start from top-left-most tile, with said tile being the origin. I'm creating my own syntax so an automated system can be implemented in the future, if someone wants to make one.
+
+;Format:
+
+;map-to-apply-to.blk:
+;signpost.textbox(<position>,<page1>,<page2-optional>)
+;npc.textbox(<sprite>,<start position>,<movement type>,<movement range>,<textpage1>,<textpage2-optional>)
+
+west-connection-to-village.blk:
+signpost.textbox("5,2","Try moving diagonally!")
+signpost.textbox("29,11","Village ahead!")
+npc.textbox("autoselect","7,6","vertical","auto","I'm lost.")
