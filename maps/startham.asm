@@ -12,7 +12,7 @@ StarthamMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 StarthamInteractions::
-	db 8
+	db 9
 	
 	db WALK_LOADZONE
 	interact_box $0048, $0000, 25, 21
@@ -40,6 +40,13 @@ StarthamInteractions::
 	db THREAD2_OPENDOOR
 	db 0
 	db MAP_STARTHAM_HOUSE_2
+	ds 7
+	
+	db BTN_LOADZONE
+	interact_box $005F, $00D2, 1, 12
+	db THREAD2_OPENDOOR
+	db 0
+	db MAP_STARTHAM_LARGE_HOUSE
 	ds 7
 	
 	db BTN_INTERACT
