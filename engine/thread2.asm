@@ -13,9 +13,12 @@ Thread2Ptrs::
 	dw AfterLoadingWalkRight
 	dw OpenDoorMovement
 	dw OpenDoorAnim
-	dw LoadingStairs
+	dw LoadingStairsUp
 	dw LoadingStairsUpLeft
 	dw LoadingStairsUpRight
+	dw LoadingStairsDown
+	dw LoadingStairsDownLeft
+	dw LoadingStairsDownRight
 	
 	
 AfterLoadingWalkUp::
@@ -274,6 +277,8 @@ OpenDoorAnim::
 	ret
 	
 	
+UP_STAIRS_Y_COORD	equ $10
+	
 LoadingStairsUpLeft::
 	ld hl, wNPC0_steps
 	dec [hl]
@@ -282,11 +287,31 @@ LoadingStairsUpLeft::
 	ld a, [hl]
 	sub 8
 	and $0F
-	cp $10 - 8
-	jr nz, AlignToUpStairs
+	cp UP_STAIRS_Y_COORD - 8
+	jr z, .startClimbing
 	
+	ld b, a ; Save this for AlignToStairsUp
+	inc hl
+	inc hl
+	ld a, [hl] ; Get x coord
+	and $0F
+	cp $0D
+	jr z, AlignToStairsUp ; If the player is at XD, this means he's on the right of the stairs
+	; Otherwise we need to move to the right
+	inc [hl] ; Inc x
+	inc hl
+	jr nz, .noCarry
+	inc [hl]
+.noCarry
+	inc hl ; Points to player dir
+	ld a, DIR_RIGHT
+	ld [hl], a
+	call MoveNPC0ToPlayer
+	jp ProcessNPCs
+	
+.startClimbing
 	ld a, DIR_LEFT
-	jr FirstLoadingStairs
+	jr FirstLoadingStairsUp
 
 	
 LoadingStairsUpRight::
@@ -297,11 +322,35 @@ LoadingStairsUpRight::
 	ld a, [hl]
 	sub 8
 	and $0F
-	cp $10 - 8
-	jr z, StartMovingUpRight
+	cp UP_STAIRS_Y_COORD - 8
+	jr z, StartStairsUpRight
+	
+	ld b, a ; Save this for AlignToStairsUp
+	inc hl
+	inc hl
+	ld a, [hl] ; Get x coord
+	and $0F
+	cp $0D
+	jr z, AlignToStairsUp ; If the player is at XD, this means he's on the right of the stairs
+	; Otherwise we need to move to the right
+	ld a, [hli] ; Get old x
+	dec [hl] ; Inc x
+	and a
+	jr nz, .noCarry
+	dec [hl]
+.noCarry
+	inc hl ; Points to player dir
+	ld a, DIR_LEFT
+	ld [hl], a
+	call MoveNPC0ToPlayer
+	jp ProcessNPCs
 	
 	
-AlignToUpStairs:
+AlignToStairsUp:
+	dec hl
+	dec hl
+	ld a, b ; Get back modified coord
+	cp UP_STAIRS_Y_COORD - 8 ; Do the comp' again
 	jr nc, .moveUp
 	ld a, DIR_DOWN
 	ld [wPlayerDir], a
@@ -325,35 +374,46 @@ AlignToUpStairs:
 	jp ProcessNPCs
 	
 	
-StartMovingUpRight: ; Part of LoadingStairsUpRight
+StartStairsUpRight: ; Part of LoadingStairsUpRight
 	ld a, DIR_RIGHT
 	
 	
-FirstLoadingStairs:
+FirstLoadingStairsUp:
 	ldh [hLoadingWalkDirection], a
-	ld a, THREAD2_LOADINGSTAIRS
+	ld a, THREAD2_LOADINGSTAIRSUP
 	ldh [hThread2ID], a
 	
-LoadingStairs::
+LoadingStairsUp::
 	ld hl, wNPC0_steps
 	dec [hl]
+	ldh a, [hLoadingWalkDirection]
+	ld [wPlayerDir], a
+	ld b, a
 	
 	; Don't move too much, looks spazzy
 	ldh a, [hFrameCounter]
-	and 1
+	and 3
 	ret nz
 	
-	ldh a, [hLoadingWalkDirection]
-	ld [wPlayerDir], a
+	ld a, b
 	cp DIR_LEFT
 	ld hl, wXPos
 	ld a, [hl]
 	jr z, .moveLeft
 	inc [hl]
-	jr .doneMoving
+	jr nz, .doneMoving ; noCarry
+	inc hl
+	inc [hl]
+	jr .doneWithCarry
 	
 .moveLeft
 	dec [hl]
+	and a
+	jr nz, .doneMoving ; noCarry
+	inc hl
+	dec [hl]
+.doneWithCarry
+	dec hl
 	
 .doneMoving
 	and 3
@@ -361,7 +421,8 @@ LoadingStairs::
 	dec hl
 	dec hl
 	ld a, [hl]
-	sub 8
+	and $0F
+	sub 6
 	jr nz, .keepMoving
 	; Once the player has gone up enough, make it disappear and stop moving it
 	ldh [hThread2ID], a ; Stop moving it next time
@@ -373,4 +434,159 @@ LoadingStairs::
 .dontMoveUp
 	call MoveNPC0ToPlayer
 	jp ProcessNPCs
+	
+	
+DOWN_STAIRS_Y_COORD equ $09
+	
+LoadingStairsDownLeft::
+	ld hl, wNPC0_steps
+	dec [hl]
+	
+	ld hl, wYPos
+	ld a, [hl]
+	sub 8
+	and $0F
+	cp DOWN_STAIRS_Y_COORD - 8
+	jr nz, AlignToStairsDown
+	
+	ld a, DIR_LEFT
+	jr FirstLoadingStairsDown
+	
+	
+LoadingStairsDownRight::
+	ld hl, wNPC0_steps
+	dec [hl]
+	
+	ld hl, wYPos
+	ld a, [hl]
+	sub 8
+	and $0F
+	cp DOWN_STAIRS_Y_COORD - 8
+	jr z, StartStairsDownRight
+	
+	
+AlignToStairsDown:
+	ld b, a
+	inc hl
+	inc hl
+	ld a, [hl] ; Get x coord
+	and $0F
+	cp $0D
+	jr z, .alignVert ; If the player is at XD, this means he's on the right of the stairs
+	; Otherwise we need to move to the right
+	inc [hl] ; Inc x
+	ld a, [hli] ; Get new x
+	jr nz, .noHorizCarry
+	inc [hl]
+.noHorizCarry
+	inc a ; New x still
+	inc a
+	and $0F ; This will be zero if player is now aligned to stairs
+	inc hl ; Points to player dir
+	ld a, DIR_RIGHT
+	ld [hl], a
+	jr .noCarry ; Done moving
+	
+.alignVert
+	dec hl
+	dec hl
+	ld a, b ; Get back modified coord
+	cp DOWN_STAIRS_Y_COORD - 8 ; Do the comp' again
+	jr nc, .moveUp
+	ld a, DIR_DOWN
+	ld [wPlayerDir], a
+	inc [hl]
+	jr nz, .noCarry
+	inc hl
+	inc [hl]
+	jr .noCarry
+	
+.moveUp
+	xor a ; ld a, DIR_UP
+	ld [wPlayerDir], a
+	dec [hl]
+	ld a, [hl]
+	inc a
+	jr nz, .noCarry
+	inc hl
+	dec [hl]
+.noCarry
+	call MoveNPC0ToPlayer
+	jp ProcessNPCs
+	
+	
+StartStairsDownRight: ; Part of LoadingStairsDownRight
+	ld a, DIR_RIGHT
+	
+	
+FirstLoadingStairsDown:
+	ldh [hLoadingWalkDirection], a
+	ld a, THREAD2_LOADINGSTAIRSDOWN
+	ldh [hThread2ID], a
+	
+	; Now we need to cover the sprites as it goes "downstairs"
+	; The sprite will go under these 4 tiles :
+	; *****
+	; *XSS*  * = Any tile
+	; *XSS*  S = Stairs tile
+	; *XX**  X = target tiles
+	; *****
+	; We need to :
+	; - Mark those tiles as "above sprites" (and hope there aren't any sprites above them)
+	; - Add sprites covering the whites of these 4 tiles
+	; (We will use OBJ pal 7 for this, so hope it's not used by anything else)
+	
+LoadingStairsDown::
+	ld hl, wNPC0_steps
+	dec [hl]
+	ldh a, [hLoadingWalkDirection]
+	ld [wPlayerDir], a
+	ld b, a
+	
+	; Don't move too much, looks spazzy
+	ldh a, [hFrameCounter]
+	and 3
+	ret nz
+	
+	ld a, b
+	cp DIR_LEFT
+	ld hl, wXPos
+	ld a, [hl]
+	jr z, .moveLeft
+	inc [hl]
+	jr nz, .doneMoving ; noCarry
+	inc hl
+	inc [hl]
+	jr .doneWithCarry
+	
+.moveLeft
+	dec [hl]
+	and a
+	jr nz, .doneMoving ; noCarry
+	inc hl
+	dec [hl]
+.doneWithCarry
+	dec hl
+	
+.doneMoving
+	and 3
+	jr nz, .dontMoveDown
+	dec hl
+	dec hl
+	; ld a, [hl]
+	; and $0F
+	; sub 6
+	; jr nz, .keepMoving
+	; Once the player has gone down enough, make it disappear and stop moving it
+	; ldh [hThread2ID], a ; Stop moving it next time
+	; ld [hl], a ; We'll put the player far away ($FEXX should be fine)
+.keepMoving
+	inc [hl]
+	inc [hl]
+	
+.dontMoveDown
+	call MoveNPC0ToPlayer
+	call ProcessNPCs
+	; If possible, hide left half (first 2 sprites of player)
+	ret
 
