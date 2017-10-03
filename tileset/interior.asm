@@ -2,7 +2,7 @@
 SECTION "Interior tileset", ROMX
 	
 InteriorTileset::
-	db $4A
+	db $4E
 	full_ptr InteriorTilesetTiles
 	db 0
 	
@@ -288,19 +288,19 @@ InteriorTileset::
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $99, 0, 3, 0, 1, 0, 0
 	
-	tile_attr $A8, 0, 1, 0, 1, 0, 0
-	tile_attr $A7, 0, 1, 0, 1, 0, 0
-	tile_attr $A5, 0, 1, 0, 1, 0, 0
-	tile_attr $A6, 0, 1, 0, 1, 0, 0
+	tile_attr $CD, 0, 1, 0, 0, 0, 0
+	tile_attr $CC, 0, 1, 0, 0, 0, 0
+	tile_attr $CA, 0, 1, 0, 0, 0, 0
+	tile_attr $CB, 0, 1, 0, 0, 0, 0
 	
 	tile_attr $AA, 0, 2, 0, 0, 0, 0
 	tile_attr $AF, 0, 2, 0, 0, 0, 0
 	tile_attr $AA, 0, 2, 0, 0, 0, 0
 	tile_attr $AF, 0, 2, 0, 0, 0, 0
 	
-	tile_attr $AF, 0, 2, 0, 0, 0, 0
+	tile_attr $AC, 0, 2, 0, 0, 0, 0
 	tile_attr $AE, 0, 2, 0, 0, 0, 0
-	tile_attr $AF, 0, 2, 0, 0, 0, 0
+	tile_attr $AC, 0, 2, 0, 0, 0, 0
 	tile_attr $AE, 0, 2, 0, 0, 0, 0
 	
 	tile_attr $B0, 0, 2, 0, 0, 0, 0
@@ -410,7 +410,12 @@ REPT 4
 ENDR
 	
 	; Stairs
-REPT 8
+REPT 2
+	db 0
+	db TILE_CANWALK
+ENDR
+REPT 2
+	db TILE_CANWALK
 	db 0
 ENDR
 	

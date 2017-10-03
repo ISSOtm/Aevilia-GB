@@ -587,6 +587,12 @@ InteriorTilesetTiles::
 	dw $9F11, $9F11, $9F11, $D9D1, $39F1, $CDFD, $F3FF, $FCFF
 	dw $FCFF, $FFDF, $DF5F, $DF9F, $DF5B, $DF95, $DF5B, $FFB7
 	
+	; $CA-CD : Chair
+	dw $040F, $0A0B, $0A0B, $0A0B, $0AFA, $0AFA, $FAFA, $FA0A
+	dw $FA0B, $FA0B, $FA0B, $FA0B, $FAFA, $0AFA, $0AFA, $04F4
+	dw $0F08, $0F08, $0F08, $0F08, $0FFF, $0AFA, $0AFA, $04F4
+	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $07F7, $0FF8
+	
 
 	
 	
