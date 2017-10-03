@@ -1561,6 +1561,15 @@ SaveBlocks::
 	hram_block hRandInt, 2
 	wramx_block wNumOfNPCScripts, 3
 	wramx_block wNPCArray, $90
+	
+flags_block: MACRO
+	wramx_block wFlags, 0 ; 256 bytes
+ENDM
+	enum_start
+REPT $10
+	flags_block enum_value
+	enum_skip
+ENDR
 	dw 0 ; Terminate
 	
 	; Bank 1

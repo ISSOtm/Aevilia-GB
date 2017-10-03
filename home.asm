@@ -806,4 +806,5 @@ INCLUDE "home/handlers.asm"
 INCLUDE "home/utilities2.asm"
 
 INCLUDE "home/map.asm"
+INCLUDE "home/flags.asm"
 

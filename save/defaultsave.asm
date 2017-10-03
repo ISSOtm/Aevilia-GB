@@ -66,6 +66,11 @@ REPT $10 ; 1 NPC = $10 bytes
 ENDR
 ENDR
 
+DefaultFlags::
+REPT $1000
+	db 0
+ENDR
+
 DefaultSaveBank0End:
 
 	ds $2000 - (DefaultSaveBank0End - DefaultSaveBank0)

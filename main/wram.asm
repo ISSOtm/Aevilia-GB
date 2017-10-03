@@ -656,6 +656,12 @@ wBlockData::
 	ds $1000
 	
 	
+SECTION "Flags", WRAMX
+
+wFlags::
+	ds $1000
+	
+	
 	
 SECTION "Stack", WRAM0[$CFD0]
 
