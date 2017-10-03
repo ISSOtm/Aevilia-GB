@@ -21,7 +21,7 @@ PlayerHouseInteractions::
 	ds 7
 	
 	db WALK_LOADZONE
-	interact_box $0008, $000E, 16, 1
+	interact_box $0008, $FFFE, 16, 16
 	db THREAD2_LOADINGSTAIRSUP_LEFT
 	db 0
 	db MAP_PLAYER_HOUSE_2F
