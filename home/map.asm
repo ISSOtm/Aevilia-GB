@@ -194,7 +194,7 @@ ENDC
 	and $0F
 	jr z, .noNPCTiles
 	ld de, $80C0
-	ld b, a
+	push af
 .NPCTilesLoop
 	ld b, [hl]
 	inc hl
@@ -211,8 +211,9 @@ ENDC
 	jr z, .notOpposingGender
 	ld hl, TomTiles
 .notOpposingGender
-	ld c, $C0
+	push bc
 	ld a, b
+	ld bc, $C0
 	call CopyAcrossToVRAM
 	ld a, 1
 	ld [rVBK], a
@@ -222,14 +223,15 @@ ENDC
 	jr nc, .noCarry0
 	dec d
 .noCarry0
-	ld c, $C0
-	ld a, b
+	pop af
+	ld bc, $C0
 	call CopyAcrossToVRAM
 	xor a
 	ld [rVBK], a
 	pop hl
 	inc hl
-	dec b
+	pop af
+	dec a
 	jr nz, .NPCTilesLoop
 .noNPCTiles
 	
