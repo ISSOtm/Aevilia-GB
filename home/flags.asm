@@ -9,8 +9,8 @@ SECTION "Flag routines", ROM0
 ; - B = Prev WRAM bank | $
 ; - C = 0
 ; - A = Copy of B
-; - D has bit 7 reset THEN rolled right three times
-; - E = number of times A has been rolled
+; - D = [hl] rotated E times
+; - E = number of times D has been rolled right
 ; - HL points to byte (wrong WRAM bank though)
 GetFlag::
 	ld a, [rSVBK]
@@ -38,6 +38,7 @@ ENDR
 	rra
 	dec c
 	jr nz, .shiftTillFlag
+	ld d, a ; Save for wrapping funcs
 	
 	ld a, b
 	ld [rSVBK], a
@@ -48,7 +49,7 @@ SetFlag::
 	call GetFlag
 	ld a, BANK(wFlags)
 	ld [rSVBK], a
-	ld a, [hl]
+	ld a, d
 	scf
 	
 .shiftBack
@@ -66,7 +67,7 @@ ResetFlag::
 	call GetFlag
 	ld a, BANK(wFlags)
 	ld [rSVBK], a
-	ld a, [hl]
+	ld a, d
 	and a ; Reset carry
 	
 .shiftBack
@@ -84,7 +85,7 @@ ToggleFlag::
 	call GetFlag
 	ld a, BANK(wFlags)
 	ld [rSVBK], a
-	ld a, [hl]
+	ld a, d
 	ccf
 	
 .shiftBack
