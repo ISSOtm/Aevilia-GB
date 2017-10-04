@@ -35,7 +35,7 @@ TestHouseNPCs::
 	dw TestHouseNPCScripts
 	
 	db $01
-	dw TestHouseNPCTiles
+	full_ptr TestHouseNPCTiles
 	
 TestHouseWarpToPoints::
 	db 1 ; Number of warp-to points

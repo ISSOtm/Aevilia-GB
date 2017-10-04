@@ -90,7 +90,7 @@ StarthamNPCs::
 	dw StarthamNPCScripts
 	
 	db $01 ; Number of NPC tile sets
-	dw GenericBoyATiles
+	full_ptr GenericBoyATiles
 	
 StarthamWarpToPoints::
 	db 5 ; Number of warp-to points

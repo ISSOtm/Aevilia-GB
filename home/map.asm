@@ -196,12 +196,24 @@ ENDC
 	ld de, $80C0
 	ld b, a
 .NPCTilesLoop
+	ld b, [hl]
+	inc hl
 	ld a, [hli]
 	push hl
 	ld h, [hl]
 	ld l, a
+	or h
+	jr nz, .notOpposingGender
+	ld b, BANK(EvieTiles)
+	ld hl, EvieTiles
+	ld a, [wPlayerGender]
+	and a
+	jr z, .notOpposingGender
+	ld hl, TomTiles
+.notOpposingGender
 	ld c, $C0
-	call CopyToVRAMLite
+	ld a, b
+	call CopyAcrossToVRAM
 	ld a, 1
 	ld [rVBK], a
 	ld a, e
@@ -211,7 +223,8 @@ ENDC
 	dec d
 .noCarry0
 	ld c, $C0
-	call CopyToVRAMLite
+	ld a, b
+	call CopyAcrossToVRAM
 	xor a
 	ld [rVBK], a
 	pop hl

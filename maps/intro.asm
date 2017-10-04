@@ -82,10 +82,13 @@ IntroMapNPCs::
 	dw IntroMapNPCScripts
 	
 	db 4
-	dw TestNPCTiles
-	dw InvisibleTiles
-	dw (LeftEyeTiles - 16 * 4 * 2) ; Make it so the actual tiles land in the slot for left/right, but without using padding
-	dw (RightEyeTiles - 16 * 4 * 2)
+	full_ptr TestNPCTiles
+	full_ptr InvisibleTiles
+	; Cannot use full_ptr for these two due to the math causing a syntax error in "BANK(\1)"
+	db BANK(LeftEyeTiles)
+	dw LeftEyeTiles - 16 * 4 * 2 ; Make it so the actual tiles land in the slot for left/right, but without using padding
+	db BANK(RightEyeTiles)
+	dw RightEyeTiles - 16 * 4 * 2
 	
 IntroMapWarpToPoints::
 	db 2
