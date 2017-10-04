@@ -196,21 +196,25 @@ ENDC
 	ld de, $80C0
 	push af
 .NPCTilesLoop
-	ld b, [hl]
-	inc hl
+	ld a, [hli]
+	and a
+	jr z, .loadOppositeGender
+	ld b, a
 	ld a, [hli]
 	push hl
 	ld h, [hl]
 	ld l, a
-	or h
-	jr nz, .notOpposingGender
+	jr .notOppositeGender
+.loadOppositeGender
+	dec hl
+	push hl
 	ld b, BANK(EvieTiles)
 	ld hl, EvieTiles
 	ld a, [wPlayerGender]
 	and a
-	jr z, .notOpposingGender
+	jr nz, .notOppositeGender
 	ld hl, TomTiles
-.notOpposingGender
+.notOppositeGender
 	push bc
 	ld a, b
 	ld bc, $C0
