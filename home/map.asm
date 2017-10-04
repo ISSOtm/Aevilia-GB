@@ -119,8 +119,33 @@ ENDC
 	jr z, .noInteractions
 	ld b, a
 .copyInteractions
-	ld d, HIGH(wWalkInterCount)
 	ld e, [hl]
+	bit 7, e
+	jr z, .notTiedToFlag
+	res 7, e ; Reset that bit
+	ld c, e ; Store the type for later
+	push bc ; Save count and type
+	inc hl
+	ld a, [hli] ; Read flag ID
+	ld e, a
+	ld d, [hl]
+	push hl ; Save read ptr
+	call GetFlag
+	pop hl
+	pop bc
+	ld a, [hld] ; Get back high byte
+	dec hl
+	bit 7, a ; Check if bit was supposed to be reset
+	jr z, .checkIfFlagReset
+	ccf ; If the flag is supposed to be set, invert the check
+.checkIfFlagReset
+	ld e, c ; Get back interaction type
+	jr nc, .notTiedToFlag ; The bit was supposed to be reset, and it is !
+	ld de, INTERACTION_STRUCT_SIZE + 3 ; 1 byte of type plus two of flag ID
+	add hl, de
+	jr .nextInteraction
+.notTiedToFlag
+	ld d, HIGH(wWalkInterCount)
 	ld a, [de]
 	inc a
 	ld [de], a
@@ -129,17 +154,23 @@ ENDC
 	ld e, a
 	dec d ; de points to wButtonLoadZones + struct offset
 	ld a, [hli]
+	bit 7, a ; If the interaction was tied to a certain flag,
+	jr z, .noFlag
+	inc hl ; Skip over it
+	inc hl
+.noFlag
 	rra
 	jr c, .buttonThingy
 	dec d
 .buttonThingy
-	and a
+	and $3F ; Don't count flag-tied flag
 	jr nz, .loadZone
 	dec d
 	dec d
 .loadZone
 	ld c, INTERACTION_STRUCT_SIZE
 	rst copy
+.nextInteraction
 	dec b
 	jr nz, .copyInteractions
 .noInteractions
