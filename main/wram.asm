@@ -10,7 +10,6 @@ wFatalErrorCode::
 ; Parameters transferred to the corresponding registers on each VBlank
 ; The idea is that these can be edited anytime
 ; Also, this SCX is pre-screen shake, and WX and WY are ignored if wEnableWindow is zero
-; Please take note that the text box takes precedence over these!
 wSCY::
 	ds 1
 wSCX::
@@ -634,20 +633,7 @@ wBattleTransitionID::
 	
 wBattlePreservedNPCs::
 	ds 1
-	
-	
-	
-SECTION "Map statuses", WRAMX,BANK[2]
 
-wIntroMapStatus::
-	ds 1
-wIntroMapDelayStep::
-	ds 1
-	
-SECTION "NPC statuses", WRAMX,BANK[2]
-
-wTestWarriorFlags::
-	ds 1
 	
 	
 SECTION "Map block data", WRAMX
@@ -658,8 +644,21 @@ wBlockData::
 	
 SECTION "Flags", WRAMX
 
+UNION
+	
 wFlags::
 	ds $1000
+	
+NEXTU
+	
+wIntroMapStatus::
+	ds 1
+wIntroMapDelayStep::
+	ds 1
+wTestWarriorFlags::
+	ds 1
+	
+ENDU
 	
 	
 	
