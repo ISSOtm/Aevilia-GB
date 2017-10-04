@@ -194,8 +194,8 @@ ENDC
 	and $0F
 	jr z, .noNPCTiles
 	ld de, $80C0
-	push af
 .NPCTilesLoop
+	push af
 	ld a, [hli]
 	and a
 	jr z, .loadOppositeGender
