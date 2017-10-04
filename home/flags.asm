@@ -6,9 +6,9 @@ SECTION "Flag routines", ROM0
 ; Flags are grouped by eight in a byte, of course
 
 ; Returns :
-; - Prev WRAM bank in B
+; - B = Prev WRAM bank | $
 ; - C = 0
-; - A = byte rolled a few times
+; - A = Copy of B
 ; - D has bit 7 reset THEN rolled right three times
 ; - E = number of times A has been rolled
 ; - HL points to byte (wrong WRAM bank though)
@@ -26,7 +26,7 @@ GetFlag::
 	res 7, d ; Force ignoring bit 7 !!
 REPT 3
 	srl d
-	rl e
+	rr e
 ENDR
 	ld hl, wFlags
 	add hl, de ; Add base ptr to point to byte (cannot overflow, btw)
@@ -46,6 +46,9 @@ ENDR
 	
 SetFlag::
 	call GetFlag
+	ld a, BANK(wFlags)
+	ld [rSVBK], a
+	ld a, [hl]
 	scf
 	
 .shiftBack
@@ -54,8 +57,6 @@ SetFlag::
 	jr nz, .shiftBack
 	ld c, a
 	
-	ld a, BANK(wFlags)
-	ld [rSVBK], a
 	ld [hl], c
 	ld a, b
 	ld [rSVBK], a
@@ -63,6 +64,9 @@ SetFlag::
 	
 ResetFlag::
 	call GetFlag
+	ld a, BANK(wFlags)
+	ld [rSVBK], a
+	ld a, [hl]
 	and a ; Reset carry
 	
 .shiftBack
@@ -71,8 +75,6 @@ ResetFlag::
 	jr nz, .shiftBack
 	ld c, a
 	
-	ld a, BANK(wFlags)
-	ld [rSVBK], a
 	ld [hl], c
 	ld a, b
 	ld [rSVBK], a
@@ -80,6 +82,9 @@ ResetFlag::
 	
 ToggleFlag::
 	call GetFlag
+	ld a, BANK(wFlags)
+	ld [rSVBK], a
+	ld a, [hl]
 	ccf
 	
 .shiftBack
@@ -88,8 +93,6 @@ ToggleFlag::
 	jr nz, .shiftBack
 	ld c, a
 	
-	ld a, BANK(wFlags)
-	ld [rSVBK], a
 	ld [hl], c
 	ld a, b
 	ld [rSVBK], a
