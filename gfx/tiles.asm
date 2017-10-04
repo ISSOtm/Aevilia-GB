@@ -153,7 +153,7 @@ ConsoleTiles::
 	
 SECTION "Overworld tileset tiles", ROMX,ALIGN[4]
 	
-OverworldTilesetTiles::
+OverworldTilesetTiles0::
 	; Grass tiles (80-82)
 	dw $0062, $02B5, $004A, $40B5, $004A, $08B4, $004B, $0094
 	dw $00AA, $0855, $002B, $00AA, $2054, $00AA, $0255, $004A
@@ -184,9 +184,7 @@ OverworldTilesetTiles::
 	dw $F030, $EC4C, $D6A2, $82F2, $83F3, $83FD, $C37E, $FF3C ; Top-right
 	dw $FF00, $AF10, $FE00, $FF00, $AD42, $FF00, $EF10, $FB00 ; Filler
 	
-	; 98
-	dw $7E81, $7F80, $3FC0, $3FC0, $3FC0, $9F60, $C33C, $E01F ; Water
-	
+OverworldTilesetTiles1::
 	; Bridge (99-9A)
 	dw $FF00, $8877, $8877, $FF00, $22DD, $FF00, $FFFF, $1010 ; Horizontal
 	dw $FF00, $8877, $8877, $FF00, $22DD, $FF00, $8877, $8877 ; Vertical
@@ -198,9 +196,7 @@ OverworldTilesetTiles::
 	; 9D
 	dw $0000, $0012, $0044, $0000, $0020, $0002, $0040, $0008 ; Path tile (merge with rock filler?)
 	
-	; 9E
-	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
-	
+OverworldTilesetTiles2::
 	; Tree (9F-A6)
 	dw $0101, $0203, $0D0E, $1718, $243B, $D3EC, $5C63, $E19E ; Top-left (walkable)
 	dw $8080, $C040, $F030, $78A8, $FE16, $FF2B, $FE16, $FF69 ; Top-right (walkable)
@@ -227,7 +223,7 @@ OverworldTilesetTiles::
 	dw $2038, $5078, $5078, $2038, $5078, $5078, $2030, $0000 ; Vertical, end
 	dw $0077, $0077, $00FF, $00EE, $0044, $0000, $0011, $0044 ; Shadow
 	
-	; Door animation frames (AF-DA)
+	; Door animation frames (AF-CA)
 	dw $00FF, $00FF, $3FFF, $3FE0, $3FE7, $38E8, $38E8, $3FEF ; Top-left
 	dw $00FF, $00FF, $3FFF, $3FE0, $3FE7, $38E8, $38E8, $3FEF ; Top-right (H-flipped !)
 	dw $FC07, $FCF7, $7C17, $7C17, $1C17, $FCFF, $FDFF, $06FE ; Bottom-right

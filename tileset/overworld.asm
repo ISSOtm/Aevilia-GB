@@ -2,8 +2,16 @@
 SECTION "Overworld tileset", ROMX
 
 OverworldTileset::
-	db $4B ; Number of tiles
-	full_ptr OverworldTilesetTiles
+	db $18 ; Number of tiles
+	full_ptr OverworldTilesetTiles0
+	db 1
+	full_ptr WaterFrames
+	db 5
+	full_ptr OverworldTilesetTiles1
+	db 1
+	full_ptr FlowerFrames
+	db $2B
+	full_ptr OverworldTilesetTiles2
 	db 0
 	
 	db 0
