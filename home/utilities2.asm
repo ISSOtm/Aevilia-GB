@@ -99,7 +99,7 @@ CopyAcross::
 	rst bankswitch
 	ret
 	
-; Copy c bytes from a:hl to de, assuming de is in VRAM
+; Copy bc bytes from a:hl to de, assuming de is in VRAM
 ; Thus, doesn't copy if VRAM isn't available
 CopyAcrossToVRAM::
 	; If this function looks kamoulox-esque, see CopyAcross
