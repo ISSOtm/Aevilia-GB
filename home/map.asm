@@ -31,7 +31,7 @@ ENDC
 	
 	ld a, BANK(MapROMBanks)
 	rst bankswitch
-	ld h, MapROMBanks >> 8
+	ld h, HIGH(MapROMBanks)
 	ld l, d ; MapROMBanks is 256-byte aligned
 	ld a, [hl] ; Get map ROM bank
 	ld b, a ; Store for bankswitch just after
@@ -40,9 +40,9 @@ ENDC
 	ld a, d
 	add a, a ; 2 bytes per pointer
 	
-	add a, MapPointers & $FF
+	add a, LOW(MapPointers)
 	ld l, a
-	adc a, MapPointers >> 8 ; a = Hi + Lo + Carry
+	adc a, HIGH(MapPointers) ; a = Hi + Lo + Carry
 	sub l ; a = Hi + Carry, OK!
 	ld h, a
 	ld a, [hli] ; Set hl to map header's pointer
@@ -119,7 +119,7 @@ ENDC
 	jr z, .noInteractions
 	ld b, a
 .copyInteractions
-	ld d, wWalkInterCount >> 8
+	ld d, HIGH(wWalkInterCount)
 	ld e, [hl]
 	ld a, [de]
 	inc a
@@ -175,13 +175,13 @@ ENDC
 	inc de
 	ld c, 2
 	rst copy ; Copy movement flags and speed
-	ld a, $80
+	ld a, $20
 	ld [de], a ; Init vertical displacement
 	inc de
 	xor a
 	ld [de], a ; Init unused byte
 	inc de
-	ld a, $80
+	ld a, $20
 	ld [de], a ; Init horizontal displacement
 	inc de
 	dec b
@@ -402,7 +402,7 @@ LoadTileset::
 	push hl
 	ld [wLoadedTileset], a
 	ld l, a
-	ld h, TilesetROMBanks >> 8
+	ld h, HIGH(TilesetROMBanks)
 	save_rom_bank
 	ld a, BANK(TilesetROMBanks)
 	rst bankswitch
@@ -410,9 +410,9 @@ LoadTileset::
 	
 	ld a, l
 	add a, a
-	add a, TilesetPointers & $FF
+	add a, LOW(TilesetPointers)
 	ld l, a
-	adc a, TilesetPointers >> 8
+	adc a, HIGH(TilesetPointers)
 	sub l
 	ld h, a
 	ld a, [hli]
@@ -465,7 +465,7 @@ LoadTileset::
 	ld [rHDMA4], a
 	ld a, c ; Get the number of tiles back
 	dec a ; Must write (numOfTiles - 1) !
-	ld c, rHDMA5 & $FF
+	ld c, LOW(rHDMA5)
 	or $80 ; Add HDMA flag
 	ld [$FF00+c], a
 .waitTransferComplete
@@ -615,7 +615,7 @@ LoadTileset::
 	pop hl
 	inc hl
 	ld a, e
-	cp wOBJPalettes & $FF
+	cp LOW(wOBJPalettes)
 	jr nz, .loadTilesetBGPalettes
 	
 	restore_rom_bank
@@ -643,7 +643,7 @@ LoadTileset::
 	pop hl
 	inc hl
 	ld a, e
-	cp wPalettesEnd & $FF
+	cp LOW(wPalettesEnd)
 	jr nz, .loadTilesetOBJPalettes
 	
 ;	restore_rom_bank
@@ -658,7 +658,7 @@ LoadTileset::
 	
 	
 GetCameraTopLeftPtr::
-	ld d, vTileMap0 >> 8
+	ld d, HIGH(vTileMap0)
 	ld a, [wCameraYPos]
 	and $F0
 	add a, a
@@ -766,9 +766,9 @@ RedrawMap::
 	jr nc, .noCarry4
 	inc d
 	ld a, d
-	cp vTileMap1 >> 8
+	cp HIGH(vTileMap1)
 	jr nz, .noCarry4
-	ld d, vTileMap0 >> 8
+	ld d, HIGH(vTileMap0)
 .noCarry4
 	ld a, e
 	and (VRAM_ROW_SIZE - 1)
@@ -780,9 +780,9 @@ RedrawMap::
 	jr nc, .noWrap2
 	inc d
 	ld a, d
-	cp vTileMap1 >> 8
+	cp HIGH(vTileMap1)
 	jr nz, .noWrap2
-	ld d, vTileMap0 >> 8
+	ld d, HIGH(vTileMap0)
 .noWrap2
 	pop hl ; Get back pointer from last line
 	ld a, [wMapWidth]
@@ -801,7 +801,7 @@ RedrawMap::
 ; hl points to end of the block's metadata
 ; de points to last written tile, a equals zero
 DrawBlock::
-	ld h, wBlockMetadata >> 8
+	ld h, HIGH(wBlockMetadata)
 	add a, a
 	add a, a
 	add a, a
@@ -1028,7 +1028,7 @@ MoveCamera::
 	ld c, 2
 	rst copy
 	
-	ld d, vTileMap0 >> 8
+	ld d, HIGH(vTileMap0)
 	ld a, [wTempBuf]
 	and $F0
 	add a, a
@@ -1194,7 +1194,7 @@ MoveCamera::
 .columnTargetAcquired
 	ld [de], a
 	
-	ld d, vTileMap0 >> 8
+	ld d, HIGH(vTileMap0)
 	ld a, [wTempBuf]
 	and $F0
 	add a, a
@@ -1234,10 +1234,10 @@ MoveCamera::
 	jr nc, .noCarry5
 	inc d
 	ld a, d
-	cp vTileMap1 >> 8
+	cp HIGH(vTileMap1)
 	jr nz, .noCarry5
 	; Wrap
-	ld d, vTileMap0 >> 8
+	ld d, HIGH(vTileMap0)
 .noCarry5
 	pop hl
 	ld a, [wMapWidth]
@@ -1392,7 +1392,7 @@ ENDR
 	jr z, .noWalkingAnim ; half of the walking frames will be of the opposite direction (to create arms balancing)
 	inc c ; Set bit 0 of c to mirror the bottom half
 .noWalkingAnim
-	ld d, wVirtualOAM >> 8 ; Restore
+	ld d, HIGH(wVirtualOAM) ; Restore
 	
 	ld a, c ; Get direction
 	and 6
@@ -1510,9 +1510,9 @@ GetNPCOffsetFromCam::
 	add a, a
 	add a, a
 	add a, a
-	add a, wNPC0_ypos & $FF
+	add a, LOW(wNPC0_ypos)
 	ld l, a
-	ld h, wNPC0_ypos >> 8
+	ld h, HIGH(wNPC0_ypos)
 	; hl = Pointer to NPC's Y coord
 	ld a, [hli]
 	push hl
@@ -1611,10 +1611,12 @@ MoveNPCs::
 	and a
 	jr nz, .movementContinues
 .stopMovement
+	; Oddity : If this triggers on the same frame an NPC "bonks", RNG will be rolled twice
+	; (This roll will be overwritten by the "bonk" one)
 	push hl
 	call RandInt
 	pop hl
-	ld [hli], a
+	ld [hli], a ; Set random freezing time
 	set 3, [hl] ; Mark NPC as "frozen"
 .movementContinues
 	
@@ -1628,7 +1630,7 @@ MoveNPCs::
 	ld [bc], a
 	inc bc
 	ld a, c
-	cp (wTempBuf + 4) & $FF
+	cp LOW(wTempBuf + 4)
 	jr nz, .copyToTemp
 	dec bc
 	dec bc
@@ -1644,22 +1646,21 @@ MoveNPCs::
 	ld a, [bc]
 	jr nz, .movingPositively
 	sub a, d
-	ld [bc], a
 	jr nc, .noCarry
+	ld [bc], a
 	inc bc
 	ld a, [bc]
 	dec a
-	ld [bc], a
 	jr .noCarry
 .movingPositively
 	add a, d
-	ld [bc], a
 	jr nc, .noCarry
+	ld [bc], a
 	inc bc
 	ld a, [bc]
-	dec a
-	ld [bc], a
+	inc a
 .noCarry
+	ld [bc], a
 	; Perform collision check
 	push hl
 	push de
@@ -1669,29 +1670,30 @@ MoveNPCs::
 	jr z, .stopNPC
 	
 	; Update displacement
-	ld bc, (wNPC0_ydispl - wNPC0_xpos)
-	add hl, bc
+	ld a, l
+	add a, (wNPC0_ydispl - wNPC0_xpos)
+	ld l, a
 	ld a, [hl]
 	bit 0, e
 	jr nz, .updateDisplacementPositively
 	sub a, d
-	db $06 ; Absorbs the next instruction, and the value of b doesn't matter
+	sub a, d ; Compensate for next
 .updateDisplacementPositively
 	add a, d
-	jr c, .stopNPC ; Prevent NPCs going too far from their "anchor point"
-	ld [hl], a
+	ld d, a ; Store this (next check destroys a)
+	and $C0
+	jr nz, .stopNPC ; Prevent NPCs going too far from their "anchor point" (box of 64x64 px)
+	ld [hl], d
 	
 	ld a, l
-	and $F0
-	ld l, a
-	ld bc, wTempBuf
-.applyMovement
-	ld a, [bc]
-	ld [hli], a
-	inc bc
-	ld a, c
-	cp (wTempBuf + 4) & $FF
-	jr nz, .applyMovement
+	and -NPC_STRUCT_SIZE
+	ld e, a
+	ld d, h ; de = NPC's ypos
+	ld hl, wTempBuf
+	ld c, 4
+	rst copy ; Apply movement
+	ld h, d
+	ld l, e
 .gotoNextNPC ; "Relay" to avoid turning some "jr"s above into "jp"s (Saves size and wastes 1 CPU cycle)
 	jr .nextNPC
 	
@@ -1755,6 +1757,19 @@ MoveNPCs::
 	; Process one frame of movement (if NPC bonks immediately, avoids a "stutter frame") ; also "hli" coincidentally placed hl just right! :D
 	jp .NPCIsMoving ; Too far to jr, tho :/
 	
+.stopNPC ; This block of code is off in the distance to avoid turning a jr into a jp
+	ld a, l
+	and -NPC_STRUCT_SIZE
+	ld l, a
+	ld bc, (wNPC0_steps - wNPC0_ypos)
+	add hl, bc
+	push hl
+	call RandInt
+	pop hl
+	ld [hli], a ; Make NPC enter "frozen" state
+	set 3, [hl]
+	jr .nextNPC
+	
 .dontMove
 	; Stall NPC for some frames, to avoid spamming turning around
 	ld a, b
@@ -1768,22 +1783,9 @@ MoveNPCs::
 	and -NPC_STRUCT_SIZE ; Get on struct edge
 	sub	(wNPC1_ypos - wNPC0_steps) ; Go to previous struct
 	ld l, a
-	cp (wNPC0_steps - 16) & $FF ; Check if we reached the end
+	cp LOW(wNPC0_steps - 16) ; Check if we reached the end
 	jp nz, .moveNPC
 	ret
-	
-.stopNPC ; This block of code is off in the distance to avoid turning a jr into a jp
-	ld a, l
-	and -NPC_STRUCT_SIZE
-	ld l, a
-	ld bc, (wNPC0_steps - wNPC0_ypos)
-	add hl, bc
-	push hl
-	call RandInt
-	pop hl
-	ld [hli], a ; Make NPC enter "frozen" state
-	set 3, [hl]
-	jr .nextNPC
 	
 ; Get collision for the NPC pointed to by hl (can be anywhere within the NPC's struct) at coordinates given by wTempBuf
 ; Doesn't alter wTempBuf, but otherwise trashes all other registers
@@ -2282,7 +2284,7 @@ NoOOB:
 	ld a, BANK(wBlockData)
 	call SwitchRAMBanks
 	ld a, [de]
-	ld d, wBlockMetadata >> 8
+	ld d, HIGH(wBlockMetadata)
 	add a, a
 	add a, a
 	add a, a
@@ -2316,7 +2318,7 @@ NoOOB:
 	res 7, a ; Bank 0's tiles have attributes 0-127, bank 1's have 128-255
 .tileIsBank1
 	ld l, a
-	ld h, wTileAttributes >> 8
+	ld h, HIGH(wTileAttributes)
 	bit 7, [hl]
 	ret ; Return with colliding with block status
 	
@@ -2568,7 +2570,7 @@ ScanForInteraction::
 	
 	
 GetPlayerTopLeftPtr::
-	ld d, vTileMap0 >> 8
+	ld d, HIGH(vTileMap0)
 	ld a, [wYPos]
 	and $F0
 	add a, a
