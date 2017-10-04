@@ -20,6 +20,7 @@ function drawHUD()
 	wBtnLoadZoneCount = 0x01D703
 	wWalkingLoadZones = 0x01D500
 	wButtonLoadZones = 0x01D600
+	interactionstructlength = 16
 	
 	wNumOfNPCs = 0x01D70F
 	wNPC0_ypos = 0x01D710
@@ -29,6 +30,10 @@ function drawHUD()
 	wXPos = 0xC231
 	wPlayerDir = 0xC233
 	
+	playerboxxoffset = 2
+	playerboxyoffset = 8
+	playerboxxsize = 11
+	playerboxysize = 7
 	interactionoffsets = {{7, 7}, {16, 7}, {9, 1}, {9, 14}}
 	
 	wLoadedMapROMBank = 0xC246
@@ -39,7 +44,7 @@ function drawHUD()
 	wTileAttributes = 0x01D200
 	tileattriblength = 1
 	
-	wBlockData = 0x04D000
+	wBlockData = 0x02D000
 	
 	
 	-- Utilities
@@ -161,7 +166,15 @@ function drawHUD()
 	end
 	
 	function drawbox(xpos, ypos, xsize, ysize, color, fillcolor)
-		if xsize > 0 then
+		if xpos + xsize > 0x10000 then
+			drawbox(xpos, ypos, 0x10000 - xpos - 1, ysize, color, fillcolor)
+			drawbox(xpos - 0x10000, ypos, xsize, ysize, color, fillcolor)
+			
+		elseif ypos + ysize > 0x10000 then
+			drawbox(xpos, ypos, xsize, 0x10000 - ypos - 1, color, fillcolor)
+			drawbox(xpos, ypos - 0x10000, xsize, ysize, color, fillcolor)
+			
+		elseif xsize > 0 then
 			if ysize > 0 then
 				gui.drawRectangle(xpos, ypos, xsize, ysize, color, fillcolor)
 			else
@@ -213,9 +226,12 @@ function drawHUD()
 			interybox = readmemory(baseaddr + 4, memory.read_u8)
 			interxbox = readmemory(baseaddr + 5, memory.read_u8)
 			
-			drawbox(interxpos - cameraxpos, interypos - cameraypos, interxbox - 1, interybox - 1, 0xFF0000FF)
+			if interxbox ~= 0 and interybox ~= 0 then
+				drawbox(interxpos - cameraxpos, interypos - cameraypos, interxbox - 1, interybox - 1, 0xFF0000FF)
+				drawbox((interxpos - cameraxpos + playerboxxoffset - 1) % 0x10000, (interypos - cameraypos + playerboxyoffset - 1) % 0x10000, interxbox + 1 + playerboxxsize, interybox + 1 + playerboxysize, 0, 0x808000FF)
+			end
 			
-			baseaddr = baseaddr + 8
+			baseaddr = baseaddr + interactionstructlength
 		end
 		
 		baseaddr = wButtonInteractions
@@ -228,7 +244,7 @@ function drawHUD()
 			
 			drawbox(interxpos - cameraxpos, interypos - cameraypos, interxbox - 1, interybox - 1, 0xFF0080FF)
 			
-			baseaddr = baseaddr + 8
+			baseaddr = baseaddr + interactionstructlength
 		end
 		
 	--	gui.DrawFinish()
@@ -245,9 +261,12 @@ function drawHUD()
 			loadzoneybox = readmemory(baseaddr + 4, memory.read_u8)
 			loadzonexbox = readmemory(baseaddr + 5, memory.read_u8)
 			
-			drawbox(loadzonexpos - cameraxpos, loadzoneypos - cameraypos, loadzonexbox - 1, loadzoneybox - 1, 0xFF8000FF, 0x808000FF)
+			if interxbox ~= 0 and interybox ~= 0 then
+				drawbox(loadzonexpos - cameraxpos, loadzoneypos - cameraypos, loadzonexbox - 1, loadzoneybox - 1, 0xFF8000FF)
+				drawbox((loadzonexpos - cameraxpos + playerboxxoffset - 1) % 0x10000, (loadzoneypos - cameraypos + playerboxyoffset - 1) % 0x10000, loadzonexbox + 1 + playerboxxsize, loadzoneybox + 1 + playerboxysize, 0, 0x808000FF)
+			end
 			
-			baseaddr = baseaddr + 8
+			baseaddr = baseaddr + interactionstructlength
 		end
 		
 		baseaddr = wButtonLoadZones
@@ -260,7 +279,7 @@ function drawHUD()
 			
 			drawbox(loadzonexpos - cameraxpos, loadzoneypos - cameraypos, loadzonexbox - 1, loadzoneybox - 1, 0xFF8080FF, 0x808080FF)
 			
-			baseaddr = baseaddr + 8
+			baseaddr = baseaddr + interactionstructlength
 		end
 		
 	--	gui.DrawFinish()
@@ -289,8 +308,7 @@ function drawHUD()
 	
 	function drawplayerbox()
 	--	gui.DrawNew("Player Box")
-		
-		drawbox((xpos - cameraxpos + 2) % 0x10000, (ypos - cameraypos + 8) % 0x10000, 11, 7, 0xFFFF0000)
+		drawbox((xpos - cameraxpos + playerboxxoffset) % 0x10000, (ypos - cameraypos + playerboxyoffset) % 0x10000, playerboxxsize, playerboxysize, 0xFFFF0000)
 		
 	--	gui.DrawFinish()
 	end
@@ -358,6 +376,7 @@ function drawHUD()
 	
 --	gui.clearGraphics()
 	
+--	gui.drawRectangle(-1,15,17,17, 0, 0x808000FF)
 	drawcollision()
 	drawnpcs()
 	drawinteractions()
