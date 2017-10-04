@@ -1141,12 +1141,8 @@ StartMenu::
 	ld [SRAMEnable], a
 	ld [SRAMBank], a
 	
-	ld d, h
-	ld e, l
-	ld bc, 30
-	call DelayBCFrames
 	ld hl, DoneStr
-	ld de, wTextboxTileMap + SCREEN_WIDTH * 14 + 3
+	ld de, wTextboxTileMap + SCREEN_WIDTH * 14 + 2
 	rst copyStr
 	inc a
 	ld [wTransferRows + 14], a

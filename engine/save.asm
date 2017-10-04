@@ -1313,7 +1313,6 @@ LoadFile::
 	call CopyToVRAMLite
 	
 	ld bc, SaveBlocks
-	ld de, wTextboxTileMap + SCREEN_WIDTH * 14 + 1 ; Progress bar location
 	ld a, SRAM_UNLOCK
 	ld [SRAMEnable], a
 	ldh a, [hSRAM32kCompat]
@@ -1330,10 +1329,8 @@ LoadFile::
 	ld [SRAMBank], a
 	ld hl, sFile1Data0Start
 .copyLoop
-	rst waitVBlank
 	ld a, [bc]
 	inc bc
-	push de
 	ld e, a
 	ld a, [bc]
 	inc bc
@@ -1360,15 +1357,6 @@ LoadFile::
 	ld c, a
 	rst copy ; Copy block
 	pop bc
-	pop de
-	ld a, 1
-	ld [wTransferRows + 14], a
-	ld a, [de]
-	inc a
-	ld [de], a
-	cp 8
-	jr nz, .copyLoop
-	inc de
 	jr .copyLoop
 	
 .toHRAM
@@ -1376,7 +1364,6 @@ LoadFile::
 	jr .highByteDone
 	
 .doneCopying
-	pop de
 	pop af
 	inc a
 	bit 0, a ; See next function
@@ -1410,16 +1397,13 @@ SaveFile::
 	ld [hl], 0 ; Make file invalid to prevent making bad saves 'cause of resets
 	
 	ld bc, SaveBlocks
-	ld hl, wTextboxTileMap + SCREEN_WIDTH * 14 + 1 ; Progress bar location 
 .copyOneBank
 	push af
 	ld [SRAMBank], a
 	ld de, sFile1Data0Start
 .copyLoop
-	rst waitVBlank
 	ld a, [bc]
 	inc bc
-	push hl
 	ld l, a
 	ld a, [bc]
 	inc bc
@@ -1446,15 +1430,6 @@ SaveFile::
 	ld c, a
 	rst copy ; Copy block
 	pop bc
-	pop hl
-	ld a, 1
-	ld [wTransferRows + 14], a
-	ld a, [hl]
-	inc a
-	ld [hl], a
-	cp 8
-	jr nz, .copyLoop
-	inc hl
 	jr .copyLoop
 	
 .fromHRAM
@@ -1462,7 +1437,6 @@ SaveFile::
 	jr .highByteDone
 	
 .doneCopying
-	pop hl
 	pop af
 	inc a
 	bit 0, a ; We start at the even bank, so only re-loop if we have to process the odd bank
