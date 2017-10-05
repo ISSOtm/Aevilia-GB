@@ -655,7 +655,8 @@ wIntroMapStatus::
 	ds 1
 wIntroMapDelayStep::
 	ds 1
-wTestWarriorFlags::
+	
+	; Used
 	ds 1
 	
 ENDU

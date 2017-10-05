@@ -57,10 +57,7 @@ TestHouseNPCScripts::
 	
 	set_text_prefix TestHouseTestBattleScript
 TestHouseTestBattleScript::
-	text_bankswitch BANK(wTestWarriorFlags)
-	text_lda wTestWarriorFlags
-	text_bankswitch 1
-	text_bit $80
+	text_get_flag FLAG_TEST_WARRIOR_SPOKE_ONCE
 	print_name
 .source1
 	text_jr cond_nz, (.branch1 - .source1)
@@ -70,10 +67,7 @@ TestHouseTestBattleScript::
 	clear_box
 	print_line_id 1
 	delay 100
-	text_bankswitch BANK(wTestWarriorFlags)
-	text_lda_imm $80
-	text_sta wTestWarriorFlags
-	text_bankswitch 1
+	text_set_flag FLAG_TEST_WARRIOR_SPOKE_ONCE
 	print_line_id 2
 	empty_line
 	empty_line
