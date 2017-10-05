@@ -474,7 +474,8 @@ ENDC
 	xor a
 	ld [wFadeSpeed], a
 	inc a
-	ldh [hIgnorePlayerActions], a
+	ldh [hIgnorePlayerActions], a ; Let all triggers happen at the player's target warping position
+	ldh [hAbortFrame], a ; The current overworld frame must NOT keep going, since a new map has been loaded
 	ret
 	
 	

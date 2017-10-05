@@ -48,6 +48,10 @@ hOverworldFrameCounter::
 hIgnorePlayerActions::
 	ds 1
 	
+; Set to 1 if the current overworld frame should be aborted, e.g. when a new map is loaded mid-frame.
+hAbortFrame::
+	ds 1
+	
 	
 ; Serves currently no purpose, but should be used later to check which rendering mode is active
 ; (Either scrollable in all directions, or fully fixed)

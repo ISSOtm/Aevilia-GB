@@ -675,6 +675,8 @@ OverworldLoop::
 	ldh [hIgnorePlayerActions], a
 	
 .forceIgnorePlayerActions
+	xor a
+	ldh [hAbortFrame], a
 	rst waitVBlank
 	
 	; Increment overworld's frame counter
@@ -707,6 +709,10 @@ OverworldLoop::
 	or h
 	jr nz, @+1
 	
+	ldh a, [hAbortFrame] ; If map script tells to abort frame, do so
+	and a
+	jr nz, .forceIgnorePlayerActions
+	
 	ldh a, [hIgnorePlayerActions]
 	and a
 	jr nz, .ignoreMovement
@@ -733,6 +739,10 @@ OverworldLoop::
 	
 	call DoWalkingInteractions
 	
+	ldh a, [hAbortFrame] ; If walking interactions tells to abort frame, do so
+	and a
+	jr nz, .forceIgnorePlayerActions
+	
 	ld a, [wBattleEncounterID]
 	and a
 	jr nz, .startBattle
@@ -756,7 +766,10 @@ OverworldLoop::
 	
 	callacross StartMenu
 .gotoLoop
-	jr OverworldLoop
+	ldh a, [hAbortFrame] ; Doesn't make a very big difference, though
+	and a
+	jp nz, .forceIgnorePlayerActions
+	jp OverworldLoop
 	
 .startBattle
 	callacross StartBattle
