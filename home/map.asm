@@ -221,7 +221,6 @@ LoadNPCs:
 	ld a, [wNumOfNPCs] ; The NPC won't be loaded
 	dec a
 	ld [wNumOfNPCs], a
-	pop hl
 	ld a, 13 ; Skip over NPC + 1 flag byte
 	add a, l
 	ld l, a
