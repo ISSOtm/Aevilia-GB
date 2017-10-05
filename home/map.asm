@@ -719,8 +719,25 @@ LoadTileset::
 	push hl
 	ld h, [hl]
 	ld l, a
+	or h
 	ld c, OBJ_PALETTE_STRUCT_SIZE
+	jr nz, .normalPalette
+	; Load opposite gender's palette
+	save_rom_bank
+	ld a, BANK(EvieDefaultPalette)
+	rst bankswitch
+	ld a, [wPlayerGender]
+	and a
+	ld hl, EvieDefaultPalette
+	jr nz, .loadOppositeGenderPalette
+	ld hl, TomDefaultPalette
+.loadOppositeGenderPalette
 	rst copy
+	restore_rom_bank
+	jr .paletteLoaded
+.normalPalette
+	rst copy
+.paletteLoaded
 	pop hl
 	inc hl
 	ld a, e
