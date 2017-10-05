@@ -1338,7 +1338,7 @@ StopPlayerMovement::
 ; Aside from "THIS FUNCTION IS FUCKING HUUUUUGE", there's not much to say
 ; In fact, it's so huge there are a couple JRs in here that died because their target was too far away
 ProcessNPCs::
-	ld a, BANK(wVirtualOAM)
+	ld a, BANK(wNPCArray)
 	call SwitchRAMBanks
 	
 	ld hl, wNPCArray
