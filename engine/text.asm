@@ -636,9 +636,14 @@ WaitForButtonPress::
 	xor [hl]
 	ld [hld], a
 .noBlink
+	; To continue, the player shall either hold B or is press A
+	ldh a, [hHeldButtons]
+	and 2
+	jr nz, .end
 	ldh a, [hPressedButtons]
-	and 3
+	rrca
 	jr z, .waitLoop
+.end
 	
 	ld a, $12
 	ld [hli], a
