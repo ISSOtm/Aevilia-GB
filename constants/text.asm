@@ -75,6 +75,10 @@
 	enum_elem TEXT_MUSIC_STOP
 	enum_elem OVERRIDE_TEXBOX_PAL
 	enum_elem CLOSE_TEXTBOX
+	enum_elem TEXT_GET_FLAG
+	enum_elem TEXT_SET_FLAG
+	enum_elem TEXT_RESET_FLAG
+	enum_elem TEXT_TOGGLE_FLAG
 	
 	enum_elem INVALID_TXT_COMMAND ; WARNING : TEXT COMMAND PROCESSOR MUST BE UPDATED IF IDS 128+ ARE USED!!!
 
@@ -583,4 +587,27 @@ ENDM
 ; Closes the textbox without ending the stream
 close_box: MACRO
 	db CLOSE_TEXTBOX
+ENDM
+
+
+; Gets the state of a given game flag in the Z text flag
+text_get_flag: MACRO
+	db TEXT_GET_FLAG
+	dw \1
+ENDM
+
+; Sets a game flag
+text_set_flag: MACRO
+	db TEXT_SET_FLAG
+	dw \1
+ENDM
+
+text_reset_flag: MACRO
+	db TEXT_RESET_FLAG
+	dw \1
+ENDM
+
+text_toggle_flag: MACRO
+	db TEXT_TOGGLE_FLAG
+	dw \1
 ENDM

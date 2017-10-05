@@ -251,6 +251,10 @@ TextCommandsPointers::
 	dw TextStopMusic
 	dw OverrideTextboxPalette
 	dw CloseTextbox
+	dw TextGetFlag
+	dw TextSetFlag
+	dw TextResetFlag
+	dw TextToggleFlag
 	
 	
 ; A clone of ProcessText, but for the battle engine!
@@ -2103,4 +2107,45 @@ OverrideTextboxPalette::
 CloseTextbox::
 	callacross DisableTextbox
 	ld a, 1
+	ret
+	
+	
+TextGetFlag::
+	ld hl, wDigitBuffer + 1
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	call GetFlag
+	ld hl, wTextFlags
+	ld a, 3
+	res TEXT_ZERO_FLAG, [hl]
+	ret nc
+	set TEXT_ZERO_FLAG, [hl]
+	ret
+	
+TextSetFlag::
+	ld hl, wDigitBuffer + 1
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	call SetFlag
+	ld a, 3
+	ret
+	
+TextResetFlag::
+	ld hl, wDigitBuffer + 1
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	call ResetFlag
+	ld a, 3
+	ret
+	
+TextToggleFlag::
+	ld hl, wDigitBuffer + 1
+	ld a, [hli]
+	ld d, [hl]
+	ld e, a
+	call ToggleFlag
+	ld a, 3
 	ret
