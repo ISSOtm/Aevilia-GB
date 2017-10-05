@@ -1535,6 +1535,7 @@ SaveBlocks::
 	hram_block hRandInt, 2
 	wramx_block wNumOfNPCScripts, 3
 	wramx_block wNPCArray, $90
+	wramx_block wNumOfNPCs, 1
 	
 flags_block: MACRO
 	wramx_block wFlags, 0 ; 256 bytes

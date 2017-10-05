@@ -176,28 +176,30 @@ ENDC
 .noInteractions
 	
 LoadNPCs:
-	ld a, [hli] ; Get NPC count
-	and $07 ; Failsafe!
-	ld [wNumOfNPCs], a
-	jp z, .noNPCs
-	ld de, wNPC1_ypos
-	ld b, a
 	ld a, [wTargetWarpID]
 	inc a
-	jr nz, .NPCLoadingLoop
+	ld a, [hli] ; Get NPC count
+	jr nz, .loadNPCs
 	; Warp $FF overrides NPC loading
-	ld a, b
+	; The number of NPCs mustn't be reloaded either
+	ld b, a
 	add a, a ; *2
 	add a, a ; *4
 	add a, a ; *8
 	sub a, b ; *7
 	add a, a ; *14 (size of ROM NPC)
+	add a, 3 ; Skip script loading (1 count & 1 ptr)
 	add a, l
-	add a, 3 ; Skip script loading
 	ld l, a
 	jr nc, .skipLoadingNPCs
 	inc h
 	jr .skipLoadingNPCs
+.loadNPCs
+	and $07 ; Failsafe!
+	ld [wNumOfNPCs], a
+	jp z, .noNPCs
+	ld de, wNPC1_ypos
+	ld b, a
 .NPCLoadingLoop
 	; Check for flag dependency
 	ld a, [hli]
