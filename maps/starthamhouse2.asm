@@ -23,6 +23,7 @@ StarthamHouse2Interactions::
 StarthamHouse2NPCs::
 	db 2
 	
+	dw 0
 	interact_box $0040, $0000, 0, 0
 	db 0
 	db $0A << 2 | DIR_LEFT
@@ -30,6 +31,7 @@ StarthamHouse2NPCs::
 	db $00
 	db $00
 	
+	dw 0
 	interact_box $0070, $0090, 0, 0
 	db 0
 	db $0A << 2 | DIR_LEFT

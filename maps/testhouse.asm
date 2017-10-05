@@ -24,6 +24,7 @@ TestHouseInteractions::
 TestHouseNPCs::
 	db 1
 	
+	dw 0
 	interact_box $0020, $0020, 16, 16
 	db 0
 	db $01 << 2 + DIR_LEFT

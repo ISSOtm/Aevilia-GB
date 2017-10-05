@@ -175,30 +175,55 @@ ENDC
 	jr nz, .copyInteractions
 .noInteractions
 	
+LoadNPCs:
 	ld a, [hli] ; Get NPC count
 	and $07 ; Failsafe!
 	ld [wNumOfNPCs], a
-	jr z, .noNPCs
+	jp z, .noNPCs
 	ld de, wNPC1_ypos
 	ld b, a
 	ld a, [wTargetWarpID]
 	inc a
 	jr nz, .NPCLoadingLoop
 	; Warp $FF overrides NPC loading
-	inc hl ; Skip script loading
-	inc hl
-	inc hl
 	ld a, b
-	add a, a
-	add a, b ; *3
-	add a, a ; *6
-	add a, a ; *12 (size of ROM NPC)
+	add a, a ; *2
+	add a, a ; *4
+	add a, a ; *8
+	sub a, b ; *7
+	add a, a ; *14 (size of ROM NPC)
 	add a, l
+	add a, 3 ; Skip script loading
 	ld l, a
 	jr nc, .skipLoadingNPCs
 	inc h
 	jr .skipLoadingNPCs
 .NPCLoadingLoop
+	; Check for flag dependency
+	ld a, [hli]
+	ld c, a
+	or [hl] ; Check if there is a flag dependency (ie. this is non-zero)
+	jr z, .noFlagDependency
+	push bc ; Save counter
+	push de ; Save write ptr
+	ld e, c
+	ld d, [hl]
+	push hl ; Save read ptr
+	call GetFlag
+	pop hl
+	pop de
+	pop bc
+	bit 7, [hl]
+	jr z, .checkFlagReset
+	ccf
+.checkFlagReset
+	jr nc, .noFlagDependency ; Dependency met.
+	ld a, 13 ; Skip over NPC + 1 flag byte
+	add a, l
+	ld l, a
+	jr .skipNPC
+.noFlagDependency
+	inc hl
 	ld c, 10
 	rst copy ; Copy position and hitbox and interaction ID and sprite ID and palettes
 	xor a
@@ -215,6 +240,7 @@ ENDC
 	ld a, $20
 	ld [de], a ; Init horizontal displacement
 	inc de
+.skipNPC
 	dec b
 	jr nz, .NPCLoadingLoop
 	ld de, wNumOfNPCScripts
@@ -952,6 +978,8 @@ MoveNPC0ToPlayer::
 	
 MoveCamera::
 	ld a, [wCameramanID]
+	cp 9
+	ret nc ; If the cameraman ID is too high, this means "don't move the camera an inch"
 	call GetNPCOffsetFromCam
 	
 	ld hl, wTempBuf

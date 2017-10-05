@@ -34,6 +34,7 @@ IntroMapInteractions::
 IntroMapNPCs::
 	db 6
 	
+	dw 0
 	interact_box $0128, $0070, 16, 16 ; X hitbox
 	db 0 ; Interaction ID
 	db 1 << 2 + DIR_DOWN ; Sprite ID & direction
@@ -42,6 +43,7 @@ IntroMapNPCs::
 	db 0 ; Movement speed
 	
 	; Dummy NPC for the camera to focus on during gender selection
+	dw 0
 	interact_box $00D0, $0000, 0, 0
 	db 0
 	db 2 << 2 | DIR_DOWN
@@ -50,6 +52,7 @@ IntroMapNPCs::
 	db 0
 	
 	; Dummy NPCs to display some of the character's eye colors to override some palette limitations
+	dw 0
 	interact_box $00C8, $0018, 0, 0
 	db 0
 	db 3 << 2 | DIR_LEFT
@@ -57,6 +60,7 @@ IntroMapNPCs::
 	db 0
 	db 0
 	
+	dw 0
 	interact_box $00C8, $0020, 0, 0
 	db 0
 	db 4 << 2 | DIR_LEFT
@@ -64,6 +68,7 @@ IntroMapNPCs::
 	db 0
 	db 0
 	
+	dw 0
 	interact_box $00C8, $0070, 0, 0
 	db 0
 	db 4 << 2 | DIR_RIGHT
@@ -71,6 +76,7 @@ IntroMapNPCs::
 	db 0
 	db 0
 	
+	dw 0
 	interact_box $00C8, $0078, 0, 0
 	db 0
 	db 3 << 2 | DIR_RIGHT

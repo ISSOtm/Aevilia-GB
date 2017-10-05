@@ -35,6 +35,7 @@ PlayerHouseInteractions::
 PlayerHouseNPCs::
 	db 1
 	
+	dw 0 ; No flag dependency
 	interact_box $0060, $0000, 0, 0
 	db 0 ; Interaction ID
 	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
@@ -45,7 +46,8 @@ PlayerHouseNPCs::
 	db 0 ; Number of NPC scripts
 	dw 0 ; Obligatory no matter the above value
 	
-	db 0 ; Number of NPC tile sets
+	db 1 ; Number of NPC tile sets
+	db 0 ; Special trigger : load opposite gender's tiles (if Evie, load Tom, etc.)
 	
 PlayerHouseWarpToPoints::
 	db 2 ; Number of warp-to points

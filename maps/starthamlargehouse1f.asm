@@ -23,6 +23,7 @@ StarthamLargeHouseInteractions::
 StarthamLargeHouseNPCs::
 	db 1
 	
+	dw 0
 	interact_box $0020, $0000, 0, 0
 	db 0 ; Interaction ID
 	db $0A << 2 | DIR_LEFT ; Sprite ID & direction

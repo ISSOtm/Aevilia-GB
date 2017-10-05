@@ -12,7 +12,7 @@ StarthamMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 StarthamInteractions::
-	db 9
+	db 10
 	
 	db WALK_LOADZONE
 	interact_box $0048, $0000, 25, 21
@@ -42,14 +42,16 @@ StarthamInteractions::
 	db MAP_STARTHAM_HOUSE_2
 	ds 7
 	
-	db BTN_LOADZONE
+	db BTN_LOADZONE | FLAG_DEP
+	flag_dep FLAG_SET, FLAG_STARTHAM_LARGE_HOUSE_UNLOCKED
 	interact_box $005F, $00D2, 1, 12
 	db THREAD2_OPENDOOR
 	db 0
 	db MAP_STARTHAM_LARGE_HOUSE
 	ds 7
 	
-	db BTN_INTERACT
+	db BTN_INTERACT | FLAG_DEP
+	flag_dep FLAG_RESET, FLAG_STARTHAM_LARGE_HOUSE_UNLOCKED
 	interact_box $005F, $00D2, 1, 12
 	dw StarthamLockedHouseText
 	ds 8
@@ -69,9 +71,16 @@ StarthamInteractions::
 	dw StarthamEmptySign
 	ds 8
 	
-StarthamNPCs::
-	db 2 ; Number of NPCs
+	db WALK_INTERACT | FLAG_DEP
+	flag_dep FLAG_RESET, FLAG_STARTHAM_SIBLING_ENTERED
+	interact_box $0098, $0050, 1, 1
+	dw StarthamMeetSiblingCutscene
+	ds 8
 	
+StarthamNPCs::
+	db 3 ; Number of NPCs
+	
+	dw 0 ; No flag dependency
 	interact_box $00B3, $00D8, 16, 16
 	db 1 ; Interaction ID
 	db $01 << 2 | DIR_DOWN ; Sprite ID & direction
@@ -79,6 +88,8 @@ StarthamNPCs::
 	db $F4 ; Movement permissions
 	db $01 ; Movement speed
 	
+	; Parzival
+	dw 0 ; No flag dependency
 	interact_box $0110, $01C0, 16, 16
 	db 0 ; Interaction ID
 	db $01 << 2 | DIR_DOWN
@@ -86,11 +97,21 @@ StarthamNPCs::
 	db 0
 	db 0
 	
+	; Sibling (cutscene-only)
+	flag_dep FLAG_RESET, FLAG_STARTHAM_SIBLING_ENTERED
+	interact_box $0098, $0060, 0, 0
+	db 0
+	db 2 << 2 | DIR_UP
+	dn 2, 2, 2, 2
+	db 0
+	db 0
+	
 	db $02 ; Number of NPC scripts
 	dw StarthamNPCScripts
 	
-	db $01 ; Number of NPC tile sets
+	db 2 ; Number of NPC tile sets
 	full_ptr GenericBoyATiles
+	db 0
 	
 StarthamWarpToPoints::
 	db 5 ; Number of warp-to points
@@ -292,4 +313,41 @@ StarthamEmptySign::
 	wait_user
 	print_line_id 2
 	wait_user
+	done
+	
+	
+	set_text_prefix StarthamMeetSiblingCutscene
+StarthamMeetSiblingCutscene::
+	delay 20
+	turn_npc 2, DIR_LEFT
+	delay 10
+	disp_box
+	print_line_id 0
+	delay 60
+	print_line_id 1
+	print_line_id 2
+	wait_user
+	clear_box
+	print_line_id 3
+	print_line_id 4
+	print_line_id 5
+	wait_user
+	clear_box
+	print_line_id 6
+	print_line_id 7
+	print_line_id 8
+	wait_user
+	delay 20
+	turn_player DIR_UP
+	delay 10 - 3
+	text_lda_imm $FF
+	text_sta wCameramanID ; Freeze camera in place
+	text_sta wYPos + 1
+	make_npc_walk 2, DIR_LEFT, 16, 1
+	delay 10
+	turn_npc 2, DIR_UP
+	delay 5
+	text_lda_imm $FF
+	text_sta wNPC2_ypos + 1
+	text_set_flag FLAG_STARTHAM_SIBLING_ENTERED
 	done

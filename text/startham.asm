@@ -62,3 +62,16 @@ SECTION "Startham text strings", ROMX
 	dline 6, "already own a"
 	dline 7, "house already..."
 	
+	
+	set_text_prefix StarthamMeetSiblingCutscene
+	dname "Sibling"
+	dline 0, "Whoa!"
+	dline 1, "Finally you're"
+	dline 2, "awake\, sibling!"
+	dline 3, "I kept ringing\,"
+	dline 4, "but that didn't"
+	dline 5, "wake ya up!"
+	dline 6, "Now that you're"
+	dline 7, "up\, I'm gonna"
+	dline 8, "sit down a bit."
+	

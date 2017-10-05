@@ -23,6 +23,7 @@ PlayerHouse2FInteractions::
 PlayerHouse2FNPCs::
 	db 2
 	
+	dw 0
 	interact_box $0040, $0030, 0, 0
 	db 0 ; Interaction ID
 	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
@@ -30,6 +31,7 @@ PlayerHouse2FNPCs::
 	db $00 ; Movement permissions
 	db $00 ; Movement speed
 	
+	dw 0
 	interact_box $0050, $0050, 0, 0
 	db 0 ; Interaction ID
 	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
