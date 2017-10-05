@@ -299,7 +299,7 @@ ENDM
 
 ; make_player_walk_to dir coord spd
 ; Refer to make_npc_walk
-; Rather unorthodox ordering of arguments, but that's to avoid as much work as possible when passing to make_player_walk (internally)
+; Rather unorthodox internal ordering of arguments, but that's to avoid as much work as possible when passing to make_player_walk (internally)
 make_player_walk_to: MACRO
 	db MAKE_PLAYER_WALK_TO
 	dw \2
