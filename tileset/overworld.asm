@@ -10,7 +10,7 @@ OverworldTileset::
 	full_ptr OverworldTilesetTiles1
 	db 1
 	full_ptr FlowerFrames
-	db $2B
+	db $2C
 	full_ptr OverworldTilesetTiles2
 	db 0
 	
