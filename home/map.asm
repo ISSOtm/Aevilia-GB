@@ -204,24 +204,29 @@ LoadNPCs:
 	ld c, a
 	or [hl] ; Check if there is a flag dependency (ie. this is non-zero)
 	jr z, .noFlagDependency
+	push hl ; Save read ptr
 	push bc ; Save counter
 	push de ; Save write ptr
 	ld e, c
 	ld d, [hl]
-	push hl ; Save read ptr
 	call GetFlag
-	pop hl
 	pop de
 	pop bc
+	pop hl
 	bit 7, [hl]
 	jr z, .checkFlagReset
 	ccf
 .checkFlagReset
-	jr nc, .noFlagDependency ; Dependency met.
+	jr nc, .dependencyMet
+	ld a, [wNumOfNPCs] ; The NPC won't be loaded
+	dec a
+	ld [wNumOfNPCs], a
+	pop hl
 	ld a, 13 ; Skip over NPC + 1 flag byte
 	add a, l
 	ld l, a
 	jr .skipNPC
+.dependencyMet
 .noFlagDependency
 	inc hl
 	ld c, 10
