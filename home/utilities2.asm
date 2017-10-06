@@ -188,19 +188,16 @@ TextCopyAcross::
 	ld a, b
 	rst bankswitch
 .copyText
-	ld a, [hli]
-	and a
-	jr z, .endCopy
-	ld [de], a
-	inc de
-	jr .copyText
-.endCopy
 	ld a, [de]
 	cp $10
-	jr z, .dontOverwriteBorder
-	xor a
+	jr z, .endCopy ; Don't overwrite border
+	ld a, [hli]
 	ld [de], a
-.dontOverwriteBorder
+	inc de
+	and a
+	jr z, .endCopy
+	jr .copyText
+.endCopy
 	pop af
 	rst bankswitch
 	ret
