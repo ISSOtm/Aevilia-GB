@@ -1529,7 +1529,7 @@ ENDM
 SaveBlocks::
 	; Bank 0
 	wram0_block wTargetWarpID, 2
-	wram0_block wUnlinkJoypad, (wCameraXPos + 2 - wUnlinkJoypad)
+	wram0_block wYPos, (wCameraXPos + 2 - wYPos)
 	hram_block hOverworldButtonFilter, 1
 	wramx_block wIntroMapStatus, 3
 	hram_block hRandInt, 2

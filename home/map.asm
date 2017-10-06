@@ -8,6 +8,9 @@ LoadMap_FatalError::
 	ld a, ERR_BAD_MAP
 	jp FatalError
 	
+LoadMap_Hook::
+	ld a, c
+	
 ; If applicable, performs music fade-out
 ; Performs gfx fade-out,
 ; Loads map (meta-)data,
@@ -349,9 +352,7 @@ ENDC
 	
 	; Now we're going to move the camera to the cameraman...
 	ld a, [hli]
-	inc de
-	inc de
-	ld [de], a ; wCameramanID
+	ld [wCameramanID], a
 	push hl
 	call MoveNPC0ToPlayer ; If camera is set to target player (ie. NPC0), move NPC0 to avoid camera moving incorrectly
 	pop hl

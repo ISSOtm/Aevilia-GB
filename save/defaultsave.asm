@@ -16,12 +16,12 @@ DefaultSaveWarp::
 	db 2 ; wLoadedMap
 	
 DefaultPlayerData::
-	db 0 ; wUnlinkJoypad
-	db 0 ; wNoClipActive
-	db 1 ; wPlayerSpeed
 	dw $70 ; wYPos
 	dw $70 ; wXPos
 	db DIR_RIGHT ; wPlayerDir
+	db 0 ; wUnlinkJoypad
+	db 0 ; wNoClipActive
+	db 1 ; wPlayerSpeed
 	db 1 ; wPlayerGender (edit IntroChooseGender if modified)
 	db 0 ; wCameramanID
 	dw 0 ; wCameraYPos

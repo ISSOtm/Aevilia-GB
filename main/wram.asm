@@ -61,6 +61,15 @@ wMapHeight::
 	
 	
 SECTION "Player data", WRAM0,ALIGN[2]
+; Coordinates within the map
+wYPos::
+	ds 2
+wXPos::
+	ds 2
+; Direction the player is facing
+wPlayerDir::
+	ds 1
+	
 ; If non-zero, joypads inputs can't move the player
 wUnlinkJoypad::
 	ds 1
@@ -71,15 +80,6 @@ wNoClipActive::
 	
 ; The player's speed, in px/frame
 wPlayerSpeed::
-	ds 1
-	
-; Coordinates within the map
-wYPos::
-	ds 2
-wXPos::
-	ds 2
-; Direction the player is facing
-wPlayerDir::
 	ds 1
 	
 wPlayerGender::
