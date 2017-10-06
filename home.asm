@@ -803,11 +803,6 @@ OverworldLoop::
 	jp .forceIgnorePlayerActions ; Don't force the player's actions to be taken into account, again.
 	
 	
-SECTION "Misc stuff", ROM0
-DoneStr::
-	dstr "DONE!"
-	
-	
 SECTION "Konami keys", ROM0,ALIGN[8]
 KonamiCheatKeys::
 	db $40, $40, $80, $80, $20, $10, $20, $10, $02, $01, $00
@@ -818,4 +813,5 @@ INCLUDE "home/utilities2.asm"
 
 INCLUDE "home/map.asm"
 INCLUDE "home/flags.asm"
+INCLUDE "home/strings.asm"
 
