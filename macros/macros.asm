@@ -21,7 +21,10 @@ ENDM
 ; Usage : dstr "string"
 ; Adds the NULL after the string.
 dstr: MACRO
-	db \1
+	REPT _NARG
+		db \1
+		shift
+	ENDR
 	db 0
 ENDM
 
