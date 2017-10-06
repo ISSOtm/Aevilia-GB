@@ -255,6 +255,7 @@ TextCommandsPointers::
 	dw TextSetFlag
 	dw TextResetFlag
 	dw TextToggleFlag
+	dw TextLoadMap
 	
 	
 ; A clone of ProcessText, but for the battle engine!
@@ -401,6 +402,11 @@ BattleTextCommandsPointers::
 	dw TextStopMusic
 	dw OverrideTextboxPalette
 	dw CloseTextbox
+	dw TextGetFlag
+	dw TextSetFlag
+	dw TextResetFlag
+	dw TextToggleFlag
+	dw TextLoadMap
 	
 TextErrorStr::
 	db "TEXT ERROR."
@@ -642,7 +648,7 @@ WaitForButtonPress::
 	jr nz, .end
 	ldh a, [hPressedButtons]
 	rrca
-	jr z, .waitLoop
+	jr nc, .waitLoop
 .end
 	
 	ld a, $12
@@ -2152,5 +2158,20 @@ TextToggleFlag::
 	ld d, [hl]
 	ld e, a
 	call ToggleFlag
+	ld a, 3
+	ret
+	
+	
+TextLoadMap::
+	ld hl, wDigitBuffer + 2
+	ld a, [hld]
+	ld [wTargetWarpID], a
+	ld c, [hl]
+	
+	; Ususally a macro is used instead, but it would cause a bank 0 load, which isn't good practice.
+	ld b, 1
+	ld hl, LoadMap_Hook
+	call CallAcrossBanks
+	
 	ld a, 3
 	ret

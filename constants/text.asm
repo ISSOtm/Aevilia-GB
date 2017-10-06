@@ -79,6 +79,7 @@
 	enum_elem TEXT_SET_FLAG
 	enum_elem TEXT_RESET_FLAG
 	enum_elem TEXT_TOGGLE_FLAG
+	enum_elem TEXT_LOAD_MAP
 	
 	enum_elem INVALID_TXT_COMMAND ; WARNING : TEXT COMMAND PROCESSOR MUST BE UPDATED IF IDS 128+ ARE USED!!!
 
@@ -610,4 +611,12 @@ ENDM
 text_toggle_flag: MACRO
 	db TEXT_TOGGLE_FLAG
 	dw \1
+ENDM
+
+
+; load_map map warp
+load_map: MACRO
+	db TEXT_LOAD_MAP
+	db \1
+	db \2
 ENDM
