@@ -35,7 +35,7 @@ DoNothing::
 	
 ; Do you need a pointer to $00, be it byte or word?
 ; WE GOT YOU COVERED RIGHT HERE!!1
-NullPtr::
+NullWord::
 NullByte::
 	dw 0
 	
