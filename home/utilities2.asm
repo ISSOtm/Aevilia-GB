@@ -181,25 +181,78 @@ RandInt::
 	ret
 	
 	
-; Used by PrintKnownPointer
-TextCopyAcross::
+PrintAcross::
 	ldh a, [hCurROMBank]
 	push af
 	ld a, b
 	rst bankswitch
-.copyText
-	ld a, [de]
-	cp $10
-	jr z, .endCopy ; Don't overwrite border
-	ld a, [hli]
-	ld [de], a
-	inc de
-	and a
-	jr z, .endCopy
-	jr .copyText
-.endCopy
+	call StrnPrint
 	pop af
 	rst bankswitch
+	ret
+	
+; Print the string pointed to by hl at de (not including the terminating NUL)
+; At most c chars will be printed
+StrnPrint::
+	ld a, c
+	and a
+	ret z
+	
+	ld a, [hli]
+	cp $20
+	jr nc, .normalChar
+	; This is a control char
+	and a ; The terminator ends it all
+	ret z
+	
+	push hl ; Save the read ptr where we read from the control char
+	dec a ; Get index between 0 and $1E (since original 0 has been removed)
+	add a, a
+	add a, LOW(.controlChars)
+	ld l, a
+	adc a, HIGH(.controlChars)
+	sub l
+	ld h, a ; Get pointer to control char's func
+	ld a, [hli] ; Read addr of control char's func
+	ld h, [hl]
+	ld l, a
+	rst callHL ; Obtain pointer to read
+	call StrnPrint ; Copy it w/ control chars & border prevention
+	pop hl ; Get back read ptr
+	jr StrnPrint
+	
+.normalChar
+	ld [de], a
+	inc de
+	dec c
+	jr StrnPrint
+	
+	; Array of pointers to functions that return a pointer to the string to be copied
+	; (Note : if you're smart you can have the function perform the write itself, by returning a pointer to a NUL)
+	; WARNING : these functions must NOT modify c or de !!
+.controlChars
+	dw .siblingName
+	dw .playerBroSis
+	dwfill 29, .doNothing
+	
+.siblingName
+	ld hl, TomName
+	ld a, [wPlayerGender]
+	and a
+	ret z
+	ld hl, EvieName
+	ret
+	
+.playerBroSis
+	ld hl, SisString
+	ld a, [wPlayerGender]
+	and a
+	ret z
+	ld hl, BroString
+	ret
+	
+.doNothing
+	ld hl, NullByte ; Points to a NUL, thus does nothing
 	ret
 	
 	

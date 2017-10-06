@@ -568,8 +568,10 @@ PrintNameAndWaitForTextbox::
 	bit TEXT_PIC_FLAG, [hl]
 	
 	ld de, wTextboxName
+	ld c, 13 ; 16 characters at most
 	jr nz, .picPresent
 	ld e, (wTextboxName - 4) & $FF
+	ld c, 16
 .picPresent
 
 	ld hl, wDigitBuffer + 1
@@ -583,8 +585,7 @@ PrintNameAndWaitForTextbox::
 	ld a, $15
 	ld [de], a
 	inc de
-	call CopyStrAcross
-	dec de
+	call PrintAcross
 	ld a, $16
 	ld [de], a
 	
@@ -861,16 +862,18 @@ PrintKnownPointer::
 .printLine
 	ld a, [wTextFlags]
 	bit TEXT_PIC_FLAG, a ; Check if pic is present
+	ld c, 15 ; When it is, only 15 chars can be printed
 	jr nz, .picIsPresent
 	ld a, e ; Place text on pic's space since it's free
 	sub (wTextboxLine0 - wTextboxPicRow1)
 	ld e, a
+	ld c, 15 + (wTextboxLine0 - wTextboxPicRow1) ; This gives additional characters
 .picIsPresent
 	; Copy string across banks (b preserved thus far :D)
 	push de
 	
 	; This is almost equivalent to CopyStrAcross, but doesn't copy the terminating $00 if it would overwrite the border
-	call TextCopyAcross
+	call PrintAcross
 	
 	ld d, h ; Get after-copy hl
 	ld e, l
@@ -2008,22 +2011,26 @@ InstantPrintLines::
 	ld a, [wTextFlags]
 	bit TEXT_PIC_FLAG, a ; Check if pic is there
 	ld de, wTextboxPicRow1
+	ld c, 18
 	jr z, .picNotPresent
 	ld e, wTextboxLine0 & $FF
+	ld c, 15
 .picNotPresent
-	ld c, 3
+	ld b, 3
 .loop
 	push de
-	call TextCopyAcross
+	push bc
+	call PrintAcross
+	pop bc
 .clearLoop
 	ld a, [de]
 	cp $10
-	jr z, .endClear
+	jr z, .endClearing
 	xor a
 	ld [de], a
 	inc de
 	jr .clearLoop
-.endClear
+.endClearing
 	pop de
 	ld a, SCREEN_WIDTH
 	add a, e
