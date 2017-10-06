@@ -2016,8 +2016,9 @@ InstantPrintLines::
 	ld e, wTextboxLine0 & $FF
 	ld c, 15
 .picNotPresent
-	ld b, 3
+	ld a, 3
 .loop
+	push af
 	push de
 	push bc
 	call PrintAcross
@@ -2035,7 +2036,8 @@ InstantPrintLines::
 	ld a, SCREEN_WIDTH
 	add a, e
 	ld e, a
-	dec c
+	pop af
+	dec a
 	jr nz, .loop
 	
 	ld hl, wTransferRows + 2
