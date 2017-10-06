@@ -163,7 +163,8 @@ StarthamWarpToPoints::
 	
 StarthamBlocks::
 INCBIN "maps/startham.blk"
-
+	
+	
 StarthamNPCScripts::
 	dw StarthamNPC0Script
 	dw StarthamGenericBoyAScript
@@ -369,16 +370,35 @@ StarthamMeetSiblingCutscene::
 	make_player_walk DIR_UP | ROTATE_45, 20, 1
 	turn_player DIR_RIGHT
 	delay 5
-	make_npc_walk 1, DIR_UP, 46, 1
+	make_npc_walk 1, DIR_UP, 66, 1
+	turn_npc 1, DIR_RIGHT
+	delay 20
 	turn_npc 1, DIR_LEFT
+	delay 20
+	turn_npc 1, DIR_DOWN
+	delay 10
+	clear_box
 	print_name
 	print_line_id 9
 	print_line_id 10
+	make_player_walk DIR_UP, 20, 1
+	turn_player DIR_RIGHT
 	wait_user
 	print_line_id 11
 	print_line_id 12
 	wait_user
+	clear_box
+	turn_npc 1, DIR_LEFT
+	delay 10
+	print_line_id 13
+	print_line_id 14
+	wait_user
+	print_line_id 15
+	print_line_id 16
+	print_line_id 17
+	wait_user
 	close_box
 	
+	text_set_flag FLAG_SIBLING_WATCHING_TV
 	text_set_flag FLAG_STARTHAM_SIBLING_ENTERED
 	done

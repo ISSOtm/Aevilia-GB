@@ -33,7 +33,7 @@ PlayerHouseInteractions::
 	ds 8
 	
 PlayerHouseNPCs::
-	db 2
+	db 3
 	
 	dw 0 ; No flag dependency
 	interact_box $0060, $0000, 0, 0
@@ -44,15 +44,23 @@ PlayerHouseNPCs::
 	db $00 ; Movement speed
 	
 	flag_dep FLAG_SET, FLAG_LOAD_CUTSCENE_NPCS
-	interact_box $0090, $0048, 0, 0
+	interact_box $0090, $0048, 16, 16
 	db 0
 	db 1 << 2 | DIR_UP
 	dn 2, 2, 2, 2
 	db 0
 	db 0
 	
-	db 0 ; Number of NPC scripts
-	dw 0 ; Obligatory no matter the above value
+	flag_dep FLAG_SET, FLAG_SIBLING_WATCHING_TV
+	interact_box $0090, $0048, 16, 16
+	db 0
+	db 1 << 2 | DIR_UP
+	dn 2, 2, 2, 2
+	db 0
+	db 0
+	
+	db 1 ; Number of NPC scripts
+	dw PlayerHouseNPCScripts ; Obligatory no matter the above value
 	
 	db 1 ; Number of NPC tile sets
 	db 0 ; Special trigger : load opposite gender's tiles (if Evie, load Tom, etc.)
@@ -82,13 +90,31 @@ PlayerHouseBlocks::
 INCBIN "maps/playerhouse.blk"
 	
 	
+PlayerHouseNPCScripts::
+	dw PlayerHouseSiblingTVScript
+	
+	
+	set_text_prefix PlayerHouseSiblingTVScript
+PlayerHouseSiblingTVScript::
+	print_name SiblingName
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
+	wait_user
+	done
+	
+	
 	set_text_prefix PlayerHouseTV
 PlayerHouseTVScript::
+	text_get_flag FLAG_SIBLING_WATCHING_TV
+.source1
+	text_jr cond_z, .branch1 - .source1
+	
 	disp_box
 	print_line_id 0
 	print_line_id 1
-.source1
-	choose YesNoChoice, .branch1 - .source1
+.source2
+	choose YesNoChoice, .branch2 - .source2
 	close_box
 	make_player_walk_to VERTICAL_AXIS, $30, 1
 	make_player_walk_to HORIZONTAL_AXIS, $0080, 1
@@ -99,7 +125,19 @@ PlayerHouseTVScript::
 	turn_player DIR_DOWN
 	done
 	
-.branch1
+.branch2
 	print_line_id 2
+	wait_user
+	done
+	
+.branch1
+	print_name
+	print_line_id 3
+	print_line_id 4
+	print_line_id 5
+	wait_user
+	print_line_id 6
+	print_line_id 7
+	print_line_id 8
 	wait_user
 	done
