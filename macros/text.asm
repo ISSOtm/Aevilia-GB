@@ -12,15 +12,35 @@ ENDM
 dline: MACRO
 line_label EQUS STRCAT("{line_prefix}", "\1")
 line_label::
+
 IF _NARG > 1
-	dstr \2
+	; "REPT _NARG - 1" is apparently invalid, so instead...
+isFirst	equ 1
+	REPT _NARG
+		IF isFirst == 1
+isFirst = 0
+		ELSE
+			db \2
+			shift
+		ENDC
+	ENDR
+	
+	db 0
+PURGE isFirst
 ENDC
+
 PURGE line_label ; Required, otherwise conflicts arise (!)
 ENDM
 
 dname: MACRO
 name_prefix::
+
 IF _NARG > 0
-	dstr \1
+	REPT _NARG
+		db \1
+		shift
+	ENDR
+	
+	db 0
 ENDC
 ENDM

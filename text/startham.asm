@@ -64,12 +64,10 @@ SECTION "Startham text strings", ROMX
 	
 	
 	set_text_prefix StarthamMeetSiblingCutscene
-	dname
-	dstr 1
+	dname 1
 	dline 0, "Whoa!"
 	dline 1, "Finally you're"
-	dline 2
-	dstr "awake\, ", 2, "!"
+	dline 2, "awake\, ", 2, "!"
 	dline 3, "I kept ringing\,"
 	dline 4, "but that didn't"
 	dline 5, "wake ya up!"
@@ -77,13 +75,14 @@ SECTION "Startham text strings", ROMX
 	dline 7, "bit\, but"
 	dline 8, "inside\, ok?"
 	
-	dline 9, "I like this"
-	dline 10, "house."
-	dline 11, "It feels like"
-	dline 12, "it's my home."
-	dline 13, "Hey\, don't look"
-	dline 14, "so surprised!"
-	dline 15, "I toldja I'd"
-	dline 16, "pay you a visit"
-	dline 17, "anytime soon."
+	dline 9, "Y'know\, ", 2, "I"
+	dline 10, "love your"
+	dline 11, "house."
+	dline 12, "It feels like"
+	dline 13, "it's my home."
+	dline 14, "Hey\, don't look"
+	dline 15, "so surprised!"
+	dline 16, "I toldja I'd"
+	dline 17, "pay you a visit"
+	dline 18, "anytime soon."
 	

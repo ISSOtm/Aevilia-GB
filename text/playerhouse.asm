@@ -18,8 +18,7 @@ SECTION "Player house text strings", ROMX
 	
 	
 	set_text_prefix PlayerHouseSiblingTVScript
-	dname
-	dstr 1
+	dname 1
 	dline 0, "I'm watching"
 	dline 1, "TV\, so please"
 	dline 2, "don't disturb."
