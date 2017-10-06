@@ -321,9 +321,11 @@ StarthamMeetSiblingCutscene::
 	delay 20
 	turn_npc 2, DIR_LEFT
 	delay 10
-	disp_box
+	print_name
 	print_line_id 0
-	delay 60
+	delay 20
+	turn_player DIR_RIGHT
+	delay 40
 	print_line_id 1
 	print_line_id 2
 	wait_user
@@ -337,17 +339,46 @@ StarthamMeetSiblingCutscene::
 	print_line_id 7
 	print_line_id 8
 	wait_user
+	close_box
 	delay 20
 	turn_player DIR_UP
-	delay 10 - 3
+	text_lda_imm THREAD2_OPENDOOR ; Start door-opening animation
+	text_sta hThread2ID
 	text_lda_imm $FF
 	text_sta wCameramanID ; Freeze camera in place
+	delay 30
 	text_sta wYPos + 1
 	make_npc_walk 2, DIR_LEFT, 16, 1
 	delay 10
 	turn_npc 2, DIR_UP
 	delay 5
 	text_lda_imm $FF
-	text_sta wNPC2_ypos + 1
+	text_sta wNPC3_ypos + 1
+	text_asmcall ProcessNPCs
+	delay 20
+	text_asmcall RedrawMap ; Make door close
+	delay 10
+	text_set_flag FLAG_LOAD_CUTSCENE_NPCS
+	load_map MAP_PLAYER_HOUSE, 0
+	text_reset_flag FLAG_LOAD_CUTSCENE_NPCS
+	
+	; The cutscene continues, but in the house
+	delay 5
+	turn_player DIR_DOWN
+	delay 10
+	make_player_walk DIR_UP | ROTATE_45, 20, 1
+	turn_player DIR_RIGHT
+	delay 5
+	make_npc_walk 1, DIR_UP, 46, 1
+	turn_npc 1, DIR_LEFT
+	print_name
+	print_line_id 9
+	print_line_id 10
+	wait_user
+	print_line_id 11
+	print_line_id 12
+	wait_user
+	close_box
+	
 	text_set_flag FLAG_STARTHAM_SIBLING_ENTERED
 	done

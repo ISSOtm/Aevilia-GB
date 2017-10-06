@@ -34,4 +34,5 @@ FLAG_DEP	equ $80
 	enum_elem	FLAG_TEST_WARRIOR_SPOKE_ONCE
 	enum_elem	FLAG_STARTHAM_LARGE_HOUSE_UNLOCKED
 	enum_elem	FLAG_STARTHAM_SIBLING_ENTERED
+	enum_elem	FLAG_LOAD_CUTSCENE_NPCS ; Use with NPCs that should only be loaded for a cutscene (reset after loading)
 	

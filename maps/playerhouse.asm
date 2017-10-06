@@ -33,7 +33,7 @@ PlayerHouseInteractions::
 	ds 8
 	
 PlayerHouseNPCs::
-	db 1
+	db 2
 	
 	dw 0 ; No flag dependency
 	interact_box $0060, $0000, 0, 0
@@ -42,6 +42,14 @@ PlayerHouseNPCs::
 	dn 1, 1, 1, 1 ; Palette IDs
 	db $00 ; Movement permissions
 	db $00 ; Movement speed
+	
+	flag_dep FLAG_SET, FLAG_LOAD_CUTSCENE_NPCS
+	interact_box $0090, $0048, 0, 0
+	db 0
+	db 1 << 2 | DIR_UP
+	dn 2, 2, 2, 2
+	db 0
+	db 0
 	
 	db 0 ; Number of NPC scripts
 	dw 0 ; Obligatory no matter the above value
