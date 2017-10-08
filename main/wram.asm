@@ -663,9 +663,9 @@ ENDU
 	
 	
 	
-SECTION "Stack", WRAM0[$CFD0]
+SECTION "Stack", WRAM0[$CF80]
 
 wStack::	
-	ds $30 ; The stack isn't very big right now
+	ds $80 ; The stack isn't very big right now
 wStackBottom::
 
