@@ -1,5 +1,19 @@
 
-SECTION "Overworld tileset", ROMX
+SECTION "Overworld tileset", ROMX, ALIGN[4]
+WaterFrames::
+	dw $7E81, $7F80, $3FC0, $3FC0, $3FC0, $9F60, $C33C, $E01F ; Frame 1
+	dw $C13E, $FC03, $FE01, $7E81, $7E81, $7E81, $3FC0, $8778 ; Frame 2
+	dw $0FF0, $837C, $F906, $FD02, $FC03, $FC03, $FC03, $FE01 ; Frame 3
+	dw $FC03, $1EE1, $07F8, $F30C, $FB04, $F906, $F906, $F906 ; Frame 4
+	dw $F30C, $F906, $3CC3, $0EF1, $E718, $F708, $F30C, $F30C ; Frame 5
+	dw $E718, $E718, $F30C, $7887, $1CE3, $CF30, $EF10, $E718 ; Frame 6
+	dw $CF30, $CF30, $CF30, $E718, $F00F, $38C7, $9F60, $DF20 ; Frame 7
+	dw $BF40, $9F60, $9F60, $9F60, $CF30, $E11E, $708F, $3FC0 ; Frame 8
+	
+FlowerFrames::
+	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
+	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower frame 2
+	
 
 OverworldTileset::
 	db $18 ; Number of tiles
@@ -517,18 +531,3 @@ ENDR
 	dw 0
 	dw 0
 	dw 0
-	
-	
-WaterFrames::
-	dw $7E81, $7F80, $3FC0, $3FC0, $3FC0, $9F60, $C33C, $E01F ; Frame 1
-	dw $C13E, $FC03, $FE01, $7E81, $7E81, $7E81, $3FC0, $8778 ; Frame 2
-	dw $0FF0, $837C, $F906, $FD02, $FC03, $FC03, $FC03, $FE01 ; Frame 3
-	dw $FC03, $1EE1, $07F8, $F30C, $FB04, $F906, $F906, $F906 ; Frame 4
-	dw $F30C, $F906, $3CC3, $0EF1, $E718, $F708, $F30C, $F30C ; Frame 5
-	dw $E718, $E718, $F30C, $7887, $1CE3, $CF30, $EF10, $E718 ; Frame 6
-	dw $CF30, $CF30, $CF30, $E718, $F00F, $38C7, $9F60, $DF20 ; Frame 7
-	dw $BF40, $9F60, $9F60, $9F60, $CF30, $E11E, $708F, $3FC0 ; Frame 8
-	
-FlowerFrames::
-	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower
-	dw $0000, $0000, $0000, $0000, $0000, $0000, $0000, $0000 ; Flower frame 2
