@@ -378,10 +378,14 @@ STATHandler::
 	ld l, rIF & $FF
 	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
 	
+	ld a, [hHDMAInUse]
+	and a
+	jr z, .HDMAInactive
+	; The transfer may be "reserved" but not started (if the parameters are being written, for example)
 	ld a, [rHDMA5]
-	rlca
-	jr c, .HDMAInactive
-	rrca
+	inc a ; Is the transfer active ?
+	jr z, .HDMAInactive
+	dec a ; The transfer is active, thus, it must be stopped
 	ld [rHDMA5], a ; Write a value with bit 7 reset, which stops the transfer
 	db $21 ; Absorbs the next two bytes, which trashes hl but we don't care
 .HDMAInactive
@@ -440,9 +444,12 @@ STATHandler::
 	ld [rVBK], a ; Switch to copy's dest bank
 	
 	; Check is HDMA is currently in use
-	ldh a, [hHDMALength]
+	ldh a, [hHDMAInUse]
+	and a
+	jr nz, .useStandardCopy
+	
 	inc a
-	jr z, .useStandardCopy
+	ldh [hHDMAInUse], a
 	
 	ld c, rHDMA1 & $FF
 	; Write copy's source pointer
@@ -588,6 +595,16 @@ ENDC
 	jr z, .end
 	dec a ; If so, restart it
 	or $80
+	ld l, a ; Save this
+.waitHDMAHBlank ; HDMA shouldn't be started during Mode 0, so wait until it's the beginning of Mode 3
+	ld a, [rSTAT]
+	and 3
+	jr nz, .waitHDMAHBlank
+.waitNotHBlank
+	ld a, [rSTAT]
+	and 3
+	jr z, .waitNotHBlank
+	ld a, l ; Get back length
 	ld [rHDMA5], a
 	
 	

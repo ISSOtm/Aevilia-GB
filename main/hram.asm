@@ -84,3 +84,8 @@ hLoadingWalkDirection::
 hLoadingFinalCount::
 	ds 1
 	
+	
+; Set when HDMA is being used by something
+hHDMAInUse::
+	ds 1
+	

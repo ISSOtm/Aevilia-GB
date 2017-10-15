@@ -198,7 +198,6 @@ LoadNPCs:
 	inc h
 	jr .skipLoadingNPCs
 .loadNPCs
-	and $07 ; Failsafe!
 	ld [wNumOfNPCs], a
 	jp z, .noNPCs
 	ld de, wNPC1_ypos
@@ -252,6 +251,12 @@ LoadNPCs:
 .skipNPC
 	dec b
 	jr nz, .NPCLoadingLoop
+	ld a, [wNumOfNPCs]
+	and $F8
+	jr z, .correctNumOfNPCs
+	; Do something
+	jp FatalError
+.correctNumOfNPCs
 	ld de, wNumOfNPCScripts
 	ld c, 3
 	rst copy ; Copy nb & ptr
@@ -535,9 +540,13 @@ LoadTileset::
 	ld a, b
 	rst bankswitch ; Switch to the source bank
 	
-	ld a, [rHDMA5]
-	rlca
-	jr nc, .useStandardCopy ; If HDMA is busy, use the standard copy function instead
+	ld a, [hHDMAInUse]
+	and a
+	jr nz, .useStandardCopy ; If HDMA is busy, use the standard copy function instead
+	
+	; Reserve HDMA for use
+	inc a ; ld a, 1
+	ldh [hHDMAInUse], a
 	
 	ld a, h
 	ld [rHDMA1], a
@@ -547,22 +556,43 @@ LoadTileset::
 	ld [rHDMA3], a
 	ld a, e
 	ld [rHDMA4], a
+	; Calculate DE after transfer
+	ld a, c
+	swap a
+	and $0F
+	ld b, a ; Store high byte
+	ld a, c
+	swap a
+	and $F0 ; Get low byte
+	add a, e ; Add
+	ld e, a
+	adc a, b ; Add high byte
+	sub e
+	add a, d
+	ld d, a
 	ld a, c ; Get the number of tiles back
 	dec a ; Must write (numOfTiles - 1) !
-	ld c, LOW(rHDMA5)
 	or $80 ; Add HDMA flag
+	ld c, a ; Save this
+.waitHBlank
+	ld a, [rSTAT]
+	and 3
+	jr nz, .waitHBlank
+.waitNotHBlank
+	ld a, [rSTAT]
+	and 3
+	jr z, .waitNotHBlank
+	ld a, c ; Get back value to be written
+	ld c, LOW(rHDMA5)
+	ld hl, $CC00
 	ld [$FF00+c], a
 .waitTransferComplete
 	ld a, [$FF00+c]
-	rlca ; Roll bit 7 into carry
-	jr nc, .waitTransferComplete ; Transfer is inactive => bit is reset
-	dec c
-	ld a, [$FF00+c] ; Get destination pointer
-	ld e, a
-	dec c
-	ld a, [$FF00+c]
-	or $80 ; This bit is reset...
-	ld d, a
+	inc a
+	jr nz, .waitTransferComplete ; This is $FF when transfer has completed
+	; Now, we don't need HDMA1-HDMA5 anymore
+	xor a
+	ldh [hHDMAInUse], a
 	jr .copiedTileBlock
 	
 .useStandardCopy
@@ -2537,6 +2567,8 @@ DoButtonInteractions::
 	ld [hli], a ; Stop NPC's movement
 	push bc
 	call ProcessNPCs
+	ld a, [wLoadedMapROMBank]
+	rst bankswitch
 	pop af ; NPC script ID goes in a
 	add a, a
 	ld hl, wNPCScriptsPointer
@@ -2546,7 +2578,7 @@ DoButtonInteractions::
 	ld l, a
 	jr nc, ProcessInteraction + 1 ; Skip 1st "inc hl"
 	inc h
-	jr ProcessInteraction
+	jr ProcessInteraction + 1
 	
 .noNPCs
 	ld e, INTERACTION_STRUCT_SIZE
