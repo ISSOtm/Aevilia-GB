@@ -78,11 +78,22 @@ hThread2ID::
 	ds 1
 hHDMALength:: ; Used by Thread 2 to know if HDMA can be used
 	ds 1
+	
+UNION
+
 hLoadingDoorAnimCount::
-hLoadingWalkDirection::
 	ds 1
 hLoadingFinalCount::
 	ds 1
+	
+NEXTU
+	
+hLoadingWalkDirection::
+	ds 1
+hLoadingStepCounter::
+	ds 1
+	
+ENDU
 	
 	
 ; Set when HDMA is being used by something

@@ -523,18 +523,8 @@ FirstLoadingStairsDown:
 	ldh [hLoadingWalkDirection], a
 	ld a, THREAD2_LOADINGSTAIRSDOWN
 	ldh [hThread2ID], a
-	
-	; Now we need to cover the sprites as it goes "downstairs"
-	; The sprite will go under these 4 tiles :
-	; *****
-	; *XSS*  * = Any tile
-	; *XSS*  S = Stairs tile
-	; *XX**  X = target tiles
-	; *****
-	; We need to :
-	; - Mark those tiles as "above sprites" (and hope there aren't any sprites above them)
-	; - Add sprites covering the whites of these 4 tiles
-	; (We will use OBJ pal 7 for this, so hope it's not used by anything else)
+	xor a
+	ldh [hLoadingStepCounter], a
 	
 LoadingStairsDown::
 	ld hl, wNPC0_steps
@@ -569,17 +559,21 @@ LoadingStairsDown::
 	dec hl
 	
 .doneMoving
+	ld b, a
+	ldh a, [hLoadingStepCounter]
+	cp 8
+	jr c, .dontMoveDown
 	and 3
 	jr nz, .dontMoveDown
 	dec hl
 	dec hl
-	; ld a, [hl]
-	; and $0F
-	; sub 6
-	; jr nz, .keepMoving
+	ld a, [hl]
+	and $0F
+	jr nz, .keepMoving
 	; Once the player has gone down enough, make it disappear and stop moving it
-	; ldh [hThread2ID], a ; Stop moving it next time
-	; ld [hl], a ; We'll put the player far away ($FEXX should be fine)
+	ldh [hThread2ID], a ; Stop moving it next time
+	ld a, $FC
+	ld [hl], a ; We'll put the player far away ($FEXX should be fine)
 .keepMoving
 	inc [hl]
 	inc [hl]
@@ -587,6 +581,21 @@ LoadingStairsDown::
 .dontMoveDown
 	call MoveNPC0ToPlayer
 	call ProcessNPCs
+	
 	; If possible, hide left half (first 2 sprites of player)
+	ldh a, [hLoadingStepCounter]
+	inc a
+	ldh [hLoadingStepCounter], a
+	cp 24
+	ret c
+	cp 31
+	ret nc
+	ld hl, wVirtualOAM + 4 * OAM_SPRITE_SIZE
+	xor a
+	ld [hli], a
+	inc hl
+	inc hl
+	inc hl
+	ld [hl], a
 	ret
 
