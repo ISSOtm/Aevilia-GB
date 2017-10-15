@@ -1,6 +1,5 @@
 ----------------------------------------------
 -               WRAP WIDTH BAR               -
-[000000
 8/22/17
 (MM/DD/YY)
 Hey. I'm Parzival Wolfram.
@@ -78,8 +77,6 @@ K R-B - This is pretty hard. You think making a QR code is hard? You haven't see
 mikkoku (again) - GBz80ASM might not be usable nowadays but it doesn't mean you can't use it as a starting place for x86ASM. So what if they're not the same?
 
 Well, my battery's dying. Time to sign off for now.
-Make sure to look for my secret room!
-Hint: I messed with collision to make it.
 
 ----------------------------------------------
 -               WRAP WIDTH BAR               -  
