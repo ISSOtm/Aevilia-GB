@@ -151,6 +151,7 @@ TitleScreen::
 	ld hl, rLCDC
 	res 2, [hl]
 	xor a
+	ld [wEnableWindow], a
 	ld [wNumOfSprites], a
 	inc a
 	ld [wTransferSprites], a

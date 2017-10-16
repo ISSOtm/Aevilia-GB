@@ -334,9 +334,6 @@ StaffCreditsStrs::
 	
 	dstr "GRAPHICS"
 	db 0
-	dstr "Alpha"
-	dstr "Mian"
-	dstr "Citx"
 	dstr "ISSOtm"
 	db 0
 	
@@ -349,8 +346,6 @@ StaffCreditsStrs::
 	db 0
 	dstr "Parzival"
 	dstr "Charmy"
-	dstr "Kai"
-	dstr "Citx"
 	db 0
 	
 	dstr "SUPPORT"
