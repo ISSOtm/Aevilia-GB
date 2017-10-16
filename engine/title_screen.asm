@@ -120,30 +120,25 @@ TitleScreen::
 	inc de
 	ld [de], a
 	
+	ld a, 2 ; SCX
+	ldh [hSpecialEffectsBuf], a
+	ld a, (SCREEN_HEIGHT - 5) * 8
+	ldh [hSpecialEffectsLY], a
+	
 .wait
+	ld hl, wXPos
+	ldh a, [hFrameCounter]
+	and 15
+	ld a, [hl]
+	ldh [hSpecialEffectsBuf + 1], a
+	jr nz, .dontIncrement
+	inc a
+	ld [hl], a
+.dontIncrement
 	rst waitVBlank
 	ldh a, [hPressedButtons]
 	and BUTTON_A | BUTTON_START
 	jr nz, .end
-	
-	; Scroll the clouds
-	ld hl, wXPos
-.waitLine
-	ld a, [rLY]
-	cp (SCREEN_HEIGHT - 5) * 8
-	jr nz, .waitLine
-.waitHBlank
-	ld a, [rSTAT]
-	and 3
-	jr nz, .waitHBlank
-	ld a, [hl]
-	inc a
-	ld [rSCX], a
-	ld b, a
-	ldh a, [hFrameCounter]
-	and 15
-	jr nz, .wait
-	ld [hl], b
 	jr .wait
 	
 .end
@@ -152,6 +147,8 @@ TitleScreen::
 	res 2, [hl]
 	xor a
 	ldh [hEnableWindow], a
+	ldh [hSpecialEffectsLY], a
+	ldh [hSpecialEffectsBuf], a
 	ld [wNumOfSprites], a
 	inc a
 	ld [wTransferSprites], a
