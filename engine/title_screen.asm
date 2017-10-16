@@ -83,11 +83,11 @@ TitleScreen::
 	ld b, 2
 	call .copyToScreen
 	ld a, 7
-	ld [wWX], a
+	ldh [hWX], a
 	ld a, $86
-	ld [wWY], a
+	ldh [hWY], a
 	ld a, 1
-	ld [wEnableWindow], a
+	ldh [hEnableWindow], a
 	
 	ld [rVBK], a
 	ld hl, .topTitleMap
@@ -151,7 +151,7 @@ TitleScreen::
 	ld hl, rLCDC
 	res 2, [hl]
 	xor a
-	ld [wEnableWindow], a
+	ldh [hEnableWindow], a
 	ld [wNumOfSprites], a
 	inc a
 	ld [wTransferSprites], a

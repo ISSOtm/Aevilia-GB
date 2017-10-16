@@ -452,9 +452,9 @@ ENDC
 	jr nz, @+1
 	
 	ld a, [wCameraYPos]
-	ld [wSCY], a
+	ldh [hSCY], a
 	ld a, [wCameraXPos]
-	ld [wSCX], a
+	ldh [hSCX], a
 	call RedrawMap
 	call MoveNPC0ToPlayer
 	call ProcessNPCs
@@ -540,7 +540,7 @@ LoadTileset::
 	ld a, b
 	rst bankswitch ; Switch to the source bank
 	
-	ld a, [hHDMAInUse]
+	ldh a, [hHDMAInUse]
 	and a
 	jr nz, .useStandardCopy ; If HDMA is busy, use the standard copy function instead
 	

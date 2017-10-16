@@ -41,6 +41,39 @@ hOverworldPressedButtons::
 hFrameCounter::
 	ds 1
 	
+; Parameters transferred to the corresponding registers on each VBlank
+; The idea is that these can be edited anytime
+; Also, this SCX is pre-screen shake, and WX and WY are ignored if hEnableWindow is zero
+hSCY::
+	ds 1
+hSCX::
+	ds 1
+; Both of these are ignored if wEnableWindow is zero
+hWY::
+	ds 1
+hWX::
+	ds 1
+	
+; Controls whether the window should be displayed or not
+; The window will be displayed anyways if the text box is active!
+hEnableWindow::
+	ds 1
+	
+; Controls how the screen should shake
+; The screen moves one pixel laterally per frame
+; This controls the amplitude of the effect
+; 2 means the screen will oscillate between -2 and +2 like this :
+; 0 -> 1 -> 2 -> 1 -> 0 -> -1 -> -2 -> -1 -> repeat
+hScreenShakeAmplitude::
+	ds 1
+; Holds the current displacement applied to wSCX
+; Ensure the displacement is within bounds - no error checking is done. This would simply produce a graphical oddity
+; Avoiding editing this manually altogether is better IMHO
+; This is zeroed when the amplitude is reset
+hScreenShakeDisplacement::
+	ds 1
+	
+	
 ; Incremented on each overworld loop iteration
 hOverworldFrameCounter::
 	ds 1
@@ -73,6 +106,13 @@ hRandIntLow::
 	ds 1
 hRandIntHigh::
 	ds 1
+	
+	
+; This is used by the STAT handler to help performing various effects
+hSpecialEffectLY::
+	ds 1
+hSpecialEffectsBuf::
+	ds 4 * 2
 	
 hThread2ID::
 	ds 1

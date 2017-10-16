@@ -297,7 +297,7 @@ IntroChooseGender::
 	ret z ; Don't gray out Evie (this could happen if pressing A after graying out once)
 	; Gray out Tom
 	xor a
-	ld [hOverworldPressedButtons], a ; Make sure no action will be taken
+	ldh [hOverworldPressedButtons], a ; Make sure no action will be taken
 	jr .toggleGender ; Gender loaded by default save file is Tom, so this will gray him out
 	
 .doneDelaying ; Run actual code

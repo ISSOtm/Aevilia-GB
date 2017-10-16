@@ -19,8 +19,8 @@ PlayCredits::
 	call FillVRAM
 	ld [rVBK], a
 	call ClearMovableMap
-	ld [wSCY], a
-	ld [wSCX], a
+	ldh [hSCY], a
+	ldh [hSCX], a
 	ldh [hTilemapMode], a
 	
 	; Let text appear by loading a palette
@@ -61,7 +61,7 @@ PlayCredits::
 	inc c
 	inc b
 	ld a, b
-	ld [wSCY], a
+	ldh [hSCY], a
 	cp $60
 	jr nz, .scrollDownToStaff
 	
@@ -124,7 +124,7 @@ PlayCredits::
 	ld bc, $A00
 	call FillVRAM
 	ld [wTransferSprites], a
-	rst waitVBlank ; Make sure wSCY gets applied
+	rst waitVBlank ; Make sure SCY gets applied
 	
 	pop hl
 	ld de, v0Tiles0 + VRAM_TILE_SIZE
@@ -209,9 +209,9 @@ PlayCredits::
 	jr nz, .staff_goDownOnePixel
 	ld e, 8 ; Being < 8 would make a 256-frame wait.
 .staff_goDownOnePixel
-	ld a, [wSCY]
+	ldh a, [hSCY]
 	inc a ; Scroll down by 1 pixel
-	ld [wSCY], a
+	ldh [hSCY], a
 	push hl
 	ld hl, wVirtualOAM + 1
 .scrollSpritesRight
@@ -242,7 +242,7 @@ PlayCredits::
 	cp $9C
 	jr nz, .staff_dontRefreshLine ; If that's not the end, keep going down
 	ld a, $60
-	ld [wSCY], a
+	ldh [hSCY], a
 	pop hl
 	
 	inc hl
@@ -259,12 +259,12 @@ PlayCredits::
 	
 	
 	; Fade the screen for the final moment
-	ld a, 8
-	ld [wFadeSpeed], a
-	callacross Fadeout
+	; ld a, 8
+	; ld [wFadeSpeed], a
+	; callacross Fadeout
 	xor a
-	ld [wSCY], a
-	ld [wSCX], a
+	ldh [hSCY], a
+	ldh [hSCX], a
 	ld [wNumOfSprites], a
 	inc a
 	ld [wTransferSprites], a

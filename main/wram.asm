@@ -7,39 +7,6 @@ wFatalErrorCode::
 	ds 1
 	
 	
-; Parameters transferred to the corresponding registers on each VBlank
-; The idea is that these can be edited anytime
-; Also, this SCX is pre-screen shake, and WX and WY are ignored if wEnableWindow is zero
-wSCY::
-	ds 1
-wSCX::
-	ds 1
-; Both of these are ignored if wEnableWindow is zero
-wWY::
-	ds 1
-wWX::
-	ds 1
-	
-; Controls whether the window should be displayed or not
-; The window will be displayed anyways if the text box is active!
-wEnableWindow::
-	ds 1
-	
-; Controls how the screen should shake
-; The screen moves one pixel laterally per frame
-; This controls the amplitude of the effect
-; 2 means the screen will oscillate between -2 and +2 like this :
-; 0 -> 1 -> 2 -> 1 -> 0 -> -1 -> -2 -> -1 -> repeat
-wScreenShakeAmplitude::
-	ds 1
-; Holds the current displacement applied to wSCX
-; Ensure the displacement is within bounds - no error checking is done. This would simply produce a graphical oddity
-; Avoiding editing this manually altogether is better IMHO
-; This is zeroed when the amplitude is reset
-wScreenShakeDisplacement::
-	ds 1
-	
-	
 ; ID of the current save file
 wSaveFileID::
 	ds 1

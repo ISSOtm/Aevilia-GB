@@ -419,7 +419,7 @@ THE_CONSTANT = 42
 	
 	; Move down to adjust for the upcoming screen
 	ld a, $10
-	ld [wSCY], a
+	ldh [hSCY], a
 	
 	; Load appropriate console palette and tiles
 	ldh a, [hConsoleType]
@@ -728,9 +728,9 @@ OverworldLoop::
 	call MoveCamera
 	call ProcessNPCs
 	ld a, [wCameraYPos]
-	ld [wSCY], a
+	ldh [hSCY], a
 	ld a, [wCameraXPos]
-	ld [wSCX], a
+	ldh [hSCX], a
 	
 	call DoWalkingInteractions
 	
@@ -751,7 +751,7 @@ OverworldLoop::
 	jr nz, OverworldLoop
 	
 	; Process button interactions, if any
-	ld a, [hOverworldPressedButtons]
+	ldh a, [hOverworldPressedButtons]
 	rrca ; A
 	jr c, .doButtonInteractions
 	rrca ; B

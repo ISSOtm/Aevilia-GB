@@ -16,7 +16,7 @@ InitGBPalAndSryScreen::
 	ld [rLCDC], a
 	
 	ld a, 1
-	ld [hPreventSoftReset], a ; Soft reset restarts in CGB mode, so prevent it.
+	ldh [hPreventSoftReset], a ; Soft reset restarts in CGB mode, so prevent it.
 	ei
 	
 	; Leave only game name for 1/3 second
@@ -25,13 +25,13 @@ InitGBPalAndSryScreen::
 	
 	; Shake screen a little
 	ld a, 2
-	ld [wScreenShakeAmplitude], a
+	ldh [hScreenShakeAmplitude], a
 	
 	ld c, 40
 	call DelayBCFrames
 	
 	xor a
-	ld [wScreenShakeAmplitude], a
+	ldh [hScreenShakeAmplitude], a
 	
 	; Wait a bit before displaying text
 	ld c, 20
@@ -60,7 +60,7 @@ InitGBPalAndSryScreen::
 	jr nz, .scrollDown
 	inc c
 	ld a, c
-	ld [wSCY], a
+	ldh [hSCY], a
 	cp 10
 	jr nz, .scrollDown
 	
@@ -100,7 +100,7 @@ InitGBPalAndSryScreen::
 	cp $98
 	jr nz, .lock
 	
-	ld a, [hFrameCounter]
+	ldh a, [hFrameCounter]
 	ld b, a
 	and $0F
 	jr nz, .noScroll
@@ -405,9 +405,9 @@ TransitionToFixedMap::
 	
 CopyToFixedMap::
 	ld h, vTileMap0 >> 8
-	ld a, [wSCY]
+	ldh a, [hSCY]
 	and -TILE_SIZE
-	ld [wSCY], a
+	ldh [hSCY], a
 	add a, a
 	jr nc, .noCarry1
 	inc h
@@ -418,9 +418,9 @@ CopyToFixedMap::
 	inc h
 .noCarry2
 	ld l, a
-	ld a, [wSCX]
+	ldh a, [hSCX]
 	and -TILE_SIZE
-	ld [wSCX], a
+	ldh [hSCX], a
 	rrca
 	rrca
 	rrca
@@ -850,11 +850,11 @@ InterleaveFromMovableToFixed::
 	ld e, a ; ld e, 0
 	; d holds first scanline
 	ld d, a ; ld d, 0
-	ld [wWY], a
+	ldh [hWY], a
 	inc a
-	ld [wEnableWindow], a
+	ldh [hEnableWindow], a
 	ld a, 7
-	ld [wWX], a
+	ldh [hWX], a
 	rst waitVBlank
 .interleaveLoop
 	ld l, rLCDC & $FF
@@ -936,11 +936,11 @@ InterleaveFromFixedToMovable::
 	res 1, [hl]
 	ld de, ((LY_VBLANK - INTERLEAVE_SPEED) << 8) | (INTERLEAVE_LAST - INTERLEAVE_SPEED)
 	xor a
-	ld [wWY], a
+	ldh [hWY], a
 	inc a
-	ld [wEnableWindow], a
+	ldh [hEnableWindow], a
 	ld a, 7
-	ld [wWX], a
+	ldh [hWX], a
 	rst waitVBlank
 .interleaveLoop
 	ld c, d
@@ -1000,7 +1000,7 @@ InterleaveFromFixedToMovable::
 	ld e, a
 	jr nz, .interleaveLoop
 	
-	ld [wEnableWindow], a
+	ldh [hEnableWindow], a
 	dec a
 	ld [rWX], a
 	ld l, rIE & $FF

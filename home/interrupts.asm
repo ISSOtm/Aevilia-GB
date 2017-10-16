@@ -14,8 +14,8 @@ VBlank_int::
 ; STAT
 STAT_int::
 	push af
+	ld a, [rSTAT]
 	push hl
-	ld hl, rSTAT
 	jp STATHandler
 	
 ; Timer

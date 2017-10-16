@@ -84,14 +84,14 @@ FileSelectOptions::
 	; so instead we just move the window normally
 	; Besides, the textbox disables sprites, and we need one.
 	ld a, $1E
-	ld [wWY], a
+	ldh [hWY], a
 	ld a, 7
-	ld [wWX], a
+	ldh [hWX], a
 	
 	xor a ; Disable textbox trickery
 	ld [wTextboxStatus], a
 	inc a ; ld a, 1
-	ld [wEnableWindow], a
+	ldh [hEnableWindow], a
 	ld [wNumOfSprites], a
 	ld [wTransferSprites], a
 	
@@ -236,13 +236,13 @@ FileSelectOptions_Erase:
 	ld hl, EraseWhichFileStr
 	call CopyStrToVRAM
 	
-	ld hl, wWY
+	ld c, LOW(hWY)
 .moveWindowDown
 	rst waitVBlank
-	ld a, [hl]
+	ld a, [c]
 	inc a
 	inc a
-	ld [hl], a
+	ld [c], a
 	cp $60
 	jr nz, .moveWindowDown
 	
@@ -324,13 +324,13 @@ FileSelectOptions_Copy:
 	ld hl, CopyWhichFileStr
 	call CopyStrToVRAM
 	
-	ld hl, wWY
+	ld c, LOW(hWY)
 .moveWindowDown
 	rst waitVBlank
-	ld a, [hl]
+	ld a, [c]
 	inc a
 	inc a
-	ld [hl], a
+	ld [c], a
 	cp $60
 	jr nz, .moveWindowDown
 	
@@ -381,7 +381,7 @@ FileSelectOptions_Copy:
 	ld c, BANK(ConfirmCopyText)
 	ld de, ConfirmCopyText
 	xor a
-	ld [wEnableWindow], a
+	ldh [hEnableWindow], a
 	callacross ProcessText_Hook
 	ld hl, wTextFlags
 	bit 4, [hl] ; Will be set if the first option has been selected
@@ -417,7 +417,7 @@ FileSelectOptionsEnd:
 	ld c, a ; ld c, 0
 	call FillVRAMLite
 	
-	ld [wEnableWindow], a ; Disable "normal" window
+	ldh [hEnableWindow], a ; Disable "normal" window
 	ld a, $F2
 	ld [wTextboxStatus], a ; Make window begin its descent, the rest will be handled automatically.
 	
@@ -453,7 +453,7 @@ DrawFileSelect::
 	ld [wSaveA], a ; Reset Konami cheat
 	
 	ld a, $10
-	ld [wSCY], a
+	ldh [hSCY], a
 	
 	ld de, InvertedPalette + 3
 	ld c, 0
@@ -510,7 +510,7 @@ DrawFileSelect::
 	ld [wTransferSprites], a
 	
 	; Draw the console strings on-screen
-	ld a, [hConsoleType]
+	ldh a, [hConsoleType]
 	add a, a
 	ld hl, ConsoleTypes
 	add a, l ; Assumed not to overflow (if needed move the pointer array around)
@@ -785,10 +785,10 @@ ENDR
 	and 3
 	sub e
 	jr nc, .scrollLoop
-	ld a, [wSCY]
+	ldh a, [hSCY]
 	inc a
 	inc a
-	ld [wSCY], a
+	ldh [hSCY], a
 	jr .scrollLoop
 	
 .loadFile
@@ -1148,7 +1148,7 @@ ConfirmDeletionText::
 	print_pic GameTiles
 	print_name GameName
 	text_lda_imm 0
-	text_sta wEnableWindow
+	text_sta hEnableWindow
 	print_line .line0
 	print_line .line1
 	wait_user
@@ -1175,7 +1175,7 @@ ConfirmCopyText::
 	print_pic GameTiles
 	print_name GameName
 	text_lda_imm 0
-	text_sta wEnableWindow
+	text_sta hEnableWindow
 	print_line .line0
 	print_line .line1
 	wait_user

@@ -1572,9 +1572,9 @@ TextMoveEntity_Common:
 	call MoveCamera
 	call ProcessNPCs
 	ld a, [wCameraYPos]
-	ld [wSCY], a
+	ldh [hSCY], a
 	ld a, [wCameraXPos]
-	ld [wSCX], a
+	ldh [hSCX], a
 	pop hl
 	pop de
 	pop bc

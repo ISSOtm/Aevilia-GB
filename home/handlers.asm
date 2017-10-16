@@ -25,34 +25,34 @@ VBlankHandler::
 	
 	
 	; Transfer WRAM positions to I/O (hiding window if needed)
-	ld a, [wEnableWindow]
+	ldh a, [hEnableWindow]
 	and a
 	ld a, LY_VBLANK
 	jr z, .setWY ; Set window to be just under the screen, don't care about WX
-	ld a, [wWX]
+	ldh a, [hWX]
 	ld [rWX], a
-	ld a, [wWY]
+	ldh a, [hWY]
 .setWY
 	ld [rWY], a
 	
 	
-	ld a, [wScreenShakeAmplitude]
+	ldh a, [hScreenShakeAmplitude]
 	and a
 	jr z, .dontShakeScreen
 	
 	ld b, a
 	and $80 ; Check if bit 7 is set (its meaning is separate from the amplitude)
-	ld a, [wScreenShakeDisplacement]
+	ldh a, [hScreenShakeDisplacement]
 	jr nz, .moveLeft ; Bit 7 is set, move left
 	inc a
 .movementCommon ; Code common to both movements
-	ld [wScreenShakeDisplacement], a
+	ldh [hScreenShakeDisplacement], a
 	cp b
 	jr nz, .dontShakeScreen ; We didn't reach the edge of the displacement
 	ld a, b ; Retrieve amplitude
 	cpl ; Negate amplitude
 	inc a
-	ld [wScreenShakeAmplitude], a
+	ldh [hScreenShakeAmplitude], a
 	jr .capAtAmplitude
 ; The placement of this piece of code can seem strange,
 ; but it is placed at a point that wouldn't be traversed otherwise.
@@ -61,7 +61,7 @@ VBlankHandler::
 	dec a
 	jr .movementCommon
 .dontShakeScreen
-	ld [wScreenShakeDisplacement], a ; Avoid displacement carry-over (zeroing amplitude when displacement is non-zero then setting amplitude again)
+	ldh [hScreenShakeDisplacement], a ; Avoid displacement carry-over (zeroing amplitude when displacement is non-zero then setting amplitude again)
 	ld b, a ; Make sure B holds 0
 .capAtAmplitude ; Jump here with b containing the displacement
 	ldh a, [hTilemapMode]
@@ -79,9 +79,9 @@ VBlankHandler::
 	ld a, [rLCDC]
 	and $F7
 	ld [rLCDC], a
-	ld a, [wSCY]
+	ldh a, [hSCY]
 	ld [rSCY], a
-	ld a, [wSCX]
+	ldh a, [hSCX]
 .transferScroll
 	add a, b
 	ld [rSCX], a
@@ -346,15 +346,17 @@ DMAScript:
 	
 ; Handles all STAT operations
 STATHandler::
-	bit 2, [hl]
-	jr z, .musicTime ; not on LY=LYC
+	ld hl, rSTAT
+	; a = [rSTAT]
+	bit 2, a
+	jr z, .notTextbox ; not on LY=LYC
 	
 	; LY=LYC : it's textbox time !
 .waitHBlank
 	bit 1, [hl]
 	jr nz, .waitHBlank
 	
-	dec hl ; hl = rLCDC
+	dec hl ; ld hl, rLCDC
 	res 1, [hl] ; Zero OBJ bit
 	set 3, [hl] ; Switch to textbox's tilemap
 	
@@ -372,13 +374,59 @@ STATHandler::
 	pop af
 	reti
 	
+.notTextbox
+	and 3
+	jr nz, .musicTime
+	
+	; Mode 0 : we gotta perform sweet tricks !
+	ld hl, hSpecialEffectLY
+	ld a, [rLY]
+	inc a ; The writes will happen slightly too late
+	cp [hl] ; Check if on the correct scanline
+	jr z, .performEffect
+	jr nc, .disableMode0
+	jr .noEffect
+	
+.performEffect
+	push bc
+	ld b, 4
+	inc hl
+.oneEffect
+	ld a, [hli] ; Get target
+	inc a
+	jr z, .doneWithEffects
+	dec a
+	and 9
+	add LOW(rSCY)
+	ld c, a ; Get target in HRAM
+	ld a, [hli] ; Read value
+	ld [c], a ; Write
+	dec b
+	jr nz, .oneEffect
+.doneWithEffects
+	pop bc
+.disableMode0
+	; Disable the Mode 0 interrupt
+	ld hl, rSTAT
+	res 3, [hl]
+	
+.noEffect
+	bit 2, [hl] ; LY=LYC could have been skipped
+	; End quickly if VBlank is about to happen
+	ld a, [rLY]
+	cp $8F
+	jp nz, .end
+	pop hl
+	pop af
+	reti
+	
 .musicTime
 	res 5, [hl] ; Disable mode 2 interrupt
 	
 	ld l, rIF & $FF
 	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
 	
-	ld a, [hHDMAInUse]
+	ldh a, [hHDMAInUse]
 	and a
 	jr z, .HDMAInactive
 	; The transfer may be "reserved" but not started (if the parameters are being written, for example)
