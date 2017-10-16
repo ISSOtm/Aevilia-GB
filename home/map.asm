@@ -199,6 +199,7 @@ LoadNPCs:
 	jr .skipLoadingNPCs
 .loadNPCs
 	ld [wNumOfNPCs], a
+	and a
 	jp z, .noNPCs
 	ld de, wNPC1_ypos
 	ld b, a
