@@ -115,7 +115,7 @@ FileSelectOptions::
 	call CopyAcrossToVRAM
 	
 	; Clear the area under the window
-	ld a, 2
+	xor a
 	ld hl, $98C0
 	ld bc, 14 * VRAM_ROW_SIZE
 	call FillVRAM
@@ -411,8 +411,9 @@ FileSelectOptions_Copy:
 	jp FileSelectOptions
 	
 FileSelectOptionsEnd:
-	ld hl, $98C1
 	xor a
+	ld [wNumOfSprites], a
+	ld hl, $98C1
 	ld c, a ; ld c, 0
 	call FillVRAMLite
 	
@@ -421,6 +422,33 @@ FileSelectOptionsEnd:
 	ld [wTextboxStatus], a ; Make window begin its descent, the rest will be handled automatically.
 	
 DrawFileSelect::
+	; Clean up
+	ld c, $81
+	callacross LoadFont
+	ld c, 0
+	callacross LoadFont
+	ld a, 1
+	ld [rVBK], a
+	ld hl, vAttrMap0
+	ld bc, VRAM_ROW_SIZE * SCREEN_HEIGHT
+	call FillVRAM
+	xor a
+	ld [rVBK], a
+	ld hl, v0Tiles2
+	ld c, VRAM_TILE_SIZE
+	call FillVRAMLite
+	ld hl, vTileMap0
+	ld bc, VRAM_ROW_SIZE * SCREEN_HEIGHT
+	call FillVRAM
+	; Redraw "Aevilia GB" string
+	; Do last to avoid displaying anything
+	ld c, 0
+	ld de, GrayPalette
+	callacross LoadBGPalette_Hook
+	ld c, 1
+	ld de, DefaultPalette
+	callacross LoadBGPalette_Hook
+	
 	xor a
 	ld [wSaveA], a ; Reset Konami cheat
 	
@@ -1306,12 +1334,6 @@ DLCUnavailableLine3::
 SECTION "Save file management", ROMX
 	
 LoadFile::
-	callacross TransitionToFixedMap
-	ld hl, ProgressTiles
-	ld de, $9010
-	ld c, $80
-	call CopyToVRAMLite
-	
 	ld bc, SaveBlocks
 	ld a, SRAM_UNLOCK
 	ld [SRAMEnable], a
@@ -1369,16 +1391,9 @@ LoadFile::
 	bit 0, a ; See next function
 	jr nz, .copyOneBank
 	
-	; Calculate header...
-	
 	ret
 	
 SaveFile::
-	ld hl, ProgressTiles
-	ld de, $9010
-	ld c, $80
-	call CopyToVRAMLite
-	
 	ld a, SRAM_UNLOCK
 	ld [SRAMEnable], a
 	ldh a, [hSRAM32kCompat]

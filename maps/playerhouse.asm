@@ -52,7 +52,7 @@ PlayerHouseNPCs::
 	db 0
 	
 	flag_dep FLAG_SET, FLAG_SIBLING_WATCHING_TV
-	interact_box $0090, $0048, 16, 16
+	interact_box $0039, $0080, 16, 16
 	db 0
 	db 1 << 2 | DIR_UP
 	dn 2, 2, 2, 2
@@ -101,6 +101,8 @@ PlayerHouseSiblingTVScript::
 	print_line_id 1
 	print_line_id 2
 	wait_user
+	close_box
+	turn_npc 1, DIR_UP
 	done
 	
 	

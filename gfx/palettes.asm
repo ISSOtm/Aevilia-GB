@@ -46,6 +46,61 @@ ConsolePalettes::
 	db $00, $00, $00
 	
 	
+; Title screen BG palettes
+TitleScreenCloudPalette::
+	db $0F, $14, $1F
+	db $1F, $1F, $1F
+	db $14, $14, $14
+	db $00, $00, $00
+TitleScreenLogoPalette0::
+	db $0F, $14, $1F
+	db $05, $09, $15
+	db $05, $0D, $15
+	db $00, $00, $00
+TitleScreenLogoPalette1::
+	db $0F, $14, $1F
+	db $02, $11, $1A
+	db $05, $0D, $15
+	db $00, $00, $00
+TitleScreenLogoPalette2::
+	db $0F, $14, $1F
+	db $00, $17, $1B
+	db $02, $11, $1A
+	db $00, $00, $00
+TitleScreenEvieHeadPalette::
+	db $0F, $14, $1F
+	db $1F, $17, $16
+	db $1F, $00, $0F
+	db $00, $00, $00
+TitleScreenTomHeadPalette::
+	db $0F, $14, $1F
+	db $1F, $17, $16
+	db $08, $02, $02
+	db $00, $00, $00
+	
+; Title screen OBJ palettes
+TitleScreenEyePalette::
+	db $1F, $1F, $1F
+	db $09, $0F, $1F
+	db $08, $17, $04
+TitleScreenClothesPalette::
+	db $1F, $48, $1F
+	db $19, $09, $09
+	db $00, $00, $00
+TitleScreenArmsPalette::
+	db $1F, $17, $16
+	db $0A, $0A, $0A ; Unused
+	db $00, $00, $00
+TitleScreenTomJeansPalette::
+	db $02, $0B, $12
+	db $03, $07, $11
+	db $00, $00, $00
+TitleScreenEvieJeansPalette::
+	db $09, $0F, $1F
+	db $02, $0B, $12
+	db $00, $00, $00
+	
+	
 CharSelectTextPalette::
 	db $1F, $1F, $1F
 	db $0A, $0A, $0A
@@ -100,6 +155,7 @@ TomTextboxPalette::
 	db $0A, $0A, $0A
 	db $00, $00, $00
 	db $09, $00, $03
+	
 	
 GenericBoyAPalette::
 	db $1F, $17, $13

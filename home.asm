@@ -408,8 +408,9 @@ THE_CONSTANT = 42
 	xor a
 	ld [SRAMEnable], a
 	
+	homecall TitleScreen
+	
 	; Init music, awww yea
-	ld [GlobalVolume], a
 	ld a, MUSIC_FILESELECT
 	ld [wCurrentMusicID], a
 	call DS_Init
@@ -417,16 +418,8 @@ THE_CONSTANT = 42
 	call DS_Fade
 	
 	; Move down to adjust for the upcoming screen
-	ld a, 3
-.moveDownLoop
-	inc a
+	ld a, $10
 	ld [wSCY], a
-	ld b, a
-	rst waitVBlank
-	rst waitVBlank
-	ld a, b
-	cp 16
-	jr nz, .moveDownLoop
 	
 	; Load appropriate console palette and tiles
 	ldh a, [hConsoleType]
@@ -443,6 +436,8 @@ THE_CONSTANT = 42
 	ld c, 1
 	callacross LoadOBJPalette_Hook
 	
+	ld a, BANK(ConsoleTiles)
+	rst bankswitch
 	pop af
 	ld de, VRAM_TILE_SIZE
 	call MultiplyDEByA
