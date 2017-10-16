@@ -223,12 +223,12 @@ ENDR
 	jr nz, .keepDecrementing
 	or $80
 	dec a
-.doneDecrementing
 	ld [wTextboxStatus], a
 	and $7F
 	jr nz, .displayTextbox
+.doneDecrementing
 	ld [wTextboxStatus], a ; Clear "closing" bit
-	jr .textboxDone
+	jr .noTextbox
 	
 .moveTextboxUpwards
 	cp TILE_SIZE * 6 + 1 ; If the textbox is fully deployed
@@ -246,6 +246,7 @@ ENDR
 	ld b, a
 	ld a, LY_VBLANK
 	sub b
+	ldh [hTextboxLY], a
 	ld [rLYC], a
 	
 	ld hl, rSTAT
@@ -253,16 +254,37 @@ ENDR
 	jr .textboxDone
 	
 .noTextbox
+	dec a
+	ldh [hTextboxLY], a
 	ld hl, rSTAT
 	res 6, [hl]
 	
 .textboxDone
-	ld hl, rLCDC
+	dec hl ; ld hl, rLCDC
 	set 1, [hl]
 	
-	inc hl ; hl = rLCDC
+	inc hl ; hl = rSTAT
 	set 5, [hl] ; Enable Mode 2 interrupt to schedule music
-	; Due to a hardware bug exclusive to the DMG, this immediately schedules a LCD interrupt (but not on the CGB)
+	
+	ldh a, [hSpecialEffectsLY]
+	and a
+	jr z, .noSpecialEffects
+	bit 6, [hl] ; Check if textbox LYC is active
+	jr z, .enableSpecialEffects ; If not, enable
+	; If the effect's line is "in" the textbox, it has priority => don't
+	; So, don't trigger if FX >= text => text-FX <= 0 => text-1-FX < 0
+	ld e, a
+	ldh a, [hTextboxLY]
+	dec a
+	cp e
+	jr c, .noSpecialEffects
+	ld a, e ; Get back special FX LY
+.enableSpecialEffects
+	set 6, [hl]
+	ld [rLYC], a
+.noSpecialEffects
+	
+	; Due to a hardware bug exclusive to the DMG, editing STAT immediately schedules a LCD interrupt (but not on the CGB)
 	ld l, rIF & $FF
 	res 1, [hl] ; Thus, we remove it.
 	
@@ -349,9 +371,38 @@ STATHandler::
 	ld hl, rSTAT
 	; a = [rSTAT]
 	bit 2, a
-	jr z, .notTextbox ; not on LY=LYC
+	jr z, .musicTime ; not on LY=LYC
 	
-	; LY=LYC : it's textbox time !
+	; LY=LYC : check if it's textbox or special effects time
+	ld a, [rLYC]
+	ld h, a
+	ldh a, [hTextboxLY]
+	cp h
+	ld h, $FF
+	jr z, .waitHBlank ; If we're on the textbox's LY, it has priority
+	
+	; Then we have to perform a special effect
+	push bc
+	ld l, LOW(hSpecialEffectsBuf)
+	; Wait until HBlank so the effect won't nuke the current line
+	ld a, [hli] ; Get target
+	and a
+	jr z, .doneWithEffects
+	dec a
+	and 9
+	add LOW(rSCY)
+	ld c, a ; Get target in HRAM
+	ld a, [hli] ; Read value
+	ld [c], a ; Write
+.doneWithEffects
+	ldh a, [hTextboxLY] ; Make sure the textbox will render afterwards
+	ld [rLYC], a ; (the value is $FF is the textbox is de-activated, so no prob')
+	pop bc
+	ld hl, rSTAT
+	ld a, [rLY]
+	cp $8F
+	jr .endMode2
+	
 .waitHBlank
 	bit 1, [hl]
 	jr nz, .waitHBlank
@@ -369,52 +420,7 @@ STATHandler::
 	cpl
 	ld [hli], a
 	cp $8F ^ $FF ; Check if we were on last scanline ; if yes, we need to return quickly (VBlank is incoming)
-	jp nz, .end
-	pop hl
-	pop af
-	reti
-	
-.notTextbox
-	and 3
-	jr nz, .musicTime
-	
-	; Mode 0 : we gotta perform sweet tricks !
-	ld hl, hSpecialEffectLY
-	ld a, [rLY]
-	inc a ; The writes will happen slightly too late
-	cp [hl] ; Check if on the correct scanline
-	jr z, .performEffect
-	jr nc, .disableMode0
-	jr .noEffect
-	
-.performEffect
-	push bc
-	ld b, 4
-	inc hl
-.oneEffect
-	ld a, [hli] ; Get target
-	inc a
-	jr z, .doneWithEffects
-	dec a
-	and 9
-	add LOW(rSCY)
-	ld c, a ; Get target in HRAM
-	ld a, [hli] ; Read value
-	ld [c], a ; Write
-	dec b
-	jr nz, .oneEffect
-.doneWithEffects
-	pop bc
-.disableMode0
-	; Disable the Mode 0 interrupt
-	ld hl, rSTAT
-	res 3, [hl]
-	
-.noEffect
-	bit 2, [hl] ; LY=LYC could have been skipped
-	; End quickly if VBlank is about to happen
-	ld a, [rLY]
-	cp $8F
+.endMode2
 	jp nz, .end
 	pop hl
 	pop af
