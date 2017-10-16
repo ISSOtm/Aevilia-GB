@@ -271,3 +271,68 @@ ClearMovableMap::
 	ld bc, vTileMap1 - vTileMap0
 	xor a
 	jp FillVRAM
+	
+	
+; Transfer c tiles from b:hl to de using HDMA if available
+; (This assumes hl and de are aligned)
+; NOTE : don't try to transfer more than 128 tiles !!
+TransferTilesAcross::
+	ldh a, [hCurROMBank]
+	push af
+	ld a, b
+	rst bankswitch
+	ld b, c ; Transfer to b 'cause c will be re-used a lot
+.tryAgain
+	ldh a, [hHDMAInUse]
+	and a
+	jr z, .HDMAClear
+	; Transfer one tile "normally"
+	ld c, VRAM_TILE_SIZE
+	call CopyToVRAMLite
+	dec b
+	jr nz, .tryAgain ; If any tiles remain, try again to use HDMA
+	jr .done
+	
+.transferAgain
+	ld b, $7F
+	jr .waitHBlank
+	
+.HDMAClear
+	inc a
+	ldh [hHDMAInUse], a
+	dec b ; We have to write 1 less than the number of tiles
+	ld c, LOW(rHDMA1)
+	ld a, h
+	ld [c], a
+	inc c
+	ld a, l
+	ld [c], a
+	inc c
+	ld a, d
+	ld [c], a
+	inc c
+	ld a, e
+	ld [c], a
+	inc c
+.waitHBlank
+	rst isVRAMOpen
+	jr nz, .waitHBlank
+.waitNotHBlank
+	rst isVRAMOpen
+	jr z, .waitHBlank
+	ld a, b
+	or $80
+	ld [c], a ; Start HDMA
+.waitHDMA
+	ld a, [c]
+	inc a
+	jr nz, .waitHDMA
+	ld a, b
+	sub $80
+	jr nc, .transferAgain
+	xor a
+	ldh [hHDMAInUse], a
+.done
+	pop af
+	rst bankswitch
+	ret
