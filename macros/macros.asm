@@ -30,8 +30,8 @@ ENDM
 
 ; Usage : dspr ypos, xpos, tile, attr
 dspr: MACRO
-	db \1 + 16
-	db \2 + 8
+	db LOW(\1 + 16)
+	db LOW(\2 + 8)
 	db \3
 	db \4
 ENDM
