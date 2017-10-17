@@ -334,6 +334,7 @@ StaffCreditsStrs::
 	
 	dstr "GRAPHICS"
 	db 0
+	dstr "Alpha"
 	dstr "ISSOtm"
 	db 0
 	
