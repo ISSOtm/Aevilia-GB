@@ -297,9 +297,23 @@ TitleScreen::
 	inc de
 	ld [de], a
 	
+	; Make a copy of the logo below the screen for the animation
+	ld a, 1
+	ld [rVBK], a
+	ld hl, vTileMap0 + VRAM_ROW_SIZE
+	ld de, vTileMap0 + VRAM_ROW_SIZE * 19
+	ld c, VRAM_ROW_SIZE * 4
+	call CopyToVRAMLite
+	xor a
+	ld [rVBK], a
+	ld hl, vTileMap0 + VRAM_ROW_SIZE
+	ld de, vTileMap0 + VRAM_ROW_SIZE * 19
+	ld c, VRAM_ROW_SIZE * 4
+	call CopyToVRAMLite
+	
 	; Perform animation
 	ld hl, hSCY
-	ld a, $90
+	ld a, $B8 ; Make it so the top of the screen
 	ld [hli], a
 .scrollTitleScreen
 	rst waitVBlank
@@ -326,9 +340,10 @@ ENDR
 	inc [hl]
 	jr nz, .scrollTitleScreen
 	
-	dec hl ; ld hl, hSCY
-	ld b, $D8
+	ld hl, hSCY
+	ld b, $C8
 .scrollLogoIn
+	ld [hl], b
 	rst waitVBlank
 .waitBelowLogo2
 	ld a, [rLY]
@@ -336,9 +351,11 @@ ENDR
 	jr nz, .waitBelowLogo2
 	ld [rSCY], a
 	
-	inc b
-	ld [hl], b
+	dec b
+	ld a, b
+	cp $90
 	jr nz, .scrollLogoIn
+	ld [hl], 0
 	
 	ld bc, 30
 	call DelayBCFrames
