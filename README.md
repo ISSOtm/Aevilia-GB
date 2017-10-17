@@ -5,6 +5,17 @@ A RPG for the Game Boy Color, written in pure assembly.
 Note : this is neither a tutorial nor a walkthrough for the game.
 
 
+# Credits
+
+Most programming was done by [ISSOtm](http://github.com/ISSOtm/).
+
+[Sound engine](http://github.com/DevEd2/DevSound/) and soundtrack by [DevEd](http://github.com/DevEd2/).
+
+Most graphics were drawn by [Kai](http://github.com/kaikun97).
+
+Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [Charmy](http://github.com/CharmyBee99).
+
+
 # Source's contents
 
 - _aevilia.gbc_<br/>
@@ -39,4 +50,4 @@ The game is open-source, you are allowed and actually encouraged to modify it. D
 
 You are not allowed to distribute your modified copy claiming it's the original. We (the AeviDev Team) reserve the right to shut down any modified copy of the game infringing this.
 
-tl;dr : play by the rules and we'll support you.
+tl;dr : play by the rules and we'll support you. Don't, and... just don't.
