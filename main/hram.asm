@@ -136,6 +136,11 @@ hLoadingWalkDirection::
 hLoadingStepCounter::
 	ds 1
 	
+NEXTU
+	
+hCloudScrollCount::
+	ds 1
+	
 ENDU
 	
 	

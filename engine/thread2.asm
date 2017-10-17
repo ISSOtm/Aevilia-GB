@@ -19,6 +19,7 @@ Thread2Ptrs::
 	dw LoadingStairsDown
 	dw LoadingStairsDownLeft
 	dw LoadingStairsDownRight
+	dw ScrollClouds
 	
 	
 AfterLoadingWalkUp::
@@ -597,5 +598,17 @@ LoadingStairsDown::
 	inc hl
 	inc hl
 	ld [hl], a
+	ret
+	
+	
+ScrollClouds::
+	ld hl, hSpecialEffectsBuf + 1
+	ld c, LOW(hCloudScrollCount)
+	ld a, [c]
+	dec a
+	and 15
+	ld [c], a
+	ret nz
+	inc [hl]
 	ret
 

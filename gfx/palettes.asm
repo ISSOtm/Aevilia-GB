@@ -52,6 +52,11 @@ TitleScreenCloudPalette::
 	db $1F, $1F, $1F
 	db $14, $14, $14
 	db $00, $00, $00
+TitleScreenAeviDevPalette::
+	db $0F, $14, $1F
+	db $08, $17, $04
+	db $00, $10, $00
+	db $00, $00, $00
 TitleScreenLogoPalette0::
 	db $0F, $14, $1F
 	db $05, $09, $15

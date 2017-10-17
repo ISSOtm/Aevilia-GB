@@ -408,7 +408,7 @@ THE_CONSTANT = 42
 	xor a
 	ld [SRAMEnable], a
 	
-	homecall TitleScreen
+	homecall PlayIntro
 	
 	; Init music, awww yea
 	ld a, MUSIC_FILESELECT
