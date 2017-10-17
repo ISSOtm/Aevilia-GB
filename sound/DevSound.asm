@@ -22,6 +22,13 @@
 ; TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 ; SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ; ================================================================
+;
+; Please take note that DevSound is licensed under the MIT license.
+; This copy of DevSound has been edited for use within Aevilia ;
+; for the original version, please refer to:
+;                http://github.com/DevEd2/DevSound/
+;
+; ================================================================
 
 UseFXHammer	set	1
 
