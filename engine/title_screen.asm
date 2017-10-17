@@ -313,7 +313,7 @@ TitleScreen::
 	
 	; Perform animation
 	ld hl, hSCY
-	ld a, $B8 ; Make it so the top of the screen
+	ld a, $B8 ; Make it so the top of the screen doesn't show the Aevilia logo
 	ld [hli], a
 .scrollTitleScreen
 	rst waitVBlank
@@ -322,6 +322,16 @@ TitleScreen::
 	sub 40
 	jr nz, .waitBelowLogo
 	ld [rSCY], a
+	
+	; Do this now so it's not overwritten by Thread 2
+	ld c, LOW(hSpecialEffectsBuf + 1)
+	ld a, [hl]
+	and 3
+	jr nz, .dontMoveClouds
+	ld a, [c]
+	inc a
+	ld [c], a
+.dontMoveClouds
 	
 	ld de, wVirtualOAM + 1
 	ld c, 40

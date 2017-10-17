@@ -314,6 +314,12 @@ AeviDevLogoTiles::
 	dw $8080, $0000, $0000, $0000, $0000, $0000, $0000, $0000
 	
 	
+SECTION "DevSoft tiles", ROMX,ALIGN[4]
+	
+DevSoftTiles::
+	dw $
+	
+	
 SECTION "Title screen tiles", ROMX,ALIGN[4]
 
 TitleScreenTiles::
