@@ -430,7 +430,7 @@ DrawFileSelect::
 	ld a, 1
 	ld [rVBK], a
 	ld hl, vAttrMap0
-	ld bc, VRAM_ROW_SIZE * SCREEN_HEIGHT
+	ld bc, VRAM_ROW_SIZE * (SCREEN_HEIGHT + 2)
 	call FillVRAM
 	xor a
 	ld [rVBK], a
@@ -438,7 +438,7 @@ DrawFileSelect::
 	ld c, VRAM_TILE_SIZE
 	call FillVRAMLite
 	ld hl, vTileMap0
-	ld bc, VRAM_ROW_SIZE * SCREEN_HEIGHT
+	ld bc, VRAM_ROW_SIZE * (SCREEN_HEIGHT + 2)
 	call FillVRAM
 	; Redraw "Aevilia GB" string
 	; Do last to avoid displaying anything
