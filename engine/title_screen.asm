@@ -276,7 +276,7 @@ DevSoftAnimation::
 	db   0,$9F,$A0,$A1,$A2,$A3,$A4,  0,$A5,$A6,$C6,$C7,$C8,$C9,$CA,$CB,$CC,$CD,$CE,$CF
 	
 .done
-	ld hl, vTileMap0 + VRAM_ROW_SIZE * 4
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 5
 	ld c, VRAM_ROW_SIZE * 5
 	xor a
 	call FillVRAMLite
