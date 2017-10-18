@@ -9,7 +9,7 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 
 Most programming was done by [ISSOtm](http://github.com/ISSOtm/).
 
-[Sound engine](http://github.com/DevEd2/DevSound/) and soundtrack by [DevEd](http://github.com/DevEd2/).
+[Sound engine](http://github.com/DevEd2/DevSound/) by [DevEd](http://github.com/DevEd2/) and [Pigu](http://github.com/Pigu-A/), soundtrack by DevEd.
 
 Most graphics were drawn by [Kai](http://github.com/kaikun97).
 
