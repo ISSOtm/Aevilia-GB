@@ -2733,7 +2733,7 @@ CH4_UpdateRegisters:
 	jr	nz,.noloop
 	ld	a,[hl]
 	ld	[CH4NoisePos],a
-	jr	.updateNote
+	jr	.updatearp
 .noloop
 	cp	$ff
 	jr	z,.continue
