@@ -571,9 +571,11 @@ CH3Ins2			ds	1
 
 CH4Ptr			ds	2
 CH4VolPtr		ds	2
+CH4WavePtr		ds	2
 CH4NoisePtr		ds	2
 CH4VolPos		ds	1
 CH4VolLoop		ds	1
+CH4WavePos		ds	1
 CH4NoisePos		ds	1
 CH4LoopPtr		ds	2
 CH4RetPtr		ds	2
@@ -583,6 +585,7 @@ CH4Tick			ds	1
 CH4Reset		ds	1
 CH4Transpose	ds	1
 CH4Vol			ds	1
+CH4Wave			ds	1
 CH4ChanVol		ds	1
 CH4Pan			ds	1
 CH4NoteCount	ds	1

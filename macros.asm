@@ -57,6 +57,11 @@ value = value | \1
 	db value
 ENDM
 
+dbw: MACRO
+	db \1
+	dw \2
+ENDM
+
 
 INCLUDE "macros/macros.asm"
 INCLUDE "macros/memory.asm"

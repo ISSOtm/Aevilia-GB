@@ -473,8 +473,6 @@ ENDC
 	jr z, .stillSameMusic ; Music $FF = no music
 	dec a
 	call DS_Init
-	xor a
-	ld [GlobalVolume], a
 	inc a ; ld a, 1
 	call DS_Fade
 .stillSameMusic
