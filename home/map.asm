@@ -229,6 +229,8 @@ LoadNPCs:
 	ld a, 13 ; Skip over NPC + 1 flag byte
 	add a, l
 	ld l, a
+	jr nc, .skipNPC
+	inc h
 	jr .skipNPC
 .dependencyMet
 .noFlagDependency
