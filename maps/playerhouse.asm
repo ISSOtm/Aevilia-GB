@@ -96,7 +96,7 @@ PlayerHouseNPCScripts::
 	
 	set_text_prefix PlayerHouseSiblingTVScript
 PlayerHouseSiblingTVScript::
-	print_name SiblingName
+	print_name
 	print_line_id 0
 	print_line_id 1
 	print_line_id 2
