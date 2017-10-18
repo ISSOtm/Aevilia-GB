@@ -34,19 +34,17 @@ w1			equ	%01100000
 w2			equ	%01000000
 w3			equ	%00100000
 
-; For pulse instruments, volume control is software-based by default.
-; However, hardware volume envelopes may still be used by adding the
-; envelope length * $10.
-; Example: $3F = initial volume $F, env. length $3
-; Repeat that value for the desired length.
-; Note that using initial volume $F + envelope length $F will be
-; interpreted as a "table end" command, use initial volume $F +
-; envelope length $0 instead.
-; Same applies to initial volume $F + envelope length $8 which
-; is interpreted as a "loop" command, use initial volume $F +
-; envelope length $0 instead.
+; For pulse and noise instruments, volume control is software-based by default.
+; However, when the table execution ends ($FF) the value after that terminator
+; will be loaded as a hardware volume and envelope. Please be cautious that the
+; envelope speed won't be scaled along the channel volume.
 
-vol_Dummy			db	$f,$ff
+; For wave instruments, volume has the same range as the above (that's right,
+; this is possible by scaling the wave data) except that it won't load the
+; value after the terminator as a final volume.
+; WARNING: since there's no way to rewrite the wave data without restarting
+; the wave so make sure that the volume doesn't change too fast that it
+; unintentionally produces sync effect
 
 vol_Kick:			db	$18,$ff
 vol_Snare:			db	$1d,$ff
@@ -127,8 +125,23 @@ vol_ScareChordWave:
 	db	w1,$ff
 				
 ; =================================================================
-; Arpeggio sequences
+; Arpeggio/Noise sequences
 ; =================================================================
+
+s7	equ	$2d
+
+; Noise values are the same as Deflemask, but with one exception:
+; To convert 7-step noise values (noise mode 1 in deflemask) to a
+; format usable by DevSound, take the corresponding value in the
+; arpeggio macro and add s7.
+; Example: db s7+32 = noise value 32 with step lengh 7
+; Note that each noiseseq must be terminated with a loop command
+; ($80) otherwise the noise value will reset!
+
+arp_Kick:	db	32,26,37,$80,2
+arp_Snare:	db	s7+29,s7+23,s7+20,35,$80,3
+arp_Hat:	db	41,43,$80,1
+arp_S7:	db	s7,$80,1
 
 arp_Pluck:			db	12,0,$ff
 
@@ -141,50 +154,7 @@ arp_Boss1Echo1:	db	12,0,$ff
 arp_ScareChordTom:	db	22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,$ff
 
 ; =================================================================
-; Noise sequences
-; =================================================================
-
-; Noise values are the same as Deflemask, but with one exception:
-; To convert 7-step noise values (noise mode 1 in deflemask) to a
-; format usable by DevSound, take the corresponding value in the
-; arpeggio macro and add s7.
-; Example: db s7+32 = noise value 32 with step lengh 7
-; Note that each noiseseq must be terminated with a loop command
-; ($80) otherwise the noise value will reset!
-
-s7	equ	$2d
-
-noiseseq_Kick:	db	32,26,37,$80,2
-noiseseq_Snare:	db	s7+29,s7+23,s7+20,35,$80,3
-noiseseq_Hat:	db	41,43,$80,1
-noiseseq_S7:	db	s7,$80,1
-
-; =================================================================
-; Pulse sequences
-; =================================================================
-
-pulse_12:			db	0,$ff
-pulse_25:			db	1,$ff
-pulse_50:			db	2,$ff
-pulse_75:			db	3,$ff
-
-pulse_Arp1:			db	0,0,1,1,1,2,2,3,3,3,2,2,1,1,1,$80,0
-
-pulse_ScareChord:	db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$80,0
-
-; =================================================================
-; Vibrato sequences
-; Must be terminated with a loop command!
-; =================================================================
-
-vib_Dummy:			db	0,0,$80,1
-
-vib_WaveBass:		db	48,2,4,6,4,2,0,-2,-4,-6,-4,-2,0,$80,1
-vib_QuietLead:		db	12,1,1,0,0,-1,-1,0,0,$80,1
-vib_QuietLeadFade:	db	1,1,1,0,0,-1,-1,0,0,$80,1
-
-; =================================================================
-; Wave sequences
+; Pulse/Wave sequences
 ; =================================================================
 
 WaveTable:
@@ -203,143 +173,120 @@ wave_ScareChord:	db	$ff,$ff,$ff,$ff,$00,$00,$00,$00,$ff,$ff,$ff,$ff,$f0,$00,$00,
 waveseq_Bass:		db	1,$ff
 waveseq_Pulse:		db	2,$ff
 waveseq_Rand:		db	3,$ff
-waveseq_ScareChord:	db	4,$ff
+waveseq_ScareChordWave:	db	4,$ff
 waveseq_Buffer:		db	$c0,$ff
+
+waveseq_12:			db	0,$ff
+waveseq_25:			db	1,$ff
+waveseq_50:			db	2,$ff
+waveseq_75:			db	3,$ff
+
+waveseq_Arp1:			db	0,0,1,1,1,2,2,3,3,3,2,2,1,1,1,$80,0
+
+waveseq_ScareChord:	db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$80,0
+
+; =================================================================
+; Vibrato sequences
+; Must be terminated with a loop command!
+; =================================================================
+
+vib_Dummy:			db	0,0,$80,1
+
+vib_WaveBass:		db	48,2,4,6,4,2,0,-2,-4,-6,-4,-2,0,$80,1
+vib_QuietLead:		db	12,1,1,0,0,-1,-1,0,0,$80,1
+vib_QuietLeadFade:	db	1,1,1,0,0,-1,-1,0,0,$80,1
 
 ; =================================================================
 ; Instruments
 ; =================================================================
 
-InstrumentTable:	
-	dw	ins_Kick
-	dw	ins_Snare
-	dw	ins_CHH
-	dw	ins_OHH
-	dw	ins_CymbQ
-	dw	ins_CymbL
+InstrumentTable:
+	const_def
+	dins	Kick
+	dins	Snare
+	dins	CHH
+	dins	OHH
+	dins	CymbQ
+	dins	CymbL
 	
-	dw	ins_WaveBass
-	dw	ins_Echo1a
-	dw	ins_Echo1b
-	dw	ins_Echo2
-	dw	ins_QuietLead
-	dw	ins_QuietLeadFade
+	dins	WaveBass
+	dins	Echo1a
+	dins	Echo1b
+	dins	Echo2
+	dins	QuietLead
+	dins	QuietLeadFade
 	
-	dw	ins_Arp1
-	dw	ins_PulseLead1a
-	dw	ins_PulseLead1b
-	dw	ins_WaveBass2a
-	dw	ins_WaveBass2b
+	dins	Arp1
+	dins	PulseLead1a
+	dins	PulseLead1b
+	dins	WaveBass2a
+	dins	WaveBass2b
 	
-	dw	ins_CorruptionFade
-	dw	ins_CorruptionWave
+	dins	CorruptionFade
+	dins	CorruptionWave
 	
-	dw	ins_WaveTrill
-	dw	ins_PulseTrill5
-	dw	ins_PulseTrill7
-	dw	ins_Boss1Lead
-	dw	ins_Boss1Echo1
-	dw	ins_Boss1Echo2
-	dw	ins_Boss1Bass
-	dw	ins_Boss1Wave
-	dw	ins_Boss1WaveEcho
+	dins	WaveTrill
+	dins	PulseTrill5
+	dins	PulseTrill7
+	dins	Boss1Lead
+	dins	Boss1Echo1
+	dins	Boss1Echo2
+	dins	Boss1Bass
+	dins	Boss1Wave
+	dins	Boss1Echo
 	
-	dw	ins_ScareChord
-	dw	ins_ScareChordWave
-	dw	ins_ScareChordNoise
+	dins	ScareChord
+	dins	ScareChordWave
+	dins	ScareChordNoise
 	
-; Instrument format: [no reset flag],[wave mode (ch3 only)],[voltable id],[arptable id],[pulsetable/wavetable id],[vibtable id]
-; note that wave mode must be 0 for non-wave instruments
+; Instrument format: [no reset flag],[voltable id],[arptable id],[wavetable id],[vibtable id]
+; _ for no table
 ;!!! REMEMBER TO ADD INSTRUMENTS TO THE INSTRUMENT POINTER TABLE!!!
-ins_Kick:				Instrument	0,vol_Kick,noiseseq_Kick,DummyTable,DummyTable	; pulse/waveseq and vibrato unused by noise instruments
-ins_Snare:				Instrument	0,vol_Snare,noiseseq_Snare,DummyTable,DummyTable
-ins_CHH:				Instrument	0,vol_Kick,noiseseq_Hat,DummyTable,DummyTable
-ins_OHH:				Instrument	0,vol_OHH,noiseseq_Hat,DummyTable,DummyTable
-ins_CymbQ:				Instrument	0,vol_CymbQ,noiseseq_Hat,DummyTable,DummyTable
-ins_CymbL:				Instrument	0,vol_CymbL,noiseseq_Hat,DummyTable,DummyTable
+ins_Kick:				Instrument	0,Kick,Kick,_,_	; pulse/waveseq and vibrato unused by noise instruments
+ins_Snare:				Instrument	0,Snare,Snare,_,_
+ins_CHH:				Instrument	0,Kick,Hat,_,_
+ins_OHH:				Instrument	0,OHH,Hat,_,_
+ins_CymbQ:				Instrument	0,CymbQ,Hat,_,_
+ins_CymbL:				Instrument	0,CymbL,Hat,_,_
 
-ins_WaveBass:			Instrument	0,vol_WaveBass,DummyTable,waveseq_Bass,vib_WaveBass
-ins_Echo1a:				Instrument	0,vol_Echo1a,DummyTable,pulse_50,vib_Dummy
-ins_Echo1b:				Instrument	0,vol_Echo1b,DummyTable,pulse_50,vib_Dummy
-ins_Echo2:				Instrument	0,vol_Echo2,DummyTable,pulse_50,vib_Dummy
-ins_QuietLead:			Instrument	0,vol_QuietLead,DummyTable,pulse_25,vib_QuietLead
-ins_QuietLeadFade:		Instrument	0,vol_QuietLeadFade,DummyTable,pulse_25,vib_QuietLeadFade
+ins_WaveBass:			Instrument	0,WaveBass,_,Bass,WaveBass
+ins_Echo1a:				Instrument	0,Echo1a,_,50,_
+ins_Echo1b:				Instrument	0,Echo1b,_,50,_
+ins_Echo2:				Instrument	0,Echo2,_,50,_
+ins_QuietLead:			Instrument	0,QuietLead,_,25,QuietLead
+ins_QuietLeadFade:		Instrument	0,QuietLeadFade,_,25,QuietLeadFade
 
-ins_Arp1:				Instrument	1,vol_Arp1,ArpBuffer,pulse_Arp1,vib_Dummy
-ins_PulseLead1a:		Instrument	0,vol_PulseLead1,arp_Pluck,pulse_25,vib_Dummy
-ins_PulseLead1b:		Instrument	0,vol_PulseLead1,arp_Pluck,pulse_50,vib_Dummy
+ins_Arp1:				Instrument	1,Arp1,Buffer,Arp1,_
+ins_PulseLead1a:		Instrument	0,PulseLead1,Pluck,25,_
+ins_PulseLead1b:		Instrument	0,PulseLead1,Pluck,50,_
 
-ins_WaveBass2a:			Instrument	0,vol_WaveBass2a,arp_Pluck,waveseq_Pulse,vib_Dummy
-ins_WaveBass2b:			Instrument	0,vol_WaveBass2b,arp_Pluck,waveseq_Pulse,vib_Dummy
+ins_WaveBass2a:			Instrument	0,WaveBass2a,Pluck,Pulse,_
+ins_WaveBass2b:			Instrument	0,WaveBass2b,Pluck,Pulse,_
 
-ins_CorruptionFade:		Instrument	0,vol_CorruptionFade,DummyTable,DummyTable,vib_Dummy
-ins_CorruptionWave:		Instrument	0,vol_WaveBass,DummyTable,waveseq_Rand,vib_Dummy
+ins_CorruptionFade:		Instrument	0,CorruptionFade,_,_,_
+ins_CorruptionWave:		Instrument	0,WaveBass,_,Rand,_
 
-ins_WaveTrill:			Instrument	0,vol_WaveTrill,arp_Trill5,waveseq_Buffer,vib_Dummy
+ins_WaveTrill:			Instrument	0,WaveTrill,Trill5,Buffer,_
 
-ins_PulseTrill5:		Instrument	0,vol_PulseTrill,arp_Trill5,pulse_25,vib_Dummy
-ins_PulseTrill7:		Instrument	0,vol_PulseTrill,arp_Trill7,pulse_25,vib_Dummy
-ins_Boss1Lead:			Instrument	0,vol_Boss1Echo1,arp_Boss1Echo1,pulse_25,vib_Dummy
-ins_Boss1Echo1:			Instrument	0,vol_Boss1Echo1,arp_Boss1Echo1,pulse_50,vib_Dummy
-ins_Boss1Echo2:			Instrument	0,vol_Boss1Echo2,arp_Boss1Echo1,pulse_50,vib_Dummy
-ins_Boss1Bass:			Instrument	0,vol_Boss1Bass,arp_Boss1Bass,pulse_12,vib_Dummy
-ins_Boss1Wave:			Instrument	0,vol_WaveBass,DummyTable,waveseq_Pulse,vib_Dummy
-ins_Boss1WaveEcho:		Instrument	0,vol_WaveEcho,DummyTable,waveseq_Pulse,vib_Dummy
+ins_PulseTrill5:		Instrument	0,PulseTrill,Trill5,25,_
+ins_PulseTrill7:		Instrument	0,PulseTrill,Trill7,25,_
+ins_Boss1Lead:			Instrument	0,Boss1Echo1,Boss1Echo1,25,_
+ins_Boss1Echo1:			Instrument	0,Boss1Echo1,Boss1Echo1,50,_
+ins_Boss1Echo2:			Instrument	0,Boss1Echo2,Boss1Echo1,50,_
+ins_Boss1Bass:			Instrument	0,Boss1Bass,Boss1Bass,12,_
+ins_Boss1Wave:			Instrument	0,WaveBass,_,Pulse,_
+ins_Boss1Echo:		Instrument	0,WaveEcho,_,Pulse,_
 
-ins_ScareChord:			Instrument	0,vol_ScareChord,arp_Trill6,pulse_ScareChord,vib_Dummy
-ins_ScareChordWave:		Instrument	0,vol_ScareChordWave,arp_ScareChordTom,waveseq_ScareChord,vib_Dummy
-ins_ScareChordNoise:	Instrument	0,vol_Dummy,noiseseq_S7,DummyTable,DummyTable
-
-	enum_start
-	enum_elem	_ins_Kick
-	enum_elem	_ins_Snare
-	enum_elem	_ins_CHH
-	enum_elem	_ins_OHH
-	enum_elem	_ins_CymbQ
-	enum_elem	_ins_CymbL
-	
-	enum_elem	_ins_WaveBass
-	enum_elem	_ins_Echo1a
-	enum_elem	_ins_Echo1b
-	enum_elem	_ins_Echo2
-	enum_elem	_ins_QuietLead
-	enum_elem	_ins_QuietLeadFade
-	
-	enum_elem	_ins_Arp1
-	enum_elem	_ins_PulseLead1a
-	enum_elem	_ins_PulseLead1b
-	enum_elem	_ins_WaveBass2a
-	enum_elem	_ins_WaveBass2b
-	enum_elem	_ins_CorruptionFade
-	enum_elem	_ins_CorruptionWave
-	
-	enum_elem	_ins_WaveTrill
-	enum_elem	_ins_PulseTrill5
-	enum_elem	_ins_PulseTrill7
-	enum_elem	_ins_Boss1Lead
-	enum_elem	_ins_Boss1Echo1
-	enum_elem	_ins_Boss1Echo2
-	enum_elem	_ins_Boss1Bass
-	enum_elem	_ins_Boss1Wave
-	enum_elem	_ins_Boss1Echo
-	
-	enum_elem	_ins_ScareChord
-	enum_elem	_ins_ScareChordWave
-	enum_elem	_ins_ScareChordNoise
-
-Kick				equ	_ins_Kick
-Snare				equ	_ins_Snare
-CHH					equ	_ins_CHH
-OHH					equ	_ins_OHH
-CymbQ				equ	_ins_CymbQ
-CymbL				equ	_ins_CymbL
+ins_ScareChord:			Instrument	0,ScareChord,Trill6,ScareChord,_
+ins_ScareChordWave:		Instrument	0,ScareChordWave,ScareChordTom,ScareChordWave,_
+ins_ScareChordNoise:	Instrument	0,_,S7,_,_
 
 ; =================================================================
 
 PT_SafePlace:	dw	SafePlace_CH1,SafePlace_CH2,SafePlace_CH3,DummyChannel
 
 SafePlace_CH1:
-	db	SetInsAlternate,_ins_Echo1a,_ins_Echo1b
+	db	SetInsAlternate,id_Echo1a,id_Echo1b
 	db	SetLoopPoint
 	rept	4
 	db	CallSection
@@ -361,7 +308,7 @@ SafePlace_CH1:
 	
 SafePlace_CH2:
 	db	SetLoopPoint
-	db	SetInstrument,_ins_Echo2
+	db	SetInstrument,id_Echo2
 	db	rest,2
 	rept	2
 	rept	4
@@ -374,7 +321,7 @@ SafePlace_CH2:
 	endr
 	endr
 	db	rest,2
-	db	SetInstrument,_ins_QuietLead	
+	db	SetInstrument,id_QuietLead	
 	db	D#6,2,rest,2,D#6,4,D_6,4,C_6,8,A#5,8
 	db	C_6,2,D_6,2,C_6,8,A#5,4,C_6,8,A#5,4,G_5,4
 	db	G#5,1,A_5,11,G_5,4,F_5,8,D#5,8
@@ -382,7 +329,7 @@ SafePlace_CH2:
 	db	D#6,12,D_6,4,C_6,8,D_6,8
 	db	D#6,4,D_6,4,C_6,4,D_6,4,C_6,4,D#6,4,G_6,4,A#6,4
 	db	G_6,1,A_6,11,G_6,4,F_6,8,C_6,8,F_5,16
-	db	SetInstrument,_ins_QuietLeadFade
+	db	SetInstrument,id_QuietLeadFade
 	db	F_5,16
 	db	GotoLoopPoint
 
@@ -395,7 +342,7 @@ SafePlace_CH2:
 	ret
 	
 SafePlace_CH3:
-	db	SetInstrument,_ins_WaveBass
+	db	SetInstrument,id_WaveBass
 	db	SetLoopPoint
 	db	D#3,32,D#4,16,D#3,12,F_3,2,G_3,2
 	db	F_3,32,F_4,16,F_3,12,G_3,2,F_3,2
@@ -409,12 +356,12 @@ PT_Battle1:
 Battle1_CH1:
 	db	rest,128
 	db	SetLoopPoint
-	db	SetInstrument,_ins_PulseLead1a
+	db	SetInstrument,id_PulseLead1a
 	rept	2
 	db	CallSection
 	dw	.block1
 	endr
-	db	SetInstrument,_ins_PulseLead1b
+	db	SetInstrument,id_PulseLead1b
 
 	db	CallSection
 	dw	.block2
@@ -437,7 +384,7 @@ Battle1_CH1:
 	
 Battle1_CH2:
 	db	rest,128
-	db	SetInstrument,_ins_Arp1
+	db	SetInstrument,id_Arp1
 	db	SetLoopPoint
 	db	rest,128,rest,128
 	rept	3
@@ -463,7 +410,7 @@ Battle1_CH2:
 	ret
 
 Battle1_CH3:
-	db	SetInstrument,_ins_WaveBass2a
+	db	SetInstrument,id_WaveBass2a
 	rept	2
 	db	CallSection
 	dw	.block3
@@ -570,12 +517,12 @@ Corruption_CH1:
 	db	GotoLoopPoint
 	
 Corruption_CH2:
-	db	SetInstrument,_ins_CorruptionFade
+	db	SetInstrument,id_CorruptionFade
 	db	SetChannelPtr
 	dw	$4981
 	
 Corruption_CH3:
-	db	SetInstrument,_ins_CorruptionWave
+	db	SetInstrument,id_CorruptionWave
 	db	SetLoopPoint
 	db	$08,$1B,$20,$0A,$04,$16,$2A,$12,$1B,$28,$1A,$14,$2B,$02,$26,$2B
 	db	$0D,$00,$1E,$13,$18,$2A,$05,$2E,$1E,$1B,$11,$15,$21,$2A,$06,$00
@@ -597,13 +544,13 @@ Corruption_CH4:
 PT_Boss1:	dw	Boss1_CH1,Boss1_CH2,Boss1_CH3,Boss1_CH4
 	
 Boss1_CH1:
-	db	SetInstrument,_ins_PulseTrill5
+	db	SetInstrument,id_PulseTrill5
 	
 	db	CallSection
 	dw	.block1
 	db	CallSection
 	dw	.block1
-	db	SetInsAlternate,_ins_PulseTrill7,_ins_PulseTrill5
+	db	SetInsAlternate,id_PulseTrill7,id_PulseTrill5
 	db	E_5,8,B_4,4
 	db	E_5,8,B_4,4
 	db	E_5,8,B_4,4
@@ -618,13 +565,13 @@ Boss1_CH1:
 	db	D#6,4,A#4,4
 	
 	db	SetLoopPoint
-	db	SetInstrument,_ins_Boss1Lead
+	db	SetInstrument,id_Boss1Lead
 	
 	db	E_4,24,G_4,8,F_4,2,F#4,10,E_4,12,D_4,8
 	db	E_4,32,D_4,12,F#4,12,D_4,8
 	db	D_4,2,E_4,22,G_4,8,A_4,8,G_4,4,F#4,8,G_4,4,F#4,8
 	db	G_4,32,A_4,12,F#4,12,D_4,8
-	db	SetInsAlternate,_ins_Boss1Echo1,_ins_Boss1Echo2
+	db	SetInsAlternate,id_Boss1Echo1,id_Boss1Echo2
 	db	CallSection
 	dw	.block2
 	db	E_4,8,E_4,4,G_4,8,G_4,4,E_4,2,G_4,2,G_4,2,E_4,2
@@ -635,7 +582,7 @@ Boss1_CH1:
 	dw	.block2
 	db	E_4,8,E_4,4,G_4,8,G_4,4,E_4,2,G_4,2,G_4,2,E_4,2
 	db	A_4,6,A_4,2,G_4,2,G_4,2,F#4,6,F#4,2,G_4,2,F#4,2,F#4,2,G_4,2,D_4,2,F#4,2
-	db	SetInstrument,_ins_Boss1Echo1
+	db	SetInstrument,id_Boss1Echo1
 	db	D_4,2,E_4,62
 	db	GotoLoopPoint
 	
@@ -675,7 +622,7 @@ Boss1_CH1:
 	ret
 
 Boss1_CH2:
-	db	SetInstrument,_ins_Boss1Bass
+	db	SetInstrument,id_Boss1Bass
 	
 rept 4
 	db	CallSection
@@ -719,7 +666,7 @@ endr
 	ret
 	
 Boss1_CH3:
-	db	SetInstrument,_ins_WaveTrill
+	db	SetInstrument,id_WaveTrill
 	db	EnablePWM,$f,7
 	rept	4
 	db	CallSection
@@ -727,12 +674,12 @@ Boss1_CH3:
 	endr
 	
 	db	SetLoopPoint
-	db	SetInsAlternate,_ins_Boss1Wave,_ins_Boss1Echo
+	db	SetInsAlternate,id_Boss1Wave,id_Boss1Echo
 rept 2
 	db	CallSection
 	dw	.block2
 endr
-	db	SetInstrument,_ins_Boss1Wave
+	db	SetInstrument,id_Boss1Wave
 	db	CallSection
 	dw	.block4
 rept 3
@@ -814,19 +761,19 @@ Boss1_CH4:
 PT_ScareChord	dw	ScareChord_CH1,ScareChord_CH1,ScareChord_CH3,ScareChord_CH4
 
 ScareChord_CH1:
-	db	SetInstrument,_ins_ScareChord
+	db	SetInstrument,id_ScareChord
 	db	G_5,40
 	db	rest,1
 	db	EndChannel
 	
 ScareChord_CH3:
-	db	SetInstrument,_ins_ScareChordWave
+	db	SetInstrument,id_ScareChordWave
 	db	fix,40
 	db	rest,1
 	db	EndChannel
 	
 ScareChord_CH4:
-	db	SetInstrument,_ins_ScareChordNoise
+	db	SetInstrument,id_ScareChordNoise
 	db	G_4,1,F#4,1,F_4,1,E_4,1,D#4,1,D_4,1,C#4,1,C_4,1,B_3,1,A#3,1,A_3,1,G#3,1
 	db	G_3,1,F#3,1,F_3,1,E_3,1,D#3,1,D_3,1,C#3,1,C_3,1,B_2,1,A#2,1,A_2,1,G#2,1
 	db	rest,1
@@ -835,4 +782,4 @@ ScareChord_CH4:
 ; ================================================================
 
 Scale_CH1:
-	db	SetInstrument,_ins_PulseLead1a,C_3,4,D_3,4,E_3,4,F_3,4,G_3,4,A_3,4,B_3,4,C_4,4,EndChannel
+	db	SetInstrument,id_PulseLead1a,C_3,4,D_3,4,E_3,4,F_3,4,G_3,4,A_3,4,B_3,4,C_4,4,EndChannel
