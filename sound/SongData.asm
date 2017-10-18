@@ -28,12 +28,6 @@ SongPointerTable:
 ; Volume sequences
 ; =================================================================
 
-; Wave volume values
-w0			equ	%00000000
-w1			equ	%01100000
-w2			equ	%01000000
-w3			equ	%00100000
-
 ; For pulse and noise instruments, volume control is software-based by default.
 ; However, when the table execution ends ($FF) the value after that terminator
 ; will be loaded as a hardware volume and envelope. Please be cautious that the
@@ -46,36 +40,34 @@ w3			equ	%00100000
 ; the wave so make sure that the volume doesn't change too fast that it
 ; unintentionally produces sync effect
 
-vol_Kick:			db	$18,$ff
-vol_Snare:			db	$1d,$ff
-vol_OHH:			db	$48,$ff
-vol_CymbQ:			db	$6a,$ff
-vol_CymbL:			db	$3f,$ff
+vol_Kick:			db	$ff,$81
+vol_Snare:			db	$ff,$d1
+vol_OHH:			db	$ff,$84
+vol_CymbQ:			db	$ff,$a6
+vol_CymbL:			db	$ff,$f3
 
-vol_Echo1a:			db	$1c,$ff
-vol_Echo1b:			db	$16,$ff
-vol_Echo2:			db	2,2,2,2,2,2,2,2,2,2,2,2,1,$ff
-vol_WaveBass:		db	w3,$ff
-vol_QuietLead:		db	3,$ff
+vol_Echo1a:			db	$ff,$c1
+vol_Echo1b:			db	$ff,$61
+vol_Echo2:			db	2,2,2,2,2,2,2,2,2,2,2,2,1,$ff,1
+vol_WaveBass:		db	15,$ff,15
+vol_QuietLead:		db	$ff,3
 vol_QuietLeadFade:	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
 					db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-					db	0,$ff
+					db	0,$ff,0
 					
-vol_Arp1:			db	$1d,$1d,$1d,$1d,$1d,$1d,$1d,$1d,$1d,$1d
-					db	$19,$18,$18,$18,$18,$18,$18,$18,$18,$18
-					db	$19,$ff
-vol_PulseLead1:		db	$4c,$ff	
-vol_WaveBass2a:		db	w3,w3,w3,w3,w3,w1,w1,w2,$ff
-vol_WaveBass2b:		db	w3,w3,w3,w3,w3,w3,w3,w3,w3,w3,w3,w3,w3,w3,w3,w1,w1,w2,$ff
+vol_Arp1:			db	13,12,11,10,9,8,7,6,5,4,9,8,7,6,5,4,3,2,1,0,9,8,7,6,5,4,3,2,1,$ff,0
+vol_PulseLead1:		db	$ff,$c4	
+vol_WaveBass2a:		db	15,15,15,15,15,5,5,$ff,10
+vol_WaveBass2b:		db	15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,5,5,$ff,10
 
-vol_CorruptionFade:	db	$90,$ff
+vol_CorruptionFade:	db	$ff,$09
 
-vol_WaveTrill:		db	w3,w3,w3,w3,w3,w2,w2,w2,w2,w2,w1,w1,w1,w1,w1,w1,w1,w1,w1,w1,w0,$ff
-vol_PulseTrill:		db	$1f,$ff
-vol_Boss1Echo1:	db	$5f,$ff
-vol_Boss1Echo2:db	$56,$ff
-vol_Boss1Bass:	db	$3f,$ff
-vol_WaveEcho:		db	w1,$ff
+vol_WaveTrill:		db	15,15,15,15,15,8,8,8,8,8,4,4,4,4,4,4,4,4,4,4,0,$ff,0
+vol_PulseTrill:		db	$ff,$f1
+vol_Boss1Echo1:		db	$ff,$f5
+vol_Boss1Echo2:		db	$ff,$65
+vol_Boss1Bass:		db	$ff,$f3
+vol_WaveEcho:		db	5,$ff,5
 
 vol_LongFade:
 	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
@@ -90,7 +82,7 @@ vol_LongFade:
 	db	4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
 	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
 	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	1,$ff
+	db	$ff,1
 vol_LongFade2:	
 	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
@@ -104,25 +96,34 @@ vol_LongFade2:
 	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
 	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
 	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	1,$ff
+	db	$ff,1
 	
 vol_ScareChord:
-	rept	60
-	db	$7f
-	endr
+	db	15,15,15,15,15,15,15
+	db	14,14,14,14,14,14,14
+	db	13,13,13,13,13,13,13
+	db	12,12,12,12,12,12,12
+	db	11,11,11,11,11,11,11
+	db	10,10,10,10,10,10,10
+	db	9,9,9,9,9,9,9
+	db	8,8,8,8,8,8,8
+	db	7,7,7,7
 	rept	20
 	db	2
 	endr
-	db	1,$ff
+	rept	20
+	db	1
+	endr
+	db	$ff,0
 	
 vol_ScareChordWave:
 	rept	40
-	db	w3
+	db	15
 	endr
 	rept	27
-	db	w2
+	db	8
 	endr
-	db	w1,$ff
+	db	4,$ff,4
 				
 ; =================================================================
 ; Arpeggio/Noise sequences
@@ -136,18 +137,18 @@ s7	equ	$2d
 ; arpeggio macro and add s7.
 ; Example: db s7+32 = noise value 32 with step lengh 7
 ; Note that each noiseseq must be terminated with a loop command
-; ($80) otherwise the noise value will reset!
+; ($fe) otherwise the noise value will reset!
 
-arp_Kick:	db	32,26,37,$80,2
-arp_Snare:	db	s7+29,s7+23,s7+20,35,$80,3
-arp_Hat:	db	41,43,$80,1
-arp_S7:	db	s7,$80,1
+arp_Kick:	db	$a0,$9a,$a5,$fe,2
+arp_Snare:	db	s7+$9d,s7+$97,s7+$94,$a3,$fe,3
+arp_Hat:	db	$a9,$ab,$fe,1
+arp_S7:	db	s7,$fe,0
 
 arp_Pluck:			db	12,0,$ff
 
-arp_Trill5:			db	5,5,0,0,$80,0
-arp_Trill6:			db	6,6,0,0,$80,0
-arp_Trill7:			db	7,7,0,0,$80,0
+arp_Trill5:			db	5,5,0,0,$fe,0
+arp_Trill6:			db	6,6,0,0,$fe,0
+arp_Trill7:			db	7,7,0,0,$fe,0
 arp_Boss1Bass:	db	12,0,$ff
 arp_Boss1Echo1:	db	12,0,$ff
 
@@ -181,9 +182,9 @@ waveseq_25:			db	1,$ff
 waveseq_50:			db	2,$ff
 waveseq_75:			db	3,$ff
 
-waveseq_Arp1:			db	0,0,1,1,1,2,2,3,3,3,2,2,1,1,1,$80,0
+waveseq_Arp1:			db	0,0,1,1,1,2,2,3,3,3,2,2,1,1,1,$fe,0
 
-waveseq_ScareChord:	db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$80,0
+waveseq_ScareChord:	db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$fe,0
 
 ; =================================================================
 ; Vibrato sequences
@@ -275,7 +276,7 @@ ins_Boss1Echo1:			Instrument	0,Boss1Echo1,Boss1Echo1,50,_
 ins_Boss1Echo2:			Instrument	0,Boss1Echo2,Boss1Echo1,50,_
 ins_Boss1Bass:			Instrument	0,Boss1Bass,Boss1Bass,12,_
 ins_Boss1Wave:			Instrument	0,WaveBass,_,Pulse,_
-ins_Boss1Echo:		Instrument	0,WaveEcho,_,Pulse,_
+ins_Boss1Echo:			Instrument	0,WaveEcho,_,Pulse,_
 
 ins_ScareChord:			Instrument	0,ScareChord,Trill6,ScareChord,_
 ins_ScareChordWave:		Instrument	0,ScareChordWave,ScareChordTom,ScareChordWave,_
