@@ -110,8 +110,9 @@ PlayerHouseSiblingTVScript::
 PlayerHouseTVScript::
 	text_get_flag FLAG_SIBLING_WATCHING_TV
 .source1
-	text_jr cond_z, .branch1 - .source1
+	text_jr cond_nz, .branch1 - .source1
 	
+	; Watch TV
 	disp_box
 	print_line_id 0
 	print_line_id 1
@@ -132,6 +133,7 @@ PlayerHouseTVScript::
 	wait_user
 	done
 	
+	; Sibling watching TV
 .branch1
 	print_name
 	print_line_id 3

@@ -2139,7 +2139,7 @@ TextGetFlag::
 	ld hl, wTextFlags
 	ld a, 3
 	res TEXT_ZERO_FLAG, [hl]
-	ret nc
+	ret c ; If the flag is set, then it's NZ
 	set TEXT_ZERO_FLAG, [hl]
 	ret
 	
