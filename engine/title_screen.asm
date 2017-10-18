@@ -202,6 +202,11 @@ DevSoftAnimation::
 	ld c, 1
 	callacross LoadOBJPalette_Hook
 	
+	ld hl, DevSoftTiles
+	ld de, v0Tiles1
+	ld bc, BANK(DevSoftTiles) << 8 | $50
+	call TransferTilesAcross
+	
 	ld hl, vTileMap0 + VRAM_ROW_SIZE * 4
 	ld c, SCREEN_WIDTH
 	xor a
@@ -210,11 +215,6 @@ DevSoftAnimation::
 	ld de, vTileMap0 + VRAM_ROW_SIZE * 5
 	ld b, 5
 	call TitleScreen.copyToScreen
-	
-	ld hl, DevSoftTiles
-	ld de, v0Tiles1
-	ld bc, BANK(DevSoftTiles) << 8 | $50
-	call TransferTilesAcross
 	
 	ld hl, hSpecialEffectsBuf + 1
 .animate
