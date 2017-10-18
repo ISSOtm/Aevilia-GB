@@ -48,7 +48,7 @@ vol_Echo1a:			db	$ff,$c1
 vol_Echo1b:			db	$ff,$61
 vol_Echo2:			db	2,2,2,2,2,2,2,2,2,2,2,2,1,$ff,1
 vol_WaveBass:		db	15,$ff,15
-vol_QuietLead:		db	$ff,3
+vol_QuietLead:		db	$ff,$30
 vol_QuietLeadFade:	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
 					db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 					db	0,$ff,0
@@ -187,6 +187,7 @@ waveseq_ScareChord:	db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$fe,0
 ; =================================================================
 ; Vibrato sequences
 ; Must be terminated with a loop command!
+; Must be terminated with a loop command!
 ; =================================================================
 
 vib_WaveBass:		db	48,2,4,6,4,2,0,-2,-4,-6,-4,-2,0,$80,1
@@ -286,10 +287,12 @@ SafePlace_CH1:
 	db	SetInsAlternate,id_Echo1a,id_Echo1b
 	db	SetLoopPoint
 	rept	4
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	endr
 	rept	4
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	endr
 	db	GotoLoopPoint
 	
@@ -307,10 +310,12 @@ SafePlace_CH2:
 	db	rest,2
 	rept	2
 	rept	4
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	endr
 	rept	4
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	endr
 	endr
 	db	rest,2
@@ -351,13 +356,16 @@ Battle1_CH1:
 	db	SetLoopPoint
 	db	SetInstrument,id_PulseLead1a
 	rept	2
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	endr
 	db	SetInstrument,id_PulseLead1b
 
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	db	E_4,12,D_4,12,B_3,12,D_4,8,F#4,8,G_4,4,F#4,8,B_3,4,D_4,4,B_3,4
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	db	D_4,8,F#4,4,E_4,64
 	db	GotoLoopPoint
 	
@@ -378,9 +386,11 @@ Battle1_CH2:
 	db	SetLoopPoint
 	db	rest,128,rest,128
 	rept	3
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	endr
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	db	GotoLoopPoint
 	
 .block1
@@ -400,15 +410,18 @@ Battle1_CH2:
 Battle1_CH3:
 	db	SetInstrument,id_WaveBass2a
 	rept	2
-	dbw	CallSection,.block3
+	db	CallSection
+	dw	.block3
 	endr
 	
 	db	SetLoopPoint
 	rept	2
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	endr
 	rept	3
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	endr
 	db	C_3,4,C_3,4,C_4,4,C_3,4,B_3,4,C_4,4,C_3,4,$80,16,D_3,8
 	db	$80,15,D_3,4,D_4,4,D_3,4,C_4,4,D_4,4,D_3,4,G_2,4
@@ -436,7 +449,8 @@ Battle1_CH3:
 	ret
 	
 Battle1_CH4:
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	Drum	Kick,4
 	Drum	CHH,4
 	Drum	Snare,4
@@ -455,7 +469,8 @@ Battle1_CH4:
 	db		fix,4
 
 	db	SetLoopPoint
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	db	GotoLoopPoint
 	
 .block1
@@ -492,8 +507,10 @@ PT_Boss1:	dw	Boss1_CH1,Boss1_CH2,Boss1_CH3,Boss1_CH4
 Boss1_CH1:
 	db	SetInstrument,id_PulseTrill5
 	
-	dbw	CallSection,.block1
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
+	db	CallSection
+	dw	.block1
 	db	SetInsAlternate,id_PulseTrill7,id_PulseTrill5
 	db	E_5,8,B_4,4
 	db	E_5,8,B_4,4
@@ -516,12 +533,14 @@ Boss1_CH1:
 	db	D_4,2,E_4,22,G_4,8,A_4,8,G_4,4,F#4,8,G_4,4,F#4,8
 	db	G_4,32,A_4,12,F#4,12,D_4,8
 	db	SetInsAlternate,id_Boss1Echo1,id_Boss1Echo2
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	db	E_4,8,E_4,4,G_4,8,G_4,4,E_4,2,G_4,2,G_4,2,E_4,2
 	db	A_4,6,A_4,2,G_4,2,G_4,2,F#4,6,F#4,2,G_4,2,F#4,2,F#4,2,G_4,2,E_4,2,F#4,2
 	db	B_3,2,E_4,2,D#4,2,B_3,2,B_3,2,D#4,2,F#4,6,F#4,2,G_4,2,F#4,2,F#4,2,G_4,2,D_4,2,F#4,2
 	db	E_4,16,E_4,4,G_4,2,E_4,2,F#4,2,G_4,2,D_4,2,F#4,2
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 	db	E_4,8,E_4,4,G_4,8,G_4,4,E_4,2,G_4,2,G_4,2,E_4,2
 	db	A_4,6,A_4,2,G_4,2,G_4,2,F#4,6,F#4,2,G_4,2,F#4,2,F#4,2,G_4,2,D_4,2,F#4,2
 	db	SetInstrument,id_Boss1Echo1
@@ -567,15 +586,19 @@ Boss1_CH2:
 	db	SetInstrument,id_Boss1Bass
 	
 rept 4
-	dbw	CallSection,.block0
+	db	CallSection
+	dw	.block0
 endr
 	db	SetLoopPoint
 rept 2
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 endr
-	dbw	CallSection,.block3
+	db	CallSection
+	dw	.block3
 rept 3
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 endr
 	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
 	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
@@ -607,21 +630,26 @@ Boss1_CH3:
 	db	SetInstrument,id_WaveTrill
 	db	EnablePWM,$f,7
 	rept	4
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	endr
 	
 	db	SetLoopPoint
 	db	SetInsAlternate,id_Boss1Wave,id_Boss1Echo
 rept 2
-	dbw	CallSection,.block2
+	db	CallSection
+	dw	.block2
 endr
 	db	SetInstrument,id_Boss1Wave
-	dbw	CallSection,.block4
+	db	CallSection
+	dw	.block4
 rept 3
-	dbw	CallSection,.block3
+	db	CallSection
+	dw	.block3
 endr
 rept 4
-	dbw	CallSection,.block5
+	db	CallSection
+	dw	.block5
 endr
 	
 	db	GotoLoopPoint
@@ -661,10 +689,12 @@ endr
 	
 Boss1_CH4:
 	rept	3
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	Drum	Kick,4
 	endr
-	dbw	CallSection,.block1
+	db	CallSection
+	dw	.block1
 	Drum	Snare,4
 	db	SetChannelPtr
 	dw	Battle1_CH4
