@@ -58,7 +58,6 @@ PlayIntro::
 	
 	ld a, $5B
 	ldh [hSCX], a
-	
 	ld a, 13 ; Speed
 	ld [wXPos], a
 	ld a, 60 ; Number of frames to stand still
@@ -66,8 +65,8 @@ PlayIntro::
 	
 	ld a, 1
 	ld [rVBK], a
-	ld hl, vTileMap0 + VRAM_ROW_SIZE * 3
-	ld c, VRAM_ROW_SIZE * 7
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 2
+	ld c, 0 ; VRAM_ROW_SIZE * 8
 	call FillVRAMLite
 	xor a
 	ld [rVBK], a
@@ -188,7 +187,102 @@ PlayIntro::
 	
 	
 DevSoftAnimation::
+	ld a, $4E
+	ldh [hSCX], a
+	ld a, 12 ; Speed
+	ld [wXPos], a
+	ld a, 60 ; Number of frames to stand still
+	ld [wXPos + 1], a
+	rst waitVBlank
 	
+	ld de, TitleScreenDevSoftPalette
+	ld c, 1
+	callacross LoadBGPalette_Hook
+	ld de, TitleScreenDevSoftPalette + 3
+	ld c, 1
+	callacross LoadOBJPalette_Hook
+	
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 4
+	ld c, SCREEN_WIDTH
+	xor a
+	call FillVRAMLite
+	ld hl, .tilemap
+	ld de, vTileMap0 + VRAM_ROW_SIZE * 5
+	ld b, 5
+	call TitleScreen.copyToScreen
+	
+	ld hl, DevSoftTiles
+	ld de, v0Tiles1
+	ld bc, BANK(DevSoftTiles) << 8 | $50
+	call TransferTilesAcross
+	
+	ld hl, hSpecialEffectsBuf + 1
+.animate
+	ld c, LOW(hSCX)
+	rst waitVBlank
+	ldh a, [hFrameCounter]
+	and 1
+	jr nz, .animate
+	ld a, [wXPos]
+	and a
+	jr nz, .move
+	ld a, [wXPos + 1] ; Decrement the wait counter
+	dec a
+	ld [wXPos + 1], a
+	cp 30
+	jr z, .printMessage
+	and a
+	jr nz, .animate
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 3
+	ld c, SCREEN_WIDTH
+	call FillVRAMLite ; Clear message
+	inc a ; If we finished waiting, set speed to non-zero
+	ld [wXPos], a
+	jr .animate
+	
+.printMessage
+	ld hl, .message
+	ld de, vTileMap0 + VRAM_ROW_SIZE * 3 + 2
+	call CopyStrToVRAM
+	jr .animate
+	
+.message
+	dstr "SOUND ENGINE BY"
+	
+.move
+	ld d, a
+	ld a, [wXPos + 1]
+	and a
+	ld a, d
+	jr nz, .moveLeft
+	inc a
+	cp $12
+	jr z, .done
+	inc a
+.moveLeft
+	dec a
+	ld [wXPos], a
+	ld a, [c]
+	sub d
+	ld [c], a
+	ld b, d
+	jr .animate
+	
+.tilemap
+	db   0,  0,$80,$81,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,$A7,$A8,$A9,$AA
+	db $82,$83,$84,$85,$86,$87,$88,$89,  0,$8A,$AB,$AC,$AD,$AE,$AF,$B0,$B1,$B2,$B3,$B4
+	db $8B,$8C,$8D,$8E,$8F,$90,$91,$92,$93,$94,$B5,$B6,$B7,$B8,$B9,$BA,$BB,$BC,$BD,$BE
+	db $95,$96,$97,$98,$99,$9A,$9B,$9C,$9D,$9E,$BF,$C0,$C1,$C2,$C3,$C4,$C5,$BC,$BD,$BE
+	db   0,$9F,$A0,$A1,$A2,$A3,$A4,  0,$A5,$A6,$C6,$C7,$C8,$C9,$CA,$CB,$CC,$CD,$CE,$CF
+	
+.done
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 4
+	ld c, VRAM_ROW_SIZE * 5
+	xor a
+	call FillVRAMLite
+	ld [wNumOfSprites], a
+	inc a
+	ld [wTransferSprites], a
 	
 	
 TitleScreen::

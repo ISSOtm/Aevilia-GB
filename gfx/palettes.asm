@@ -57,6 +57,11 @@ TitleScreenAeviDevPalette::
 	db $08, $17, $04
 	db $00, $10, $00
 	db $00, $00, $00
+TitleScreenDevSoftPalette::
+	db $0B, $10, $1B
+	db $05, $08, $15
+	db $04, $04, $04 ; Text
+	db $00, $00, $00
 TitleScreenLogoPalette0::
 	db $0B, $10, $1B
 	db $05, $09, $15
