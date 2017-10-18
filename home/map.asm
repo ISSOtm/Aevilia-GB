@@ -78,9 +78,11 @@ ENDC
 	
 	callacross Fadeout
 	
+	xor a
+	ldh [hThread2ID], a ; Avoid race conditions while loading the map
+	
 	; Clear OAM 'cause NPC code doesn't clear attribs, etc.
 	; Has to be done AFTER fadeout to avoid graphical errors
-	xor a
 	ld [wNumOfSprites], a
 	ld hl, wVirtualOAM
 	ld c, OAM_SIZE
