@@ -11,7 +11,6 @@ SongSpeedTable:
 	db	2,3	; battle 1
 	db	4,4	; menu
 	db	4,4	; overworld
-	db	2,2	; corruption
 	db	2,3	; boss 1
 	db	2,3	; scare chord
 	
@@ -20,7 +19,6 @@ SongPointerTable:
 	dw	PT_Battle1
 	dw	PT_Menu
 	dw	PT_Overworld
-	dw	PT_Corruption
 	dw	PT_Boss1
 	dw	PT_ScareChord
 
@@ -503,43 +501,6 @@ PT_Menu:		dw	Scale_CH1,DummyChannel,DummyChannel,DummyChannel
 
 PT_Overworld:	dw	Scale_CH1,DummyChannel,DummyChannel,DummyChannel
 
-; ================================================================
-
-PT_Corruption:	dw	Corruption_CH1,Corruption_CH2,Corruption_CH3,Corruption_CH4
-
-Corruption_CH1:
-	db	SetInstrument,69
-	db	SetLoopPoint
-	db	$1B,$04,$02,$0C,$0E,$25,$20,$27,$0F,$2B,$27,$0B,$09,$21,$00,$2A
-	db	$04,$02,$00,$20,$0F,$2F,$28,$04,$14,$10,$28,$2A,$23,$2D,$2A,$10
-	db	$23,$03,$0E,$0E,$02,$1D,$30,$18,$20,$1D,$09,$10,$1C,$0F,$17,$03
-	db	$15,$0B,$0D,$01,$11,$0E,$28,$11,$0D,$13,$0A,$13,$15,$2D,$0B,$1E
-	db	$2B,$04,$30,$26,$06,$30,$1A,$2E,$05,$26,$2F,$2C,$14,$19,$27,$00
-	db	GotoLoopPoint
-	
-Corruption_CH2:
-	db	SetInstrument,id_CorruptionFade
-	db	SetChannelPtr
-	dw	$4981
-	
-Corruption_CH3:
-	db	SetInstrument,id_CorruptionWave
-	db	SetLoopPoint
-	db	$08,$1B,$20,$0A,$04,$16,$2A,$12,$1B,$28,$1A,$14,$2B,$02,$26,$2B
-	db	$0D,$00,$1E,$13,$18,$2A,$05,$2E,$1E,$1B,$11,$15,$21,$2A,$06,$00
-	db	$11,$2A,$23,$22,$0F,$2B,$09,$1F,$30,$25,$20,$09,$1D,$0A,$25,$0B
-	db	$22,$25,$19,$2A,$00,$03,$21,$05,$22,$0B,$1A,$0B,$25,$28,$16,$00
-	db	GotoLoopPoint
-
-Corruption_CH4:
-	db	SetInstrument,$42
-	db	SetLoopPoint
-	db	$0A,$0A,$10,$01,$27,$04,$1D,$1F,$03,$0D,$21,$13,$14,$1D,$00,$2A
-	db	$26,$2D,$01,$10,$0D,$2B,$18,$2A,$0A,$30,$13,$12,$0B,$28,$09,$2F
-	db	$27,$28,$02,$22,$1B,$2B,$0F,$16,$13,$0E,$18,$17,$27,$10,$1E,$2C
-	db	$1A,$15,$0e,$17,$03,$08,$0F,$26,$18,$0B,$0B,$0A,$04,$27,$22,$0F
-	db	GotoLoopPoint
-	
 ; ================================================================
 
 PT_Boss1:	dw	Boss1_CH1,Boss1_CH2,Boss1_CH3,Boss1_CH4
