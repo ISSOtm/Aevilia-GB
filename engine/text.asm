@@ -568,7 +568,7 @@ PrintNameAndWaitForTextbox::
 	bit TEXT_PIC_FLAG, [hl]
 	
 	ld de, wTextboxName
-	ld c, 13 ; 16 characters at most
+	ld c, 12 ; 16 characters at most
 	jr nz, .picPresent
 	ld e, (wTextboxName - 4) & $FF
 	ld c, 16
@@ -862,12 +862,12 @@ PrintKnownPointer::
 .printLine
 	ld a, [wTextFlags]
 	bit TEXT_PIC_FLAG, a ; Check if pic is present
-	ld c, 15 ; When it is, only 15 chars can be printed
+	ld c, 14 ; When it is, only 15 chars can be printed
 	jr nz, .picIsPresent
 	ld a, e ; Place text on pic's space since it's free
 	sub (wTextboxLine0 - wTextboxPicRow1)
 	ld e, a
-	ld c, 15 + (wTextboxLine0 - wTextboxPicRow1) ; This gives additional characters
+	ld c, 14 + (wTextboxLine0 - wTextboxPicRow1) ; This gives additional characters
 .picIsPresent
 	; Copy string across banks (b preserved thus far :D)
 	push de
