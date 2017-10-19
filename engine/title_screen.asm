@@ -229,7 +229,7 @@ DevSoftAnimation::
 	ld a, [wXPos + 1] ; Decrement the wait counter
 	dec a
 	ld [wXPos + 1], a
-	cp 30
+	cp 45
 	jr z, .printMessage
 	and a
 	jr nz, .animate
@@ -285,6 +285,152 @@ DevSoftAnimation::
 	ld [wTransferSprites], a
 	
 	
+CopyrightAnimation::
+	ld bc, 10
+	call DelayBCFrames
+	
+	ld hl, rLCDC
+	set 2, [hl] ; Set 8x16 sprites
+	xor a
+	ldh [hSCX], a
+	
+	ld hl, CopyrightTiles
+	ld de, v0Tiles1
+	ld bc, BANK(CopyrightTiles) << 8 | $22
+	call TransferTilesAcross
+	
+	ld hl, CopyrightOAM0
+	ld de, wVirtualOAM
+	ld c, OAM_SPRITE_SIZE * 9
+	rst copy
+	ld a, 9
+	ld [wNumOfSprites], a
+	ld [wTransferSprites], a
+	
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 24 + 7
+	ld b, $94
+.writeAeviDevLine0
+	rst isVRAMOpen
+	jr nz, .writeAeviDevLine0
+	ld [hl], b
+	inc hl
+	inc b
+	inc b
+	ld a, b
+	cp $A2
+	jr nz, .writeAeviDevLine0
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 25 + 6
+	ld b, $93
+.writeAeviDevLine1
+	rst isVRAMOpen
+	jr nz, .writeAeviDevLine1
+	ld [hl], b
+	inc hl
+	inc b
+	inc b
+	ld a, b
+	cp $A1
+	jr nz, .writeAeviDevLine1
+	
+	ld a, $DE
+	ldh [hSCY], a
+	ld hl, wYPos + 1
+	ld a, 40
+	ld [hld], a
+	ld [hl], 12
+.animate0
+	rst waitVBlank
+.wait0
+	ld a, [rLY]
+	sub 88
+	jr nz, .wait0
+	ld [rSCY], a
+	ldh a, [hFrameCounter]
+	rrca
+	jr c, .animate0
+	
+	ldh a, [hSCY]
+	sub [hl]
+	ldh [hSCY], a
+	ld de, wVirtualOAM
+.scrollSprites0
+	ld a, [de]
+	sub [hl]
+	ld [de], a
+	ld a, e
+	add OAM_SPRITE_SIZE
+	ld e, a
+	cp LOW(wVirtualOAM + OAM_SPRITE_SIZE * 9)
+	jr nz, .scrollSprites0
+	ld [wTransferSprites], a
+	ld a, [hl]
+	and a
+	jr z, .waitAfterAnim0
+	dec [hl]
+	jr .animate0
+	
+.waitAfterAnim0
+	inc hl
+	dec [hl]
+	dec hl
+	jr nz, .animate0
+	
+	ld hl, CopyrightOAM1
+	ld de, wVirtualOAM
+	ld c, OAM_SPRITE_SIZE * 8
+	rst copy
+	ld a, 8
+	ld [wNumOfSprites], a
+	ld [wTransferSprites], a
+	ld hl, CopyrightTilemap
+	ld de, vTileMap0 + VRAM_ROW_SIZE * 24
+	ld b, 2
+	call TitleScreen.copyToScreen
+	
+	ld hl, wYPos
+	ld [hl], 0
+.animate1
+	rst waitVBlank
+.wait1
+	ld a, [rLY]
+	sub 88
+	jr nz, .wait1
+	ld [rSCY], a
+	ldh a, [hFrameCounter]
+	rrca
+	jr c, .animate1
+	
+	ldh a, [hSCY]
+	add [hl]
+	ldh [hSCY], a
+	ld de, wVirtualOAM
+.scrollSprites1
+	ld a, [de]
+	add [hl]
+	ld [de], a
+	ld a, e
+	add OAM_SPRITE_SIZE
+	ld e, a
+	cp LOW(wVirtualOAM + OAM_SPRITE_SIZE * 8)
+	jr nz, .scrollSprites1
+	ld [wTransferSprites], a
+	ld a, [hl]
+	cp 12
+	jr z, .done
+	inc [hl]
+	jr .animate1
+	
+.done
+	xor a
+	ldh [hSCY], a
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 24
+	ld c, VRAM_ROW_SIZE * 2
+	call FillVRAMLite
+	ld [wNumOfSprites], a
+	inc a
+	ld [wTransferSprites], a
+	
+	
 TitleScreen::
 	ld hl, TitleScreenTiles
 	ld de, v0Tiles0
@@ -313,9 +459,6 @@ TitleScreen::
 	inc c
 	dec b
 	jr nz, .loadOBJPalettes
-	
-	ld hl, rLCDC
-	set 2, [hl] ; Set 8x16 sprites
 	
 	ld hl, vTileMap0 + VRAM_ROW_SIZE
 	ld c, 0 ; VRAM_ROW_SIZE * 8
@@ -625,4 +768,31 @@ IntroCloudMap:: ; 1 line = 1/2 VRAM row
 	db $AA,$AB,$AC,$8A,$8A,$8A,$8A,$AD,$AE,$AF,$8A,$8A,$B0,$B1,$B2,$B3
 	db $8A,$B4,$8A,$AA,$AB,$AC,$8A,$8A,$8A,$8A,$AD,$AE,$AF,$8A,$8A,$8A
 	dbfill VRAM_ROW_SIZE, $8A
+	
+	
+CopyrightOAM0::
+	dspr $7E,  8, $80, $81
+	dspr $7E, 16, $82, $81
+	dspr $7E, 24, $84, $81
+	dspr $7E, 32, $86, $81
+	dspr $7E, 40, $88, $81
+	
+	dspr $7E,112, $8A, $81
+	dspr $7E,120, $8C, $81
+	dspr $7E,128, $8E, $81
+	dspr $7E,136, $90, $81
+	
+CopyrightTilemap::
+	db   0,$80,$82,$84,$86,$88,  0,  0,  0,  0,  0,  0,  0,  0,$8A,$8C,$8E,$90,  0,  0
+	db   0,$81,$83,$85,$87,$89,  0,  0,  0,  0,  0,  0,  0,  0,$8B,$8D,$8F,$91,  0,  0
+	
+CopyrightOAM1::
+	dspr  48, 48, $92, $81
+	dspr  48, 56, $94, $81
+	dspr  48, 64, $96, $81
+	dspr  48, 72, $98, $81
+	dspr  48, 80, $9A, $81
+	dspr  48, 88, $9C, $81
+	dspr  48, 96, $9E, $81
+	dspr  48,104, $A0, $81
 	
