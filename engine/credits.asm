@@ -262,6 +262,16 @@ PlayCredits::
 	; ld a, 8
 	; ld [wFadeSpeed], a
 	; callacross Fadeout
+	ld bc, 8 << 8 | LOW(rBGPI)
+	ld a, $80
+	ld [c], a
+	inc c
+	rst waitVBlank
+	ld a, $FF
+.blankOut
+	ld [c], a
+	dec b
+	jr nz, .blankOut
 	xor a
 	ldh [hSCY], a
 	ldh [hSCX], a
@@ -364,6 +374,7 @@ StaffCreditsStrs::
 	dstr "Torchickens"
 	dstr "GCL"
 	dstr "beware"
+	dstr "#gbdev"
 	dstr "GBDev Discord"
 	dstr "Nintendo"
 	db 0
