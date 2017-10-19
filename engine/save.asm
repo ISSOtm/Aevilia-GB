@@ -1546,14 +1546,18 @@ SaveBlocks::
 	wram0_block wTargetWarpID, 2
 	wram0_block wYPos, (wCameraXPos + 2 - wYPos)
 	hram_block hOverworldButtonFilter, 1
-	wramx_block wIntroMapStatus, 3
 	hram_block hRandInt, 2
-	wramx_block wNumOfNPCScripts, 3
+	wramx_block wWalkingInteractions, 0
+	wramx_block wWalkingLoadZones, 0
+	wramx_block wButtonInteractions, 0
+	wramx_block wButtonLoadZones, 0
+	wramx_block wWalkInterCount, 7
 	wramx_block wNPCArray, $90
 	wramx_block wNumOfNPCs, 1
 	
 flags_block: MACRO
-	wramx_block wFlags, 0 ; 256 bytes
+	dw (wFlags + 256 * \1) | (BANK(wFlags) << 13)
+	db 0 ; 256 bytes
 ENDM
 	enum_start
 REPT $10

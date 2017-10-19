@@ -8,14 +8,14 @@ DefaultSaveBank0::
 DefaultSaveMagicString0::
 	dstr "Aevilia"
 	
-DefaultSaveChecksums0::
+DefaultSaveChecksums0:
 	ds $F8
 	
-DefaultSaveWarp::
+DefaultSaveWarp:
 	db 0 ; wTargetWarpID
 	db 2 ; wLoadedMap
 	
-DefaultPlayerData::
+DefaultPlayerData:
 	dw $70 ; wYPos
 	dw $70 ; wXPos
 	db DIR_RIGHT ; wPlayerDir
@@ -27,24 +27,23 @@ DefaultPlayerData::
 	dw 0 ; wCameraYPos
 	dw 0 ; wCameraXPos
 	
-DefaultButtonFilter::
+DefaultButtonFilter:
 	db $FF ; hOverworldButtonFilter
 	
-DefaultMapStatuses::
-	db 0 ; wIntroMapStatus
-	db 0 ; wIntroMapDelayStep
-	db 0 ; wTestWarriorFlags
-	
-DefaultRNG::
+DefaultRNG:
 	dw 0 ; hRandInt
 	
-; Will be overridden by the map loading anyways
-DefaultNumOfNPCScripts::
+; These two will be overridden by the map loading anyways
+DefaultInteractions:
+	dbfill $400, 0
+	
+DefaultInteractionCounts:
+	dbfill 4, 0 ; wWalkInterCount - wBtnLoadZoneCount
 	db 0 ; wNumOfNPCScripts
 	dw 0 ; wNPCScriptsPointer
 	
 ; NPC 0 is never overridden, so we initialize it here
-DefaultNPCArray::
+DefaultNPCArray:
 	dw 0 ; wNPC0_ypos
 	dw 0 ; wNPC0_xpos
 	db 0 ; wNPC0_ybox
@@ -61,15 +60,11 @@ DefaultNPCArray::
 	
 ; wNPC1_ypos to wNPC8_xdispl
 REPT 8 ; 8 NPCs
-REPT $10 ; 1 NPC = $10 bytes
-	db 0
-ENDR
+	dbfill $10, 0 ; 1 NPC = $10 bytes
 ENDR
 
-DefaultFlags::
-REPT $1000
-	db 0
-ENDR
+DefaultFlags:
+	dbfill $1000, 0
 
 DefaultSaveBank0End:
 

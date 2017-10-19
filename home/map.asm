@@ -110,6 +110,29 @@ ENDC
 	inc hl
 	push bc
 	
+	ld a, [hli]
+	and a
+	jr z, .noInteractions
+	ld b, a
+	ld a, [wTargetWarpID] ; Warp $FF will already have the interactions loaded
+	inc a
+	jr nz, .loadInteractions
+.skipInteractions
+	ld a, INTERACTION_STRUCT_SIZE + 1
+	bit 7, [hl] ; Check if the interaction is tied to a flag
+	jr z, .skipInteraction
+	inc a ; If yes, skip it
+	inc a
+.skipInteraction
+	add a, l
+	ld l, a
+	adc a, h
+	sub l
+	ld h, a
+	dec b
+	jr nz, .skipInteractions
+	jr .noInteractions
+.loadInteractions
 	xor a
 	ld de, wWalkInterCount
 	ld c, 4
@@ -118,11 +141,6 @@ ENDC
 	inc de
 	dec c
 	jr nz, .clearInteractionsLoop
-	
-	ld a, [hli]
-	and a
-	jr z, .noInteractions
-	ld b, a
 .copyInteractions
 	ld e, [hl]
 	bit 7, e

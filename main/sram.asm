@@ -49,14 +49,29 @@ sFile1WarpID::
 sFile1MapID::
 	ds 1
 	
-sFile1OverworldData::
-	ds 13
+sFile1PlayerData::
+	ds 14
 	
 sFile1ButtonFilter::
 	ds 1
 	
-sFile1MapStatuses::
+sFile1RNG::
+	ds 2
+	
+sFile1Interactions::
+	ds $400
+	
+sFile1InteractionCounts::
+	ds 4
+	
+sFile1NPCScripts::
 	ds 3
+	
+sFile1NPCArray::
+	ds 9 * $10
+	
+sFile1Flags::
+	ds $1000
 	
 	
 SECTION "Save file 1 bank 1", SRAM,BANK[5]
