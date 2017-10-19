@@ -641,10 +641,9 @@ LoadTileset::
 	call Copy ; Copy block metadata
 	
 	ld a, [hli] ; Read number of tile animators
-	ld de, wNumOfTileAnims
-	ld [de], a
 	and $0F ; Cap that
 	jr z, .noAnimators
+	ld de, wNumOfTileAnims
 	ld b, a
 	ld c, b
 .copyAnimators ; This loop is a bit of an oddball : de points to the byte *just before* the target
@@ -674,6 +673,7 @@ LoadTileset::
 	dec c
 	jr nz, .copyAnimators
 	
+	ld c, b ; Re-copy the number of animators
 	; Now, copy all animation frames to WRAM bank 3
 	push hl
 	ld hl, wTileAnim0_framesPtr + 1
@@ -728,7 +728,9 @@ LoadTileset::
 	dec b
 	jr nz, .copyAnimationFrames
 	pop hl
+	ld a, c
 .noAnimators
+	ld [wNumOfTileAnims], a
 	
 	ld de, wOBJPalette6_color2
 	ld c, 14
