@@ -185,6 +185,7 @@ PlayIntro::
 	
 .aeviDevDone
 	
+; -------------------------------------------------------------
 	
 DevSoftAnimation::
 	ld a, $4E
@@ -211,11 +212,12 @@ DevSoftAnimation::
 	ld c, SCREEN_WIDTH
 	xor a
 	call FillVRAMLite
-	ld hl, .tilemap
+	ld hl, DevSoftTilemap
 	ld de, vTileMap0 + VRAM_ROW_SIZE * 5
 	ld b, 5
 	call TitleScreen.copyToScreen
 	
+.animateReloadHL
 	ld hl, hSpecialEffectsBuf + 1
 .animate
 	ld c, LOW(hSCX)
@@ -265,15 +267,23 @@ DevSoftAnimation::
 	ld a, [c]
 	sub d
 	ld [c], a
-	ld b, d
-	jr .animate
-	
-.tilemap
-	db   0,  0,$80,$81,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,$A7,$A8,$A9,$AA
-	db $82,$83,$84,$85,$86,$87,$88,$89,  0,$8A,$AB,$AC,$AD,$AE,$AF,$B0,$B1,$B2,$B3,$B4
-	db $8B,$8C,$8D,$8E,$8F,$90,$91,$92,$93,$94,$B5,$B6,$B7,$B8,$B9,$BA,$BB,$BC,$BD,$BE
-	db $95,$96,$97,$98,$99,$9A,$9B,$9C,$9D,$9E,$BF,$C0,$C1,$C2,$C3,$C4,$C5,$BC,$BD,$BE
-	db   0,$9F,$A0,$A1,$A2,$A3,$A4,  0,$A5,$A6,$C6,$C7,$C8,$C9,$CA,$CB,$CC,$CD,$CE,$CF
+	cp $A5
+	jr nz, .animate
+	ld hl, $98AF
+	ld b, 5
+.clearRightOfLogo
+	ld c, 5
+	xor a
+	call FillVRAMLite
+	ld a, l
+	add VRAM_ROW_SIZE - 5
+	ld l, a
+	jr nc, .noCarry
+	inc h
+.noCarry
+	dec b
+	jr nz, .clearRightOfLogo
+	jr .animateReloadHL
 	
 .done
 	ld hl, vTileMap0 + VRAM_ROW_SIZE * 5
@@ -284,6 +294,7 @@ DevSoftAnimation::
 	inc a
 	ld [wTransferSprites], a
 	
+; -----------------------------------------------------------------------
 	
 CopyrightAnimation::
 	ld bc, 10
@@ -430,6 +441,7 @@ CopyrightAnimation::
 	inc a
 	ld [wTransferSprites], a
 	
+; ----------------------------------------------------------------
 	
 TitleScreen::
 	ld hl, TitleScreenTiles
@@ -768,6 +780,13 @@ IntroCloudMap:: ; 1 line = 1/2 VRAM row
 	db $AA,$AB,$AC,$8A,$8A,$8A,$8A,$AD,$AE,$AF,$8A,$8A,$B0,$B1,$B2,$B3
 	db $8A,$B4,$8A,$AA,$AB,$AC,$8A,$8A,$8A,$8A,$AD,$AE,$AF,$8A,$8A,$8A
 	dbfill VRAM_ROW_SIZE, $8A
+	
+DevSoftTilemap::
+	db   0,  0,$80,$81,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,$A7,$A8,$A9,$AA
+	db $82,$83,$84,$85,$86,$87,$88,$89,  0,$8A,$AB,$AC,$AD,$AE,$AF,$B0,$B1,$B2,$B3,$B4
+	db $8B,$8C,$8D,$8E,$8F,$90,$91,$92,$93,$94,$B5,$B6,$B7,$B8,$B9,$BA,$BB,$BC,$BD,$BE
+	db $95,$96,$97,$98,$99,$9A,$9B,$9C,$9D,$9E,$BF,$C0,$C1,$C2,$C3,$C4,$C5,$BC,$BD,$BE
+	db   0,$9F,$A0,$A1,$A2,$A3,$A4,  0,$A5,$A6,$C6,$C7,$C8,$C9,$CA,$CB,$CC,$CD,$CE,$CF
 	
 	
 CopyrightOAM0::
