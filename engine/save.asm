@@ -863,9 +863,11 @@ VerifyChecksums::
 .checksumOneBlock
 	ld a, [hl]
 	add a, b
+	rrca ; Add in a little bit of asymmetry...
 	ld b, a
 	ld a, [hli]
 	xor c
+	rlca
 	ld c, a
 	ld a, l
 	and $3F
@@ -1472,9 +1474,11 @@ CalculateFileChecksums:
 .checksumOneBlock
 	ld a, [hl]
 	add a, b
+	rrca
 	ld b, a
 	ld a, [hli]
 	xor c
+	rlca
 	ld c, a
 	ld a, l
 	and $3F
