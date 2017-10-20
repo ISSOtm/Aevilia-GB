@@ -11,7 +11,7 @@ PlayerHouse2F::
 	dw NO_SCRIPT ; No loading script
 	
 PlayerHouse2FInteractions::
-	db 1
+	db 2
 	
 	db WALK_LOADZONE
 	interact_box $0008, $FFFE, 16, 16
@@ -19,6 +19,11 @@ PlayerHouse2FInteractions::
 	db 1
 	db MAP_PLAYER_HOUSE
 	ds 7
+	
+	db BTN_INTERACT
+	interact_box $0010, $0090, 32, 16
+	dw TestIntroCutscene
+	ds 8
 	
 PlayerHouse2FNPCs::
 	db 2
@@ -58,3 +63,10 @@ PlayerHouse2FWarpToPoints::
 	
 PlayerHouse2FBlocks::
 INCBIN "maps/playerhouse2f.blk"
+	
+	
+TestIntroCutscene::
+	text_asmcall IntroCutscene
+	disp_box
+	wait_user
+	done
