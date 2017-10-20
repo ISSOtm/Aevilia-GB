@@ -72,10 +72,11 @@ IntroCutscene::
 	ld a, 2
 	ld [rIE], a
 	halt ; Halt with disabled ints = will wait until an int occur but not exec it (+ a certain bug, but whatever.)
-	ld a, 8
+	ld a, 7
 .waitVBlankEnd
 	dec a
 	jr nz, .waitVBlankEnd
+	nop
 	
 	; Perform pit effect
 .lineEffect
