@@ -184,6 +184,8 @@ PlayIntro::
 	dspr 64,$D9,$AF, 1
 	
 .aeviDevDone
+	ld bc, 20
+	call DelayBCFrames
 	
 ; -------------------------------------------------------------
 	
@@ -502,8 +504,19 @@ TitleScreen::
 	cp $86
 	jr nz, .moveWindowUp
 	
-	ld bc, 60
+	ld bc, 30
 	call DelayBCFrames
+	
+	ld c, LOW(hSpecialEffectsBuf + 1)
+	ld b, 10
+.scrollClouds
+	rst waitVBlank
+	rst waitVBlank
+	ld a, [c]
+	inc a
+	ld [c], a
+	dec b
+	jr nz, .scrollClouds
 	
 	ld hl, .OAM
 	ld de, wVirtualOAM
