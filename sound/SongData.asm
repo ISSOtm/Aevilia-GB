@@ -138,8 +138,8 @@ s7	equ	$2d
 ; ($fe) otherwise the noise value will reset!
 
 arp_Kick:	db	$a0,$9a,$a5,$fe,2
-arp_Snare:	;db	s7+$9d,s7+$97,s7+$94,$a3,$fe,3	; currently broken
-			db	$9d,$97,$94,$a3,$fe,3			; temp until issues with above preset are fixed
+arp_Snare:	db	s7+$9d,s7+$97,s7+$94,$a3,$fe,3	; currently broken
+			;db	$9d,$97,$94,$a3,$fe,3			; temp until issues with above preset are fixed
 arp_Hat:	db	$a9,$ab,$fe,1
 arp_S7:	db	s7,$fe,0
 
