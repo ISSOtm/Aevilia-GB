@@ -1541,7 +1541,7 @@ wramx_block: MACRO
 ENDM
 
 hram_block: MACRO
-	dw $1000 | (\1 & $FF)
+	dw $1000 | LOW(\1)
 	db \2
 ENDM
 
@@ -1560,7 +1560,7 @@ SaveBlocks::
 	wramx_block wNumOfNPCs, 1
 	
 flags_block: MACRO
-	dw (wFlags + 256 * \1) | (BANK(wFlags) << 13)
+	dw (wFlags & $1FFF + 256 * \1) | (BANK(wFlags) << 13)
 	db 0 ; 256 bytes
 ENDM
 	enum_start
