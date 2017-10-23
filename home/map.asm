@@ -205,6 +205,8 @@ LoadNPCs:
 	jr nz, .loadNPCs
 	; Warp $FF overrides NPC loading
 	; The number of NPCs mustn't be reloaded either
+	and a ; If there are no NPCs, the rest of the data doesn't exist, so skip it
+	jp z, .noNPCs
 	ld b, a
 	add a, a ; *2
 	add a, a ; *4
