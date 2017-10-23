@@ -6,7 +6,7 @@ SECTION "Intro cutscene", ROMX
 IntroCutscene::
 	xor a
 	ld [wNumOfSprites], a
-	inc a
+;	inc a
 	ld [wTransferSprites], a
 	rst waitVBlank
 	di ; Disable interrupts, they get in the way
@@ -30,6 +30,12 @@ IntroCutscene::
 	ld c, SCREEN_WIDTH / 2
 	rst fill
 	
+	; Setup for HALT that syncs CPU with PPU
+	ld a, $20
+	ld [rSTAT], a ; Enable Mode 2 int only
+	ld a, 2
+	ld [rIE], a
+	
 .waitVBlank
 	; Wait for VBlank
 	ld a, [rLY]
@@ -37,6 +43,7 @@ IntroCutscene::
 	jr nz, .waitVBlank
 	
 .loop
+	; Avoid memory-intensive operations, otherwise the effect "hiccups"
 	callacross DevSound_Play
 	
 	; Increment frame counter
@@ -54,23 +61,19 @@ IntroCutscene::
 	and a
 	rra
 	jr nc, .canScroll
-	bit 0, c ; Scroll these every other frame
-	jr z, .dontScroll
+	bit 0, c ; Scroll these by half the speed
+	jr nz, .canScroll
+	dec a ; Done by alternating between this and the lower
 .canScroll
 	add [hl]
-	ld [hl], a
-.dontScroll
-	inc hl
+	ld [hli], a
 	dec b
 	jr nz, .moveScreen
 	
 	
-	ld a, $20
-	ld [rSTAT], a ; Enable Mode 2 int only
+	; Wait until first line
 	xor a
-	ld [rIF], a ; Clear IE
-	ld a, 2
-	ld [rIE], a
+	ld [rIF], a ; Clear IF
 	halt ; Halt with disabled ints = will wait until an int occur but not exec it (+ a certain bug, but whatever.)
 	ld a, 7
 .waitVBlankEnd
@@ -80,7 +83,7 @@ IntroCutscene::
 	
 	; Perform pit effect
 .lineEffect
-	ld hl, wLargerBuf
+	ld hl, wLargerBuf ; This adds some additional delay. Works fine.
 	ld c, LOW(rSCY)
 	; The beginning of Mode 3 must land around here
 REPT 9
@@ -105,9 +108,6 @@ ENDR
 .waitHBlankEnd
 	dec a
 	jr nz, .waitHBlankEnd
-REPT 0
-	nop
-ENDR
 	jr .lineEffect
 	
 .done
