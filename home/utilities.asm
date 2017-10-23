@@ -162,7 +162,7 @@ SwitchCPUSpeed:
 	ld a, [rIE] ; Save interrupts
 	ld b, a
 	xor a
-	ld [rIF], a ; Prevent any interrupt
+	ld [rIE], a ; Prevent any interrupt
 	stop ; GO!!
 	ld a, b
 	ld [rIE], a ; Restore ints
