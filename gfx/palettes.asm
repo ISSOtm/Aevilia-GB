@@ -138,6 +138,13 @@ CharSelectTomPalette1::
 	db $1E, $13, $10
 	
 	
+IntroMatrixPalette
+	db $00, $00, $00
+	db $00, $00, $00 ; Unused
+	db $00, $1F, $00
+	db $00, $00, $00 ; Unused
+	
+	
 IntroNPCPalette::
 ; Test NPC palette
 TestNPCPalette::

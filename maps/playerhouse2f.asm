@@ -67,6 +67,4 @@ INCBIN "maps/playerhouse2f.blk"
 	
 TestIntroCutscene::
 	text_asmcall IntroCutscene
-	disp_box
-	wait_user
 	done
