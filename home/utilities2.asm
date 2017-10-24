@@ -138,45 +138,42 @@ FillVRAM::
 ; I didn't implement the weird re-looping they did, though X)
 RandInt::
 	ldh a, [hRandIntLow]
-	ld l, a
+	ld c, a
 	cp $0A
 	ldh a, [hRandIntHigh]
 	jr nz, .dontChangeCycles
 	cp $56
 	jr nz, .dontChangeCycles
 	xor a
-	ld l, a
-.dontChangeCycles
-	ld h, a
-	xor l
 	ld c, a
+.dontChangeCycles
+	xor c
+	ld h, a
+	ld l, c
 	ld b, l
-	ld h, 0
+	ld c, h
 	add hl, hl
 	ld a, l
 	xor c
 	ld l, a
 	ld a, h
-	xor b
+	and $01 ; Remove pre-shift upper byte
+	xor b ; Resets carry
+	rra
 	cpl
-	scf
-	rra
-	ld b, a
-	ld a, l
-	rra
-	ld c, a
-	ld hl, $1FF4
-	jr nc, .useThatConstant
-	ld hl, $8180
-.useThatConstant
-	ld a, h
-	xor b
 	ld h, a
 	ld a, l
+	rra
+	ld bc, $1F74
+	jr nc, .useThatConstant
+	ld bc, $8100
+.useThatConstant
 	xor c
 	ld l, a
 	ldh [hRandIntLow], a
 	ld a, h
+	xor b
+	ld h, a
 	ldh [hRandIntHigh], a
 	ret
 	
