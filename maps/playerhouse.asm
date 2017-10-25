@@ -5,13 +5,14 @@ PlayerHouse::
 	
 	db MUSIC_SAFE_PLACE ; Music ID
 	
+	db 0 ; Tileset is fixed
 	db TILESET_INTERIOR
 	dw NO_SCRIPT ; No map script
 	map_size 10, 9
 	dw NO_SCRIPT ; No loading script
 	
 PlayerHouseInteractions::
-	db 3
+	db 4
 	
 	db WALK_LOADZONE
 	interact_box $0077, $003E, 10, $15
@@ -30,6 +31,12 @@ PlayerHouseInteractions::
 	db BTN_INTERACT
 	interact_box $0008, $0080, 16, 16
 	dw PlayerHouseTVScript
+	ds 8
+	
+	db WALK_INTERACT | FLAG_DEP
+	flag_dep FLAG_SET, FLAG_LOAD_CUTSCENE_NPCS
+	interact_box $0071, $003E, 16, 21
+	dw PlayerHouseDontLeaveScript
 	ds 8
 	
 PlayerHouseNPCs::
@@ -101,6 +108,11 @@ PlayerHouseSiblingTVScript::
 	print_line_id 1
 	print_line_id 2
 	wait_user
+	print_line_id 3
+	print_line_id 4
+	wait_user
+	print_line_id 5
+	wait_user
 	close_box
 	turn_npc 1, DIR_UP
 	done
@@ -143,5 +155,96 @@ PlayerHouseTVScript::
 	print_line_id 6
 	print_line_id 7
 	print_line_id 8
+	wait_user
+	close_box
+	delay 10
+	make_player_walk DIR_DOWN, $0005, 1
+	make_player_walk DIR_DOWN | ROTATE_45 | ROTATE_CW, 36, 1
+	delay 10
+	turn_player DIR_RIGHT
+	delay 40
+	turn_player DIR_LEFT
+	done
+	
+	
+	set_text_prefix PlayerHouseDontLeaveScript
+PlayerHouseDontLeaveScript::
+	make_player_walk DIR_DOWN, 3, 1
+	turn_npc 1, DIR_DOWN
+	delay 5
+	print_name
+	print_line_id 0
+	wait_user
+	turn_player DIR_UP
+	close_quick
+	make_npc_walk 1, DIR_LEFT, 56, 1
+	turn_npc 1, DIR_DOWN
+	print_name
+	print_line_id 1
+	text_lda_imm $48
+	text_sta wXPos
+	make_player_walk DIR_UP, 40, 1
+	print_line_id 2
+	print_line_id 3
+	print_line_id 4
+	wait_user
+	clear_box
+	print_line_id 5
+	print_line_id 6
+	wait_user
+.source1
+	choose OkayNoChoice, .branch1 - .source1
+	; Okay
+	clear_box
+	print_line_id 7
+	print_line_id 8
+	wait_user
+	clear_box
+	print_line_id 14
+	print_line_id 15
+	wait_user
+	print_line_id 19
+	print_line_id 20
+.source2
+	text_jr .branch2 - .source2
+	
+.branch1
+	; No
+	clear_box
+	print_line_id 9
+	delay 30
+	print_line_id 10
+	print_line_id 11
+	wait_user
+	print_line_id 12
+	print_line_id 13
+	wait_user
+	print_line_id 14
+	print_line_id 15
+	wait_user
+	clear_box
+	delay 30
+	print_line_id 16
+	print_line_id 17
+	delay 40
+	print_line_id 18
+	
+.branch2
+	wait_user
+	close_box
+	set_counter 16
+.branch3
+	make_npc_walk 1, DIR_DOWN, 1, 1
+.source3
+	djnz .branch3 - .source3
+	
+	text_lda_imm $FF
+	text_sta wNPC2_ypos + 1
+	text_sta wWalkingInter0_ypos + 1
+	text_reset_flag FLAG_SIBLING_WATCHING_TV
+	clear_box
+	disp_box
+	print_line_id 21
+	delay 60
 	wait_user
 	done

@@ -6,6 +6,7 @@ TestHouse::
 	
 	db MUSIC_SAFE_PLACE ; Music ID
 	
+	db 0
 	db TILESET_TEST_HOUSE
 	dw NO_SCRIPT ; No map script
 	map_size 9, 6

@@ -23,6 +23,7 @@ IntroMap::
 	
 	db MUSIC_NONE ; No music
 	
+	db 0
 	db TILESET_INTRO
 	dw IntroMapScript
 	map_size 15, 18
@@ -507,8 +508,8 @@ IntroCheckStartMenu::
 	ld a, 1
 	ldh [hIgnorePlayerActions], a
 	
-	ld [wTargetWarpID], a ; Go to the test map's warp #1
-	xor a
+	ld [wTargetWarpID], a ; Go to the player house's warp #1
+	ld a, MAP_PLAYER_HOUSE_2F
 	jp LoadMap
 	
 

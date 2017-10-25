@@ -5,7 +5,8 @@ PlayerHouse2F::
 	
 	db MUSIC_SAFE_PLACE ; Music ID
 	
-	db TILESET_INTERIOR
+	db 1 ; Tileset is dependent
+	dw PlayerHouse2FTilesetScript
 	dw NO_SCRIPT ; No map script
 	map_size 10, 9
 	dw NO_SCRIPT ; No loading script
@@ -50,7 +51,7 @@ PlayerHouse2FNPCs::
 	db 0 ; Number of NPC tile sets
 	
 PlayerHouse2FWarpToPoints::
-	db 1 ; Number of warp-to points
+	db 2 ; Number of warp-to points
 	
 	dw $0009
 	dw $000F
@@ -61,8 +62,25 @@ PlayerHouse2FWarpToPoints::
 	dw NO_SCRIPT
 	ds 6
 	
+	dw $0013
+	dw $0090
+	db DIR_DOWN
+	db NO_WALKING
+	db 0
+	db THREAD2_DISABLED
+	dw NO_SCRIPT
+	ds 6
+	
 PlayerHouse2FBlocks::
 INCBIN "maps/playerhouse2f.blk"
+	
+PlayerHouse2FTilesetScript::
+	ld de, FLAG_INTRO_CUTSCENE_PLAYED
+	call GetFlag
+	ld a, TILESET_INTRO
+	ret nc ; If the cutscene hasn't played yet, use the dimmed tileset instead
+	ld a, TILESET_INTERIOR
+	ret
 	
 	
 TestIntroCutscene::

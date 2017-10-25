@@ -6,6 +6,7 @@ StarthamMap::
 	
 	db MUSIC_OVERWORLD ; Music ID
 	
+	db 0 ; Tileset is fixed
 	db TILESET_TEST ; Tileset
 	dw NO_SCRIPT ; Script (none)
 	map_size 29, 18 ; Width, height
@@ -338,7 +339,6 @@ StarthamMeetSiblingCutscene::
 	clear_box
 	print_line_id 6
 	print_line_id 7
-	print_line_id 8
 	wait_user
 	close_box
 	delay 20
@@ -379,11 +379,12 @@ StarthamMeetSiblingCutscene::
 	delay 10
 	clear_box
 	print_name
+	print_line_id 8
 	print_line_id 9
-	print_line_id 10
 	make_player_walk DIR_UP, 20, 1
 	turn_player DIR_RIGHT
 	wait_user
+	print_line_id 10
 	print_line_id 11
 	print_line_id 12
 	wait_user
@@ -395,10 +396,21 @@ StarthamMeetSiblingCutscene::
 	wait_user
 	print_line_id 15
 	print_line_id 16
+	wait_user
+	clear_box
+	delay 60
 	print_line_id 17
+	delay 30
+	print_line_id 18
+	wait_user
+	print_line_id 19
+	print_line_id 20
 	wait_user
 	close_box
-	
+	delay 10
+	make_npc_walk 1, DIR_UP | ROTATE_45 | ROTATE_CW, 21, 1
+	make_npc_walk 1, DIR_RIGHT, 35, 1
+	turn_npc 1, DIR_UP
 	text_set_flag FLAG_SIBLING_WATCHING_TV
 	text_set_flag FLAG_STARTHAM_SIBLING_ENTERED
 	done

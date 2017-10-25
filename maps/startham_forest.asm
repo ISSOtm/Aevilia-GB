@@ -5,6 +5,7 @@ TestForestMap::
 	
 	db MUSIC_OVERWORLD ; Music ID
 	
+	db 0
 	db TILESET_TEST
 	dw NO_SCRIPT ; Script (none)
 	map_size 30, 18 ; Width, height

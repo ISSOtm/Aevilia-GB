@@ -94,10 +94,23 @@ ENDC
 	inc hl
 	
 	; Tileset
-	ld a, [wLoadedTileset]
-	ld c, a
+	ld a, [hli] ; Check if tileset is fixed
+	and a
+	jr z, .fixedTileset
+	ld a, [hli] ; If the tileset is dependent, call a function to determine the tileset to use
+	push hl
+	ld h, [hl]
+	ld l, a
+	rst callHL ; This function must return the ID in a (all registers can be destroyed)
+	pop hl
+	inc hl
+	db $0E ; ld c, $22, and c is about to be overwritten
+.fixedTileset
 	ld a, [hli]
+	ld c, a
+	ld a, [wLoadedTileset] ; Lets "movable" tilesets modify c
 	cp c
+	ld a, c ; ...at the cost of one instruction.
 	call nz, LoadTileset
 	
 	ld de, wMapScriptPtr ; Copy this data

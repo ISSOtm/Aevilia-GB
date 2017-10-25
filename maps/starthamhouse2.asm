@@ -5,6 +5,7 @@ StarthamHouse2::
 	
 	db MUSIC_SAFE_PLACE ; Music ID
 	
+	db 0
 	db TILESET_INTERIOR
 	dw NO_SCRIPT ; No map script
 	map_size 10, 10
