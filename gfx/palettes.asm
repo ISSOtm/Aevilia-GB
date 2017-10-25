@@ -264,3 +264,29 @@ InteriorChairPalette::
 	db $1F, $10, $1C
 	db $00, $00, $00
 	
+; Interior tileset palettes (darkened)
+	
+InteriorMainDarkPalette::
+	db $0E, $0E, $0D
+	db $0A, $03, $00
+	db $05, $00, $00
+	db $00, $00, $00
+	
+InteriorWallDarkPalette::
+	db $13, $13, $13
+	db $09, $0F, $13
+	db $02, $0B, $10
+	db $00, $00, $00
+	
+InteriorGreenDarkPalette::
+	db $0E, $0E, $0D
+	db $06, $0C, $00
+	db $00, $04, $00
+	db $00, $00, $00
+	
+InteriorChairDarkPalette::
+	db $0E, $0E, $0D
+	db $16, $0F, $09
+	db $13, $04, $10
+	db $00, $00, $00
+	

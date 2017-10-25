@@ -34,12 +34,14 @@ TilesetROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(TestInteriorTileset)
 	db BANK(IntroTileset)
 	db BANK(InteriorTileset)
+	db BANK(InteriorTilesetDark)
 	
 TilesetPointers::
 	dw OverworldTileset
 	dw TestInteriorTileset
 	dw IntroTileset
 	dw InteriorTileset
+	dw InteriorTilesetDark
 
 
 ; ** Map header structure : **
