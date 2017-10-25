@@ -560,6 +560,9 @@ DrawFileSelect::
 	and a
 	jr z, SelectFile
 	ld [hl], 0 ; Tell the game it's not the first time anymore
+	ldh a, [hHeldButtons] ; Skip the message if Select and B are held
+	cp DPAD_UP | BUTTON_B | BUTTON_A
+	jr z, SelectFile
 	ld c, BANK(CompatExplanationText)
 	ld de, CompatExplanationText
 	callacross ProcessText_Hook
