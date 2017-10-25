@@ -290,13 +290,13 @@ LoadPalette_Common:
 	jr nz, .copy
 	pop af
 	ld [rSVBK], a
-	pop hl
 	
 	; Check if palette should be committed to the screen
 	ldh a, [hGFXFlags]
 	bit 6, a
-	ret nz
+	jr nz, .popOffAndQuit
 	
+	pop hl
 	ld b, 3
 	bit 1, c
 	jr nz, .writeByte
@@ -311,6 +311,10 @@ LoadPalette_Common:
 	pop bc
 	dec b
 	jr nz, .writeByte
+	ret
+	
+.popOffAndQuit ; For side effect compatibility
+	add sp, 2 ; Remove original pointer from the stack
 	ret
 	
 	
