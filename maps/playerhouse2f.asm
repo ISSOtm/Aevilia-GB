@@ -21,8 +21,8 @@ PlayerHouse2FInteractions::
 	db MAP_PLAYER_HOUSE
 	ds 7
 	
-	db BTN_INTERACT
-	interact_box $0010, $0090, 32, 16
+	db WALK_INTERACT
+	interact_box $0013, $0090, 1, 1
 	dw TestIntroCutscene
 	ds 8
 	
@@ -77,12 +77,21 @@ INCBIN "maps/playerhouse2f.blk"
 PlayerHouse2FTilesetScript::
 	ld de, FLAG_INTRO_CUTSCENE_PLAYED
 	call GetFlag
-	ld a, TILESET_INTRO
+	ld a, TILESET_INTERIOR_DARK
 	ret nc ; If the cutscene hasn't played yet, use the dimmed tileset instead
 	ld a, TILESET_INTERIOR
 	ret
 	
 	
 TestIntroCutscene::
+	delay 60
 	text_asmcall IntroCutscene
+	make_player_walk DIR_LEFT, 14, 1
+	delay 60
+	text_asmcall .lightUp
 	done
+	
+.lightUp
+	ld a, TILESET_INTERIOR
+	call LoadTileset
+	jpacross ReloadPalettes
