@@ -2,12 +2,25 @@
 SECTION "Intro cutscene", ROMX,ALIGN[8] ; So IntroCutscenePitSpeeds is 256-byte aligned
 	
 IntroCutscenePitSpeeds::
-	db $10, $0F, $0D, $0B, $08, $09, $06, $07, $04, $05
+	db 8 << 2
+	db 7 << 2 | 2
+	db 6 << 2 | 3
+	db 5 << 2 | 3
+	db 3 << 2
+	db 3 << 2 | 1
+	db 3 << 2 | 3
+	db 2 << 2
+	db 2 << 2 | 1
+	db 2 << 2 | 2
 	
 	
 ; So badass it requires its own ASM func.
 ; Hell yeah.
 IntroCutscene::
+	
+	
+; Uses the Demotronic trick to make the player "fall" into a Matrix-like pit
+PitEffect:
 	xor a
 	ld [wNumOfSprites], a
 	inc a
@@ -73,11 +86,21 @@ IntroCutscene::
 	inc de
 	and a
 	rra
-	jr nc, .canScroll
+	jr nc, .noQuarterScroll
+	bit 0, c
+	jr nz, .noQuarterScroll
+	bit 1, c
+	jr nz, .noQuarterScroll
+	dec a
+	dec a
+.noQuarterScroll
+	and a
+	rra
+	jr nc, .noHalfScroll
 	bit 0, c ; Scroll these by half the speed
-	jr nz, .canScroll
+	jr nz, .noHalfScroll
 	dec a ; Done by alternating between this and the lower
-.canScroll
+.noHalfScroll
 	add [hl]
 	ld [hli], a
 	dec b
