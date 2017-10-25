@@ -21,7 +21,8 @@ PlayerHouse2FInteractions::
 	db MAP_PLAYER_HOUSE
 	ds 7
 	
-	db WALK_INTERACT
+	db WALK_INTERACT | FLAG_DEP
+	flag_dep FLAG_RESET, FLAG_INTRO_CUTSCENE_PLAYED
 	interact_box $0013, $0090, 1, 1
 	dw TestIntroCutscene
 	ds 8
@@ -84,11 +85,63 @@ PlayerHouse2FTilesetScript::
 	
 	
 TestIntroCutscene::
-	delay 60
+	set_counter 6
+	text_lda_imm 0
+.sleepingLoop
+	delay 50
+	text_xor $FF
+	text_sta wNPC0_steps
+	text_asmcall ProcessNPCs
+.sleepingSource
+	djnz .sleepingLoop - .sleepingSource
+	
+	set_fade_speed 3
+	gfx_fadeout
 	text_asmcall IntroCutscene
-	make_player_walk DIR_LEFT, 14, 1
+	text_asmcall RedrawMap
+	delay 30
+	; Make player wake up
 	delay 60
+	turn_player DIR_LEFT
+	delay 20
+	turn_player DIR_RIGHT
+	delay 20
+	turn_player DIR_LEFT
+	delay 120
+	; Make player leave bed
+	make_player_walk DIR_LEFT, 14, 1
+	
+	delay 60
+	; Play "Click!" SFX
+	make_player_walk DIR_UP, 11, 1
+	delay 20
 	text_asmcall .lightUp
+	delay 50
+	turn_player DIR_DOWN
+	delay 20
+	make_player_walk DIR_DOWN | ROTATE_45 | ROTATE_CW, 16, 1
+	make_player_walk DIR_LEFT, 34, 1
+	delay 10
+	turn_player DIR_UP
+	delay 20
+	set_fade_speed $81
+	gfx_fadeout
+	text_lda hGFXFlags ; Don't commit the player palettes while the screen is black
+	text_or $40
+	text_sta hGFXFlags
+	text_asmcall LoadPlayerGraphics
+	text_and $BF
+	text_sta hGFXFlags ; Commit palettes on loading
+	text_lda_imm DIR_DOWN
+	text_sta wPlayerDir
+	gfx_fadein
+	delay 30
+	make_player_walk DIR_DOWN, 19, 1
+	delay 10
+	turn_player DIR_LEFT
+	
+	text_set_flag FLAG_INTRO_CUTSCENE_PLAYED
+	set_fade_speed 0
 	done
 	
 .lightUp
