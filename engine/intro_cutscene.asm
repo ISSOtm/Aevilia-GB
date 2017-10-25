@@ -224,9 +224,6 @@ ENDR
 	ld [rIE], a
 	ei ; Re-enable interrupts
 	
-	call ProcessNPCs
 	call RedrawMap
-	
-	ld a, $81
-	ld [wFadeSpeed], a
-	jp Fadein
+	call ReloadPalettes
+	jp ProcessNPCs
