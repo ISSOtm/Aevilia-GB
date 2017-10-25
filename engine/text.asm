@@ -1806,7 +1806,7 @@ SetFadeSpeed::
 Fadein_TextWrapper::
 	callacross Fadein ; Returns with a = 0
 	
-	inc a
+	ld a, 1
 	ret
 	
 Fadeout_TextWrapper::
