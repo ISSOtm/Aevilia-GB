@@ -291,6 +291,12 @@ LoadPalette_Common:
 	pop af
 	ld [rSVBK], a
 	pop hl
+	
+	; Check if palette should be committed to the screen
+	ldh a, [hGFXFlags]
+	bit 6, a
+	ret nz
+	
 	ld b, 3
 	bit 1, c
 	jr nz, .writeByte

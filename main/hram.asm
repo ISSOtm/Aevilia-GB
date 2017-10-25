@@ -12,6 +12,8 @@ hCurROMBank::
 	
 ; Flags for graphics
 ; If bit 7 is non-zero, will trigger the compensation for GBA screens
+; If bit 6 is non-zero, palettes will not be committed to the screen when loaded via LoadBG/OBJPalette
+;  (use ReloadPalettes after)
 hGFXFlags::
 	ds 1
 	
