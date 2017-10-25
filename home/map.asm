@@ -108,7 +108,7 @@ ENDC
 .fixedTileset
 	ld a, [hli]
 	ld c, a
-	ld a, [wLoadedTileset] ; Lets "movable" tilesets modify c
+	ld a, [wLoadedTileset] ; Lets "movable" tilesets modify c...
 	cp c
 	ld a, c ; ...at the cost of one instruction.
 	call nz, LoadTileset

@@ -504,10 +504,11 @@ IntroCheckStartMenu::
 .playerTooSmart
 	ld a, $F9
 	ldh [hOverworldButtonFilter], a
-	pop bc ; Remove the return address, otherwise LoadMap will return with the wrong ROM bank. Also, switching RAM banks back is done by LoadMap anyways
-	ld a, 1
-	ldh [hIgnorePlayerActions], a
+	pop bc ; Remove the return address, since LoadMap will return with the wrong ROM bank. Also, switching RAM banks back is done by LoadMap anyways
 	
+	ld a, 1
+	ldh [hIgnorePlayerActions], a ; Prevent the player from moving so the cutscene has time to trigger
+	; ld a, 1
 	ld [wTargetWarpID], a ; Go to the player house's warp #1
 	ld a, MAP_PLAYER_HOUSE_2F
 	jp LoadMap
