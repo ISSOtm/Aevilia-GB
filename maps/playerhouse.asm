@@ -188,46 +188,48 @@ PlayerHouseDontLeaveScript::
 	print_line_id 3
 	print_line_id 4
 	wait_user
-	clear_box
 	print_line_id 5
+	wait_user
+	clear_box
 	print_line_id 6
+	print_line_id 7
 	wait_user
 .source1
 	choose OkayNoChoice, .branch1 - .source1
 	; Okay
 	clear_box
-	print_line_id 7
 	print_line_id 8
+	print_line_id 9
 	wait_user
 	clear_box
-	print_line_id 14
 	print_line_id 15
+	print_line_id 16
 	wait_user
-	print_line_id 19
 	print_line_id 20
+	print_line_id 21
 .source2
 	text_jr .branch2 - .source2
 	
 .branch1
 	; No
 	clear_box
-	print_line_id 9
-	delay 30
 	print_line_id 10
+	delay 30
 	print_line_id 11
-	wait_user
 	print_line_id 12
-	print_line_id 13
 	wait_user
+	print_line_id 13
 	print_line_id 14
+	wait_user
 	print_line_id 15
+	print_line_id 16
 	wait_user
 	clear_box
 	delay 30
-	print_line_id 16
 	print_line_id 17
-	delay 40
 	print_line_id 18
+	delay 40
+	print_line_id 19
 	
 .branch2
 	wait_user
@@ -244,7 +246,8 @@ PlayerHouseDontLeaveScript::
 	text_reset_flag FLAG_SIBLING_WATCHING_TV
 	clear_box
 	disp_box
-	print_line_id 21
+	print_line_id 22
 	delay 60
+	text_asmcall ProcessNPCs
 	wait_user
 	done

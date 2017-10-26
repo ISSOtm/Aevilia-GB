@@ -85,6 +85,8 @@ SECTION "Startham text strings", ROMX
 	dline 16, "you a visit soon."
 	dline 17, "..."
 	dline 18, "Ok."
-	dline 19, "I'm gonna watch"
-	dline 20, "TV."
+	dline 19, "I understand I'm"
+	dline 20, "bothering you."
+	dline 21, "I'll watch TV and"
+	dline 22, "leave you alone."
 	

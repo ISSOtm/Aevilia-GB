@@ -406,6 +406,9 @@ StarthamMeetSiblingCutscene::
 	print_line_id 19
 	print_line_id 20
 	wait_user
+	print_line_id 21
+	print_line_id 22
+	wait_user
 	close_box
 	delay 10
 	make_npc_walk 1, DIR_UP | ROTATE_45 | ROTATE_CW, 21, 1

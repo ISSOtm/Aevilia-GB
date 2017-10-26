@@ -31,31 +31,32 @@ SECTION "Player house text strings", ROMX
 	dname 1
 	dline 0, "Wait!"
 	dline 1, "Um\, ",2,"..."
-	dline 2, "I know I didn't"
-	dline 3, "tell you before"
-	dline 4, "coming\, but..."
-	dline 5, "Can I spend some"
-	dline 6, "time with you?"
+	dline 2, "I know I was"
+	dline 3, "rude not to tell"
+	dline 4, "you before coming\,"
+	dline 5, "but..."
+	dline 6, "Can I spend some"
+	dline 7, "time with you?"
 	
-	dline 7, "Really? Oh\, ",2,"\,"
-	dline 8, "you're the best!"
+	dline 8, "Really? Oh\, ",2,"\,"
+	dline 9, "you're the best!"
 	; 14
 	; 15
-	dline 19, "I really missed"
-	dline 20, "seeing you\, ",2,"."
+	dline 20, "I really missed"
+	dline 21, "seeing you\, ",2,"."
 	
-	dline 9, "..."
-	dline 10, "Look\, ",2,"\, I know"
-	dline 11, "that was rude\, but"
-	dline 12, "would you really"
-	dline 13, "turn me away?"
-	dline 14, "It's been almost a"
-	dline 15, "year\, now."
-	dline 16, "It's alright\,"
-	dline 17, "then?"
-	dline 18, "Thank you."
+	dline 10, "..."
+	dline 11, "Look\, ",2,"\, I know"
+	dline 12, "that was rude\, but"
+	dline 13, "would you really"
+	dline 14, "turn me away?"
+	dline 15, "It's been almost a"
+	dline 16, "year\, now."
+	dline 17, "It's alright\,"
+	dline 18, "then?"
+	dline 19, "Thank you."
 	
-	dline 21, 1," joined you!"
+	dline 22, 1," joined you!"
 	
 	
 OkayNoChoice::
