@@ -543,6 +543,8 @@ STATHandler::
 	ld a, [$FF00+c]
 	inc a
 	jr nz, .waitTransferDone
+	; xor a
+	ldh [hHDMAInUse], a
 	jr .doneAnimating
 	
 .useStandardCopy
@@ -584,7 +586,7 @@ STATHandler::
 	add a, wTileAnim1_frameCount - wTileAnim0_frameCount
 	ld l, a ; Can't overflow
 	dec b
-	jr nz, .runAnimator
+	jp nz, .runAnimator
 	pop af
 	ld [rVBK], a ; Restore VRAM bank
 	pop bc
