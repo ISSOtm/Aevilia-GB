@@ -28,6 +28,7 @@ PitEffect:
 	rst waitVBlank
 	di ; Disable interrupts, they get in the way
 	call SpeedUpCPU ; The vertical rastersplits require Full CPU Power(tm)
+	; Note that switching speeds causes a part of the display to be drawn blank, but this is done on a blank screen
 	
 	ld de, IntroMatrixPalette
 	ld c, 0
@@ -217,6 +218,12 @@ ENDR
 	dec b
 	jr nz, .blackOut
 	
+	; Slowing down causes a part of the screen to be white
+	; This is avoided by having that happen during VBlank
+.waitVBlankBeforeSlowdown
+	ld a, [rLY]
+	cp $90
+	jr nz, .waitVBlankBeforeSlowdown
 	call SlowDownCPU
 	xor a ; Clear interrupts...
 	ld [rIF], a
@@ -224,6 +231,6 @@ ENDR
 	ld [rIE], a
 	ei ; Re-enable interrupts
 	
-	call RedrawMap
-	call ReloadPalettes
-	jp ProcessNPCs
+	call RedrawMap ; Re-draw the map that was overwritten
+	callacross ReloadPalettes ; Reload palettes that we blacked out
+	jp ProcessNPCs ; And finally, display NPCs again.
