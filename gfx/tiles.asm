@@ -802,6 +802,41 @@ OverworldTilesetTiles2::
 	dw $3FEF, $3FEF, $3FEF, $3FEF, $3FEF, $3FEF, $BFFF, $607F
 	
 	
+SECTION "Generic NPC tiles (boy, A)", ROMX,ALIGN[4]
+
+GenericBoyATiles::
+	dw $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $3F3F, $3F3F
+	dw $3F3F, $191F, $263D, $2D3A, $1B1C, $0F0E, $0D0B, $0606
+	dw $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $FCFC, $FCFC
+	dw $FCFC, $98F8, $64BC, $B45C, $D838, $F070, $B0D0, $6060
+	
+	dw $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $393F, $2A3F
+	dw $223F, $181F, $273F, $2E35, $1F18, $0F0E, $0D0B, $0606
+	dw $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $9CFC, $54FC
+	dw $44FC, $18F8, $E4FC, $74AC, $F818, $F070, $B0D0, $6060
+	
+	dw $0303, $0F0F, $1F1F, $3F3F, $3F3F, $131F, $151F, $141F
+	dw $101F, $080F, $0707, $0704, $0605, $0203, $0704, $0303
+	dw $C0C0, $F0F0, $F8F8, $FCFC, $FCFC, $FCFC, $FCFC, $F8F8
+	dw $38F8, $30F0, $E0E0, $90F0, $D070, $20E0, $E020, $E0E0
+	
+GenericBoyAWalkingTiles::
+	dw $0000, $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $3F3F
+	dw $3F3F, $3F3F, $1A1F, $171C, $0F0A, $0B0C, $0D0B, $0606
+	dw $0000, $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $FCFC
+	dw $FCFC, $FCFC, $78F8, $E818, $C878, $B070, $C0C0, $0000
+	
+	dw $0000, $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $393F
+	dw $2A3F, $223F, $181F, $171F, $1E19, $1F1E, $0D0B, $0606
+	dw $0000, $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $FCFC
+	dw $54FC, $44FC, $38F8, $C8F8, $68D8, $F070, $8080, $0000
+	
+	dw $0000, $0303, $0F0F, $1F1F, $3F3F, $3F3F, $131F, $151F
+	dw $141F, $101F, $080F, $0707, $1D1F, $342F, $1F13, $0C0C
+	dw $0000, $C0C0, $F0F0, $F8F8, $FCFC, $FCFC, $FCFC, $FCFC
+	dw $F8F8, $38F8, $30F0, $E0E0, $F838, $E8B8, $F8C8, $3030
+	
+	
 SECTION "Test interior tileset tiles", ROMX,ALIGN[4]
 	
 TestInteriorTilesetTiles::
@@ -1130,6 +1165,12 @@ InteriorTilesetTiles::
 	dw $FA0B, $FA0B, $FA0B, $FA0B, $FAFA, $0AFA, $0AFA, $04F4
 	dw $0F08, $0F08, $0F08, $0F08, $0FFF, $0AFA, $0AFA, $04F4
 	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $07F7, $0FF8
+	
+	
+SECTION "", ROMX,ALIGN[4]
+	
+InteriorBlanketCoverTiles::
+	dw $
 	
 
 	
