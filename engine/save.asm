@@ -1,7 +1,11 @@
 
 HIGHLIGHT_LENGTH equ 14
 	
-SECTION "File select", ROMX
+SECTION "File select", ROMX,ALIGN[4]
+	
+FileSelectHeights::
+	db $7C, $7C, $7D, $7E, $7F, $80, $81, $82
+	db $82, $82, $82, $81, $80, $7F, $7E, $7D
 
 FileSelectHighlight::
 	ld b, 3
@@ -945,10 +949,6 @@ ConsoleTypes::
 .gba
 	dstr "CONSOLE:"
 	dstr "GBA"
-	
-FileSelectHeights::
-	db $7C, $7C, $7D, $7E, $7F, $80, $81, $82
-	db $82, $82, $82, $81, $80, $7F, $7E, $7D
 	
 ; DO NOT CHANGE THE LENGTH OF THIS STRING
 ; Also make sure it matches `DefaultSaveMagicString0/1`
