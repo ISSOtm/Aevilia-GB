@@ -316,7 +316,7 @@ TransferTilesAcross::
 	jr nz, .waitHBlank
 .waitNotHBlank
 	rst isVRAMOpen
-	jr z, .waitHBlank
+	jr z, .waitNotHBlank
 	ld a, b
 	or $80
 	ld [c], a ; Start HDMA
