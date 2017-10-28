@@ -1100,8 +1100,8 @@ InteriorTilesetTiles::
 	dw $40CF, $40CF, $404F, $70FF, $28F8, $30BC, $34FC, $64FC
 	
 	; $A3-A4 : Wall picture
-	dw $00FF, $7FFF, $40C0, $48D7, $4CD3, $5EC1, $5FC0, $5FC0
-	dw $5FC0, $5FC0, $5FC0, $5FC0, $40C0, $7FFF, $00FF, $00FF
+	dw $FFFF, $7FFF, $40C0, $C857, $CC53, $5EC1, $5FC0, $DF40
+	dw $5FC0, $5FC0, $5FC0, $DFC0, $40C0, $FF7F, $FF00, $FF00
 	
 	; $A5-A8 : Chair
 	dw $202F, $505F, $505F, $505F, $50D0, $50D0, $5FDF, $5FD0
@@ -1167,12 +1167,10 @@ InteriorTilesetTiles::
 	dw $000F, $000F, $000F, $000F, $00F0, $00F0, $07F7, $0FF8
 	
 	
-SECTION "", ROMX,ALIGN[4]
+SECTION "Intro blanket tiles (cover)", ROMX,ALIGN[4]
 	
-InteriorBlanketCoverTiles::
-	dw $
-	
-
+InteriorBlanketCoverTile::
+	dw $0F0F, $3F30, $605F, $9FEF, $F0BF, $C0FF, $81FE, $83FC
 	
 	
 SECTION "Strings and text", ROMX,BANK[1]

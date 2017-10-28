@@ -436,7 +436,7 @@ ENDR
 	dw 0
 	
 	dw InteriorMainDarkPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
-	dw 0
+	dw InteriorWallDarkPalette + 3
 	dw 0
 	dw 0
 	dw 0

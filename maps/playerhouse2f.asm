@@ -23,7 +23,7 @@ PlayerHouse2FInteractions::
 	
 	db WALK_INTERACT | FLAG_DEP
 	flag_dep FLAG_RESET, FLAG_INTRO_CUTSCENE_PLAYED
-	interact_box $0013, $0090, 1, 1
+	interact_box $0010, $0090, 1, 1
 	dw TestIntroCutscene
 	ds 8
 	
@@ -49,7 +49,8 @@ PlayerHouse2FNPCs::
 	db 0 ; Number of NPC scripts
 	dw 0 ; Obligatory no matter the above value
 	
-	db 0 ; Number of NPC tile sets
+	db 1 ; Number of NPC tile sets
+	full_ptr InteriorBlanketCoverTiles
 	
 PlayerHouse2FWarpToPoints::
 	db 2 ; Number of warp-to points
@@ -63,13 +64,13 @@ PlayerHouse2FWarpToPoints::
 	dw NO_SCRIPT
 	ds 6
 	
-	dw $0013
+	dw $0010
 	dw $0090
 	db DIR_DOWN
 	db NO_WALKING
 	db 0
 	db THREAD2_DISABLED
-	dw NO_SCRIPT
+	dw PlayerHouse2FLoadBlanket
 	ds 6
 	
 PlayerHouse2FBlocks::
@@ -82,6 +83,17 @@ PlayerHouse2FTilesetScript::
 	ret nc ; If the cutscene hasn't played yet, use the dimmed tileset instead
 	ld a, TILESET_INTERIOR
 	ret
+	
+PlayerHouse2FLoadBlanket::
+	ld hl, .oam
+	ld de, wVirtualOAM
+	ld c, OAM_SPRITE_SIZE * 2
+	rst copy
+	ret
+	
+.oam
+	dspr $1A, $90, $0C, $02
+	dspr $1A, $98, $0C, $22
 	
 	
 TestIntroCutscene::
@@ -110,11 +122,12 @@ TestIntroCutscene::
 	delay 120
 	; Make player leave bed
 	make_player_walk DIR_LEFT, 14, 1
+	make_player_walk DIR_DOWN | DONT_TURN, 2, 2
 	
 	delay 60
-	; Play "Click!" SFX
-	make_player_walk DIR_UP, 11, 1
+	make_player_walk DIR_UP, 10, 1
 	delay 20
+	; Play "Click!" SFX
 	text_asmcall .lightUp
 	delay 50
 	turn_player DIR_DOWN
@@ -136,7 +149,7 @@ TestIntroCutscene::
 	text_sta wPlayerDir
 	gfx_fadein
 	delay 30
-	make_player_walk DIR_DOWN, 19, 1
+	make_player_walk DIR_DOWN | ROTATE_45 | ROTATE_CW, 19, 1
 	delay 10
 	turn_player DIR_LEFT
 	

@@ -233,4 +233,5 @@ ENDR
 	
 	call RedrawMap ; Re-draw the map that was overwritten
 	callacross ReloadPalettes ; Reload palettes that we blacked out
+	callacross PlayerHouse2FLoadBlanket
 	jp ProcessNPCs ; And finally, display NPCs again.
