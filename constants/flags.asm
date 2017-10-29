@@ -37,3 +37,12 @@ FLAG_DEP	equ $80
 	enum_elem	FLAG_LOAD_CUTSCENE_NPCS ; Use with NPCs that should only be loaded for a cutscene (make sure to reset after loading)
 	enum_elem	FLAG_SIBLING_WATCHING_TV
 	
+	enum_elem	FLAG_UNLOCK_PATH_0
+	enum_elem	FLAG_UNLOCK_PATH_1
+	enum_elem	FLAG_UNLOCK_PATH_2
+	enum_elem	FLAG_UNLOCK_PATH_3
+	enum_elem	FLAG_UNLOCK_PATH_4
+	enum_elem	FLAG_UNLOCK_PATH_5
+	enum_elem	FLAG_UNLOCK_PATH_6
+	enum_elem	FLAG_UNLOCK_PATH_7
+	
