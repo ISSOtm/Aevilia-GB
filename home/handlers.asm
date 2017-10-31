@@ -151,15 +151,18 @@ VBlankHandler::
 	and a
 	jr z, .dontTransferSprites
 	
-	ld a, [wNumOfSprites]
+	ld hl, wNumOfSprites
+	ld a, [hl] ; Get number of sprites
+	cp NB_OF_SPRITES + 1 ; Make sure this number is valid
+	jr c, .numberOfSpritesValid
+	ld a, NB_OF_SPRITES ; This should never be reached, but... it might!
+	ld [hl], a ; Force number of sprites to be valid
+.numberOfSpritesValid
 	ld b, a
 	add a, a
 	add a, a
-	add a, LOW(wVirtualOAM)
 	ld e, a
-	adc a, HIGH(wVirtualOAM)
-	sub e
-	ld d, a ; de points to the first free sprite slot
+	ld d, HIGH(wVirtualOAM) ; de points to the first free sprite slot
 	ld hl, wExtendedOAM
 	
 	ld a, [wNumOfExtendedSprites]
@@ -186,14 +189,8 @@ VBlankHandler::
 	
 	; Transfer OAM
 	ld hl, wTotalNumOfSprites
-	ld a, [hli] ; Get number of sprites
-	cp NB_OF_SPRITES + 1 ; Make sure this number is valid
-	jr c, .numberOfSpritesValid
-	ld a, NB_OF_SPRITES ; This should never be reached, but... it might!
-	dec hl
-	ld [hli], a ; Force number of sprites to be valid
-.numberOfSpritesValid
-	ld c, a ; Save this
+	ld c, [hl] ; Save this
+	inc hl
 	ld a, [hl] ; Subtract previous num of sprites
 	sub c ; Calc difference
 	jr c, .noSpritesToHide ; Negative? Nothing to do!
