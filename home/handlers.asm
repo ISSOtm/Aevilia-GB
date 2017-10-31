@@ -151,8 +151,41 @@ VBlankHandler::
 	and a
 	jr z, .dontTransferSprites
 	
+	ld a, [wNumOfSprites]
+	ld b, a
+	add a, a
+	add a, a
+	add a, LOW(wVirtualOAM)
+	ld e, a
+	adc a, HIGH(wVirtualOAM)
+	sub e
+	ld d, a ; de points to the first free sprite slot
+	ld hl, wExtendedOAM
+	
+	ld a, [wNumOfExtendedSprites]
+	ld c, a ; Save this
+	add b ; Add counts to get total number of sprites
+	cp 40 + 1 ; Check if the two OAMs don't max out the actual one
+	jr c, .OAMNotFull
+	ld a, 40 ; Max capacity
+	sub b ; Remove all sprites used by main OAM
+	ld c, a ; Store as count of sprites to transfer
+	add b ; ld a, 40
+.OAMNotFull
+	ld [wTotalNumOfSprites], a
+	
+	ld a, c
+	and a
+	jr z, .dontExtendOAM ; Return if no sprites should be transferred
+	
+	add a, a
+	add a, a
+	ld c, a ; Get length
+	rst copy
+.dontExtendOAM
+	
 	; Transfer OAM
-	ld hl, wNumOfSprites
+	ld hl, wTotalNumOfSprites
 	ld a, [hli] ; Get number of sprites
 	cp NB_OF_SPRITES + 1 ; Make sure this number is valid
 	jr c, .numberOfSpritesValid

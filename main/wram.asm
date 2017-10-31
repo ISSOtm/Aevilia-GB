@@ -202,7 +202,7 @@ SECTION "OAM", WRAM0,ALIGN[8]
 ; Make sure to update wNumOfSprites accordingly
 ;!!! LOW BYTE OF THIS MUST BE ZERO!!!
 wVirtualOAM::
-	ds $A0
+	ds 40 * OAM_SPRITE_SIZE
 	
 ; Set this to non-zero to commit a modification of VirtualOAM to the real OAM
 ; It's reset afterwards anyways
@@ -211,12 +211,29 @@ wTransferSprites::
 	
 ; Number of sprites (to be transferred) in VirtualOAM
 ; Manually capped at 40, the maximum possible value
-wNumOfSprites::
+wTotalNumOfSprites::
 	ds 1
 ; Previous value of wNumOfSprites
 ; Same cap applied
 wPrevNumOfSprites::
 	ds 1
+	
+; Number of sprites in "main" OAM (will be extended with the secondary OAM later)
+wNumOfSprites::
+	ds 1
+	
+	
+SECTION "Extended OAM", WRAM0
+	
+; This contains "minor" sprites that should be "appended" to OAM
+wExtendedOAM::
+	ds 40 * OAM_SPRITE_SIZE
+	
+; Number of extended sprites
+wNumOfExtendedSprites::
+	ds 1
+	
+
 	
 	
 SECTION "Buffer", WRAMX,BANK[1]
