@@ -727,6 +727,7 @@ OverworldLoop::
 	call MoveNPC0ToPlayer
 	call MoveCamera
 	call ProcessNPCs
+	call ExtendOAM
 	ld a, [wCameraYPos]
 	ldh [hSCY], a
 	ld a, [wCameraXPos]

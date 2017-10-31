@@ -151,70 +151,36 @@ VBlankHandler::
 	and a
 	jr z, .dontTransferSprites
 	
+	; OAM operations follow.
+	; First, transfer virtual OAM into staged OAM
 	ld hl, wNumOfSprites
 	ld a, [hl] ; Get number of sprites
 	cp NB_OF_SPRITES + 1 ; Make sure this number is valid
 	jr c, .numberOfSpritesValid
 	ld a, NB_OF_SPRITES ; This should never be reached, but... it might!
-	ld [hl], a ; Force number of sprites to be valid
+	ld [hl], a
 .numberOfSpritesValid
-	ld b, a
+	ld b, a ; Save the number of main sprites
 	add a, a
 	add a, a
-	ld e, a
-	ld d, HIGH(wVirtualOAM) ; de points to the first free sprite slot
-	ld hl, wExtendedOAM
-	
-	ld a, [wNumOfExtendedSprites]
-	ld c, a ; Save this
-	add b ; Add counts to get total number of sprites
-	cp 40 + 1 ; Check if the two OAMs don't max out the actual one
-	jr c, .OAMNotFull
-	ld a, 40 ; Max capacity
-	sub b ; Remove all sprites used by main OAM
-	ld c, a ; Store as count of sprites to transfer
-	add b ; ld a, 40
-.OAMNotFull
-	ld [wTotalNumOfSprites], a
-	
-	ld a, c
-	and a
-	jr z, .dontExtendOAM ; Return if no sprites should be transferred
-	
-	add a, a
-	add a, a
-	ld c, a ; Get length
-	rst copy
-.dontExtendOAM
-	
-	; Transfer OAM
-	ld hl, wTotalNumOfSprites
-	ld c, [hl] ; Save this
+	ld c, a
 	inc hl
-	ld a, [hl] ; Subtract previous num of sprites
-	sub c ; Calc difference
-	jr c, .noSpritesToHide ; Negative? Nothing to do!
-	jr z, .noSpritesToHide ; Zero? Same!
-	
-	ld b, a ; Save this as a counter
-	dec hl
-	ld a, [hli] ; Retrieve # of sprites
-	add a, a
-	add a, a ; Get offset
-	ld e, a ; wVirtualOAM is 256-byte aligned, so this is fine
-	ld d, wVirtualOAM >> 8 ; Get "erase" pointer
-	xor a ; Put sprite just above screen
-	
-.clearSprite
-	ld [de], a ; Move the sprite offscreen, to be faster don't clear the other bytes
+	ld a, [hl] ; Get previous count
+	ld [hl], b ; Store current count
+	sub b ; Calc diff
+	jr c, .doneClearingOAM
+	jr z, .doneClearingOAM
+	ld h, HIGH(wVirtualOAM)
+	ld l, c
+.clearSprites
+	ld [hl], 0
 REPT 4
-	inc de
+	inc l
 ENDR
-	dec b
-	jr nz, .clearSprite
+	dec a
+	jr nz, .clearSprites
 	
-.noSpritesToHide
-	ld [hl], c ; Store Current into Previous
+.doneClearingOAM
 	xor a ; Don't transfer sprites until update
 	ld [wTransferSprites], a
 	
@@ -232,7 +198,14 @@ ENDR
 	; less means returning before the CPU has access (crash),
 	; and more means CPU time is wasted
 	ld bc, (41 << 8) + (rDMA & $FF)
-	ld a, wVirtualOAM >> 8
+	ldh a, [hOAMMode]
+	and a
+	ld a, HIGH(wVirtualOAM)
+	jr z, .transferMainOAM
+	xor a
+	ldh [hOAMMode], a
+	ld a, HIGH(wStagedOAM)
+.transferMainOAM
 	call hDMAScript
 	
 .dontTransferSprites

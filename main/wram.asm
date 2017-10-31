@@ -196,6 +196,12 @@ wPalettesEnd:
 	
 	
 	
+SECTION "Staged OAM", WRAMX,BANK[0],ALIGN[8]
+
+wStagedOAM::
+	ds 40 * OAM_SPRITE_SIZE
+	
+	
 SECTION "OAM", WRAM0,ALIGN[8]
 	
 ; The virtual OAM, dynamically transferred during each VBlank
@@ -204,22 +210,11 @@ SECTION "OAM", WRAM0,ALIGN[8]
 wVirtualOAM::
 	ds 40 * OAM_SPRITE_SIZE
 	
-; Set this to non-zero to commit a modification of VirtualOAM to the real OAM
-; It's reset afterwards anyways
-wTransferSprites::
-	ds 1
-	
-; Number of sprites (to be transferred) in VirtualOAM
-; Manually capped at 40, the maximum possible value
-wTotalNumOfSprites::
-	ds 1
-; Previous value of wNumOfSprites
-; Same cap applied
-wPrevNumOfSprites::
-	ds 1
-	
 ; Number of sprites in "main" OAM (will be extended with the secondary OAM later)
 wNumOfSprites::
+	ds 1
+; Value on previous frame
+wPrevNumOfSprites::
 	ds 1
 	
 	
@@ -233,6 +228,16 @@ wExtendedOAM::
 wNumOfExtendedSprites::
 	ds 1
 	
+	
+; Set this to non-zero to commit a modification of VirtualOAM to the real OAM
+; It's reset afterwards anyways
+wTransferSprites::
+	ds 1
+	
+; Number of sprites (to be transferred) in VirtualOAM
+; Manually capped at 40, the maximum possible value
+wTotalNumOfSprites::
+	ds 1
 
 	
 	

@@ -333,3 +333,56 @@ TransferTilesAcross::
 	pop af
 	rst bankswitch
 	ret
+	
+	
+ExtendOAM::
+	ld a, BANK(wStagedOAM) ; Non-zero
+	ldh [hOAMMode], a ; Set OAM mode to "with extension"
+	call SwitchRAMBanks
+	
+	ld de, wStagedOAM
+	ld a, [wNumOfSprites]
+	cp NB_OF_SPRITES + 1
+	jr c, .copyMainOAM
+	ld a, NB_OF_SPRITES
+.copyMainOAM
+	ld b, a
+	add a, a
+	jr z, .emptyMainOAM
+	add a, a
+	ld c, a
+	ld hl, wVirtualOAM
+	rst copy
+.emptyMainOAM
+	
+	; Transfer extended OAM into staged OAM, making sure not to overflow it
+	ld a, [wNumOfExtendedSprites]
+	ld c, a ; Save this
+	add b ; Add counts to get total number of sprites
+	cp NB_OF_SPRITES + 1 ; Check if the two OAMs don't max out the actual one
+	jr c, .OAMNotFull
+	ld a, NB_OF_SPRITES ; Max capacity
+	sub b ; Remove all sprites used by main OAM
+	ld c, a ; Store as count of sprites to transfer
+	add b
+.OAMNotFull
+	
+	ld a, c
+	add a, a
+	jr z, .noExtendedSprites ; Return if no sprites should be transferred
+	add a, a
+	ld c, a ; Get length
+	ld hl, wExtendedOAM
+	rst copy
+.noExtendedSprites
+	
+	ld a, e
+.clearStagedOAM
+	cp OAM_SPRITE_SIZE * NB_OF_SPRITES
+	ret z
+	xor a
+	ld [de], a
+	ld a, e
+	add a, OAM_SPRITE_SIZE
+	ld e, a
+	jr .clearStagedOAM

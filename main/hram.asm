@@ -75,6 +75,11 @@ hScreenShakeAmplitude::
 hScreenShakeDisplacement::
 	ds 1
 	
+; If this is zero, VBlank will transfer wVirtualOAM
+; Otherwise, this will be cleared, and VBlank will transfer wStagedOAM instead
+hOAMMode::
+	ds 1
+	
 	
 ; Incremented on each overworld loop iteration
 hOverworldFrameCounter::
