@@ -186,7 +186,7 @@ StartBattle::
 	
 	ld a, [wBattlePreservedNPCs]
 	ld b, a
-	ld hl, wVirtualOAM + 4 * 4 ; Skip 4 sprites (the player's)
+	ld hl, wVirtualOAM + 8 * OAM_SPRITE_SIZE ; Skip 8 sprites (the overlays and the player's)
 	ld c, 8
 .clearUnwantedNPCs
 	rrc b
@@ -210,19 +210,21 @@ StartBattle::
 	jr nz, .clearUnwantedNPCs
 	inc a
 	ld [wTransferSprites], a
+	ldh a, [hOAMMode]
+	and a
+	call nz, ExtendOAM
 	
 	ld a, [wBattleTransitionID]
 IF !DEF(GlitchMaps)
 	cp MAX_BATT_TRANS
 	jp nc, .invalidBattleTransition
 ENDC
-	ld hl, BattleTransitions
 	add a, a
-	add a, l
+	add a, LOW(BattleTransitions)
 	ld l, a
-	jr nc, .noCarry4
-	inc h
-.noCarry4
+	adc HIGH(BattleTransitions)
+	sub l
+	ld h, a
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
