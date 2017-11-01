@@ -2605,6 +2605,7 @@ DoButtonInteractions::
 	ld [hli], a ; Stop NPC's movement
 	push bc
 	call ProcessNPCs
+	call ExtendOAM
 	ld a, [wLoadedMapROMBank]
 	rst bankswitch
 	pop af ; NPC script ID goes in a
