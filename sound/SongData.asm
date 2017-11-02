@@ -13,6 +13,7 @@ SongSpeedTable:
 	db	4,4	; overworld
 	db	2,3	; boss 1
 	db	2,3	; scare chord
+	db	6,5 ; neo safe place
 	
 SongPointerTable:
 	dw	PT_SafePlace
@@ -21,6 +22,7 @@ SongPointerTable:
 	dw	PT_Overworld
 	dw	PT_Boss1
 	dw	PT_ScareChord
+	dw	PT_NeoSafePlace
 
 ; =================================================================
 ; Volume sequences
@@ -44,9 +46,12 @@ vol_OHH:			db	$ff,$84
 vol_CymbQ:			db	$ff,$a6
 vol_CymbL:			db	$ff,$f3
 
+vol_Echo1:			db	$ff,$f1
 vol_Echo1a:			db	$ff,$c1
 vol_Echo1b:			db	$ff,$61
-vol_Echo2:			db	2,2,2,2,2,2,2,2,2,2,2,2,1,$ff,1
+vol_Echo2:			db	$ff,$f1
+vol_Echo2Quiet:		db	2,2,2,2,2,2,2,2,2,2,2,2,1,$ff,1
+vol_NeoEcho:		db	$ff,$53
 vol_WaveBass:		db	15,$ff,15
 vol_QuietLead:		db	$ff,$30
 vol_QuietLeadFade:	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
@@ -143,6 +148,8 @@ arp_Snare:	db	s7+$9d,s7+$97,s7+$94,$a3,$fe,3	; currently broken
 arp_Hat:	db	$a9,$ab,$fe,1
 arp_S7:	db	s7,$fe,0
 
+arp_Echo2:			db	12,0,$ff
+
 arp_Pluck:			db	12,0,$ff
 
 arp_Trill5:			db	5,5,0,0,$fe,0
@@ -208,9 +215,11 @@ InstrumentTable:
 	dins	CymbL
 	
 	dins	WaveBass
+	dins	Echo1
 	dins	Echo1a
 	dins	Echo1b
 	dins	Echo2
+	dins	Echo2Quiet
 	dins	QuietLead
 	dins	QuietLeadFade
 	
@@ -237,6 +246,8 @@ InstrumentTable:
 	dins	ScareChordWave
 	dins	ScareChordNoise
 	
+	dins	NeoEcho
+	
 ; Instrument format: [no reset flag],[voltable id],[arptable id],[wavetable id],[vibtable id]
 ; _ for no table
 ;!!! REMEMBER TO ADD INSTRUMENTS TO THE INSTRUMENT POINTER TABLE!!!
@@ -248,9 +259,11 @@ ins_CymbQ:				Instrument	0,CymbQ,Hat,_,_
 ins_CymbL:				Instrument	0,CymbL,Hat,_,_
 
 ins_WaveBass:			Instrument	0,WaveBass,_,Bass,WaveBass
+ins_Echo1:				Instrument	0,Echo1,_,50,_
 ins_Echo1a:				Instrument	0,Echo1a,_,50,_
 ins_Echo1b:				Instrument	0,Echo1b,_,50,_
-ins_Echo2:				Instrument	0,Echo2,_,50,_
+ins_Echo2:				Instrument	0,Echo2,Echo2,25,_
+ins_Echo2Quiet:			Instrument	0,Echo2Quiet,_,50,_
 ins_QuietLead:			Instrument	0,QuietLead,_,25,QuietLead
 ins_QuietLeadFade:		Instrument	0,QuietLeadFade,_,25,QuietLeadFade
 
@@ -279,6 +292,8 @@ ins_ScareChord:			Instrument	0,ScareChord,Trill6,ScareChord,_
 ins_ScareChordWave:		Instrument	0,ScareChordWave,ScareChordTom,ScareChordWave,_
 ins_ScareChordNoise:	Instrument	0,_,S7,_,_
 
+ins_NeoEcho:			Instrument	0,NeoEcho,_,50,_
+
 ; =================================================================
 
 PT_SafePlace:	dw	SafePlace_CH1,SafePlace_CH2,SafePlace_CH3,DummyChannel
@@ -304,7 +319,7 @@ SafePlace_CH1:
 	
 SafePlace_CH2:
 	db	SetLoopPoint
-	db	SetInstrument,id_Echo2
+	db	SetInstrument,id_Echo2Quiet
 	db	rest,2
 	rept	2
 	rept	4
@@ -712,6 +727,109 @@ ScareChord_CH4:
 	db	G_3,1,F#3,1,F_3,1,E_3,1,D#3,1,D_3,1,C#3,1,C_3,1,B_2,1,A#2,1,A_2,1,G#2,1
 	db	rest,1
 	db	EndChannel
+
+; ================================================================
+
+PT_NeoSafePlace	dw	NeoSafePlace_CH1,NeoSafePlace_CH2,NeoSafePlace_CH3,NeoSafePlace_CH4
+
+NeoSafePlace_CH1:
+	db	SetInsAlternate,id_Echo1,id_NeoEcho
+	db	SetLoopPoint
+	db	F_5,2,B_4,2,A_4,2,F_5,2,G_4,2,A_4,2,A_4,2,G_4,2
+REPT 3
+	dbw	CallSection,.block0
+ENDR
+	db	G_5,2,A_4,2,D_5,2,G_5,2,B_4,2,D_5,2,D_5,2,B_4,2
+REPT 3
+	dbw	CallSection,.block1
+ENDR
+	db	GotoLoopPoint
+	
+.block0
+	db	F_5,2,A_4,2,A_4,2,F_5,2,G_4,2,A_4,2,A_4,2,G_4,2
+	ret
+	
+.block1
+	db	G_5,2,D_5,2,D_5,2,G_5,2,B_4,2,D_5,2,D_5,2,B_4,2
+	ret
+
+NeoSafePlace_CH2:
+	db	SetInstrument,id_Echo2
+	db	SetLoopPoint
+	
+REPT 30
+	db	F_2,2
+ENDR
+	db	G_2,2,A_2,2
+REPT 30
+	db	G_2,2
+ENDR
+	db	A_2,2,G_2,2
+	
+	db	GotoLoopPoint
+
+NeoSafePlace_CH3:
+	db	SetInstrument,id_WaveBass
+	db	SetLoopPoint
+	
+	db	rest,4,F_7,2,rest,2,F_7,4,E_7,4,D_7,8,C_7,8
+	db	D_7,2,E_7,2,D_7,8,C_7,4,D_7,8,C_7,4,A_6,4
+	
+	db	A#6,1,B_6,11,A_6,4,G_6,8,F_6,8
+	db	G_6,12,A_6,4,G_6,8,D_7,4,E_7,4
+	
+	db	F_7,12,E_7,4,D_7,8,E_7,8
+	db	F_7,4,E_7,4,D_7,4,E_7,4,D_7,4,F_7,4,A_7,4
+	db	C_8,4
+	
+	db	A_7,1,B_7,11,A_7,4,G_7,8,D_7,8
+	db	B_6,16,C_7,4,B_6,4,A_6,4,G_6,4
+	
+	dbw	CallSection,.block0
+	db	F_6,16
+	dbw	CallSection,.block0
+	db	F_6,4,G_6,4,C_7,4,A_6,4
+	
+	db	G_6,4,A_6,4,G_6,4,F_6,4,G_6,8,A_6,8
+	db	B_6,16,C_7,4,B_6,4,C_7,4,D_7,4
+	
+	db	C_7,12,B_6,4,A_6,4,B_6,4,A_6,4,G_6,4
+	db	F_6,8,A_6,8,C_7,8,A_6,4,F_6,4
+	
+	db	F#6,1,G_6,11,D_6,4,B_5,8,D_6,4,C#6,2,C_6,2
+	db	B_5,16
+	db	ChannelVolume,8
+	db	null,8
+	db	ChannelVolume,4
+	db	null,8
+	
+	db	ChannelVolume,15
+	db	GotoLoopPoint
+	
+.block0
+	db	G#6,1,A_6,3,G_6,4,F_6,4,G_6,4
+	ret
+
+NeoSafePlace_CH4:
+	db	SetLoopPoint
+	Drum	Kick,2
+	Drum	CHH,2
+	Drum	OHH,2
+	Drum	CHH,2
+	Drum	Snare,2
+	Drum	CHH,2
+	Drum	OHH,2
+	Drum	Kick,2
+	Drum	Kick,2
+	Drum	CHH,2
+	Drum	OHH,2
+	Drum	CHH,2
+	Drum	Snare,2
+	Drum	CHH,2
+	Drum	Kick,2
+	Drum	CHH,2
+	db	GotoLoopPoint
+
 
 ; ================================================================
 
