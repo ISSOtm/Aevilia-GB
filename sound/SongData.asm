@@ -14,6 +14,7 @@ SongSpeedTable:
 	db	2,3	; boss 1
 	db	2,3	; scare chord
 	db	6,5 ; neo safe place
+SongSpeedTable_End
 	
 SongPointerTable:
 	dw	PT_SafePlace
@@ -24,6 +25,15 @@ SongPointerTable:
 	dw	PT_ScareChord
 	dw	PT_NeoSafePlace
 SongPointerTable_End
+
+
+if(SongSpeedTable_End-SongSpeedTable) < (SongPointerTable_End-SongPointerTable)
+	fail "SongSpeedTable does not have enough entries for SongSpeedTable"
+endc
+
+if(SongSpeedTable_End-SongSpeedTable) > (SongPointerTable_End-SongPointerTable)
+	warn "SongSpeedTable has extra entries"
+endc
 
 ; =================================================================
 ; Volume sequences
