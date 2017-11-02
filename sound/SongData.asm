@@ -195,7 +195,7 @@ waveseq_ScareChord:	db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$fe,0
 ; Must be terminated with a loop command!
 ; =================================================================
 
-vib_WaveBass:		db	48,2,4,6,4,2,0,-2,-4,-6,-4,-2,0,$80,1
+vib_WaveBass:		db	36,1,2,2,1,0,-1,-2,-2,-1,0,$80,1
 vib_QuietLead:		db	12,1,1,0,0,-1,-1,0,0,$80,1
 vib_QuietLeadFade:	db	1,1,1,0,0,-1,-1,0,0,$80,1
 
@@ -791,9 +791,9 @@ NeoSafePlace_CH3:
 	db	F#6,1,G_6,11,D_6,4,B_5,8,D_6,4,C#6,2,C_6,2
 	db	B_5,16
 	db	ChannelVolume,8
-	db	null,8
+	db	___,8
 	db	ChannelVolume,4
-	db	null,8
+	db	___,8
 	
 	db	ChannelVolume,15
 	db	GotoLoopPoint
