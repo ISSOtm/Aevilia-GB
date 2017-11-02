@@ -1172,6 +1172,22 @@ SECTION "Intro blanket tiles (cover)", ROMX,ALIGN[4]
 InteriorBlanketCoverTile::
 	dw $0F0F, $3F30, $605F, $9FEF, $F0BF, $C0FF, $81FE, $83FC
 	
+SECTION "Player's pajamas", ROMX,ALIGN[4]
+
+PlayerPajamasTiles::
+	dw $
+	dw $
+	dw $
+	dw $
+	
+SECTION "Player's pajamas", ROMX,ALIGN[4]
+
+PlayerPajamasWalkingTiles::
+	dw $
+	dw $
+	dw $
+	dw $
+	
 	
 SECTION "Strings and text", ROMX,BANK[1]
 	
