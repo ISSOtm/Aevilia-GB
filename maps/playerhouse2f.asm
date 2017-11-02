@@ -50,7 +50,7 @@ PlayerHouse2FNPCs::
 	dw 0 ; Obligatory no matter the above value
 	
 	db 1 ; Number of NPC tile sets
-	full_ptr InteriorBlanketCoverTiles
+	full_ptr InteriorBlanketCoverTile
 	
 PlayerHouse2FWarpToPoints::
 	db 2 ; Number of warp-to points
@@ -70,7 +70,7 @@ PlayerHouse2FWarpToPoints::
 	db NO_WALKING
 	db 0
 	db THREAD2_DISABLED
-	dw PlayerHouse2FLoadBlanket
+	dw PlayerHouse2FLoadIntroGfx
 	ds 6
 	
 PlayerHouse2FBlocks::
@@ -84,6 +84,19 @@ PlayerHouse2FTilesetScript::
 	ld a, TILESET_INTERIOR
 	ret
 	
+PlayerHouse2FLoadIntroGfx::
+	ld hl, PlayerPajamasTiles
+	ld de, vPlayerTiles
+	ld bc, BANK(PlayerPajamasTiles) << 8 | 12
+	call TransferTilesAcross
+	ld a, 1
+	ld [rVBK], a
+	ld hl, PlayerPajamasWalkingTiles
+	ld de, vPlayerWalkingTiles
+	ld bc, BANK(PlayerPajamasWalkingTiles) << 8 | 12
+	call TransferTilesAcross
+	xor a
+	ld [rVBK], a
 PlayerHouse2FLoadBlanket::
 	ld hl, .oam
 	ld de, wVirtualOAM
@@ -124,6 +137,7 @@ TestIntroCutscene::
 	make_player_walk DIR_LEFT, 14, 1
 	make_player_walk DIR_DOWN | DONT_TURN, 2, 2
 	
+	; Make player's eyes blink
 	delay 60
 	make_player_walk DIR_UP, 10, 1
 	delay 20
@@ -142,7 +156,7 @@ TestIntroCutscene::
 	text_lda hGFXFlags ; Don't commit the player palettes while the screen is black
 	text_or $40
 	text_sta hGFXFlags
-	text_asmcall LoadPlayerGraphics
+	text_asmcall LoadPlayerGraphics ; To cancel the pajamas graphics
 	text_and $BF
 	text_sta hGFXFlags ; Commit palettes on loading
 	text_lda_imm DIR_DOWN
