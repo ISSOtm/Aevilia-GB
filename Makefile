@@ -59,8 +59,8 @@ $(bindir)/aevilia.gbc: $(objlist)
 	@if [ ! -d bin ]; then mkdir $(bindir); fi
 ifeq ($(DebugMode), 1)
 	@echo
-	@echo \*\*\* WARNING! COMPILING IN DEBUG MODE!
-	@echo \*\*\* DO NOT REDISTRIBUTE THIS ROM!
+	@echo "*** WARNING! COMPILING IN DEBUG MODE!"
+	@echo "*** DO NOT REDISTRIBUTE THIS ROM!"
 	@echo To disable debug mode, edit the Makefile.
 	@echo
 endif
@@ -71,8 +71,8 @@ $(bindir)/aevilia_glitchmaps.gbc: $(objlist:.o=_glitchmaps.o)
 	@if [ ! -d bin ]; then mkdir $(bindir); fi
 ifeq ($(DebugMode), 1)
 	@echo
-	@echo \*\*\* WARNING! COMPILING IN DEBUG MODE!
-	@echo \*\*\* DO NOT REDISTRIBUTE THIS ROM!
+	@echo "*** WARNING! COMPILING IN DEBUG MODE!"
+	@echo "*** DO NOT REDISTRIBUTE THIS ROM!"
 	@echo To disable debug mode, edit the Makefile.
 	@echo
 endif
