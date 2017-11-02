@@ -105,8 +105,8 @@ PlayerHouse2FLoadBlanket::
 	ret
 	
 .oam
-	dspr $1A, $90, $0C, $02
-	dspr $1A, $98, $0C, $22
+	dspr $1A, $90, $0C, $03
+	dspr $1A, $98, $0C, $23
 	
 	
 TestIntroCutscene::
