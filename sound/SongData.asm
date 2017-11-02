@@ -740,9 +740,9 @@ ENDR
 	db	GotoLoopPoint
 
 NeoSafePlace_CH3:
-	db	SetInstrument,id_WaveBass
 	db	SetLoopPoint
-	
+	db	SetInstrument,id_WaveBass
+
 	db	rest,4,F_7,2,rest,2,F_7,4,E_7,4,D_7,8,C_7,8
 	db	D_7,2,E_7,2,D_7,8,C_7,4,D_7,8,C_7,4,A_6,4
 	
