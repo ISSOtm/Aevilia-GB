@@ -14,6 +14,7 @@ SongSpeedTable:
 	db	2,3	; boss 1
 	db	2,3	; scare chord
 	db	6,5 ; neo safe place
+	db	6,6	; avocado invaders
 SongSpeedTable_End
 	
 SongPointerTable:
@@ -24,15 +25,11 @@ SongPointerTable:
 	dw	PT_Boss1
 	dw	PT_ScareChord
 	dw	PT_NeoSafePlace
+	dw	PT_AvocadoInvaders
 SongPointerTable_End
 
-
-if(SongSpeedTable_End-SongSpeedTable) < (SongPointerTable_End-SongPointerTable)
-	fail "SongSpeedTable does not have enough entries for SongSpeedTable"
-endc
-
-if(SongSpeedTable_End-SongSpeedTable) > (SongPointerTable_End-SongPointerTable)
-	warn "SongSpeedTable has extra entries"
+if(SongSpeedTable_End-SongSpeedTable) != (SongPointerTable_End-SongPointerTable)
+	fail "SongSpeedTable and SongPointerTable must have the same number of entries"
 endc
 
 ; =================================================================
@@ -156,27 +153,30 @@ WaveTable:
 	dw	wave_Pulse
 	dw	wave_Rand
 	dw	wave_ScareChord
+	dw	wave_Square
 	
-wave_Bass1:			db	$02,$46,$8a,$ce,$ff,$fe,$ed,$dc,$ba,$98,$76,$54,$33,$22,$11,$00
-wave_Pulse:			db	$cc,$cc,$cc,$cc,$cc,$c0,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-wave_Rand:			db	$A6,$F0,$4D,$5F,$FC,$3B,$B7,$FF,$92,$EB,$A9,$8A,$9C,$2B,$45,$DA
-wave_ScareChord:	db	$ff,$ff,$ff,$ff,$00,$00,$00,$00,$ff,$ff,$ff,$ff,$f0,$00,$00,$00
+wave_Bass1:				db	$02,$46,$8a,$ce,$ff,$fe,$ed,$dc,$ba,$98,$76,$54,$33,$22,$11,$00
+wave_Pulse:				db	$cc,$cc,$cc,$cc,$cc,$c0,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+wave_Rand:				db	$A6,$F0,$4D,$5F,$FC,$3B,$B7,$FF,$92,$EB,$A9,$8A,$9C,$2B,$45,$DA
+wave_ScareChord:		db	$ff,$ff,$ff,$ff,$00,$00,$00,$00,$ff,$ff,$ff,$ff,$f0,$00,$00,$00
+wave_Square:			db	$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$00,$00,$00,$00,$00,$00,$00,$00
 	
 ; use $c0 to use the wave buffer
-waveseq_Bass:		db	1,$ff
-waveseq_Pulse:		db	2,$ff
-waveseq_Rand:		db	3,$ff
+waveseq_Bass:			db	1,$ff
+waveseq_Pulse:			db	2,$ff
+waveseq_Rand:			db	3,$ff
 waveseq_ScareChordWave:	db	4,$ff
-waveseq_Buffer:		db	$c0,$ff
+waveseq_Buffer:			db	$c0,$ff
+waveseq_Square:			db	5,$ff
 
-waveseq_12:			db	0,$ff
-waveseq_25:			db	1,$ff
-waveseq_50:			db	2,$ff
-waveseq_75:			db	3,$ff
+waveseq_12:				db	0,$ff
+waveseq_25:				db	1,$ff
+waveseq_50:				db	2,$ff
+waveseq_75:				db	3,$ff
 
 waveseq_Arp1:			db	0,0,1,1,1,2,2,3,3,3,2,2,1,1,1,$fe,0
 
-waveseq_ScareChord:	db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$fe,0
+waveseq_ScareChord:		db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$fe,0
 
 ; =================================================================
 ; Vibrato sequences
@@ -231,6 +231,8 @@ InstrumentTable:
 	
 	dins	NeoEcho
 	dins	WaveBassFade
+
+	dins	SquareWave
 	
 ; Instrument format: [no reset flag],[voltable id],[arptable id],[wavetable id],[vibtable id]
 ; _ for no table
@@ -275,6 +277,8 @@ ins_ScareChordNoise:	Instrument	0,_,S7,_,_
 
 ins_NeoEcho:			Instrument	0,NeoEcho,_,50,_
 ins_WaveBassFade:		Instrument	0,WaveBassFade,_,Bass,WaveBass
+
+ins_SquareWave:			Instrument	0,WaveBass,_,Square,_
 
 ; =================================================================
 
@@ -808,6 +812,18 @@ NeoSafePlace_CH4:
 	Drum	CHH,2
 	db	GotoLoopPoint
 
+; ================================================================
+
+PT_AvocadoInvaders:		dw	DummyChannel,DummyChannel,AvocadoInvaders_CH3,DummyChannel
+
+AvocadoInvaders_CH3:
+	db	SetInstrument,id_SquareWave
+	db	SetLoopPoint
+	db	C_4,1,rest,1,C_3,1,rest,1
+	db	B_3,1,rest,1,B_2,1,rest,1
+	db	A#3,1,rest,1,A#2,1,rest,1
+	db	B_3,1,rest,1,B_2,1,rest,1
+	db	GotoLoopPoint
 
 ; ================================================================
 
