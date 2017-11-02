@@ -7,8 +7,11 @@ sExtra2KB::
 SECTION "Save common", SRAM,BANK[1]
 ; Used to check SRAM integrity
 sCommonPattern::
-	ds $1000 - 3
+	ds $1000 - 4
 sCommonPatternEnd::
+
+sSRAM32kMessageDisplayed::
+	ds 1
 	
 ; Save files non-void and valid are okay and can be loaded
 ; Save files non-void and invalid make a message pop up and are replaced with their backup

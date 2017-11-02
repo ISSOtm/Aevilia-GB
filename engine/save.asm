@@ -559,14 +559,25 @@ DrawFileSelect::
 	ldh a, [hSRAM32kCompat]
 	and a
 	jr z, SelectFile ; Don't display the text if this isn't SRAM32k
-	ld hl, wLoadedMap
-	ld a, [hl] ; Don't display the text if this is not the first time
+	
+	; Display the message only at first boot
+	ld a, BANK(sSRAM32kMessageDisplayed)
+	ld [SRAMBank], a
+	ld a, SRAM_UNLOCK
+	ld [SRAMEnable], a
+	ld hl, sSRAM32kMessageDisplayed
+	ld a, [hl]
 	and a
-	jr z, SelectFile
-	ld [hl], 0 ; Tell the game it's not the first time anymore
+	ld [hl], 1
+	ld a, 0
+	ld [SRAMEnable], a
+	ld [SRAMBank], a
+	jr nz, SelectFile
+	
 	ldh a, [hHeldButtons] ; Skip the message if Select and B are held
 	cp DPAD_UP | BUTTON_B | BUTTON_A
 	jr z, SelectFile
+	
 	ld c, BANK(CompatExplanationText)
 	ld de, CompatExplanationText
 	callacross ProcessText_Hook
