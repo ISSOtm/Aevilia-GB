@@ -175,6 +175,7 @@ ProcessText::
 	jr .mainLoop
 	
 .printErrorAndEnd
+	debug_message "INVALID TEXT COMMAND $%A%"
 	call ClearTextbox
 	ld hl, TextErrorStr
 	ld b, BANK(TextErrorStr)
@@ -328,6 +329,7 @@ ProcessBattleText::
 	jr .mainLoop
 	
 .printErrorAndEnd
+	debug_message "INVALID TEXT COMMAND $%A%"
 	call ClearBattleTextbox
 	ld hl, TextErrorStr
 	ld b, BANK(TextErrorStr)
