@@ -4,7 +4,7 @@ SECTION "Test house map", ROMX
 TestHouse::
 	db $80 ; Interior map
 	
-	db MUSIC_SAFE_PLACE ; Music ID
+	db MUSIC_NEO_SAFE_PLACE ; Music ID
 	
 	db 0
 	db TILESET_TEST_HOUSE
