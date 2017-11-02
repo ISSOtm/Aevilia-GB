@@ -1096,6 +1096,9 @@ StartMenu::
 	rrca
 	jr c, .saveGame
 	rrca
+IF DEF(DebugMode)
+	jr c, .enableDebugWarping
+ENDC
 	rrca
 	jr nc, .mainLoop
 	
@@ -1119,6 +1122,24 @@ StartMenu::
 	xor a
 	ld [rVBK], a
 	ret
+	
+IF DEF(DebugMode)
+.enableDebugWarping
+	ld hl, wWalkingLoadZone0_destWarp
+.forceWarps
+	ld [hl], 0
+	inc hl
+	ld [hl], MAP_TEST_HOUSE
+	ld a, l
+	add a, wWalkingLoadZone1_destWarp - wWalkingLoadZone0_destMap
+	ld l, a
+	jr nc, .forceWarps
+	inc h
+	ld a, h
+	cp HIGH(wButtonLoadZone0_destWarp)
+	jr z, .forceWarps
+	jr .exitMenu
+ENDC
 	
 .saveGame
 	inc a ; Can't be $FF
@@ -1156,7 +1177,7 @@ StartMenu::
 	rst copyStr
 	inc a
 	ld [wTransferRows + 14], a
-	jr .mainLoop
+	jp .mainLoop
 	
 StartMenuStrs::
 	dstr "PAUSE MENU"
