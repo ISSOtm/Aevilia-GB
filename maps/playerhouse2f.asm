@@ -50,7 +50,7 @@ PlayerHouse2FNPCs::
 	dw 0 ; Obligatory no matter the above value
 	
 	db 1 ; Number of NPC tile sets
-	full_ptr InteriorBlanketCoverTiles
+	full_ptr InteriorBlanketCoverTile
 	
 PlayerHouse2FWarpToPoints::
 	db 2 ; Number of warp-to points
