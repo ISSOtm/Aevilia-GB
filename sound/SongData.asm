@@ -63,8 +63,6 @@ vol_PulseLead1:		db	$ff,$c4
 vol_WaveBass2a:		db	15,15,15,15,15,5,5,$ff,10
 vol_WaveBass2b:		db	15,15,15,15,15,15,15,15,15,15,15,15,15,15,15,5,5,$ff,10
 
-vol_CorruptionFade:	db	$ff,$09
-
 vol_WaveTrill:		db	15,15,15,15,15,8,8,8,8,8,4,4,4,4,4,4,4,4,4,4,0,$ff,0
 vol_PulseTrill:		db	$ff,$f1
 vol_Boss1Echo1:		db	$ff,$f5
@@ -229,9 +227,6 @@ InstrumentTable:
 	dins	WaveBass2a
 	dins	WaveBass2b
 	
-	dins	CorruptionFade
-	dins	CorruptionWave
-	
 	dins	WaveTrill
 	dins	PulseTrill5
 	dins	PulseTrill7
@@ -273,9 +268,6 @@ ins_PulseLead1b:		Instrument	0,PulseLead1,Pluck,50,_
 
 ins_WaveBass2a:			Instrument	0,WaveBass2a,Pluck,Pulse,_
 ins_WaveBass2b:			Instrument	0,WaveBass2b,Pluck,Pulse,_
-
-ins_CorruptionFade:		Instrument	0,CorruptionFade,_,_,_
-ins_CorruptionWave:		Instrument	0,WaveBass,_,Rand,_
 
 ins_WaveTrill:			Instrument	0,WaveTrill,Trill5,Buffer,_
 
