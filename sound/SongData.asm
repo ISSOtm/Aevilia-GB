@@ -23,6 +23,7 @@ SongPointerTable:
 	dw	PT_Boss1
 	dw	PT_ScareChord
 	dw	PT_NeoSafePlace
+SongPointerTable_End
 
 ; =================================================================
 ; Volume sequences
