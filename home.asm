@@ -383,8 +383,9 @@ THE_CONSTANT = 42
 	ld b, 0
 .skipSettingB
 	rst copyStr ; Copy the pattern
-	ld hl, sNonVoidSaveFiles
-	ld c, 3
+	ld h, d
+	ld l, e
+	ld c, sFirstBootPattern - sCommonPatternEnd
 	rst fill ; Reset void states
 	inc a
 	ld a, b
