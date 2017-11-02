@@ -9,6 +9,7 @@
 	enum_elem MUSIC_OVERWORLD
 	enum_elem MUSIC_BOSS_1
 	enum_elem MUSIC_SCARECHORD
+	enum_elem MUSIC_NEO_SAFE_PLACE
 	
 	enum_elem MUSIC_INVALIDTRACK ; IDs >= this are invalid (except $FF)
 	
@@ -99,8 +100,9 @@ G#7		equ	$44
 A_7		equ	$45
 A#7		equ	$46
 B_7		equ	$47
-rest	equ	$48
-___		equ	$49
+C_8		equ $48
+rest	equ	$49
+___		equ	$4A
 
 fix		equ	C_2
 
