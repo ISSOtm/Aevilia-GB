@@ -70,34 +70,11 @@ vol_Boss1Echo2:		db	$ff,$65
 vol_Boss1Bass:		db	$ff,$f3
 vol_WaveEcho:		db	5,$ff,5
 
-vol_LongFade:
-	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
-	db	4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
-	db	5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
-	db	6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6
-	db	7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7
-	db	6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6
-	db	5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5
-	db	4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
-	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	$ff,1
-vol_LongFade2:	
-	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-	db	1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
-	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
-	db	4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
-	db	4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4
-	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
-	db	3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2
-	db	$ff,1
+vol_WaveBassFade:
+	rept	44
+	db	8
+	endr
+	db	4,$ff,4
 	
 vol_ScareChord:
 	db	15,15,15,15,15,15,15
@@ -242,6 +219,7 @@ InstrumentTable:
 	dins	ScareChordNoise
 	
 	dins	NeoEcho
+	dins	WaveBassFade
 	
 ; Instrument format: [no reset flag],[voltable id],[arptable id],[wavetable id],[vibtable id]
 ; _ for no table
@@ -285,6 +263,7 @@ ins_ScareChordWave:		Instrument	0,ScareChordWave,ScareChordTom,ScareChordWave,_
 ins_ScareChordNoise:	Instrument	0,_,S7,_,_
 
 ins_NeoEcho:			Instrument	0,NeoEcho,_,50,_
+ins_WaveBassFade:		Instrument	0,WaveBassFade,_,Bass,WaveBass
 
 ; =================================================================
 
@@ -790,12 +769,8 @@ NeoSafePlace_CH3:
 	
 	db	F#6,1,G_6,11,D_6,4,B_5,8,D_6,4,C#6,2,C_6,2
 	db	B_5,16
-	db	ChannelVolume,8
-	db	___,8
-	db	ChannelVolume,4
-	db	___,8
-	
-	db	ChannelVolume,15
+	db	SetInstrument,id_WaveBassFade
+	db	B_5,16
 	db	GotoLoopPoint
 	
 .block0
