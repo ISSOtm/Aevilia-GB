@@ -722,13 +722,13 @@ NeoSafePlace_CH1:
 	db	SetInsAlternate,id_Echo1,id_NeoEcho
 	db	SetLoopPoint
 	db	F_5,2,B_4,2,A_4,2,F_5,2,G_4,2,A_4,2,A_4,2,G_4,2
-REPT 3
+rept 3
 	dbw	CallSection,.block0
-ENDR
+endr
 	db	G_5,2,A_4,2,D_5,2,G_5,2,B_4,2,D_5,2,D_5,2,B_4,2
-REPT 3
+rept 3
 	dbw	CallSection,.block1
-ENDR
+endr
 	db	GotoLoopPoint
 	
 .block0
@@ -743,13 +743,13 @@ NeoSafePlace_CH2:
 	db	SetInstrument,id_Echo2
 	db	SetLoopPoint
 	
-REPT 30
+rept 30
 	db	F_2,2
-ENDR
+endr
 	db	G_2,2,A_2,2
-REPT 30
+rept 30
 	db	G_2,2
-ENDR
+endr
 	db	A_2,2,G_2,2
 	
 	db	GotoLoopPoint
