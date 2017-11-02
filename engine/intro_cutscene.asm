@@ -204,7 +204,6 @@ ENDR
 	
 .done
 	call ClearMovableMap
-	callacross LoadPlayerGraphics
 	ld a, $80
 	ld [rBGPI], a
 	ld [rOBPI], a
