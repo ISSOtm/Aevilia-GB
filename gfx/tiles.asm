@@ -1172,21 +1172,89 @@ SECTION "Intro blanket tiles (cover)", ROMX,ALIGN[4]
 InteriorBlanketCoverTile::
 	dw $0F0F, $3F30, $605F, $9FEF, $F0BF, $C0FF, $81FE, $83FC
 	
-SECTION "Player's pajamas", ROMX,ALIGN[4]
+	
+SECTION "Sleeping players", ROMX,ALIGN[4]
 
-PlayerPajamasTiles::
-	dw $
-	dw $
-	dw $
-	dw $
+EvieSleepingPajamasTiles::
+	dw $0303, $0F0C, $1F10, $1F10, $3F20, $3F23, $3C27, $382F
+	dw $3E2F, $382F, $1F17, $2E35, $1F19, $0F08, $090F, $0606
+	dw $C0C0, $F030, $F808, $F808, $FC04, $FCC4, $3CE4, $1CF4
+	dw $7CF4, $1CF4, $F8E8, $74AC, $F818, $F090, $90F0, $6060
+	
+TomSleepingPajamasTiles::
+	dw $0303, $7F7C, $3F30, $1F10, $3F20, $3F26, $393F, $2837
+	dw $263F, $181F, $273F, $2E35, $1F19, $0F08, $090F, $0606
+	dw $C0C0, $F030, $F808, $F808, $FC04, $FC64, $9CFC, $14EC
+	dw $64FC, $18F8, $E4FC, $74AC, $F818, $F090, $90F0, $6060
+	
 	
 SECTION "Player's pajamas", ROMX,ALIGN[4]
 
-PlayerPajamasWalkingTiles::
-	dw $
-	dw $
-	dw $
-	dw $
+EviePajamasTiles::
+	dw $0303, $0F0C, $1F10, $1F10, $3F20, $3F20, $3F20, $3F20
+	dw $3F20, $1F10, $1F1A, $253F, $1E19, $0F0E, $0F09, $0606
+	dw $C0C0, $F030, $F808, $F808, $FC04, $FC04, $FC04, $FC04
+	dw $FC04, $F808, $F858, $A4FC, $7898, $F070, $F090, $6060
+	
+	dw $0303, $0F0C, $1F10, $1F10, $3F20, $3F23, $3C27, $3A2F
+	dw $3A2F, $382F, $1F17, $2E35, $1F19, $0F08, $090F, $0606
+	dw $C0C0, $F030, $F808, $F808, $FC04, $FCC4, $3CE4, $5CF4
+	dw $5CF4, $1CF4, $F8E8, $74AC, $F818, $F090, $90F0, $6060
+	
+	dw $0303, $0F0C, $1F10, $3F20, $3F28, $373C, $171F, $141F
+	dw $101F, $090F, $0707, $0704, $0704, $0302, $0203, $0101
+	dw $C0C0, $F030, $F808, $FC04, $FC04, $FC04, $FC04, $FC84
+	dw $FC84, $FC04, $FCE4, $B8D8, $D070, $E020, $20E0, $C0C0
+	
+TomPajamasTiles::
+	dw $0303, $0F0C, $1F10, $1F10, $3F20, $3F20, $3F20, $3F20
+	dw $3F20, $1F1A, $273D, $2F38, $1F18, $0F08, $090F, $0606
+	dw $C0C0, $FE3E, $FC0C, $F808, $FC04, $FC04, $FC04, $FC04
+	dw $FC04, $F858, $E4BC, $F41C, $F818, $F010, $90F0, $6060
+	
+	dw $0303, $7F7C, $3F30, $1F10, $3F20, $3F26, $393F, $2A37
+	dw $223F, $181F, $273F, $2E35, $1F19, $0F08, $090F, $0606 
+	dw $C0C0, $F0C0, $F808, $F808, $FC04, $FC64, $9CFC, $54EC
+	dw $44FC, $18F8, $E4FC, $74AC, $F898, $F010, $90F0, $6060
+	
+	dw $0303, $0F0C, $1F10, $3F20, $3F28, $171C, $171F, $141F
+	dw $101F, $080F, $0707, $0704, $0704, $0302, $0203, $0101
+	dw $C0C0, $F030, $F8C8, $FC34, $FC04, $FC04, $FC04, $F888
+	dw $F888, $F090, $E0E0, $90F0, $D070, $E020, $20E0, $C0C0
+	
+SECTION "Player's pajamas, walking frames", ROMX,ALIGN[4]
+
+EviePajamasWalkingTiles::
+	dw $0000, $0303, $0F0C, $1F10, $1F10, $3F20, $3F20, $3F20
+	dw $3F20, $3F20, $1F10, $1F1A, $171D, $0B0E, $090F, $0606
+	dw $0000, $C0C0, $F030, $F808, $F808, $FC04, $FC04, $FC04
+	dw $FC04, $FC04, $F808, $F858, $E8B8, $F030, $C0C0, $0000
+	
+	dw $0000, $0303, $0F0C, $1F10, $1F10, $3F20, $3F23, $3C27
+	dw $3A2F, $3A2F, $382F, $1F17, $151F, $0F0A, $090F, $0606
+	dw $0000, $C0C0, $F030, $F808, $F808, $FC04, $FCC4, $3CE4
+	dw $5CF4, $5CF4, $1CF4, $E8F8, $48F8, $F0B0, $C0C0, $0000
+	
+	dw $0000, $0303, $0F0C, $1F10, $3F20, $3F28, $373C, $171F
+	dw $141F, $101F, $090F, $0707, $0D0F, $141F, $131F, $0606
+	dw $0000, $C0C0, $F030, $F808, $FC04, $FC04, $FC04, $FC04
+	dw $FC84, $FC84, $FC04, $FCE4, $78B8, $A8F8, $C8F8, $6060
+	
+TomPajamasWalkingTiles::
+	dw $0000, $0303, $0F0C, $1F10, $1F10, $3F20, $3F20, $3F20
+	dw $3F20, $3F20, $1F1A, $171D, $0F08, $0F08, $090F, $0606
+	dw $0000, $C0C0, $FE3E, $FC0C, $F808, $FC04, $FC04, $FC04
+	dw $FC04, $FC04, $F878, $C8B8, $C878, $F030, $C0C0, $0000
+	
+	dw $0000, $0303, $7F7C, $3F30, $1F10, $3F20, $3F26, $393F
+	dw $2A37, $223F, $1F18, $171F, $1D1F, $1F18, $090F, $0606
+	dw $0000, $C0C0, $F030, $F808, $F808, $FC04, $FC64, $9CFC
+	dw $54EC, $44FC, $38F8, $C8F8, $68D8, $F0F0, $8080, $0000
+	
+	dw $0000, $0303, $0F0C, $1F10, $3F20, $3F28, $171C, $171F
+	dw $141F, $101F, $080F, $0707, $0D0F, $141F, $131F, $0C0C
+	dw $0000, $C0C0, $F030, $F8C8, $FC34, $FC04, $FC04, $FC04
+	dw $F888, $F888, $F090, $E0E0, $70B0, $A8F8, $C8F8, $3030
 	
 	
 SECTION "Strings and text", ROMX,BANK[1]

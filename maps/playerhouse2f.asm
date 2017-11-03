@@ -85,18 +85,15 @@ PlayerHouse2FTilesetScript::
 	ret
 	
 PlayerHouse2FLoadIntroGfx::
-	ld hl, PlayerPajamasTiles
-	ld de, vPlayerTiles
-	ld bc, BANK(PlayerPajamasTiles) << 8 | 12
+	ld hl, EvieSleepingPajamasTiles
+	ld a, [wPlayerGender]
+	and a
+	jr z, .evie
+	ld hl, TomSleepingPajamasTiles
+.evie
+	ld de, vPlayerTiles + 4 * VRAM_TILE_SIZE ; Overwrite "facing" frame
+	ld bc, BANK(EvieSleepingPajamasTiles) << 8 | 4
 	call TransferTilesAcross
-	ld a, 1
-	ld [rVBK], a
-	ld hl, PlayerPajamasWalkingTiles
-	ld de, vPlayerWalkingTiles
-	ld bc, BANK(PlayerPajamasWalkingTiles) << 8 | 12
-	call TransferTilesAcross
-	xor a
-	ld [rVBK], a
 PlayerHouse2FLoadBlanket::
 	ld hl, .oam
 	ld de, wVirtualOAM
@@ -110,13 +107,12 @@ PlayerHouse2FLoadBlanket::
 	
 	
 TestIntroCutscene::
-	set_counter 6
-	text_lda_imm 0
+	set_counter 3
 .sleepingLoop
 	delay 50
-	text_xor $FF
-	text_sta wNPC0_steps
-	text_asmcall ProcessNPCs
+	make_player_walk DIR_DOWN, 1, 1
+	delay 50
+	make_player_walk DIR_UP | DONT_TURN, 1, 1
 .sleepingSource
 	djnz .sleepingLoop - .sleepingSource
 	
@@ -125,7 +121,7 @@ TestIntroCutscene::
 	text_asmcall IntroCutscene
 	text_asmcall RedrawMap
 	delay 30
-	; Make player wake up
+	text_asmcall IntroLoadAwakePajamas
 	delay 60
 	turn_player DIR_LEFT
 	delay 20
@@ -175,3 +171,30 @@ TestIntroCutscene::
 	ld a, TILESET_INTERIOR
 	call LoadTileset
 	jpacross ReloadPalettes
+	
+SECTION "Intro awake gfx loader", ROMX
+
+IntroLoadAwakePajamas::
+	ld hl, EviePajamasTiles
+	ld a, [wPlayerGender]
+	and a
+	jr z, .evie
+	ld hl, TomPajamasTiles
+.evie
+	ld de, vPlayerTiles
+	ld bc, BANK(EviePajamasTiles) << 8 | 12
+	call TransferTilesAcross
+	ld a, 1
+	ld [rVBK], a
+	ld hl, TomPajamasWalkingTiles
+	ld a, [wPlayerGender]
+	and a
+	jr nz, .tom
+	ld hl, EviePajamasWalkingTiles
+.tom
+	ld de, vPlayerWalkingTiles
+	ld bc, BANK(EviePajamasWalkingTiles) << 8 | 12
+	call TransferTilesAcross
+	xor a
+	ld [rVBK], a
+	ret
