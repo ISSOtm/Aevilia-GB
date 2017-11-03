@@ -1170,6 +1170,10 @@ InteriorTilesetTiles::
 SECTION "Intro blanket tiles (cover)", ROMX,ALIGN[4]
 	
 InteriorBlanketCoverTile::
+	dw $0078, $0010, $0020, $0078, $0000, $001E, $0004, $0008
+	dw $001E, $0000, $000F, $0001, $0002, $0004, $0008, $000F
+	dwfill 8 * 2, 0
+	
 	dw $0F0F, $3F30, $605F, $9FEF, $F0BF, $C0FF, $81FE, $83FC
 	
 	

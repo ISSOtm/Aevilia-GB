@@ -28,7 +28,7 @@ PlayerHouse2FInteractions::
 	ds 8
 	
 PlayerHouse2FNPCs::
-	db 2
+	db 3
 	
 	dw 0
 	interact_box $0040, $0030, 0, 0
@@ -45,6 +45,14 @@ PlayerHouse2FNPCs::
 	dn 1, 1, 1, 1 ; Palette IDs
 	db $00 ; Movement permissions
 	db $00 ; Movement speed
+	
+	flag_dep FLAG_RESET, FLAG_INTRO_CUTSCENE_PLAYED
+	interact_box $0002, $0089, 0, 0
+	db 0
+	db 1 << 2 | DIR_UP
+	dn 4, 4, 4, 4
+	db 0
+	db 0
 	
 	db 0 ; Number of NPC scripts
 	dw 0 ; Obligatory no matter the above value
@@ -102,22 +110,28 @@ PlayerHouse2FLoadBlanket::
 	ret
 	
 .oam
-	dspr $1A, $90, $0C, $03
-	dspr $1A, $98, $0C, $23
+	dspr $1A, $90, $10, $03
+	dspr $1A, $98, $10, $23
 	
 	
 TestIntroCutscene::
 	set_counter 3
 .sleepingLoop
-	delay 50
+	delay 20
 	make_player_walk DIR_DOWN, 1, 1
-	delay 50
+	delay 30
+	make_npc_walk 2, DIR_RIGHT | ROTATE_45 | DONT_TURN, 1, 1
+	delay 10
 	make_player_walk DIR_UP | DONT_TURN, 1, 1
+	delay 40
+	make_npc_walk 2, DIR_LEFT | ROTATE_45 | DONT_TURN, 1, 1
 .sleepingSource
 	djnz .sleepingLoop - .sleepingSource
 	
 	set_fade_speed 3
 	gfx_fadeout
+	text_lda_imm $80
+	text_sta wNPC3_ypos + 1
 	text_asmcall IntroCutscene
 	text_asmcall RedrawMap
 	delay 30
