@@ -411,6 +411,12 @@ THE_CONSTANT = 42
 	
 	homecall PlayIntro
 	
+IF DEF(DebugMode)
+	ldh a, [hHeldButtons]
+	and BUTTON_START
+	homejump nz, HomeDebugMenu
+ENDC
+	
 	; Init music, awww yea
 	ld a, MUSIC_FILESELECT
 	ld [wCurrentMusicID], a

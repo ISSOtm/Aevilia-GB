@@ -1,0 +1,258 @@
+
+SECTION "Home debug menu", ROMX
+
+HomeDebugMenu::
+	ld a, 1
+	ld [rVBK], a
+	call ClearMovableMap
+	ld [rVBK], a
+	call ClearMovableMap
+	ld c, 0
+	ld de, DefaultPalette
+	callacross LoadBGPalette_Hook
+	
+.restart
+	ld hl, .strings
+	ld de, $98A2
+	call CopyStrToVRAM
+	ld de, $9903
+	ld b, 0
+.printString
+	inc b
+	call CopyStrToVRAM
+	ld a, e
+	and -VRAM_ROW_SIZE
+	add VRAM_ROW_SIZE * 2 + 3
+	ld e, a
+	jr nc, .printStringsNoCarry
+	inc d
+.printStringsNoCarry
+	ld a, [hl]
+	and a
+	jr nz, .printString
+	
+	xor a
+	ldh [hTilemapMode], a
+	ld hl, wFixedTileMap
+	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
+	call Fill
+	
+	ld hl, wTransferRows + 8
+	inc a ; ld a, 1
+	ld c, SCREEN_HEIGHT
+	rst fill
+	
+	ld c, 0
+	ld hl, $9901
+	
+.mainLoop
+	rst waitVBlank
+	ld [hl], $7F ; VBlank should still be in effect
+	ldh a, [hPressedButtons]
+	rra
+	jr c, .exec
+	and (DPAD_UP | DPAD_DOWN) >> 1
+	jr z, .mainLoop
+	ld [hl], 0
+	and DPAD_UP >> 1
+	jr nz, .up
+	inc c
+	ld a, c
+	cp b
+	jr nz, .redrawCursor
+	xor a
+	jr .redrawCursor - 1 ; Load a (which is 0) into c
+	
+.up
+	ld a, c
+	and a
+	jr nz, .ok
+	ld a, b
+.ok
+	dec a
+	ld c, a
+.redrawCursor
+	swap a
+	add a, a
+	add a, a
+	inc a ; add a, 1
+	ld l, a
+	jr .mainLoop
+	
+.exec
+	ld [hl], 0
+	ld a, c
+	add a, a
+	add a, LOW(.pointers)
+	ld l, a
+	adc a, HIGH(.pointers)
+	sub l
+	ld h, a
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	rst callHL
+	jr .restart
+	
+.strings
+	dstr "DEBUG MENU"
+	dstr "SOUND TEST"
+	dstr "TILESET VIEWER"
+	db 0
+	
+.pointers
+	dw SoundTestMenu
+	dw TilesetViewerMenu
+	
+	
+SoundTestMenu::
+	ld hl, .strings
+.printStrings
+	ld e, [hl]
+	inc hl
+	ld d, [hl]
+	inc hl
+	rst copyStr
+	ld a, [hl]
+	and a
+	jr nz, .printStrings
+	
+	ld [wYPos], a
+	ld [wXPos], a
+	ld [wCurrentMusicID], a
+	
+	ld hl, wTransferRows + 8
+	ld c, SCREEN_HEIGHT
+	inc a
+	rst fill
+	ldh [hTilemapMode], a
+	
+	ld [rVBK], a
+	ld hl, $9E48
+	ld b, $20
+.waitVRAM
+	rst isVRAMOpen
+	jr nz, .waitVRAM
+	ld [hl], b
+	ld l, $A8
+	ld [hl], b
+	xor a
+	ld [rVBK], a
+	
+.mainLoop
+	rst waitVBlank
+	ld a, 1
+	ld [wTransferRows + 18], a
+	ld [wTransferRows + 21], a
+	ldh a, [hPressedButtons]
+	ld l, a
+	rst waitVBlank
+	
+	ld de, wFixedTileMap + SCREEN_WIDTH * 10 + 8
+	ld c, " "
+	ld a, [wYPos]
+	and a
+	jr nz, .notOnMusic
+	ld c, $7F
+.notOnMusic
+	ld a, c
+	ld [de], a
+	inc de
+	ld a, [wCurrentMusicID]
+	ld b, a
+	call PrintHex
+	ld a, c
+	ld [de], a
+	
+	ld de, wFixedTileMap + SCREEN_WIDTH * 13 + 8
+	ld a, c
+	xor " " ^ $7F
+	ld c, a
+	ld [de], a
+	inc de
+	ld a, [wCurrentMusicID]
+	ld b, a
+	call PrintHex
+	ld a, c
+	ld [de], a
+	
+	ldh a, [hPressedButtons]
+	or l ; Add in the buttons of the previous frame (since this runs at 30 fps)
+	bit 1, a
+	jr nz, .end
+	bit 5, a
+	jr nz, .left
+	bit 4, a
+	jr nz, .right
+	bit 3, a
+	jr nz, .fadein
+	bit 2, a
+	jr nz, .fadeout
+	rrca
+	jr c, .play
+	and (DPAD_UP | DPAD_DOWN) >> 1
+	jr z, .mainLoop
+	ld a, [wYPos]
+	xor 1
+	ld [wYPos], a
+	jr .mainLoop
+	
+.end
+	jp DS_Stop
+	
+.left
+	ld a, [wYPos]
+	and a
+	jr nz, .decSFX
+	ld hl, wCurrentMusicID
+	dec [hl]
+	jr .mainLoop
+.decSFX
+	jr .mainLoop
+	
+.right
+	ld a, [wYPos]
+	and a
+	jr nz, .incSFX
+	ld hl, wCurrentMusicID
+	inc [hl]
+	jr .mainLoop
+.incSFX
+	jp .mainLoop
+	
+.fadein
+	ld a, MUSICFADE_IN
+	call DS_Fade
+	jp .mainLoop
+	
+.fadeout
+	ld a, MUSICFADE_OUT
+	call DS_Fade
+	jp .mainLoop
+	
+.play
+	ld a, [wCurrentMusicID]
+	call DS_Init
+	jp .mainLoop
+	
+	
+.strings
+	dw wFixedTileMap + SCREEN_WIDTH + 2
+	dstr "SOUND TEST"
+	dw wFixedTileMap + SCREEN_WIDTH * 3 + 1
+	dstr "     A - PLAY"
+	dw wFixedTileMap + SCREEN_WIDTH * 4 + 1
+	dstr "     B - EXIT"
+	dw wFixedTileMap + SCREEN_WIDTH * 5 + 1
+	dstr " START - FADE IN"
+	dw wFixedTileMap + SCREEN_WIDTH * 6 + 1
+	dstr "SELECT - FADE OUT"
+	dw wFixedTileMap + SCREEN_WIDTH * 10 + 1
+	dstr "MUSIC:"
+	dw wFixedTileMap + SCREEN_WIDTH * 13 + 3
+	dstr "SFX:"
+	db 0
+	
+TilesetViewerMenu::
+	ret
+	
