@@ -238,6 +238,22 @@ wTransferSprites::
 ; Manually capped at 40, the maximum possible value
 wTotalNumOfSprites::
 	ds 1
+	
+	
+SECTION "Animation table", WRAM0,ALIGN[3]
+	
+wAnimationTable::
+	animation 0
+	animation 1
+	animation 2
+	animation 3
+	animation 4
+	animation 5
+	animation 6
+	animation 7
+	
+wNumOfAnimations::
+	ds 1
 
 	
 	

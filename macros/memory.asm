@@ -118,6 +118,16 @@ wButtonLoadZone\1_unused::		ds 7
 ENDM
 
 
+animation: MACRO
+wAnimation\1_linkID::		db ; ID of the animation this one is waiting for
+wAnimation\1_delay::		db
+wAnimation\1_bank::			db
+wAnimation\1_ptr::			dw
+wAnimation\1_nbOfSprites::	db
+wAnimation\1_unused::		ds 2
+ENDM
+
+
 dtile: MACRO
 	ds VRAM_TILE_SIZE * (\1)
 ENDM
