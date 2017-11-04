@@ -2,32 +2,6 @@
 SECTION "Error handler", ROMX
 	
 	
-; Prints b as hex to de
-; Advances de as well
-PrintHex::
-	ld a, b
-	and $F0
-	swap a
-	add a, "0"
-	cp ":"
-	jr c, .isDigitHigh
-	add a, "A" - ":"
-.isDigitHigh
-	ld [de], a
-	inc de
-	ld a, b
-	and $0F
-	add a, "0"
-	cp ":"
-	jr c, .isDigitLow
-	add a, "A" - ":"
-.isDigitLow
-	ld [de], a
-	inc de
-	ret
-	
-	
-	
 ; Function to print the fatal error handler
 ; Also in this bank since there's lotsa room for this
 DebugFatalError::
