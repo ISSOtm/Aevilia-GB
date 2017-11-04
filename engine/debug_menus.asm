@@ -117,10 +117,6 @@ SoundTestMenu::
 	and a
 	jr nz, .printStrings
 	
-	ld [wYPos], a
-	ld [wXPos], a
-	ld [wCurrentMusicID], a
-	
 	ld hl, wTransferRows + 8
 	ld c, SCREEN_HEIGHT
 	inc a
@@ -138,6 +134,11 @@ SoundTestMenu::
 	ld [hl], b
 	xor a
 	ld [rVBK], a
+	
+	ld [wYPos], a
+	ld [wXPos], a
+	ld [wCurrentMusicID], a
+	jr .printMusicName
 	
 .mainLoop
 	rst waitVBlank
@@ -206,7 +207,7 @@ SoundTestMenu::
 	jr nz, .decSFX
 	ld hl, wCurrentMusicID
 	dec [hl]
-	jr .mainLoop
+	jr .printMusicName
 .decSFX
 	jr .mainLoop
 	
@@ -216,7 +217,35 @@ SoundTestMenu::
 	jr nz, .incSFX
 	ld hl, wCurrentMusicID
 	inc [hl]
-	jr .mainLoop
+.printMusicName
+	ld hl, wFixedTileMap + SCREEN_WIDTH * 11
+	ld c, SCREEN_WIDTH
+	xor a
+	rst fill ; Clear the song name
+	ld bc, BANK(SongNames) << 8 | 2
+	ld a, [wCurrentMusicID]
+	cp MUSIC_INVALIDTRACK
+	ld hl, InvalidSongName
+	jr nc, .gotSongName
+	add a, a
+	add a, LOW(SongNames)
+	ld l, a
+	adc a, HIGH(SongNames)
+	sub l
+	ld h, a
+	ld de, wTempBuf
+	call CopyAcrossLite
+	ld hl, wTempBuf
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+.gotSongName
+	ld de, wFixedTileMap + SCREEN_WIDTH * 11
+	call CopyStrAcross
+	ld a, 1
+	ld [wTransferRows + 19], a
+	rst waitVBlank
+	jp .mainLoop
 .incSFX
 	jp .mainLoop
 	
