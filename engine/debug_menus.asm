@@ -12,6 +12,17 @@ HomeDebugMenu::
 	callacross LoadBGPalette_Hook
 	
 .restart
+	xor a
+	ldh [hTilemapMode], a
+	ld hl, wFixedTileMap
+	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
+	call Fill
+	
+	ld hl, wTransferRows + 8
+	inc a ; ld a, 1
+	ld c, SCREEN_HEIGHT
+	rst fill
+	
 	ld hl, .strings
 	ld de, $98A2
 	call CopyStrToVRAM
@@ -30,17 +41,6 @@ HomeDebugMenu::
 	ld a, [hl]
 	and a
 	jr nz, .printString
-	
-	xor a
-	ldh [hTilemapMode], a
-	ld hl, wFixedTileMap
-	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
-	call Fill
-	
-	ld hl, wTransferRows + 8
-	inc a ; ld a, 1
-	ld c, SCREEN_HEIGHT
-	rst fill
 	
 	ld c, 0
 	ld hl, $9901
