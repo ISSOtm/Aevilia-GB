@@ -283,5 +283,108 @@ SoundTestMenu::
 	db 0
 	
 TilesetViewerMenu::
-	ret
+	ld hl, .strings
+.printStrings
+	ld e, [hl]
+	inc hl
+	ld d, [hl]
+	inc hl
+	rst copyStr
+	ld a, [hl]
+	and a
+	jr nz, .printStrings
+	
+	ld hl, wTransferRows
+	ld c, SCREEN_HEIGHT
+	inc a ; ld a, 1
+	rst fill
+	ldh [hTilemapMode], a
+	
+	ld [rVBK], a
+.waitVRAM
+	rst isVRAMOpen
+	jr nz, .waitVRAM
+	ld a, $20
+	ld [$9E4C], a
+	
+	xor a
+	ld [rVBK], a
+	jr .updateTileset
+	
+.selectTileset
+	rst waitVBlank
+	ldh a, [hPressedButtons]
+	rra
+	jr c, .viewTiles
+	rra
+	ret c
+	rra
+	jr c, .viewNPCs
+	rra
+	rra
+	jr c, .right
+	rra
+	jr nc, .selectTileset
+	
+	ld a, [wLoadedTileset]
+	dec a
+	jr .updateTileset
+.right
+	ld a, [wLoadedTileset]
+	inc a
+.updateTileset
+	ld [wLoadedTileset], a
+	ld b, a
+	ld de, wFixedTileMap  + SCREEN_WIDTH * 10 + 13
+	call PrintHex
+	; Non-zero
+	ld [wTransferRows + 18], a
+	
+.loadTileset
+	ld d, $FD
+.clearOneBank
+	inc d
+	jr z, .doneClearingTiles
+	ld a, d
+	cpl
+	ld [rVBK], a
+	ld hl, v1Tiles1
+	ld bc, 4 * 256
+	ld e, $AA
+.clearTiles
+	rst isVRAMOpen
+	jr nz, .clearTiles
+	ld a, e
+	ld [hli], a
+	ld [hli], a
+	cpl
+	ld e, a
+	dec bc
+	ld a, b
+	or c
+	jr nz, .clearTiles
+	jr .clearOneBank
+.doneClearingTiles
+	ld a, [wLoadedTileset]
+	call LoadTileset
+	jr .selectTileset
+	
+.viewTiles
+	jr TilesetViewerMenu
+	
+.viewNPCs
+	jr TilesetViewerMenu
+	
+.strings
+	dw wFixedTileMap + SCREEN_WIDTH + 2
+	dstr "TILESET VIEWER"
+	dw wFixedTileMap + SCREEN_WIDTH * 4 + 1
+	dstr "     A - VIEW TILES"
+	dw wFixedTileMap + SCREEN_WIDTH * 5 + 1
+	dstr "     B - EXIT"
+	dw wFixedTileMap + SCREEN_WIDTH * 6 + 1
+	dstr " START - VIEW NPCS"
+	dw wFixedTileMap + SCREEN_WIDTH * 10
+	dstr "TILESET ID: ",$7F,"  ",$7F
+	db 0
 	
