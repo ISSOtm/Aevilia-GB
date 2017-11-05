@@ -1240,9 +1240,9 @@ EviePajamasWalkingTiles::
 	dw $5CF4, $5CF4, $1CF4, $E8F8, $48F8, $F0B0, $C0C0, $0000
 	
 	dw $0000, $0303, $0F0C, $1F10, $3F20, $3F28, $373C, $171F
-	dw $141F, $101F, $090F, $0707, $0D0F, $141F, $131F, $0606
+	dw $141F, $101F, $090F, $0707, $0D0F, $141F, $131F, $0E0E
 	dw $0000, $C0C0, $F030, $F808, $FC04, $FC04, $FC04, $FC04
-	dw $FC84, $FC84, $FC04, $FCE4, $78B8, $A8F8, $C8F8, $6060
+	dw $FC84, $FC84, $FC04, $FCE4, $78B8, $A8F8, $C8F8, $3030
 	
 TomPajamasWalkingTiles::
 	dw $0000, $0303, $0F0C, $1F10, $1F10, $3F20, $3F20, $3F20
