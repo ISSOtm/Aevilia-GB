@@ -15,26 +15,16 @@ TestForestInteractions::
 	db 4
 	
 	db WALK_LOADZONE
-	interact_box $0068, $01C6, 25, 14
-	db THREAD2_LOADINGWALKRIGHT
-	db 2
-	db MAP_STARTHAM
-	ds 7
+	load_zone $0068, $01C6, 25, 14, THREAD2_LOADINGWALKRIGHT, 2, MAP_STARTHAM
 	
 	db WALK_INTERACT
-	interact_box $0028, $0000, 9, 16
-	dw TestForestEndOfDemo
-	ds 8
+	interaction $0028, $0000, 9, 16, TestForestEndOfDemo
 	
 	db BTN_INTERACT
-	interact_box $00B0, $01C0, 16, 16
-	dw TestForestEntranceSign
-	ds 8
+	interaction $00B0, $01C0, 16, 16, TestForestEntranceSign
 	
 	db BTN_INTERACT
-	interact_box $0020, $0050, 16, 16
-	dw StarthamForestExitSign
-	ds 8
+	interaction $0020, $0050, 16, 16, StarthamForestExitSign
 	
 TestForestNPCs::
 	db 0
@@ -42,14 +32,7 @@ TestForestNPCs::
 TestForestWarpToPoints::
 	db 1
 	
-	dw $0074
-	dw $01C2
-	db DIR_LEFT
-	db KEEP_WALKING
-	db 0
-	db THREAD2_AFTERLOADINGWALKLEFT
-	dw NO_SCRIPT
-	ds 6
+	warp_to $0074, $01C2, DIR_LEFT, KEEP_WALKING, 0, THREAD2_AFTERLOADINGWALKLEFT, NO_SCRIPT ; Startham
 	
 TestForestBlocks::
 INCBIN "maps/startham_forest.blk"

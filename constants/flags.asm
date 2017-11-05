@@ -6,6 +6,7 @@ ENDM
 FLAG_RESET	equ $0000
 FLAG_SET	equ $8000
 
+NO_FLAG_DEP	equ 0
 FLAG_DEP	equ $80
 	
 	

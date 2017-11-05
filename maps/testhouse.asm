@@ -16,43 +16,28 @@ TestHouseInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	interact_box $004B, $002E, 6, 5
-	db THREAD2_LOADINGWALKDOWN
-	db 0
-	db MAP_STARTHAM
-	ds 7
+	load_zone $004B, $002E, 6, 5, THREAD2_LOADINGWALKDOWN, 0, MAP_STARTHAM
 	
 TestHouseNPCs::
 	db 1
 	
-	dw 0
-	interact_box $0020, $0020, 16, 16
-	db 0
-	db $01 << 2 + DIR_LEFT
-	dn 1, 2, 1, 2
-	db $00
-	db $00
+	dw NO_FLAG_DEP
+	npc $0020, $0020, 16, 16, 0, $01, DIR_LEFT, 1, 2, 1, 2, 0, 0 ; Test battle
 	
-	db $01
+	db 1
 	dw TestHouseNPCScripts
 	
-	db $01
+	db 1
 	full_ptr TestHouseNPCTiles
 	
 TestHouseWarpToPoints::
 	db 1 ; Number of warp-to points
 	
-	dw $0041 ; Y pos
-	dw $0030 ; X pos
-	db DIR_UP ; Direction
-	db NO_WALKING ; Flags
-	db 0
-	db THREAD2_AFTERLOADINGWALKUP
-	dw NO_SCRIPT ; Loading script (none)
-	ds 6
+	warp_to $0041, $0030, DIR_UP, NO_WALKING, 0, THREAD2_AFTERLOADINGWALKUP, NO_SCRIPT ; Startham
 	
 TestHouseBlocks::
 INCBIN "maps/testhouse.blk"
+	
 	
 TestHouseNPCScripts::
 	dw TestHouseTestBattleScript

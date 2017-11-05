@@ -35,55 +35,23 @@ IntroMapInteractions::
 IntroMapNPCs::
 	db 6
 	
-	dw 0
-	interact_box $0128, $0070, 16, 16 ; X hitbox
-	db 0 ; Interaction ID
-	db 1 << 2 + DIR_DOWN ; Sprite ID & direction
-	dn 1, 1, 1, 1 ; Palette IDs
-	db 0 ; Movement permissions
-	db 0 ; Movement speed
+	dw NO_FLAG_DEP
+	npc $0128, $0070, 16, 16, 0, 1, DIR_DOWN, 1, 1, 1, 1, 0, 0 ; "FRIENDLY NPC"
 	
-	; Dummy NPC for the camera to focus on during gender selection
-	dw 0
-	interact_box $00D0, $0000, 0, 0
-	db 0
-	db 2 << 2 | DIR_DOWN
-	dn 0, 0, 0, 0
-	db 0
-	db 0
+	dw NO_FLAG_DEP
+	npc $00D0, $0000, 0, 0, 0, 2, DIR_DOWN, 0, 0, 0, 0, 0, 0 ; Gender select camera focus point
 	
-	; Dummy NPCs to display some of the character's eye colors to override some palette limitations
-	dw 0
-	interact_box $00C8, $0018, 0, 0
-	db 0
-	db 3 << 2 | DIR_LEFT
-	dn 1, 1, 1, 1
-	db 0
-	db 0
+	dw NO_FLAG_DEP
+	npc $00C8, $0018, 0, 0, 0, 3, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Evie right eye
 	
-	dw 0
-	interact_box $00C8, $0020, 0, 0
-	db 0
-	db 4 << 2 | DIR_LEFT
-	dn 1, 1, 1, 1
-	db 0
-	db 0
+	dw NO_FLAG_DEP
+	npc $00C8, $0020, 0, 0, 0, 4, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Evie left eye
 	
-	dw 0
-	interact_box $00C8, $0070, 0, 0
-	db 0
-	db 4 << 2 | DIR_RIGHT
-	dn 1, 1, 1, 1
-	db 0
-	db 0
+	dw NO_FLAG_DEP
+	npc $00C8, $0070, 0, 0, 0, 4, DIR_RIGHT, 1, 1, 1, 1, 0, 0 ; Tom right eye
 	
-	dw 0
-	interact_box $00C8, $0078, 0, 0
-	db 0
-	db 3 << 2 | DIR_RIGHT
-	dn 1, 1, 1, 1
-	db 0
-	db 0
+	dw NO_FLAG_DEP
+	npc $00C8, $0078, 0, 0, 0, 3, DIR_RIGHT, 1, 1, 1, 1, 0, 0 ; Tom left eye
 	
 	db 1
 	dw IntroMapNPCScripts
@@ -100,26 +68,12 @@ IntroMapNPCs::
 IntroMapWarpToPoints::
 	db 2
 	
-	dw $0028
-	dw $0010
-	db DIR_RIGHT
-	db NO_WALKING
-	db 2
-	db THREAD2_DISABLED
-	dw CharSelectLoadingScript
-	ds 6
+	warp_to $0028, $0010, DIR_RIGHT, NO_WALKING, 2, THREAD2_DISABLED, CharSelectLoadingScript ; Char select entry point
 	
 TUTORIAL_STARTING_YPOS = $0028
 TUTORIAL_STARTING_XPOS = $0010
 	
-	dw TUTORIAL_STARTING_YPOS
-	dw TUTORIAL_STARTING_XPOS
-	db DIR_RIGHT
-	db NO_WALKING
-	db 0
-	db THREAD2_DISABLED
-	dw IntroMapLoadingScript
-	ds 6
+	warp_to TUTORIAL_STARTING_YPOS, TUTORIAL_STARTING_XPOS, DIR_RIGHT, NO_WALKING, 0, THREAD2_DISABLED, IntroMapLoadingScript ; Tutorial entry point
 	
 IntroMapBlocks::
 INCBIN "maps/intro.blk"

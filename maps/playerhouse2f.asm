@@ -15,44 +15,23 @@ PlayerHouse2FInteractions::
 	db 2
 	
 	db WALK_LOADZONE
-	interact_box $0008, $FFFE, 16, 16
-	db THREAD2_LOADINGSTAIRSDOWN_LEFT
-	db 1
-	db MAP_PLAYER_HOUSE
-	ds 7
+	load_zone $0008, $FFFE, 16, 16, THREAD2_LOADINGSTAIRSDOWN_LEFT, 1, MAP_PLAYER_HOUSE
 	
 	db WALK_INTERACT | FLAG_DEP
 	flag_dep FLAG_RESET, FLAG_INTRO_CUTSCENE_PLAYED
-	interact_box $0010, $0090, 1, 1
-	dw TestIntroCutscene
-	ds 8
+	interaction $0010, $0090, 1, 1, TestIntroCutscene
 	
 PlayerHouse2FNPCs::
 	db 3
 	
-	dw 0
-	interact_box $0040, $0030, 0, 0
-	db 0 ; Interaction ID
-	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
-	dn 1, 1, 1, 1 ; Palette IDs
-	db $00 ; Movement permissions
-	db $00 ; Movement speed
+	dw NO_FLAG_DEP
+	npc $0040, $0030, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Top-left plant
 	
-	dw 0
-	interact_box $0050, $0050, 0, 0
-	db 0 ; Interaction ID
-	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
-	dn 1, 1, 1, 1 ; Palette IDs
-	db $00 ; Movement permissions
-	db $00 ; Movement speed
+	dw NO_FLAG_DEP
+	npc $0050, $0050, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Bottom-left plant
 	
 	flag_dep FLAG_RESET, FLAG_INTRO_CUTSCENE_PLAYED
-	interact_box $0002, $0089, 0, 0
-	db 0
-	db 1 << 2 | DIR_UP
-	dn 4, 4, 4, 4
-	db 0
-	db 0
+	npc $0002, $0089, 0, 0, 0, 1, DIR_UP, 4, 4, 4, 4, 0, 0 ; ZZZ sprite
 	
 	db 0 ; Number of NPC scripts
 	dw 0 ; Obligatory no matter the above value
@@ -63,26 +42,13 @@ PlayerHouse2FNPCs::
 PlayerHouse2FWarpToPoints::
 	db 2 ; Number of warp-to points
 	
-	dw $0009
-	dw $000F
-	db DIR_RIGHT
-	db NO_WALKING
-	db 0
-	db THREAD2_DISABLED
-	dw NO_SCRIPT
-	ds 6
+	warp_to $0009, $000F, DIR_RIGHT, NO_WALKING, 0, THREAD2_DISABLED, NO_SCRIPT ; Stairs from 1F
 	
-	dw $0010
-	dw $0090
-	db DIR_DOWN
-	db NO_WALKING
-	db 0
-	db THREAD2_DISABLED
-	dw PlayerHouse2FLoadIntroGfx
-	ds 6
+	warp_to $0010, $0090, DIR_DOWN, NO_WALKING, 0, THREAD2_DISABLED, PlayerHouse2FLoadIntroGfx ; Intro entry point
 	
 PlayerHouse2FBlocks::
 INCBIN "maps/playerhouse2f.blk"
+	
 	
 PlayerHouse2FTilesetScript::
 	ld de, FLAG_INTRO_CUTSCENE_PLAYED

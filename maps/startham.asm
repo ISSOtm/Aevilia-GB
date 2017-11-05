@@ -16,106 +16,55 @@ StarthamInteractions::
 	db 12
 	
 	db WALK_LOADZONE
-	interact_box $0048, $0000, 25, 21
-	db THREAD2_LOADINGWALKLEFT
-	db 0
-	db MAP_STARTHAM_FOREST
-	ds 7
+	load_zone $0048, $0000, 25, 21, THREAD2_LOADINGWALKLEFT, 0, MAP_STARTHAM_FOREST
+	
+	db WALK_INTERACT
+	interaction $FFF8, $013E, 16, 5, StarthamUnfinishedNorthConnection
+	
+	db WALK_INTERACT
+	interaction $0100, $0142, 16, 5, StarthamUnfinishedSouthConnection
 	
 	db BTN_LOADZONE
-	interact_box $009F, $0052, 1, 12
-	db THREAD2_OPENDOOR
-	db 0 ; Dest warp point
-	db MAP_PLAYER_HOUSE ; Dest map
-	ds 7
+	load_zone $009F, $0052, 1, 12, THREAD2_OPENDOOR, 0, MAP_PLAYER_HOUSE
 	
 	db BTN_LOADZONE
-	interact_box $004F, $0092, 1, 12
-	db THREAD2_OPENDOOR
-	db 0
-	db MAP_TEST_HOUSE
-	ds 7
+	load_zone $004F, $0092, 1, 12, THREAD2_OPENDOOR, 0, MAP_TEST_HOUSE
 	
 	db BTN_LOADZONE
-	interact_box $004F, $0042, 1, 12
-	db THREAD2_OPENDOOR
-	db 0
-	db MAP_STARTHAM_HOUSE_2
-	ds 7
+	load_zone $004F, $0042, 1, 12, THREAD2_OPENDOOR, 0, MAP_STARTHAM_HOUSE_2
 	
 	db BTN_LOADZONE | FLAG_DEP
 	flag_dep FLAG_SET, FLAG_STARTHAM_LARGE_HOUSE_UNLOCKED
-	interact_box $005F, $00D2, 1, 12
-	db THREAD2_OPENDOOR
-	db 0
-	db MAP_STARTHAM_LARGE_HOUSE
-	ds 7
+	load_zone $005F, $00D2, 1, 12, THREAD2_OPENDOOR, 0, MAP_STARTHAM_LARGE_HOUSE
 	
 	db BTN_INTERACT | FLAG_DEP
 	flag_dep FLAG_RESET, FLAG_STARTHAM_LARGE_HOUSE_UNLOCKED
-	interact_box $005F, $00D2, 1, 12
-	dw StarthamLockedHouseText
-	ds 8
+	interaction $005F, $00D2, 1, 12, StarthamLockedHouseText
 	
 	db BTN_INTERACT
-	interact_box $0090, $0130, 16, 16
-	dw StarthamSignText ; Text ptr
-	ds 8
+	interaction $0090, $0130, 16, 16, StarthamSignText
 	
 	db BTN_INTERACT
-	interact_box $0060, $00E0, 16, 16
-	dw StarthamHouseForSaleSign
-	ds 8
+	interaction $0060, $00E0, 16, 16, StarthamHouseForSaleSign
 	
 	db BTN_INTERACT
-	interact_box $0050, $0050, 16, 16
-	dw StarthamEmptySign
-	ds 8
+	interaction $0050, $0050, 16, 16, StarthamEmptySign
 	
 	db WALK_INTERACT | FLAG_DEP
 	flag_dep FLAG_RESET, FLAG_STARTHAM_SIBLING_ENTERED
-	interact_box $0098, $0050, 1, 1
-	dw StarthamMeetSiblingCutscene
-	ds 8
-	
-	db WALK_INTERACT
-	interact_box $FFF8, $013E, 16, 5
-	dw StarthamUnfinishedNorthConnection
-	ds 8
-	
-	db WALK_INTERACT
-	interact_box $0100, $0142, 16, 5
-	dw StarthamUnfinishedSouthConnection
-	ds 8
+	interaction $0098, $0050, 1, 1, StarthamMeetSiblingCutscene
 	
 StarthamNPCs::
 	db 3 ; Number of NPCs
 	
-	dw 0 ; No flag dependency
-	interact_box $00B3, $00D8, 16, 16
-	db 1 ; Interaction ID
-	db $01 << 2 | DIR_DOWN ; Sprite ID & direction
-	dn 1, 1, 1, 1 ; Palette IDs
-	db $F4 ; Movement permissions
-	db $01 ; Movement speed
+	dw NO_FLAG_DEP ; No flag dependency
+	npc $00B3, $00D8, 16, 16, 1, $01, DIR_DOWN, 1, 1, 1, 1, $F4, 1 ; Generic inhabitant
 	
-	; Parzival
-	dw 0 ; No flag dependency
-	interact_box $0110, $01C0, 16, 16
-	db 0 ; Interaction ID
-	db $01 << 2 | DIR_DOWN
-	dn 1, 1, 1, 1
-	db 0
-	db 0
+	dw NO_FLAG_DEP
+	npc $0110, $01C0, 16, 16, 0, $01, DIR_DOWN, 1, 1, 1, 1, 0, 0 ; Parzival
 	
-	; Sibling (cutscene-only)
 	flag_dep FLAG_RESET, FLAG_STARTHAM_SIBLING_ENTERED
-	interact_box $0098, $0060, 0, 0
-	db 0
-	db 2 << 2 | DIR_UP
-	dn 2, 2, 2, 2
-	db 0
-	db 0
+	npc $0098, $0060, 0, 0, 0, 2, DIR_UP, 2, 2, 2, 2, 0, 0 ; Sibling (cutscene-only)
 	
 	db $02 ; Number of NPC scripts
 	dw StarthamNPCScripts
@@ -127,50 +76,15 @@ StarthamNPCs::
 StarthamWarpToPoints::
 	db 5 ; Number of warp-to points
 	
-	dw $0048 ; Y pos
-	dw $0090 ; X pos
-	db DIR_DOWN ; Direction
-	db NO_WALKING ; Flags
-	db 0 ; Cameraman ID
-	db THREAD2_DISABLED
-	dw NO_SCRIPT ; Loading script (none)
-	ds 6
+	warp_to $0048, $0090, DIR_DOWN, NO_WALKING, 0, THREAD2_DISABLED, NO_SCRIPT ; Test house
 	
-	dw $FFF8
-	dw $0140
-	db DIR_DOWN
-	db NO_WALKING
-	db 0
-	db THREAD2_DISABLED
-	dw NO_SCRIPT
-	ds 6
+	warp_to $FFF8, $0140, DIR_DOWN, NO_WALKING, 0, THREAD2_DISABLED, NO_SCRIPT ; Old intro entry point
 	
-	dw $0055
-	dw $001E
-	db DIR_RIGHT
-	db KEEP_WALKING
-	db 0
-	db THREAD2_AFTERLOADINGWALKRIGHT
-	dw NO_SCRIPT
-	ds 6
+	warp_to $0055, $001E, DIR_RIGHT, KEEP_WALKING, 0, THREAD2_AFTERLOADINGWALKRIGHT, NO_SCRIPT ; Startham forest
 	
-	dw $0098
-	dw $0050
-	db DIR_DOWN
-	db NO_WALKING
-	db 0
-	db THREAD2_DISABLED
-	dw NO_SCRIPT
-	ds 6
+	warp_to $0098, $0050, DIR_DOWN, NO_WALKING, 0, THREAD2_DISABLED, NO_SCRIPT ; Player house
 	
-	dw $0048
-	dw $0040
-	db DIR_DOWN
-	db NO_WALKING
-	db 0
-	db THREAD2_DISABLED
-	dw NO_SCRIPT
-	ds 6
+	warp_to $0048, $0040, DIR_DOWN, NO_WALKING, 0, THREAD2_DISABLED, NO_SCRIPT ; Startham house 2
 	
 StarthamBlocks::
 INCBIN "maps/startham.blk"

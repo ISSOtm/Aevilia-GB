@@ -15,30 +15,16 @@ StarthamHouse2Interactions::
 	db 1
 	
 	db WALK_LOADZONE
-	interact_box $0087, $002E, 10, $15
-	db THREAD2_LOADINGWALKDOWN
-	db 4
-	db MAP_STARTHAM
-	ds 7
+	load_zone $0087, $002E, 10, $15, THREAD2_LOADINGWALKDOWN, 4, MAP_STARTHAM
 	
 StarthamHouse2NPCs::
 	db 2
 	
-	dw 0
-	interact_box $0040, $0000, 0, 0
-	db 0
-	db $0A << 2 | DIR_LEFT
-	dn 1, 1, 1, 1
-	db $00
-	db $00
+	dw NO_FLAG_DEP
+	npc $0040, $0000, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Top-left plant
 	
-	dw 0
-	interact_box $0070, $0090, 0, 0
-	db 0
-	db $0A << 2 | DIR_LEFT
-	dn 1, 1, 1, 1
-	db $00
-	db $00
+	dw NO_FLAG_DEP
+	npc $0070, $0090, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Bottom-right plant
 	
 	db 0
 	dw 0
@@ -48,14 +34,7 @@ StarthamHouse2NPCs::
 StarthamHouse2WarpToPoints::
 	db 1 ; Number of warp-to points
 	
-	dw $0086 ; Y pos
-	dw $0038 ; X pos
-	db DIR_UP ; Direction
-	db NO_WALKING ; Flags
-	db 0
-	db THREAD2_AFTERLOADINGWALKUP
-	dw NO_SCRIPT ; Loading script (none)
-	ds 6
+	warp_to $0086, $0038, DIR_UP, NO_WALKING, 0, THREAD2_AFTERLOADINGWALKUP, NO_SCRIPT ; Startham
 	
 StarthamHouse2Blocks::
 INCBIN "maps/starthamhouse2.blk"

@@ -15,62 +15,33 @@ PlayerHouseInteractions::
 	db 5
 	
 	db WALK_LOADZONE
-	interact_box $0077, $003E, 10, $15
-	db THREAD2_LOADINGWALKDOWN
-	db 3
-	db MAP_STARTHAM
-	ds 7
+	load_zone $0077, $003E, 10, $15, THREAD2_LOADINGWALKDOWN, 3, MAP_STARTHAM
 	
 	db WALK_LOADZONE
-	interact_box $0008, $FFFE, 16, 16
-	db THREAD2_LOADINGSTAIRSUP_LEFT
-	db 0
-	db MAP_PLAYER_HOUSE_2F
-	ds 7
+	load_zone $0008, $FFFE, 16, 16, THREAD2_LOADINGSTAIRSUP_LEFT, 0, MAP_PLAYER_HOUSE_2F
 	
 	db BTN_INTERACT
-	interact_box $0008, $0080, 16, 16
-	dw PlayerHouseTVScript
-	ds 8
+	interaction $0008, $0080, 16, 16, PlayerHouseTVScript
 	
 	db WALK_INTERACT | FLAG_DEP
 	flag_dep FLAG_SET, FLAG_LOAD_CUTSCENE_NPCS
-	interact_box $0071, $003E, 16, 21
-	dw PlayerHouseDontLeaveScript
-	ds 8
+	interaction $0071, $003E, 16, 21, PlayerHouseDontLeaveScript
 	
 	db WALK_INTERACT | FLAG_DEP
 	flag_dep FLAG_SET, FLAG_SIBLING_WATCHING_TV
-	interact_box $0071, $003E, 16, 21
-	dw PlayerHouseDontLeaveScript
-	ds 8
+	interaction $0071, $003E, 16, 21, PlayerHouseDontLeaveScript
 	
 PlayerHouseNPCs::
 	db 3
 	
-	dw 0 ; No flag dependency
-	interact_box $0060, $0000, 0, 0
-	db 0 ; Interaction ID
-	db $0A << 2 | DIR_LEFT ; Sprite ID & direction
-	dn 1, 1, 1, 1 ; Palette IDs
-	db $00 ; Movement permissions
-	db $00 ; Movement speed
+	dw NO_FLAG_DEP
+	npc $0060, $0000, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Plant
 	
 	flag_dep FLAG_SET, FLAG_LOAD_CUTSCENE_NPCS
-	interact_box $0090, $0048, 16, 16
-	db 0
-	db 1 << 2 | DIR_UP
-	dn 2, 2, 2, 2
-	db 0
-	db 0
+	npc $0090, $0048, 16, 16, 0, 1, DIR_UP, 2, 2, 2, 2, 0, 0 ; Sibling (temp)
 	
 	flag_dep FLAG_SET, FLAG_SIBLING_WATCHING_TV
-	interact_box $0039, $0080, 16, 16
-	db 0
-	db 1 << 2 | DIR_UP
-	dn 2, 2, 2, 2
-	db 0
-	db 0
+	npc $0039, $0080, 16, 16, 0, 1, DIR_UP, 2, 2, 2, 2, 0, 0 ; Sibling (permanent, copy)
 	
 	db 1 ; Number of NPC scripts
 	dw PlayerHouseNPCScripts ; Obligatory no matter the above value
@@ -81,23 +52,9 @@ PlayerHouseNPCs::
 PlayerHouseWarpToPoints::
 	db 2 ; Number of warp-to points
 	
-	dw $0076 ; Y pos
-	dw $0048 ; X pos
-	db DIR_UP ; Direction
-	db NO_WALKING ; Flags
-	db 0
-	db THREAD2_AFTERLOADINGWALKUP
-	dw NO_SCRIPT ; Loading script (none)
-	ds 6
+	warp_to $0076, $0048, DIR_UP, NO_WALKING, 0, THREAD2_AFTERLOADINGWALKUP, NO_SCRIPT ; Startham
 	
-	dw $0010
-	dw $000F
-	db DIR_RIGHT
-	db NO_WALKING
-	db 0
-	db THREAD2_DISABLED
-	dw NO_SCRIPT
-	ds 6
+	warp_to $0010, $000F, DIR_RIGHT, NO_WALKING, 0, THREAD2_DISABLED, NO_SCRIPT ; 2F
 	
 PlayerHouseBlocks::
 INCBIN "maps/playerhouse.blk"
