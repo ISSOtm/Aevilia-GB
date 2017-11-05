@@ -42,7 +42,7 @@ SRAMCommonPattern::
 	ds 16 * 2
 	db "Oh, I am reaching the limit here. Gonna pad this with a few $FF bytes, and it's time to say goodbye :)"
 SRAMCommonEnd::
-	ds ($1000 - 3) - (SRAMCommonEnd - SRAMCommonPattern) - 1
+	ds ($1000 - 4) - (SRAMCommonEnd - SRAMCommonPattern) - 1
 	db 0
 	
 	
