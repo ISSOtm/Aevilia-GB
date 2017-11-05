@@ -408,6 +408,41 @@ THE_CONSTANT = 42
 	
 	xor a
 	ld [SRAMEnable], a
+	ld [SRAMBank], a
+	
+	ldh a, [hGFXFlags]
+	rla
+	jr nc, .useGBCGfx
+	ld hl, .gfxPickStrings
+	ld de, $9902
+	call CopyStrToVRAM
+	ld e, $44
+	call CopyStrToVRAM
+	ld hl, $9944
+.pickGFXModeLoop
+	rst waitVBlank
+	ldh a, [hPressedButtons]
+	rra
+	jr c, .useGBCGfx
+	and (DPAD_LEFT | DPAD_RIGHT) >> 1
+	jr z, .pickGFXModeLoop
+	ld [hl], 0
+	ld a, l
+	xor $04 ^ $0A
+	ld l, a
+	ld [hl], $7F
+	ldh a, [hGFXFlags]
+	xor $80
+	ldh [hGFXFlags], a
+	push hl
+	call ReloadPalettes
+	pop hl
+	jr .pickGFXModeLoop
+	
+.gfxPickStrings
+	dstr "PICK COLOR MODE:"
+	dstr $7F, "GBA   GBC"
+.useGBCGfx
 	
 	homecall PlayIntro
 	
