@@ -12,7 +12,7 @@ PlayerHouse::
 	dw NO_SCRIPT ; No loading script
 	
 PlayerHouseInteractions::
-	db 4
+	db 5
 	
 	db WALK_LOADZONE
 	interact_box $0077, $003E, 10, $15
@@ -35,6 +35,12 @@ PlayerHouseInteractions::
 	
 	db WALK_INTERACT | FLAG_DEP
 	flag_dep FLAG_SET, FLAG_LOAD_CUTSCENE_NPCS
+	interact_box $0071, $003E, 16, 21
+	dw PlayerHouseDontLeaveScript
+	ds 8
+	
+	db WALK_INTERACT | FLAG_DEP
+	flag_dep FLAG_SET, FLAG_SIBLING_WATCHING_TV
 	interact_box $0071, $003E, 16, 21
 	dw PlayerHouseDontLeaveScript
 	ds 8
