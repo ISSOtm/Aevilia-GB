@@ -13,7 +13,7 @@ StarthamMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 StarthamInteractions::
-	db 10
+	db 12
 	
 	db WALK_LOADZONE
 	interact_box $0048, $0000, 25, 21
@@ -76,6 +76,16 @@ StarthamInteractions::
 	flag_dep FLAG_RESET, FLAG_STARTHAM_SIBLING_ENTERED
 	interact_box $0098, $0050, 1, 1
 	dw StarthamMeetSiblingCutscene
+	ds 8
+	
+	db WALK_INTERACT
+	interact_box $FFF8, $013E, 16, 5
+	dw StarthamUnfinishedNorthConnection
+	ds 8
+	
+	db WALK_INTERACT
+	interact_box $0100, $0142, 16, 5
+	dw StarthamUnfinishedSouthConnection
 	ds 8
 	
 StarthamNPCs::
@@ -384,4 +394,57 @@ StarthamMeetSiblingCutscene::
 	turn_npc 1, DIR_UP
 	text_set_flag FLAG_SIBLING_WATCHING_TV
 	text_set_flag FLAG_STARTHAM_SIBLING_ENTERED
+	done
+	
+	
+	set_text_prefix StarthamUnfinishedMapText
+StarthamUnfinishedNorthConnection::
+	disp_box
+	print_line_id 0
+	print_line_id 1
+	wait_user
+	print_line_id 2
+	print_line_id 3
+	wait_user
+	clear_box
+	print_line_id 4
+	print_line_id 5
+	wait_user
+	print_line_id 6
+	print_line_id 7
+	wait_user
+	clear_box
+	print_line_id 8
+	print_line_id 9
+	delay 30
+	print_line_id 10
+	wait_user
+	close_box
+	make_player_walk DIR_DOWN, 5, 1
+	done
+	
+	set_text_prefix StarthamUnfinishedMapText
+StarthamUnfinishedSouthConnection::
+	disp_box
+	print_line_id 0
+	print_line_id 1
+	wait_user
+	print_line_id 2
+	print_line_id 3
+	wait_user
+	clear_box
+	print_line_id 4
+	print_line_id 5
+	wait_user
+	print_line_id 6
+	print_line_id 7
+	wait_user
+	clear_box
+	print_line_id 8
+	print_line_id 9
+	delay 30
+	print_line_id 10
+	wait_user
+	close_box
+	make_player_walk DIR_UP, 5, 1
 	done

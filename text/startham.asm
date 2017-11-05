@@ -90,3 +90,17 @@ SECTION "Startham text strings", ROMX
 	dline 21, "I'll watch TV and"
 	dline 22, "leave you alone."
 	
+	
+	set_text_prefix StarthamUnfinishedMapText
+	dline 0, "WORK IN PROGRESS"
+	dline 1, "AHEAD!"
+	dline 2, "Well\, this is a"
+	dline 3, "demo\, after all."
+	dline 4, "Since these areas"
+	dline 5, "aren't done yet\,"
+	dline 6, "how about touring"
+	dline 7, "those which are?"
+	dline 8, "Sorry for the"
+	dline 9, "inconvenience\,"
+	dline 10, "    ~ The Dev Team"
+	
