@@ -319,19 +319,23 @@ TilesetViewerMenu::
 	rra
 	ret c
 	rra
-	jr c, .viewNPCs
 	rra
+	jr c, .viewNPCs
 	rra
 	jr c, .right
 	rra
 	jr nc, .selectTileset
 	
 	ld a, [wLoadedTileset]
+	and a
+	jr z, .selectTileset
 	dec a
 	jr .updateTileset
 .right
 	ld a, [wLoadedTileset]
 	inc a
+	cp NB_OF_TILESETS
+	jr nc, .selectTileset
 .updateTileset
 	ld [wLoadedTileset], a
 	ld b, a
