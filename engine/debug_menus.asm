@@ -283,6 +283,34 @@ SoundTestMenu::
 	db 0
 	
 TilesetViewerMenu::
+	xor a
+	ld [wYPos + 1], a
+	ld [wLoadedTileset], a
+	
+.restartNoReset
+	ld a, 1
+	ld [rVBK], a
+	ld hl, vFixedMap
+	ld b, SCREEN_HEIGHT
+.clearRow
+	ld c, SCREEN_WIDTH
+	xor a
+	call FillVRAMLite
+	ld a, l
+	add VRAM_ROW_SIZE - SCREEN_WIDTH
+	ld l, a
+	jr nc, .noCarry
+	inc h
+.noCarry
+	dec b
+	jr nz, .clearRow
+	
+	xor a
+	ld [rVBK], a
+	ld hl, wFixedTileMap
+	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
+	call Fill
+	
 	ld hl, .strings
 .printStrings
 	ld e, [hl]
@@ -294,9 +322,18 @@ TilesetViewerMenu::
 	and a
 	jr nz, .printStrings
 	
+	ld de, wFixedTileMap + SCREEN_WIDTH * 10 + 13
+	ld a, [wLoadedTileset]
+	ld b, a
+	call PrintHex
+	ld de, wFixedTileMap + SCREEN_WIDTH * 11 + 13
+	ld a, [wYPos + 1]
+	ld b, a
+	call PrintHex
+	
 	ld hl, wTransferRows + 8
 	ld c, SCREEN_HEIGHT
-	inc a ; ld a, 1
+	ld a, 1
 	rst fill
 	ldh [hTilemapMode], a
 	
@@ -311,7 +348,6 @@ TilesetViewerMenu::
 	xor a
 	ld [rVBK], a
 	ld [wYPos], a
-	ld [wYPos + 1], a
 	call .loadTileset
 	ld bc, SCREEN_HEIGHT
 	call DelayBCFrames ; Wait, otherwise the block redrawn gets overwritten
@@ -396,7 +432,93 @@ TilesetViewerMenu::
 	
 	
 .viewTiles
-	jp TilesetViewerMenu
+	ld hl, wFixedTileMap + SCREEN_WIDTH * 3
+	ld bc, 2 << 8 | SCREEN_WIDTH
+.printBank
+	ld a, $80
+.printTiles
+	ld [hli], a
+	dec c
+	jr nz, .ok
+	ld c, SCREEN_WIDTH
+.ok
+	inc a
+	jr nz, .printTiles
+	ld a, l
+	add a, c
+	ld l, a
+	dec b
+	jr nz, .printBank
+	
+	ld hl, wTransferRows + 11
+	ld c, 14
+	inc a
+	rst fill
+	
+	ld e, 0
+	call .tileViewerPrintAttribs
+	; xor a
+	ld [wXPos], a
+	
+.viewTilesLoop
+	rst waitVBlank
+	ldh a, [hPressedButtons]
+	bit 1, a
+	jp nz, .restartNoReset
+	bit 4, a
+	jr nz, .tileViewerRight
+	bit 5, a
+	jr z, .viewTilesLoop
+	
+	; left
+	ld a, [wXPos]
+	dec a
+	jr .updateTileAttribs
+.tileViewerRight
+	ld a, [wXPos]
+	inc a
+.updateTileAttribs
+	and $07
+	ld [wXPos], a
+	ld e, a
+	call .tileViewerPrintAttribs
+	jr .viewTilesLoop
+	
+	
+.tileViewerPrintAttribs
+	ld a, 1
+	ld [rVBK], a
+	ld hl, vFixedMap + VRAM_ROW_SIZE * 3
+	ld d, $80
+.printRow
+	ld c, SCREEN_WIDTH
+.printAttrib
+	rst isVRAMOpen
+	jr nz, .printAttrib
+	ld [hl], e
+	inc hl
+	dec d
+	jr z, .bankEnded
+	dec c
+	jr nz, .printAttrib
+.keepPrinting
+	ld a, l
+	and -VRAM_ROW_SIZE
+	add a, VRAM_ROW_SIZE
+	ld l, a
+	jr nc, .printRow
+	inc h
+	jr .printRow
+.bankEnded
+	ld d, $80
+	ld a, e
+	xor $08
+	ld e, a
+	and $08
+	jr nz, .keepPrinting
+	xor a
+	ld [rVBK], a
+	ret
 	
 .viewNPCs
 	jp TilesetViewerMenu
