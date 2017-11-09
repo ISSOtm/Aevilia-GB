@@ -294,7 +294,7 @@ TilesetViewerMenu::
 	and a
 	jr nz, .printStrings
 	
-	ld hl, wTransferRows
+	ld hl, wTransferRows + 8
 	ld c, SCREEN_HEIGHT
 	inc a ; ld a, 1
 	rst fill
@@ -306,43 +306,160 @@ TilesetViewerMenu::
 	jr nz, .waitVRAM
 	ld a, $20
 	ld [$9E4C], a
+	ld [$9E6C], a
 	
 	xor a
 	ld [rVBK], a
-	jr .updateTileset
+	ld [wYPos], a
+	ld [wYPos + 1], a
+	call .loadTileset
+	ld bc, SCREEN_HEIGHT
+	call DelayBCFrames ; Wait, otherwise the block redrawn gets overwritten
+	call .updateBlockView
 	
 .selectTileset
 	rst waitVBlank
 	ldh a, [hPressedButtons]
 	rra
-	jr c, .viewTiles
+	jp c, .viewTiles
 	rra
 	ret c
 	rra
 	rra
-	jr c, .viewNPCs
+	jp c, .viewNPCs
 	rra
 	jr c, .right
 	rra
+	jr c, .left
+	rra
+	jr c, .up
+	rra
 	jr nc, .selectTileset
 	
-	ld a, [wLoadedTileset]
+	; down
+	ld a, [wYPos]
+	and a
+	jr nz, .selectTileset
+	inc a
+	jr .moveCursor
+.up
+	ld a, [wYPos]
 	and a
 	jr z, .selectTileset
 	dec a
-	jr .updateTileset
+.moveCursor
+	ld c, a
+	ld d, 0
+	ld a, [wYPos]
+	call .writeCursor
+	ld a, c
+	ld [wYPos], a
+	ld d, $7F
+	call .writeCursor
+	jr .selectTileset
+	
+.left
+	call .loadAction
+	ld a, [de]
+	and a
+	jr z, .selectTileset
+	dec a
+	jr .performAction
 .right
-	ld a, [wLoadedTileset]
+	call .loadAction
+	ld a, [de]
 	inc a
-	cp NB_OF_TILESETS
+	cp c
 	jr nc, .selectTileset
-.updateTileset
-	ld [wLoadedTileset], a
-	ld b, a
-	ld de, wFixedTileMap  + SCREEN_WIDTH * 10 + 13
+.performAction
+	ld [de], a
+	ld c, a
+	push hl
+	ld a, [wYPos]
+	call .getCursorPos
+	ld d, h
+	ld e, l
+	inc de
+	ld a, b
+	add a, 18
+	ld l, a
+	ld h, HIGH(wTransferRows)
+	ld [hl], a
+	ld b, c
 	call PrintHex
-	; Non-zero
-	ld [wTransferRows + 18], a
+	pop hl
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	rst callHL
+	jr .selectTileset
+	
+	
+.viewTiles
+	jp TilesetViewerMenu
+	
+.viewNPCs
+	jp TilesetViewerMenu
+	
+	
+.getCursorPos
+	ld b, a
+	add a, a
+	add a, a
+	add a, b ; *5
+	add a, a
+	add a, a ; *20
+	add a, LOW(wFixedTileMap + SCREEN_WIDTH * 10 + 12)
+	ld l, a
+	adc a, HIGH(wFixedTileMap + SCREEN_WIDTH * 10 + 12)
+	sub l
+	ld h, a
+	ret
+	
+	; Sub-func to write d at the position of the arrows for option #a
+.writeCursor
+	call .getCursorPos
+	ld [hl], d
+	inc hl
+	inc hl
+	inc hl
+	ld [hl], d
+	ld a, b
+	add a, 18
+	ld l, a
+	ld h, HIGH(wTransferRows)
+	ld [hl], h ; h is non-zero
+	rst waitVBlank
+	ret
+	
+	; Code for moving the cursor around
+.loadAction
+	ld a, [wYPos]
+	ld b, a
+	add a, a
+	add a, a
+	add a, b
+	add a, LOW(.functions)
+	ld l, a
+	adc a, HIGH(.functions)
+	sub l
+	ld h, a
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	ld a, [hli]
+	ld c, a
+	ret
+	
+.functions
+	dw wLoadedTileset
+	db NB_OF_TILESETS
+	dw .loadTileset
+	
+	dw wYPos + 1
+	db $40
+	dw .updateBlockView
 	
 .loadTileset
 	ld d, $FD
@@ -371,13 +488,14 @@ TilesetViewerMenu::
 .doneClearingTiles
 	ld a, [wLoadedTileset]
 	call LoadTileset
-	jr .selectTileset
+	callacross ReloadPalettes
+	; Fall through because block needs to be redrawn
 	
-.viewTiles
-	jr TilesetViewerMenu
+.updateBlockView
+	ld a, [wYPos + 1]
+	ld de, $9EAD
+	jp DrawBlock
 	
-.viewNPCs
-	jr TilesetViewerMenu
 	
 .strings
 	dw wFixedTileMap + SCREEN_WIDTH + 2
@@ -389,6 +507,8 @@ TilesetViewerMenu::
 	dw wFixedTileMap + SCREEN_WIDTH * 6 + 1
 	dstr " START - VIEW NPCS"
 	dw wFixedTileMap + SCREEN_WIDTH * 10
-	dstr "TILESET ID: ",$7F,"  ",$7F
+	dstr "TILESET ID: ",$7F,"00",$7F
+	dw wFixedTileMap + SCREEN_WIDTH * 11
+	dstr "  BLOCK ID:  00 "
 	db 0
 	
