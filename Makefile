@@ -46,7 +46,9 @@ rebuild: clean all
 
 clean:
 	rm -f $(objdir)/*.o
+	del $(objdir)\\*.o /f
 	rm -f $(bindir)/aevilia.gbc $(bindir)/aevilia.map $(bindir)/aevilia.sym
+	del $(objdir)\\aevilia.* /f
 
 $(bindir)/%.sym:
 	@if [ ! -d bin ]; then mkdir $(bindir); fi
