@@ -218,14 +218,13 @@ LoadNPCs:
 	jr nz, .loadNPCs
 	; Warp $FF overrides NPC loading
 	; The number of NPCs mustn't be reloaded either
-	and a ; If there are no NPCs, the rest of the data doesn't exist, so skip it
-	jp z, .noNPCs
-	ld b, a
 	add a, a ; *2
+	jp z, .noNPCs ; If there are no NPCs, the rest of the data doesn't exist, so skip it
+	ld b, a
 	add a, a ; *4
 	add a, a ; *8
-	sub a, b ; *7
-	add a, a ; *14 (size of ROM NPC)
+	add a, a ; *16
+	sub a, b ; *14 (size of ROM NPC)
 	add a, 3 ; Skip script loading (1 count & 1 ptr)
 	add a, l
 	ld l, a

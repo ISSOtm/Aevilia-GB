@@ -51,7 +51,7 @@ FatalError::
 .loop ; Wait until VBlank - do not issue a call or rst to preserve the stack as much as possible
 	ld a, [rSTAT]
 	and 3
-	sub 1
+	dec a
 	jr nz, .loop
 	ld [rLCDC], a ; Shut LCD down (don't call function because it uses b)
 	ld [rVBK], a ; Make sure to be in bank 0 for printing ; swap before saving SP for obvious reasons
@@ -116,6 +116,19 @@ CopyAcrossToVRAM::
 	call CopyToVRAM
 	pop af
 	rst bankswitch
+	ret
+	
+	
+; Get the byte at b:hl in a (and b)
+GetByteAcross::
+	ldh a, [hCurROMBank]
+	push af
+	ld a, b
+	rst bankswitch
+	ld b, [hl]
+	pop af
+	rst bankswitch
+	ld a, b
 	ret
 	
 	
