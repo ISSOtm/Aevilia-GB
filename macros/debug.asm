@@ -5,7 +5,10 @@ debug_message: MACRO
 		jr .debugMessage\@
 		dw $6464
 		dw $0000
-		dstr \1
+		REPT _NARG
+			db \1
+			shift
+		ENDR
 .debugMessage\@
 	ENDC
 ENDM
