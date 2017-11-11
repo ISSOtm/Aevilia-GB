@@ -500,14 +500,14 @@ wChangeMusics::
 	ds 1
 
 DSVarsStart:
-
+FadeType		ds	1
+InitVarsStart:
+FadeTimer		ds	1
 GlobalVolume	ds	1
 GlobalSpeed1	ds	1
 GlobalSpeed2	ds	1
 GlobalTimer		ds	1
 TickCount		ds	1
-FadeTimer		ds	1
-FadeType		ds	1
 SoundEnabled	ds	1
 
 CH1Enabled		ds	1

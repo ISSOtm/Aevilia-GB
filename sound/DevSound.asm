@@ -73,8 +73,15 @@ DevSound_Init::
 	ld	[WaveBufUpdateFlag],a
 
 	; init sound RAM area
-	ld	de,DSVarsStart
-	ld	c,DSVarsEnd-DSVarsStart
+	ld	de, FadeType
+	ld	a, [de]
+	bit	2, a
+	jr	nz, .preserveFade
+	xor	a
+	ld	[de], a
+.preserveFade
+	inc	de ; ld	de,InitVarsStart
+	ld	c,DSVarsEnd-InitVarsStart
 	ld	hl,DefaultRegTable
 	rst copy
 	
@@ -1458,8 +1465,8 @@ UpdateRegisters:
 	res	2,b
 	ld	a,b
 	ld	[FadeType],a
-	ld	b,a
-	dec a ; If fading in (value 1), volume is 0 ; otherwise, it's 7
+	dec	a
+	dec	a ; If fading in (value 2), volume is 0 ; otherwise, it's 7
 	jr	z,.gotfirstfadevolume
 	ld	a,7
 .gotfirstfadevolume
@@ -3326,7 +3333,7 @@ VolumeTable: ; used for volume multiplication
 	
 DefaultRegTable:
 	; global flags
-	db	7,0,0,0,0,0,0,1,1,1,1,1
+	db	0,7,0,0,0,0,1,1,1,1,1
 	; ch1
 	dw	DummyTable,DummyTable,DummyTable,DummyTable,DummyTable
 	db	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
