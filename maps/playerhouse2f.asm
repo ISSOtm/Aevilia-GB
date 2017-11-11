@@ -9,7 +9,7 @@ PlayerHouse2F::
 	dw PlayerHouse2FTilesetScript
 	dw NO_SCRIPT ; No map script
 	map_size 10, 9
-	dw NO_SCRIPT ; No loading script
+	dw PlayerHouse2FMuteMusic
 	
 PlayerHouse2FInteractions::
 	db 2
@@ -56,6 +56,14 @@ PlayerHouse2FTilesetScript::
 	ld a, TILESET_INTERIOR_DARK
 	ret nc ; If the cutscene hasn't played yet, use the dimmed tileset instead
 	ld a, TILESET_INTERIOR
+	ret
+	
+PlayerHouse2FMuteMusic::
+	ld de, FLAG_INTRO_CUTSCENE_PLAYED
+	call GetFlag
+	ret c
+	xor a
+	ld [wChangeMusics], a ; This won't load the new music
 	ret
 	
 PlayerHouse2FLoadIntroGfx::
@@ -138,6 +146,8 @@ TestIntroCutscene::
 	text_lda_imm DIR_DOWN
 	text_sta wPlayerDir
 	gfx_fadein
+	play_music MUSIC_SAFE_PLACE
+	fade_music MUSICFADE_IN
 	delay 30
 	make_player_walk DIR_DOWN | ROTATE_45 | ROTATE_CW, 19, 1
 	delay 10
