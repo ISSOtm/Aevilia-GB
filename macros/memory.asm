@@ -124,7 +124,8 @@ wAnimation\1_delay::		db
 wAnimation\1_bank::			db
 wAnimation\1_ptr::			dw
 wAnimation\1_nbOfSprites::	db
-wAnimation\1_unused::		ds 2
+wAnimation\1_spriteID::		db ; ID of the first sprite it uses
+wAnimation\1_unused::		ds 1
 ENDM
 
 
