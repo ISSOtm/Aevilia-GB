@@ -49,6 +49,10 @@ HomeDebugMenu::
 	and a
 	jr nz, .printString
 	
+	ld de, DefaultPalette
+	ld c, a ; ld c, 0
+	callacross LoadBGPalette_Hook
+	
 	ld c, 0
 	ld hl, $9901
 	
@@ -87,19 +91,18 @@ HomeDebugMenu::
 	jr .mainLoop
 	
 .exec
-	ld [hl], 0
-	ld a, c
-	add a, a
-	add a, LOW(.pointers)
-	ld l, a
-	adc a, HIGH(.pointers)
-	sub l
-	ld h, a
+	xor a
+	ld [hl], a ; ld [hl], 0
+	ld l, c
+	ld h, a ; ld h, 0
+	add hl, hl
+	ld de, .pointers
+	add hl, de
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
 	rst callHL
-	jr .restart
+	jp .restart
 	
 .strings
 	dstr "DEBUG MENU"
@@ -285,6 +288,8 @@ TilesetViewerMenu::
 	xor a
 	ld [wYPos + 1], a
 	ld [wLoadedTileset], a
+	inc a
+	ld [wPlayerGender], a
 	
 .restartNoReset
 	xor a
@@ -347,11 +352,16 @@ TilesetViewerMenu::
 	ld [$9E4C], a
 	ld [$9E6C], a
 	
+.toggleGender
+	ld a, [wPlayerGender]
+	xor 1
+	ld [wPlayerGender], a
 	xor a
 	ld [rVBK], a
 	ld [wYPos], a
 	call .loadTileset
-	ld bc, SCREEN_HEIGHT
+	callacross LoadPlayerGraphics
+	ld bc, SCREEN_HEIGHT - 2
 	call DelayBCFrames ; Wait, otherwise the block redrawn gets overwritten
 	call .updateBlockView
 	
@@ -363,6 +373,7 @@ TilesetViewerMenu::
 	rra
 	ret c
 	rra
+	jr c, .toggleGender
 	rra
 	jp c, .viewNPCs
 	rra
@@ -782,6 +793,7 @@ TilesetViewerMenu::
 .loadMapNPCTiles
 	ld hl, v1Tiles0
 	call .resetTileBlock
+	callacross LoadPlayerGraphics
 	
 	ld b, BANK(MapROMBanks)
 	ld d, b
@@ -922,12 +934,14 @@ TilesetViewerMenu::
 .strings
 	dw wFixedTileMap + SCREEN_WIDTH + 2
 	dstr "TILESET VIEWER"
-	dw wFixedTileMap + SCREEN_WIDTH * 4 + 1
+	dw wFixedTileMap + SCREEN_WIDTH * 4
 	dstr "     A - VIEW TILES"
-	dw wFixedTileMap + SCREEN_WIDTH * 5 + 1
+	dw wFixedTileMap + SCREEN_WIDTH * 5
 	dstr "     B - EXIT"
-	dw wFixedTileMap + SCREEN_WIDTH * 6 + 1
+	dw wFixedTileMap + SCREEN_WIDTH * 6
 	dstr " START - VIEW NPCS"
+	dw wFixedTileMap + SCREEN_WIDTH * 7
+	dstr "SELECT - TOGGLE GNDR"
 	dw wFixedTileMap + SCREEN_WIDTH * 10
 	dstr "TILESET ID: ",$7F,"00",$7F
 	dw wFixedTileMap + SCREEN_WIDTH * 11
