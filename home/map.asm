@@ -507,10 +507,12 @@ ENDC
 	ld a, [wCurrentMusicID]
 	inc a
 	jr z, .stillSameMusic ; Music $FF = no music
-	dec a
-	call DS_Init
+	ld e, a
 	ld a, 1
 	call DS_Fade
+	ld a, e
+	dec a
+	call DS_Init
 .stillSameMusic
 	
 	callacross Fadein
