@@ -1500,11 +1500,11 @@ UpdateRegisters:
 	jr	.directlyUpdateVolume
 .dostop
 	call	DevSound_Stop
-	jr	.updateVolume
+	jr	.done
 .fadeout
 	ld	a,[GlobalVolume]
 	and	a
-	jr	z,.directlyUpdateVolume
+	jr	z,.done
 	dec	a
 	ld	[GlobalVolume],a
 	jr	.updateVolume
@@ -1546,14 +1546,6 @@ CH1_UpdateRegisters:
 
 	; update arps
 .updatearp
-; Deflemask compatibility: if pitch bend is active, don't update arp and force the transpose of 0
-	ld	a,[CH1PortaType]
-	and	a
-	jr	z,.noskiparp
-	xor	a
-	ld	[CH1Transpose],a
-	jr	.continue
-.noskiparp
 	ld	hl,CH1ArpPtr
 	ld	a,[hl+]
 	ld	h,[hl]
@@ -1927,13 +1919,6 @@ CH2_UpdateRegisters:
 
 	; update arps
 .updatearp
-	ld	a,[CH2PortaType]
-	and a
-	jr	z,.noskiparp
-	xor	a
-	ld	[CH2Transpose],a
-	jr	.continue
-.noskiparp
 	ld	hl,CH2ArpPtr
 	ld	a,[hl+]
 	ld	h,[hl]
@@ -2316,13 +2301,6 @@ CH3_UpdateRegisters:
 
 	; update arps
 .updatearp
-	ld	a,[CH3PortaType]
-	and	a
-	jr	z,.noskiparp
-	xor	a
-	ld	[CH3Transpose],a
-	jr	.continue
-.noskiparp
 	ld	hl,CH3ArpPtr
 	ld	a,[hl+]
 	ld	h,[hl]
