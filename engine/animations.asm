@@ -109,6 +109,30 @@ EndAnimation::
 	and $F8
 	ld l, a
 	push hl ; Save this for clearing the struct later on
+	; Unlink animations
+	ld a, e
+	and a
+	jr z, .dontUnlinkStructs
+.unlinkStruct
+	ld a, l
+	add a, 8
+	ld l, a
+	ld a, [hl]
+	inc a
+	jr z, .structNotLinked
+	dec a
+	cp b
+	jr c, .structNotLinked
+	jr nz, .structGonnaBeMoved
+	xor a ; ld a, $FF
+.structGonnaBeMoved
+	dec a
+	ld [hl], a
+.structNotLinked
+	ld a, l
+	cp LOW(wAnimation7_linkID)
+	jr nz, .unlinkStruct
+.dontUnlinkStructs
 	
 	ld hl, wNumOfExtendedSprites
 	ld a, [hl]
@@ -147,8 +171,8 @@ EndAnimation::
 	jr .shiftOAM
 .dontShiftOAM
 	
-	pop hl ; Get back ptr to current struct
 	; Move animation structs after the current one
+	pop hl
 	ld a, e ; Check how many there are
 	and a
 	ret z ; It was the last one !
