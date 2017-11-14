@@ -211,6 +211,115 @@ EndAnimation::
 	
 	
 PlayAnimations::
+	ld a, [wNumOfAnimations]
+	and a
+	ret z
+	
+	ld b, 0
 	ld hl, wAnimationTable
+.loop
+	ld a, [hli] ; Get link ID
+	inc a
+	jr nz, .checkLink
+	ld a, [hli]
+	and a
+	jr nz, .applyDelay
+	
+	; Great, the animation can be processed !
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	ldh a, [hCurROMBank]
+	push af
+	push hl
+.processCommand
+	ld a, c
+	rst bankswitch
+	ld a, [de]
+	inc de ; We've read the command byte
+	cp INVALID_ANIM_COMMAND
+	jr nc, .invalidCommand ; Invalid commands immediately terminate the animation
+	; The first two commands are implemented a bit differently
+	and a
+	jr z, .animationEnding
+	dec a
+	jr z, .beginDelay
+	push de ; Save the read ptr
+	add a, a ; 2 bytes per animation
+	add a, LOW(AnimationCommands - 2) ; Remove 2 bytes
+	ld l, a
+	adc a, HIGH(AnimationCommands - 2)
+	sub l
+	ld h, a
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	rst callHL
+	pop de ; Get back read ptr
+	ld a, l
+	ld h, 0
+	add hl, de ; Add command's length
+	ld d, h
+	ld e, l ; Move 
+	jr .processCommand
+.beginDelay
+	pop hl
+	ld a, l
+	sub 4
+	ld l, a
+	ld a, [de] ; Get delay
+	ld [hl], a ; Write to animation's delay
+	pop af
+	rst bankswitch
+	jr .skipAnimation
+.invalidCommand
+	debug_message "WARNING: INVALID ANIMATION COMMAND %A%"
+.animationEnding
+	ld de, -5
+	add hl, de
+	jr .endAnim
+	
+.checkLink
+	dec a ; The animation is linked
+	ld c, a
+	ld a, [wNumOfAnimations]
+	scf
+	sbc c ; Check if link ID is valid (< to nb of anims)
+	jr nc, .skipAnimation
+	; Failsafe : if the animation is waiting for one that didn't start yet, terminate it.
+.endAnim
+	push bc
+	push hl
+	call EndAnimation
+	pop hl
+	pop bc
+	dec hl
+	jr .tryProcessAnimation ; The number of animations has changed, so check again.
+	
+.applyDelay
+	dec a
+	dec hl
+	ld [hl], a
+	
+.skipAnimation
+	ld a, l
+	and $F8
+	add a, 8
+	ld l, a
+	jr nc, .noCarry
+	inc h
+.noCarry
+	inc b
+.tryProcessAnimation
+	ld a, [wNumOfAnimations]
+	cp b
+	jp nc, .loop
 	ret
+	
+	
+AnimationCommands::
+	dw DoNothing
 	
