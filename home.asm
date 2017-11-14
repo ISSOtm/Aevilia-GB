@@ -453,11 +453,11 @@ IF DEF(DebugMode)
 ENDC
 	
 	; Init music, awww yea
+	ld a, 1
+	call DS_Fade
 	ld a, MUSIC_FILESELECT
 	ld [wCurrentMusicID], a
 	call DS_Init
-	ld a, 1
-	call DS_Fade
 	
 	; Move down to adjust for the upcoming screen
 	ld a, $10
