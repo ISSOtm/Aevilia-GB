@@ -3,12 +3,13 @@ SECTION "Animation engine", ROM0
 
 ; Start animation at c:de
 ; This will allocate the animation in the earliest slot available
+; Z will be set if the allocation failed (no matter the reason)
 StartAnimation::
 	; First, check if a free animation slot exists.
 	ld hl, wNumOfAnimations
 	ld a, [hl]
 	cp 8
-	debug_message "%ZERO=1%FAILED TO ALLOCATE ANIMATION!!;Allocating animation in slot %A%...;"
+	debug_message "%ZERO%FAILED TO ALLOCATE ANIMATION!!;Allocating animation in slot %A%...;"
 	ret z ; Return if all animations are used (!!!)
 	inc a
 	ld [hl], a ; Increment animation count
@@ -50,7 +51,7 @@ StartAnimation::
 	; Finally, clear the animation's sprites, since we allocated them.
 	ld a, c ; Nb of sprites
 	add a, a
-	ret z ; If no sprites, don't clear
+	jr z, .dontClearSprites ; If no sprites, don't clear
 	add a, a
 	ld c, a ; Length
 	ld a, b ; ID of first sprite
@@ -63,12 +64,15 @@ StartAnimation::
 	ld h, a
 	xor a
 	rst fill
+.dontClearSprites
+	
 	ret
 	
 .spriteOverflow
 	ld hl, wNumOfAnimations
 	dec [hl] ; Cancel allocation
 	debug_message "FAILED TO ALLOCATE ANIMATION: OAM FULL (Requested %C% sprites\, leading to %A% total.)"
+	xor a
 	ret
 	
 	
@@ -79,7 +83,7 @@ EndAnimation::
 	ld a, [wNumOfAnimations]
 	scf ; Subtract an extra 1, the slot to be freed
 	sbc b
-	debug_message "%CARRY=1%CANNOT END ANIMATION: SLOT %B% EMPTY;Ending animation slot %B%...;"
+	debug_message "%CARRY%CANNOT END ANIMATION: SLOT %B% EMPTY;Ending animation slot %B%...;"
 	ret c ; Don't end an animation that doesn't exist
 	ld e, a ; This is how many animations are after this one
 	
@@ -213,7 +217,7 @@ EndAnimation::
 PlayAnimations::
 	ld a, [wNumOfAnimations]
 	and a
-	ret z
+	ret z ; Don't do anything if there are no animations
 	
 	ld b, 0
 	ld hl, wAnimationTable
@@ -223,7 +227,7 @@ PlayAnimations::
 	jr nz, .checkLink
 	ld a, [hli]
 	and a
-	jr nz, .applyDelay
+	jp nz, .applyDelay
 	
 	; Great, the animation can be processed !
 	ld a, [hli]
@@ -248,6 +252,18 @@ PlayAnimations::
 	dec a
 	jr z, .beginDelay
 	push de ; Save the read ptr
+	push bc ; Save counter and source
+	ld b, a ; Save the command ID
+	; Copy arguments
+	ld h, d
+	ld l, e
+	ld de, wLargerBuf
+	ld c, 8
+	rst copy
+	; Calculate command script and exec it
+	ld a, BANK(AnimationCommands)
+	rst bankswitch
+	ld a, b ; Get command ID
 	add a, a ; 2 bytes per animation
 	add a, LOW(AnimationCommands - 2) ; Remove 2 bytes
 	ld l, a
@@ -258,28 +274,40 @@ PlayAnimations::
 	ld h, [hl]
 	ld l, a
 	rst callHL
+	pop bc ; Get back counter and bank
 	pop de ; Get back read ptr
-	ld a, l
-	ld h, 0
+	ld l, a
+	add a, a ; Get bit 7 into carry
+	sbc a, a ; If bit 7 was set, make number negative
+	ld h, a
 	add hl, de ; Add command's length
 	ld d, h
-	ld e, l ; Move 
+	ld e, l ; Move read ptr
 	jr .processCommand
 .beginDelay
 	pop hl
-	ld a, l
-	sub 4
-	ld l, a
+	dec hl
+	inc de
+	ld a, d ; Write back animation's pointer
+	ld [hld], a
+	ld a, e
+	ld [hld], a
+	ld a, c
+	ld [hld], a
+	dec de
 	ld a, [de] ; Get delay
 	ld [hl], a ; Write to animation's delay
 	pop af
 	rst bankswitch
 	jr .skipAnimation
 .invalidCommand
-	debug_message "WARNING: INVALID ANIMATION COMMAND %A%"
+	debug_message "BAD ANIM COMMAND %A%"
 .animationEnding
-	ld de, -5
+	pop hl
+	ld de, -5 ; Move back to beginning of animation
 	add hl, de
+	pop af
+	rst bankswitch
 	jr .endAnim
 	
 .checkLink
@@ -315,11 +343,72 @@ PlayAnimations::
 	inc b
 .tryProcessAnimation
 	ld a, [wNumOfAnimations]
-	cp b
+	scf
+	sbc b
 	jp nc, .loop
 	ret
 	
 	
+SECTION "Animation commands", ROMX
+	
 AnimationCommands::
-	dw DoNothing
+	dw AnimationJumpTo
+	dw StartNewAnim
+	dw AnimationCall
+	
+	
+AnimationJumpTo::
+	ld hl, sp+2 ; Points to saved bank
+	ld de, wLargerBuf
+	ld a, [de]
+	inc de
+	ld [hli], a
+	inc hl
+	ld a, [de]
+	inc de
+	ld [hli], a
+	ld a, [de]
+	ld [hl], a
+	xor a ; Don't advance the cursor further...
+	ret
+	
+StartNewAnim::
+	ld hl, wLargerBuf
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	ld e, a
+	ld d, [hl]
+	call StartAnimation
+	ld a, 3
+	ret ; Also returns
+	
+AnimationCall::
+	call StartNewAnim
+	; (This works because both functions return the same byte count ; add a `ld a, X` if this changes)
+	jr z, ForceAnimationEnd ; If the animation failed to start, don't do anything else.
+	ld hl, sp+3 ; Points to saved counter
+	ld a, [hl] ; Get current animation's ID
+	add a, a
+	add a, a
+	add a, a
+	add a, LOW(wAnimationTable)
+	ld l, a
+	adc a, HIGH(wAnimationTable)
+	sub l
+	ld h, a ; hl points to current animation's link
+	ld a, [wNumOfAnimations]
+	ld [hl], a
+	ld a, 3
+	ret
+	
+	
+; Repoints the saved read ptr to a 0100 
+ForceAnimationEnd::
+	ld hl, sp+4
+	ld [hl], LOW(NullByte)
+	inc hl
+	ld [hl], HIGH(NullByte)
+	xor a ; Don't move the read ptr afterwards
+	ret
 	

@@ -765,6 +765,7 @@ OverworldLoop::
 	call z, MovePlayer
 .ignoreMovement	
 	
+	call PlayAnimations
 	call MoveNPCs
 	call MoveNPC0ToPlayer
 	call MoveCamera
@@ -800,7 +801,7 @@ OverworldLoop::
 	rrca ; B
 	rrca ; Select
 	rrca ; Start
-	jr nc, OverworldLoop
+	jp nc, OverworldLoop
 	
 	callacross StartMenu
 .gotoLoop
