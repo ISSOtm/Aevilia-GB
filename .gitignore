@@ -12,3 +12,10 @@ TODO.txt
 *.ls*
 *.time
 *.clk
+dependencies.zip
+7za.exe
+libiconv2.dll
+libintl3.dll
+make.exe
+msvcp60.dll
+msvcrt.dll
