@@ -581,9 +581,19 @@ TilesetViewerMenu::
 	call .loadMapNPCTiles
 	call .updateNPCPalettes
 	
+	ld a, $FF
+	ld [wNPC0_steps], a
+.toggleWalk
+	ld a, [wNPC0_steps]
+	cpl
+	ld [wNPC0_steps], a
+	call ProcessNPCs
+	
 .NPCMainLoop
 	rst waitVBlank
 	ldh a, [hPressedButtons]
+	bit 0, a
+	jr nz, .toggleWalk
 	bit 1, a
 	jr nz, .restoreAndExit
 	rla
@@ -898,8 +908,18 @@ TilesetViewerMenu::
 	ld a, e ; bank
 	pop de
 .loadGfx
+	push de
+	push af
 	ld bc, $C0
 	call CopyAcrossToVRAM
+	ld a, 1
+	ld [rVBK], a
+	pop af
+	pop de
+	ld bc, $C0
+	call CopyAcrossToVRAM
+	xor a
+	ld [rVBK], a
 	pop hl
 	pop bc
 	dec b
