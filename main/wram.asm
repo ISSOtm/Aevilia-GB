@@ -252,6 +252,16 @@ wAnimationTable::
 	animation 6
 	animation 7
 	
+wAnimationStacks::
+	animation_stack 0
+	animation_stack 1
+	animation_stack 2
+	animation_stack 3
+	animation_stack 4
+	animation_stack 5
+	animation_stack 6
+	animation_stack 7
+	
 wNumOfAnimations::
 	ds 1
 

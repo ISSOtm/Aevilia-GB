@@ -128,6 +128,20 @@ wAnimation\1_spriteID::		db ; ID of the first sprite it uses
 wAnimation\1_unused::		ds 1
 ENDM
 
+animation_stack: MACRO
+wAnimationStack\1_count::	db
+wAnimationStack\1_bank0::	db
+wAnimationStack\1_ptr0::	dw
+wAnimationStack\1_bank1::	db
+wAnimationStack\1_ptr1::	dw
+wAnimationStack\1_bank2::	db
+wAnimationStack\1_ptr2::	dw
+wAnimationStack\1_bank3::	db
+wAnimationStack\1_ptr3::	dw
+wAnimationStack\1_bank4::	db
+wAnimationStack\1_ptr4::	dw
+ENDM
+
 
 dtile: MACRO
 	ds VRAM_TILE_SIZE * (\1)

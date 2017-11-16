@@ -224,7 +224,7 @@ PlayAnimations::
 .loop
 	ld a, [hli] ; Get link ID
 	inc a
-	jr nz, .checkLink
+	jp nz, .checkLink
 	ld a, [hli]
 	and a
 	jp nz, .applyDelay
@@ -303,12 +303,40 @@ PlayAnimations::
 .invalidCommand
 	debug_message "BAD ANIM COMMAND %A%"
 .animationEnding
+	; We're going to check if the animation has a return pointer in store
+	ld a, b
+	swap a
+	add a, LOW(wAnimationStacks)
+	ld l, a
+	adc a, HIGH(wAnimationStacks)
+	sub l
+	ld h, a
+	ld a, [hl] ; Check if the stack is empty
+	and a
+	jr nz, .returnFromSection ; If it's not, return !
 	pop hl
 	ld de, -5 ; Move back to beginning of animation
 	add hl, de
 	pop af
 	rst bankswitch
 	jr .endAnim
+.returnFromSection
+	dec a
+	ld [hli], a
+	ld c, a
+	add a, a
+	add a, c ; *3
+	add a, l
+	ld l, a
+	jr nc, .noReturnCarry
+	inc h
+.noReturnCarry
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	ld e, a
+	ld d, [hl]
+	jp .processCommand
 	
 .checkLink
 	dec a ; The animation is linked
@@ -351,10 +379,21 @@ PlayAnimations::
 	
 SECTION "Animation commands", ROMX
 	
+; Here's a small piece of doc to understand commands and create new ones :
+; A bunch of commands edit stuff on the stack (yep)
+; The reason is, the top values are :
+; sp+2 -> Read bank
+; sp+3 -> Counter (ID of cur anim)
+; sp+4 -> Read ptr
+	
+	
 AnimationCommands::
 	dw AnimationJumpTo
 	dw StartNewAnim
 	dw AnimationCall
+	dw AnimationCallSection
+	dw AnimationCopyTiles
+	dw AnimationCopySprites
 	
 	
 AnimationJumpTo::
@@ -403,12 +442,167 @@ AnimationCall::
 	ret
 	
 	
-; Repoints the saved read ptr to a 0100 
+; Repoints the saved read ptr to a 00
 ForceAnimationEnd::
-	ld hl, sp+4
+	ld hl, sp+4 ; Saved read ptr
 	ld [hl], LOW(NullByte)
 	inc hl
 	ld [hl], HIGH(NullByte)
 	xor a ; Don't move the read ptr afterwards
+	ret
+	
+	
+AnimationCallSection::
+	ld hl, sp+2
+	ld a, [hli] ; Get bank
+	ld c, a
+	ld a, [hli] ; Get anim ID
+	swap a
+	add a, LOW(wAnimationStacks)
+	ld e, a
+	adc a, HIGH(wAnimationStacks)
+	sub e
+	ld d, a
+	
+	ld a, [de]
+	cp 5
+	jr nc, .stackFull
+	inc a
+	ld [de], a
+	dec a
+	swap a
+	add a, e
+	ld e, a
+	jr nc, .noCarry
+	inc d
+.noCarry
+	
+	; Push the entry on the stack
+	ld a, c
+	ld [de], a
+	inc de
+	ld a, [hli] ; Get anim ptr
+	add a, 3 ; Add this command's length !
+	ld [de], a
+	inc de
+	ld a, [hl]
+	adc a, 0
+	ld [de], a
+	
+	; Now, edit the saved data to repoint to called section
+	ld de, wLargerBuf + 2
+	ld a, [de] ; Ptr
+	dec de
+	ld [hld], a
+	ld a, [de]
+	dec de
+	ld [hld], a
+	dec hl ; Skip anim ID
+	ld a, [de]
+	ld [hl], a
+	
+	xor a ; Don't move
+	ret
+.stackFull
+	debug_message "STACK FULL !!"
+	ld a, 3
+	ret
+	
+AnimationCopyTiles::
+	ld hl, wLargerBuf + 4
+	ld a, [hld] ; Len (in tiles)
+	swap a
+	ld c, a
+	ld a, [hld] ; Dest tile (low)
+	swap a
+	ld e, a
+	and $0F
+	add a, HIGH(v0Tiles0)
+	ld d, a
+	ld a, e
+	and $F0
+	ld e, a
+	ld a, [hld] ; Dest tile (high)
+	rra
+	jr nc, .noCarry
+	swap d
+	inc d ; This can't overflow (for the best !)
+	swap d
+.noCarry
+	rra
+	sbc a, a ; A = -carry (you can check)
+	cpl
+	inc a ; A = carry
+	ld [rVBK], a ; Set VRAM bank
+	
+	ld a, [hld] ; Bank
+	ld b, a
+	ld a, [hld]
+	ld l, [hl]
+	ld h, a
+	call TransferTilesAcross
+	xor a
+	ld [rVBK], a
+	ld a, 5
+	ret
+	
+AnimationCopySprites::
+	ld hl, sp+3
+	ld a, [hl]
+	add a, a
+	add a, a
+	add a, a
+	add a, LOW(wAnimation0_nbOfSprites)
+	ld e, a
+	adc a, HIGH(wAnimation0_nbOfSprites)
+	sub e
+	ld d, a ; de points to the animation's number of sprites
+	
+	ld a, [de]
+	ld b, a
+	ld a, [de]
+	ld d, a ; ID of 1st sprite
+	ld e, b ; Nb of sprites
+	
+	ld hl, wLargerBuf + 4
+	ld a, [hld]
+	ld b, a ; Length (in sprites)
+	ld a, d
+	cp b
+	jr c, .nbOfSpritesValid ; Valid if len < nb of spr
+	debug_message "TRIED TO COPY TOO MANY SPRITES (%B% >= %D%)"
+	ld b, d
+.nbOfSpritesValid
+	ld a, d
+	add a, e
+	ld c, a ; Max spr ID
+	ld a, [hld] ; 1st sprite
+	and a
+	ret z ; Don't try to copy 0 sprites
+	add a, b
+	cp c
+	jr nc, .preventOverflow ; Prevent overflow if trying to copy past last sprite
+	sub b ; Get back 1st sprite
+	add a, d ; Add ID of 1st allocated sprite
+	add a, a
+	add a, a
+	add a, LOW(wExtendedOAM)
+	ld e, a
+	adc a, HIGH(wExtendedOAM)
+	sub e
+	ld d, a
+	ld a, b
+	add a, a
+	add a, a
+	ld c, a
+	ld a, [hld] ; Bank
+	ld b, a
+	ld a, [hld]
+	ld l, [hl]
+	ld a, h
+	call CopyAcrossLite
+.preventOverflow
+	ld a, 5
+	ld [wTransferSprites], a
 	ret
 	

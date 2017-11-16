@@ -7,6 +7,9 @@
 	enum_elem ANIM_JUMP_TO
 	enum_elem START_NEW_ANIM
 	enum_elem ANIM_CALL
+	enum_elem ANIM_CALL_SECTION
+	enum_elem ANIM_COPY_TILES
+	enum_elem ANIM_COPY_SPRITES
 	
 	enum_elem INVALID_ANIM_COMMAND
 
@@ -28,13 +31,35 @@ ENDM
 ; Continues the animation where specified
 anim_jump: MACRO
 	db ANIM_JUMP_TO
-	db \1
-	dw \2
-ENDM
-
-anim_jump_to: MACRO
-	anim_jump BANK(\1), \1
+	IF _NARG == 1
+		db BANK(\1)
+		dw \1
+	ELSE
+		db \1
+		dw \2
+	ENDC
 ENDM
 
 ; Starts a new animation (IF A SLOT IS AVAILABLE !!)
+anim_start: MACRO
+	db START_NEW_ANIM
+	IF _NARG == 1
+		db BANK(\1)
+		dw \2
+	ELSE
+		db \1
+		dw \2
+	ENDC
+ENDM
 
+; Starts a new animation and waits for it
+anim_call: MACRO
+	db ANIM_CALL
+	IF _NARG == 1
+		db BANK(\1)
+		
+	ELSE
+		db \1
+		dw \2
+	ENDC
+ENDM
