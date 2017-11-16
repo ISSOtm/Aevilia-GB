@@ -828,7 +828,7 @@ GenericBoyAWalkingTiles::
 	
 	dw $0000, $0303, $0F0F, $1F1F, $1F1F, $3F3F, $3F3F, $393F
 	dw $2A3F, $223F, $181F, $171F, $1E19, $1F1E, $0D0B, $0606
-	dw $0000, $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $FCFC
+	dw $0000, $C0C0, $F0F0, $F8F8, $F8F8, $FCFC, $FCFC, $9CFC
 	dw $54FC, $44FC, $38F8, $C8F8, $68D8, $F070, $8080, $0000
 	
 	dw $0000, $0303, $0F0F, $1F1F, $3F3F, $3F3F, $131F, $151F
