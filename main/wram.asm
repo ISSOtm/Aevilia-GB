@@ -268,6 +268,9 @@ wNumOfAnimations::
 ; Table of "offsets" for the NPC-targeting animation commands
 wAnimationTargetNPCs::
 	ds 8
+	
+wTextAnimationSlots::
+	ds 8
 
 	
 	

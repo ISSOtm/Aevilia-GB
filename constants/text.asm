@@ -80,6 +80,8 @@
 	enum_elem TEXT_RESET_FLAG
 	enum_elem TEXT_TOGGLE_FLAG
 	enum_elem TEXT_LOAD_MAP
+	enum_elem TEXT_START_ANIM
+	enum_elem TEXT_END_ANIM
 	
 	enum_elem INVALID_TXT_COMMAND ; WARNING : TEXT COMMAND PROCESSOR MUST BE UPDATED IF IDS 128+ ARE USED!!!
 
@@ -619,4 +621,23 @@ load_map: MACRO
 	db TEXT_LOAD_MAP
 	db \1
 	db \2
+ENDM
+
+
+; start_animation textSlot bank ptr
+start_animation: MACRO
+	db TEXT_START_ANIM
+	IF _NARG == 2
+		db BANK(\2)
+		dw \2
+	ELSE
+		db \2
+		dw \3
+	ENDC
+	db \1
+ENDM
+
+; end_animation textSlot
+end_animation: MACRO
+	db TEX_END_ANIM
 ENDM

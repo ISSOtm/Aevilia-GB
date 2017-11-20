@@ -2221,12 +2221,13 @@ TextStartAnim::
 	ld h, 0
 	ld de, wTextAnimationSlots
 	jr z, .allocationFailed
+	add hl, de
 	ld a, [wNumOfAnimations]
 	ld [hl], a
-	ld a, 4
+	ld a, 5
 	ret
 .allocationFailed
-	ld a, $FF
+	xor a ; Try again
 	ret
 	
 TextEndAnim::
@@ -2237,11 +2238,9 @@ TextEndAnim::
 	ld de, wTextAnimationSlots
 	add hl, de
 	ld b, [hl]
-	ld [hl], $FF
+	ld [hl], 0
 	inc b
-	jr z, .slotEmpty
 	dec b
-	call EndAnimation
-.slotEmpty
+	call nz, EndAnimation
 	ld a, 1
 	ret

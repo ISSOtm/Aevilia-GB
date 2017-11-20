@@ -65,7 +65,8 @@ StartAnimation::
 	xor a
 	rst fill
 .dontClearSprites
-	
+	ld a, 1
+	and a
 	ret
 	
 .spriteOverflow

@@ -152,6 +152,7 @@ TestIntroCutscene::
 	make_player_walk DIR_DOWN | ROTATE_45 | ROTATE_CW, 19, 1
 	delay 10
 	turn_player DIR_LEFT
+	start_animation 0, IntroDpadAnimation
 	
 	text_set_flag FLAG_INTRO_CUTSCENE_PLAYED
 	set_fade_speed 0
@@ -188,3 +189,10 @@ IntroLoadAwakePajamas::
 	xor a
 	ld [rVBK], a
 	ret
+	
+SECTION "Intro D-pad animation", ROMX
+
+IntroDpadAnimation::
+	db 5
+	anim_copy_tiles EvieTiles, 0, $8700, 1
+	done
