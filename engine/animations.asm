@@ -394,6 +394,11 @@ AnimationCommands::
 	dw AnimationCallSection
 	dw AnimationCopyTiles
 	dw AnimationCopySprites
+	dw AnimationMoveNPC
+	dw AnimationTurnNPC
+	dw AnimationSetSpritePos
+	dw AnimationSetSpriteTiles
+	dw AnimationSetSpriteAttribs
 	
 	
 AnimationJumpTo::
@@ -509,7 +514,7 @@ AnimationCallSection::
 	ret
 	
 AnimationCopyTiles::
-	ld hl, wLargerBuf + 4
+	ld hl, wLargerBuf + 5
 	ld a, [hld] ; Len (in tiles)
 	swap a
 	ld c, a
@@ -543,7 +548,7 @@ AnimationCopyTiles::
 	call TransferTilesAcross
 	xor a
 	ld [rVBK], a
-	ld a, 5
+	ld a, 6
 	ret
 	
 AnimationCopySprites::
@@ -560,6 +565,7 @@ AnimationCopySprites::
 	
 	ld a, [de]
 	ld b, a
+	inc de
 	ld a, [de]
 	ld d, a ; ID of 1st sprite
 	ld e, b ; Nb of sprites
@@ -604,5 +610,257 @@ AnimationCopySprites::
 .preventOverflow
 	ld a, 5
 	ld [wTransferSprites], a
+	ret
+	
+	
+AnimationMoveNPC::
+	ld de, wLargerBuf
+	ld a, [de]
+	inc de
+	call GetNPCPtrFromAnimID
+	ld a, [de]
+	inc de
+	bit 7, a
+	jr z, .moveDown
+	cpl
+	inc a ; Negate
+	ld b, a ; Save
+	ld a, [hl]
+	sub b
+	ld [hli], a
+	jr nc, .movedVert
+	dec [hl]
+	jr .movedVert
+.moveDown
+	add a, [hl]
+	ld [hli], a
+	jr nc, .movedVert
+	inc [hl]
+.movedVert
+	inc hl
+	ld a, [de]
+	bit 7, a
+	jr z, .moveRight
+	cpl
+	inc a
+	ld b, a
+	ld a, [hl]
+	sub b
+	ld [hli], a
+	jr nc, .movedHoriz
+	dec [hl]
+	jr .movedHoriz
+.moveRight
+	add a, [hl]
+	ld [hli], a
+	jr nc, .movedHoriz
+	inc [hl]
+.movedHoriz
+	
+	ld a, 3
+	ret
+	
+	
+AnimationTurnNPC::
+	ld de, wLargerBuf
+	ld a, [de]
+	inc de
+	call GetNPCPtrFromAnimID
+	ld a, [de]
+	ld de, wNPC1_sprite - wNPC1_ypos
+	add hl, de ; hl now points to the NPC's sprite ID & direction
+	ld d, 3
+	bit 7, a
+	jr z, .justTurn
+	ld d, $7C ; Instead, just modify the NPC's sprite
+.justTurn
+	and d ; Get only the targeted bits
+	ld e, a
+	ld a, d
+	cpl ; Keep all the unchanged bits
+	and [hl]
+	or e
+	ld [hl], a
+	
+	ld a, 2
+	ret
+	
+	
+AnimationSetSpritePos::
+	ld hl, sp+3
+	ld a, [hl]
+	add a, a
+	add a, a
+	add a, a
+	add a, LOW(wAnimation0_nbOfSprites)
+	ld l, a
+	adc a, HIGH(wAnimation0_nbOfSprites)
+	sub l
+	ld h, a
+	ld a, [hli]
+	ld b, a ; Nb of sprites
+	ld c, [hl] ; ID of 1st sprite
+	ld hl, wLargerBuf
+	ld a, [hli] ; ID of 1st targeted sprite
+	cp b
+	jr nc, .preventOverflow
+	ld e, a ; ID of 1st targeted sprite
+	ld a, [hli]
+	ld b, a ; Nb of targeted sprites
+	add a, e
+	cp c ; Check if not going past the limit
+	jr nc, .preventOverflow
+	ld a, e
+	add a, a
+	add a, a
+	add a, LOW(wExtendedOAM)
+	ld e, a
+	adc a, HIGH(wExtendedOAM)
+	sub l
+	ld d, a
+	ld a, [hli] ; Y pos
+	ld l, [hl] ; X pos
+.loop
+	ld [de], a
+	inc de
+	ld h, a
+	ld a, l
+	ld [de], a
+	add a, 8
+	ld l, a
+REPT 3
+	inc de
+ENDR
+	ld a, h
+	dec b
+	jr nz, .loop
+.preventOverflow
+	ld a, 4
+	ld [wTransferSprites], a
+	ret
+	
+	
+AnimationSetSpriteTiles::
+	ld hl, sp+3
+	ld a, [hl]
+	add a, a
+	add a, a
+	add a, a
+	add a, LOW(wAnimation0_nbOfSprites)
+	ld l, a
+	adc a, HIGH(wAnimation0_nbOfSprites)
+	sub l
+	ld h, a
+	ld a, [hli]
+	ld b, a ; Nb of sprites
+	ld c, [hl] ; ID of 1st sprite
+	ld hl, wLargerBuf
+	ld a, [hli] ; ID of 1st targeted sprite
+	cp b
+	jr nc, .preventOverflow
+	ld e, a ; ID of 1st targeted sprite
+	ld a, [hli]
+	ld b, a ; Nb of targeted sprites
+	add a, e
+	cp c ; Check if not going past the limit
+	jr nc, .preventOverflow
+	ld a, e
+	add a, a
+	add a, a
+	add a, LOW(wExtendedOAM + 2)
+	ld e, a
+	adc a, HIGH(wExtendedOAM + 2)
+	sub l
+	ld d, a
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+.loop
+	ld a, h
+	ld [de], a
+	add a, l
+	ld h, a
+REPT 4
+	inc de
+ENDR
+	dec b
+	jr nz, .loop
+.preventOverflow
+	ld a, 4
+	ld [wTransferSprites], a
+	ret
+	
+	
+AnimationSetSpriteAttribs::
+	ld hl, sp+3
+	ld a, [hl]
+	add a, a
+	add a, a
+	add a, a
+	add a, LOW(wAnimation0_nbOfSprites)
+	ld l, a
+	adc a, HIGH(wAnimation0_nbOfSprites)
+	sub l
+	ld h, a
+	ld a, [hli]
+	ld b, a ; Nb of sprites
+	ld c, [hl] ; ID of 1st sprite
+	ld hl, wLargerBuf
+	ld a, [hli] ; ID of 1st targeted sprite
+	cp b
+	jr nc, .preventOverflow
+	ld e, a ; ID of 1st targeted sprite
+	ld a, [hli]
+	ld b, a ; Nb of targeted sprites
+	add a, e
+	cp c ; Check if not going past the limit
+	jr nc, .preventOverflow
+	ld a, e
+	add a, a
+	add a, a
+	add a, LOW(wExtendedOAM + 3)
+	ld e, a
+	adc a, HIGH(wExtendedOAM + 3)
+	sub l
+	ld d, a
+	ld a, [hli]
+	ld l, [hl]
+	ld h, a
+.loop
+	ld a, h
+	ld [de], a
+	xor l
+	ld h, a
+REPT 4
+	inc de
+ENDR
+	dec b
+	jr nz, .loop
+.preventOverflow
+	ld a, 4
+	ld [wTransferSprites], a
+	ret
+	
+	
+GetNPCPtrFromAnimID::
+	bit 7, a
+	jr z, .gotNPCID
+	and $07
+	ld b, a ; Save offset
+	ld hl, sp+3
+	ld a, [hl]
+	add a, LOW(wAnimationTargetNPCs)
+	ld l, a
+	adc a, HIGH(wAnimationTargetNPCs)
+	sub l
+	ld h, a
+	ld a, [hl] ; Get base ID
+	add a, b ; Add specified offset
+.gotNPCID
+	and $07 ; Cap to avoid OOB writes
+	swap a
+	add a, LOW(wNPC1_ypos)
+	ld l, a
+	ld h, HIGH(wNPC1_ypos)
 	ret
 	

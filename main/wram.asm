@@ -264,6 +264,10 @@ wAnimationStacks::
 	
 wNumOfAnimations::
 	ds 1
+	
+; Table of "offsets" for the NPC-targeting animation commands
+wAnimationTargetNPCs::
+	ds 8
 
 	
 	
