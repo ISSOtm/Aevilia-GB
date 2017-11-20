@@ -257,6 +257,8 @@ TextCommandsPointers::
 	dw TextResetFlag
 	dw TextToggleFlag
 	dw TextLoadMap
+	dw TextStartAnim
+	dw TextEndAnim
 	
 	
 ; A clone of ProcessText, but for the battle engine!
@@ -409,6 +411,8 @@ BattleTextCommandsPointers::
 	dw TextResetFlag
 	dw TextToggleFlag
 	dw TextLoadMap
+	dw TextStartAnim
+	dw TextEndAnim
 	
 TextErrorStr::
 	db "TEXT ERROR."
@@ -2124,9 +2128,17 @@ TextStopMusic::
 	
 OverrideTextboxPalette::
 	ld hl, wDigitBuffer + 1
-	ld e, [hl]
-	inc hl
+	ld a, [hli]
+	ld e, a
 	ld d, [hl]
+	or d
+	jr nz, .normalLoad
+	ld de, EvieDefaultPalette
+	ld a, [wPlayerGender]
+	and a
+	jr z, .normalLoad
+	ld de, TomDefaultPalette
+.normalLoad
 	ld c, 1
 	callacross LoadBGPalette
 	ld a, 3
@@ -2191,4 +2203,45 @@ TextLoadMap::
 	call CallAcrossBanks
 	
 	ld a, 3
+	ret
+	
+	
+TextStartAnim::
+	ld hl, wDigitBuffer + 1
+	ld a, [hli]
+	ld c, a
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	push hl
+	call StartAnimation
+	pop hl
+	ld l, [hl]
+	ld h, 0
+	ld de, wTextAnimationSlots
+	jr z, .allocationFailed
+	ld a, [wNumOfAnimations]
+	ld [hl], a
+	ld a, 4
+	ret
+.allocationFailed
+	ld a, $FF
+	ret
+	
+TextEndAnim::
+	ld a, [wDigitBuffer + 1]
+	and $07
+	ld l, a
+	ld h, 0
+	ld de, wTextAnimationSlots
+	add hl, de
+	ld b, [hl]
+	ld [hl], $FF
+	inc b
+	jr z, .slotEmpty
+	dec b
+	call EndAnimation
+.slotEmpty
+	ld a, 1
 	ret
