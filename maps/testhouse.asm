@@ -7,7 +7,7 @@ TestHouse::
 	db MUSIC_NEO_SAFE_PLACE ; Music ID
 	
 	db 0
-	db TILESET_TEST_HOUSE
+	db TILESET_INTERIOR
 	dw NO_SCRIPT ; No map script
 	map_size 9, 6
 	dw NO_SCRIPT ; No loading script
