@@ -1,5 +1,5 @@
 *.o
-*.gbc
+bin/*.gbc
 *.sym
 *.map
 *.sgm
