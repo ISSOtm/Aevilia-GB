@@ -1,7 +1,7 @@
 *.o
 bin/*.gbc
-*.sym
-*.map
+bin/*.sym
+bin/*.map
 *.sgm
 *.srm
 *.sav
