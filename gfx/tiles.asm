@@ -764,8 +764,10 @@ OverworldTilesetTiles2::
 	dw $2038, $5078, $5078, $2038, $5078, $5078, $2038, $5078 ; Vertical
 	dw $2038, $5078, $5078, $2038, $5078, $5078, $2030, $0000 ; Vertical, end
 	dw $0077, $0077, $00FF, $00EE, $0044, $0000, $0011, $0044 ; Shadow
+	dw $2020, $5070, $F0F0, $00F0, $F0F0, $5070, $50F0, $70F0 ; Horizontal, right end
+	dw $0070, $0070, $00F0, $00E0, $0040, $0000, $0010, $0040 ; Shadow, right end
 	
-	; Door animation frames (AF-CA)
+	; Door animation frames (B1-CC)
 	dw $00FF, $00FF, $3FFF, $3FE0, $3FE7, $38E8, $38E8, $3FEF ; Top-left
 	dw $00FF, $00FF, $3FFF, $3FE0, $3FE7, $38E8, $38E8, $3FEF ; Top-right (H-flipped !)
 	dw $FC07, $FCF7, $7C17, $7C17, $1C17, $FCFF, $FDFF, $06FE ; Bottom-right
