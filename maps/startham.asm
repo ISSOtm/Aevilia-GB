@@ -22,7 +22,7 @@ StarthamInteractions::
 	interaction $FFF8, $013E, 16, 5, StarthamUnfinishedNorthConnection
 	
 	db WALK_INTERACT
-	interaction $0100, $0142, 16, 5, StarthamUnfinishedSouthConnection
+	interaction $0100, $013E, 16, 5, StarthamUnfinishedSouthConnection
 	
 	db BTN_LOADZONE
 	load_zone $009F, $0052, 1, 12, THREAD2_OPENDOOR, 0, MAP_PLAYER_HOUSE
