@@ -26,9 +26,9 @@ function drawHUD()
 	wNPC0_ypos = 0x01D710
 	NPCstructlength = 16
 	
-	wYPos = 0xC22F
-	wXPos = 0xC231
-	wPlayerDir = 0xC233
+	wYPos = 0xC22C
+	wXPos = 0xC22E
+	wPlayerDir = 0xC22F
 	
 	playerboxxoffset = 2
 	playerboxyoffset = 8
@@ -36,8 +36,8 @@ function drawHUD()
 	playerboxysize = 7
 	interactionoffsets = {{7, 7}, {16, 7}, {9, 1}, {9, 14}}
 	
-	wLoadedMapROMBank = 0xC246
-	wMapWidth = 0xC24A
+	wLoadedMapROMBank = 0xC2F3
+	wMapWidth = 0xC2F7
 	
 	wBlockMetadata = 0x01D000
 	blockstructlength = 8
