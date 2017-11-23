@@ -5,3 +5,7 @@
 *.zip	binary diff=hex
 
 rgbasm	binary diff=hex
+rgblink	binary diff=hex
+rgbfix	binary diff=hex
+
+*.dmf	binary diff=hex
