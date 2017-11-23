@@ -194,5 +194,9 @@ SECTION "Intro D-pad animation", ROMX
 
 IntroDpadAnimation::
 	db 5
-	anim_copy_tiles EvieTiles, 0, $8700, 1
+	anim_copy_tiles EvieTiles, 0, $FA, 5
+	anim_set_pos 0, 1, SCREEN_HEIGHT * TILE_SIZE, 20
+	anim_set_pos 1, 3, SCREEN_HEIGHT * TILE_SIZE + 8, 12
+	anim_set_pos 4, 1, SCREEN_HEIGHT * TILE_SIZE + 16, 20
+	pause 60
 	done
