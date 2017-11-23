@@ -19,10 +19,13 @@ TestHouseInteractions::
 	load_zone $004B, $002E, 6, 5, THREAD2_LOADINGWALKDOWN, 0, MAP_STARTHAM
 	
 TestHouseNPCs::
-	db 1
+	db 2
 	
 	dw NO_FLAG_DEP
 	npc $0020, $0020, 16, 16, 0, $01, DIR_LEFT, 1, 2, 1, 2, 0, 0 ; Test battle
+	
+	dw NO_FLAG_DEP
+	npc $0030, $0060, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0
 	
 	db 1
 	dw TestHouseNPCScripts
