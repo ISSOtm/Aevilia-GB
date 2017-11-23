@@ -100,7 +100,7 @@ TestIntroCutscene::
 	delay 40
 	make_npc_walk 2, DIR_LEFT | ROTATE_45 | DONT_TURN, 1, 1
 .sleepingSource
-	djnz .sleepingLoop - .sleepingSource
+	text_djnz .sleepingLoop - .sleepingSource
 	
 	set_fade_speed 3
 	gfx_fadeout
