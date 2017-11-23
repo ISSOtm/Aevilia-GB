@@ -198,9 +198,13 @@ ENDM
 ; djnz offset
 ; Decrements the repetition counter, and if non-zero, jumps somewhere
 ; offset : number of bytes to jump (relative jump)
-djnz: MACRO
+text_djnz: MACRO
 	db DECREMENT_AND_JUMP
 	db \1
+ENDM
+text_djnz_label: MACRO
+.source\@
+	text_djnz (\1 - .source\@)
 ENDM
 
 

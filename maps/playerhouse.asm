@@ -201,7 +201,7 @@ PlayerHouseDontLeaveScript::
 .branch3
 	make_npc_walk 1, DIR_DOWN, 1, 1
 .source3
-	djnz .branch3 - .source3
+	text_djnz .branch3 - .source3
 	
 	text_lda_imm $FF
 	text_sta wNPC2_ypos + 1
