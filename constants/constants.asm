@@ -46,6 +46,7 @@ TEXTBOX_MOVEMENT_SPEED	EQU 4
 ; -------------- MAP ----------------
 NB_OF_NPCS		EQU 8
 NO_SCRIPT		EQU $0000
+OPEN_DOOR_FIRST_TILE	EQU $B1
 
 
 ; ------------- WARPS ---------------

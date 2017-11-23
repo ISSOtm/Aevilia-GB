@@ -248,7 +248,7 @@ OpenDoorAnim::
 	ld a, c ; Get back anim count
 ;	add a, a ; Already done by `rlca`
 	add a, a ; 4 tiles per frame
-	add a, $AF
+	add a, OPEN_DOOR_FIRST_TILE
 	ld b, a
 	call .drawTile
 	inc hl

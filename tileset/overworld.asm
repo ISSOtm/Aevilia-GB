@@ -24,7 +24,7 @@ OverworldTileset::
 	full_ptr OverworldTilesetTiles1
 	db 1
 	full_ptr FlowerFrames
-	db $2C
+	db $2D
 	full_ptr OverworldTilesetTiles2
 	db 0
 	
@@ -355,7 +355,13 @@ OverworldTileset::
 	tile_attr $AB, 0, 1, 0, 0, 0, 0
 	tile_attr $AE, 0, 1, 0, 0, 0, 0
 	
-REPT 10
+	; Horizontal fence end and path
+	tile_attr $AA, 0, 1, 0, 0, 0, 0
+	tile_attr $AE, 0, 1, 0, 0, 0, 0
+	tile_attr $AF, 0, 1, 0, 0, 0, 0
+	tile_attr $B0, 0, 1, 0, 0, 0, 0
+	
+REPT 9
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
@@ -492,13 +498,14 @@ ENDR
 	db 0
 	
 	; Fence tiles
-REPT 4
+	dbfill 4, 0
+	db TILE_CANWALK
 	db 0
-ENDR
 	db TILE_CANWALK
 	
+	dbfill 26, 0
 	; Unused tiles get nuffin'
-REPT $100 - 47
+REPT $100 - 75
 	db 0
 ENDR
 	
