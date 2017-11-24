@@ -35,8 +35,14 @@ StartAnimation::
 	ld [hl], d
 	inc l
 	dec de ; Go back to header
+	ldh a, [hCurROMBank]
+	push af
+	ld a, c
+	rst bankswitch
 	ld a, [de] ; Read nb of sprites
 	ld [hli], a
+	pop af
+	rst bankswitch
 	
 	; Allocate the sprites in the extended OAM
 	ld a, [wNumOfExtendedSprites]
@@ -569,25 +575,25 @@ AnimationCopySprites::
 	ld d, [hl] ; ID of 1st sprite
 	
 	ld hl, wLargerBuf + 4
-	ld a, [hld]
-	ld b, a ; Length (in sprites)
-	ld a, d
-	cp b
-	jr c, .nbOfSpritesValid ; Valid if len < nb of spr
-	debug_message "TRIED TO COPY TOO MANY SPRITES (%B% >= %D%)"
-	ld b, d
-.nbOfSpritesValid
-	ld a, d
-	add a, e
-	ld c, a ; Max spr ID
-	ld a, [hld] ; 1st sprite
+	ld a, [hld] ; Length (in sprites)
 	and a
 	ret z ; Don't try to copy 0 sprites
-	add a, b
-	cp c
-	jr nc, .preventOverflow ; Prevent overflow if trying to copy past last sprite
-	sub b ; Get back 1st sprite
+	ld b, a
+	ld a, e
+	cp b
+	jr nc, .nbOfSpritesValid ; Valid if len <= nb of spr (nb - len >= 0)
+	debug_message "TRIED TO COPY TOO MANY SPRITES (%B% > %D%)"
+	ld b, e
+.nbOfSpritesValid
+	ld a, [hld] ; 1st sprite
 	add a, d ; Add ID of 1st allocated sprite
+	ld d, a ; Save global ID of 1st sprite
+	add a, b ; Add len
+	cpl
+	scf
+	adc a, e ; a = e - len = nb of spr - len
+	jr nc, .preventOverflow ; Prevent overflow if len > nb of spr (condition is inverted because of ADC instead of CP)
+	ld a, d
 	add a, a
 	add a, a
 	add a, LOW(wExtendedOAM)
@@ -603,7 +609,7 @@ AnimationCopySprites::
 	ld b, a
 	ld a, [hld]
 	ld l, [hl]
-	ld a, h
+	ld h, a
 	call CopyAcrossLite
 .preventOverflow
 	ld a, 5
@@ -790,7 +796,7 @@ AnimationSetSpriteTiles::
 	add a, LOW(wExtendedOAM + 2)
 	ld e, a
 	adc a, HIGH(wExtendedOAM + 2)
-	sub l
+	sub e
 	ld d, a
 	ld a, [hli]
 	ld l, [hl]
@@ -831,7 +837,7 @@ AnimationSetSpriteAttribs::
 	add a, LOW(wExtendedOAM + 3)
 	ld e, a
 	adc a, HIGH(wExtendedOAM + 3)
-	sub l
+	sub e
 	ld d, a
 	ld a, [hli]
 	ld l, [hl]
