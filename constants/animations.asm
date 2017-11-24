@@ -103,7 +103,7 @@ anim_copy_sprites: MACRO
 		shift
 	ELSE
 		dw \1
-		dw BANK(\1)
+		db BANK(\1)
 	ENDC
 	db \2
 	db \3
@@ -163,8 +163,14 @@ anim_set_tiles: MACRO
 	db \4
 ENDM
 
+; Sets some sprite's attribs
+; args : sprID len tileID xorval
 anim_set_attribs: MACRO
 	db ANIM_SET_SPR_ATTRIBS
+	db \1
+	db \2
+	db \3
+	db \4
 ENDM
 
 anim_set_loop_counter: MACRO
