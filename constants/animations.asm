@@ -10,12 +10,14 @@
 	enum_elem ANIM_CALL_SECTION
 	enum_elem ANIM_COPY_TILES
 	enum_elem ANIM_COPY_SPRITES
-	enum_elem ANIM_MOVE_SPRITE
+	enum_elem ANIM_MOVE_SPRITES
 	enum_elem ANIM_MOVE_NPC
 	enum_elem ANIM_TURN_NPC
 	enum_elem ANIM_SET_SPR_POS
 	enum_elem ANIM_SET_SPR_TILES
 	enum_elem ANIM_SET_SPR_ATTRIBS
+	enum_elem ANIM_SET_LOOP_COUNTER
+	enum_elem ANIM_DJNZ
 	
 	enum_elem INVALID_ANIM_COMMAND
 
@@ -108,21 +110,14 @@ anim_copy_sprites: MACRO
 ENDM
 
 ; Moves sprites on-screen
-; args : bank src sprID len
+; args : sprID len ydelta xdelta
 ; sprID is the ID of the 1st allocated sprite that will be affected
 ; len is in sprite increments (ie. 4 bytes)
 anim_move_spr: MACRO
-	db ANIM_MOVE_SPRITE
-	IF _NARG >= 4
-		dw \2
-		db \1
-		shift
-	ELSE
-		dw \1
-		db BANK(\1)
-	ENDC
+	db ANIM_MOVE_SPRITES
+	db \1
 	db \2
-	db \3
+	db \3, \4
 ENDM
 
 ; Moves a NPC
@@ -170,4 +165,19 @@ ENDM
 
 anim_set_attribs: MACRO
 	db ANIM_SET_SPR_ATTRIBS
+ENDM
+
+anim_set_loop_counter: MACRO
+	db ANIM_SET_LOOP_COUNTER
+	db \1
+ENDM
+
+anim_djnz: MACRO
+	db ANIM_DJNZ
+	db \1
+ENDM
+anim_djnz_label: MACRO
+	db ANIM_DJNZ
+.source\@
+	db \1 - .source\@
 ENDM

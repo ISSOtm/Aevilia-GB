@@ -395,11 +395,14 @@ AnimationCommands::
 	dw AnimationCallSection
 	dw AnimationCopyTiles
 	dw AnimationCopySprites
+	dw AnimationMoveSprites
 	dw AnimationMoveNPC
 	dw AnimationTurnNPC
 	dw AnimationSetSpritePos
 	dw AnimationSetSpriteTiles
 	dw AnimationSetSpriteAttribs
+	dw AnimationSetLoopCounter
+	dw AnimationDjnz
 	
 	
 AnimationJumpTo::
@@ -408,10 +411,10 @@ AnimationJumpTo::
 	ld a, [de]
 	inc de
 	ld [hli], a
-	inc hl
+	inc hl ; Skip over saved counter
 	ld a, [de]
 	inc de
-	ld [hli], a
+	ld [hli], a ; Write ptr
 	ld a, [de]
 	ld [hl], a
 	xor a ; Don't advance the cursor further...
@@ -430,9 +433,8 @@ StartNewAnim::
 	
 AnimationCall::
 	call StartNewAnim
-	; (This works because both functions return the same byte count ; add a `ld a, X` if this changes)
 	jr z, ForceAnimationEnd ; If the animation failed to start, don't do anything else.
-	ld hl, sp+3 ; Points to saved counter
+	ld hl, sp+3 ; Points to current animation's ID
 	ld a, [hl] ; Get current animation's ID
 	add a, a
 	add a, a
@@ -450,7 +452,7 @@ AnimationCall::
 	
 ; Repoints the saved read ptr to a 00
 ForceAnimationEnd::
-	ld hl, sp+4 ; Saved read ptr
+	ld hl, sp+2 ; Saved read ptr
 	ld [hl], LOW(NullByte)
 	inc hl
 	ld [hl], HIGH(NullByte)
@@ -461,7 +463,7 @@ ForceAnimationEnd::
 AnimationCallSection::
 	ld hl, sp+2
 	ld a, [hli] ; Get bank
-	ld c, a
+	ld b, a
 	ld a, [hli] ; Get anim ID
 	swap a
 	add a, LOW(wAnimationStacks)
@@ -484,7 +486,7 @@ AnimationCallSection::
 .noCarry
 	
 	; Push the entry on the stack
-	ld a, c
+	ld a, b
 	ld [de], a
 	inc de
 	ld a, [hli] ; Get anim ptr
@@ -517,7 +519,6 @@ AnimationCallSection::
 AnimationCopyTiles::
 	ld hl, wLargerBuf + 5
 	ld a, [hld] ; Len (in tiles)
-	swap a
 	ld c, a
 	ld a, [hld] ; Dest tile (low)
 	swap a
@@ -559,17 +560,13 @@ AnimationCopySprites::
 	add a, a
 	add a, a
 	add a, LOW(wAnimation0_nbOfSprites)
-	ld e, a
+	ld l, a
 	adc a, HIGH(wAnimation0_nbOfSprites)
-	sub e
-	ld d, a ; de points to the animation's number of sprites
-	
-	ld a, [de]
-	ld b, a
-	inc de
-	ld a, [de]
-	ld d, a ; ID of 1st sprite
-	ld e, b ; Nb of sprites
+	sub l
+	ld h, a ; de points to the animation's number of sprites
+	ld a, [hli]
+	ld e, a ; Nb of sprites
+	ld d, [hl] ; ID of 1st sprite
 	
 	ld hl, wLargerBuf + 4
 	ld a, [hld]
@@ -610,6 +607,48 @@ AnimationCopySprites::
 	call CopyAcrossLite
 .preventOverflow
 	ld a, 5
+	ld [wTransferSprites], a
+	ret
+	
+	
+AnimationMoveSprites::
+	call GetAnimSpriteInfo
+	ld hl, wLargerBuf
+	ld a, [hli] ; ID of 1st targeted sprite
+	cp b
+	jr nc, .preventOverflow
+	ld e, a
+	ld a, [hl] ; Nb of targeted sprites
+	add a, e
+	dec a
+	cp b ; Check if not going past the limit
+	jr nc, .preventOverflow
+	ld a, [hli]
+	ld b, a
+	ld a, [hli] ; Y delta
+	ld c, [hl] ; X delta
+	ld d, a
+	ld a, e
+	add a, a
+	add a, a
+	add a, LOW(wExtendedOAM)
+	ld l, a
+	adc a, HIGH(wExtendedOAM)
+	sub l
+	ld h, a
+.loop
+	ld a, d
+	add a, [hl]
+	ld [hli], a
+	ld a, c
+	add a, [hl]
+	ld [hli], a
+	inc hl
+	inc hl
+	dec b
+	jr nz, .loop
+.preventOverflow
+	ld a, 4
 	ld [wTransferSprites], a
 	ret
 	
@@ -688,36 +727,26 @@ AnimationTurnNPC::
 	
 	
 AnimationSetSpritePos::
-	ld hl, sp+3
-	ld a, [hl]
-	add a, a
-	add a, a
-	add a, a
-	add a, LOW(wAnimation0_nbOfSprites)
-	ld l, a
-	adc a, HIGH(wAnimation0_nbOfSprites)
-	sub l
-	ld h, a
-	ld a, [hli]
-	ld b, a ; Nb of sprites
-	ld c, [hl] ; ID of 1st sprite
+	call GetAnimSpriteInfo
 	ld hl, wLargerBuf
 	ld a, [hli] ; ID of 1st targeted sprite
 	cp b
 	jr nc, .preventOverflow
-	ld e, a ; ID of 1st targeted sprite
-	ld a, [hli]
-	ld b, a ; Nb of targeted sprites
+	ld e, a
+	ld a, [hl] ; Nb of targeted sprites
 	add a, e
-	cp c ; Check if not going past the limit
+	dec a
+	cp b ; Check if not going past the limit
 	jr nc, .preventOverflow
+	ld a, [hli]
+	ld b, a
 	ld a, e
 	add a, a
 	add a, a
 	add a, LOW(wExtendedOAM)
 	ld e, a
 	adc a, HIGH(wExtendedOAM)
-	sub l
+	sub e
 	ld d, a
 	ld a, [hli] ; Y pos
 	ld l, [hl] ; X pos
@@ -742,29 +771,19 @@ ENDR
 	
 	
 AnimationSetSpriteTiles::
-	ld hl, sp+3
-	ld a, [hl]
-	add a, a
-	add a, a
-	add a, a
-	add a, LOW(wAnimation0_nbOfSprites)
-	ld l, a
-	adc a, HIGH(wAnimation0_nbOfSprites)
-	sub l
-	ld h, a
-	ld a, [hli]
-	ld b, a ; Nb of sprites
-	ld c, [hl] ; ID of 1st sprite
+	call GetAnimSpriteInfo
 	ld hl, wLargerBuf
 	ld a, [hli] ; ID of 1st targeted sprite
 	cp b
 	jr nc, .preventOverflow
-	ld e, a ; ID of 1st targeted sprite
-	ld a, [hli]
-	ld b, a ; Nb of targeted sprites
+	ld e, a
+	ld a, [hl] ; Nb of targeted sprites
 	add a, e
-	cp c ; Check if not going past the limit
+	dec a
+	cp b ; Check if not going past the limit
 	jr nc, .preventOverflow
+	ld a, [hli]
+	ld b, a
 	ld a, e
 	add a, a
 	add a, a
@@ -793,29 +812,19 @@ ENDR
 	
 	
 AnimationSetSpriteAttribs::
-	ld hl, sp+3
-	ld a, [hl]
-	add a, a
-	add a, a
-	add a, a
-	add a, LOW(wAnimation0_nbOfSprites)
-	ld l, a
-	adc a, HIGH(wAnimation0_nbOfSprites)
-	sub l
-	ld h, a
-	ld a, [hli]
-	ld b, a ; Nb of sprites
-	ld c, [hl] ; ID of 1st sprite
+	call GetAnimSpriteInfo
 	ld hl, wLargerBuf
 	ld a, [hli] ; ID of 1st targeted sprite
 	cp b
 	jr nc, .preventOverflow
-	ld e, a ; ID of 1st targeted sprite
-	ld a, [hli]
-	ld b, a ; Nb of targeted sprites
+	ld e, a
+	ld a, [hl] ; Nb of targeted sprites
 	add a, e
-	cp c ; Check if not going past the limit
+	dec a
+	cp b ; Check if not going past the limit
 	jr nc, .preventOverflow
+	ld a, [hli]
+	ld b, a
 	ld a, e
 	add a, a
 	add a, a
@@ -843,12 +852,44 @@ ENDR
 	ret
 	
 	
+AnimationSetLoopCounter::
+	ld hl, sp+3
+	ld a, [hl]
+	add a, a
+	add a, a
+	add a, a
+	ld l, a
+	ld h, 0
+	ld de, wAnimation0_loopCounter
+	add hl, de
+	ld a, [wLargerBuf]
+	ld [hl], a
+	ld a, 1
+	ret
+	
+AnimationDjnz::
+	ld hl, sp+3
+	ld a, [hl]
+	add a, a
+	add a, a
+	add a, a
+	ld l, a
+	ld h, 0
+	ld de, wAnimation0_loopCounter
+	add hl, de
+	ld a, 1
+	dec [hl]
+	ret z
+	ld a, [wLargerBuf]
+	ret
+	
+	
 GetNPCPtrFromAnimID::
 	bit 7, a
 	jr z, .gotNPCID
 	and $07
 	ld b, a ; Save offset
-	ld hl, sp+3
+	ld hl, sp+1
 	ld a, [hl]
 	add a, LOW(wAnimationTargetNPCs)
 	ld l, a
@@ -863,5 +904,21 @@ GetNPCPtrFromAnimID::
 	add a, LOW(wNPC1_ypos)
 	ld l, a
 	ld h, HIGH(wNPC1_ypos)
+	ret
+	
+	
+GetAnimSpriteInfo::
+	ld hl, sp+5 ; Compensate for the extra return addr
+	ld a, [hl]
+	add a, a
+	add a, a
+	add a, a
+	ld l, a
+	ld h, 0
+	ld de, wAnimation0_nbOfSprites
+	add hl, de
+	ld a, [hli]
+	ld b, a ; Nb of sprites
+	ld c, [hl] ; ID of 1st sprite
 	ret
 	

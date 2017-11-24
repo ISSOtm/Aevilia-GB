@@ -194,8 +194,15 @@ SECTION "Intro D-pad animation", ROMX
 IntroDpadAnimation::
 	db 5
 	anim_copy_tiles EvieTiles, 0, $FA, 5
-	anim_set_pos 0, 1, SCREEN_HEIGHT * TILE_SIZE, 20
-	anim_set_pos 1, 3, SCREEN_HEIGHT * TILE_SIZE + 8, 12
-	anim_set_pos 4, 1, SCREEN_HEIGHT * TILE_SIZE + 16, 20
-	pause 60
-	done
+	anim_set_pos 0, 1, SCREEN_HEIGHT * TILE_SIZE + 16, 20
+	anim_set_pos 1, 3, SCREEN_HEIGHT * TILE_SIZE + 24, 12
+	anim_set_pos 4, 1, SCREEN_HEIGHT * TILE_SIZE + 32, 20
+	anim_set_loop_counter 16
+.moveDpadUp
+	pause 1
+	anim_move_spr 0, 5, -2, 0
+	anim_djnz_label .moveDpadUp
+.lock ; Dirty infinite loop
+	pause 255
+	anim_set_loop_counter 0
+	anim_djnz_label .lock
