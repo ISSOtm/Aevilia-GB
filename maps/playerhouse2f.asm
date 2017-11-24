@@ -7,7 +7,7 @@ PlayerHouse2F::
 	
 	db 1 ; Tileset is dependent
 	dw PlayerHouse2FTilesetScript
-	dw NO_SCRIPT ; No map script
+	dw PlayerHouse2FHideDpad
 	map_size 10, 9
 	dw PlayerHouse2FMuteMusic
 	
@@ -57,6 +57,23 @@ PlayerHouse2FTilesetScript::
 	ret nc ; If the cutscene hasn't played yet, use the dimmed tileset instead
 	ld a, TILESET_INTERIOR
 	ret
+	
+PlayerHouse2FHideDpad::
+	ld de, FLAG_2F_DPAD_HIDDEN
+	call GetFlag
+	ret c ; Don't do anything if the dpad has already been hidden
+	ldh a, [hHeldButtons]
+	and $F0
+	ret z ; Wait until the player moves
+	ld hl, wAnimation0_delay
+	ld [hl], 0
+	inc hl
+	inc hl
+	ld [hl], LOW(IntroHideDpadAnimation)
+	inc hl
+	ld [hl], HIGH(IntroHideDpadAnimation)
+	ld de, FLAG_2F_DPAD_HIDDEN
+	jp SetFlag
 	
 PlayerHouse2FMuteMusic::
 	ld de, FLAG_INTRO_CUTSCENE_PLAYED
@@ -193,10 +210,8 @@ SECTION "Intro D-pad animation", ROMX
 
 IntroDpadAnimation::
 	db 5
-	anim_copy_tiles EvieTiles, 0, $FA, 5
-	anim_set_pos 0, 1, SCREEN_HEIGHT * TILE_SIZE + 16, 20
-	anim_set_pos 1, 3, SCREEN_HEIGHT * TILE_SIZE + 24, 12
-	anim_set_pos 4, 1, SCREEN_HEIGHT * TILE_SIZE + 32, 20
+	anim_copy_tiles PlayerHouse2FDpadTiles, 0, $FD, 3
+	anim_copy_sprites .oam, 0, 5
 	anim_set_loop_counter 16
 .moveDpadUp
 	pause 1
@@ -206,3 +221,19 @@ IntroDpadAnimation::
 	pause 255
 	anim_set_loop_counter 0
 	anim_djnz_label .lock
+	
+.oam
+	dspr SCREEN_HEIGHT * TILE_SIZE     , 12, $FD, 4
+	dspr SCREEN_HEIGHT * TILE_SIZE + 8 ,  4, $FE, 4
+	dspr SCREEN_HEIGHT * TILE_SIZE + 8 , 12, $FF, 4
+	dspr SCREEN_HEIGHT * TILE_SIZE + 8 , 20, $FE, $24
+	dspr SCREEN_HEIGHT * TILE_SIZE + 16, 12, $FD, $44
+	
+IntroHideDpadAnimation::
+	anim_set_loop_counter 16
+	pause 20
+.moveDpadDown
+	pause 1
+	anim_move_spr 0, 5, 2, 0
+	anim_djnz_label .moveDpadDown
+	done

@@ -1263,6 +1263,14 @@ TomPajamasWalkingTiles::
 	dw $F888, $F888, $F090, $E0E0, $70B0, $A8F8, $C8F8, $3030
 	
 	
+SECTION "Player houe 2F - Dpad tiles", ROMX,ALIGN[4]
+
+PlayerHouse2FDpadTiles::
+	dw $7E7E, $FF81, $FF81, $FF81, $FF81, $FF81, $FF81, $FF81 ; Top (+ down via mirrorring)
+	dw $7F7F, $FF80, $FF80, $FF80, $FF80, $FF80, $FF80, $7F7F ; Left (+ right via mirroring)
+	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Middle
+	
+	
 SECTION "Strings and text", ROMX,BANK[1]
 	
 AeviliaStr::
