@@ -1266,9 +1266,9 @@ TomPajamasWalkingTiles::
 SECTION "Player houe 2F - Dpad tiles", ROMX,ALIGN[4]
 
 PlayerHouse2FDpadTiles::
-	dw $7E7E, $FF81, $FF81, $FF81, $FF81, $FF81, $FF81, $FF81 ; Top (+ down via mirrorring)
-	dw $7F7F, $FF80, $FF80, $FF80, $FF80, $FF80, $FF80, $7F7F ; Left (+ right via mirroring)
-	dw $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00, $FF00 ; Middle
+	dw $7E7E, $FF81, $FF81, $FFBD, $FF81, $FF81, $FFBD, $FF81 ; Top (+ down via mirrorring)
+	dw $7F7F, $FF80, $FF92, $FF92, $FF92, $FF92, $FF80, $7F7F ; Left (+ right via mirroring)
+	dw $FF18, $FF7E, $FF7E, $FFFF, $FFFF, $FF7E, $FF7E, $FF18 ; Middle
 	
 	
 SECTION "Strings and text", ROMX,BANK[1]

@@ -223,11 +223,11 @@ IntroDpadAnimation::
 	anim_djnz_label .lock
 	
 .oam
-	dspr SCREEN_HEIGHT * TILE_SIZE     , 12, $FD, 4
-	dspr SCREEN_HEIGHT * TILE_SIZE + 8 ,  4, $FE, 4
-	dspr SCREEN_HEIGHT * TILE_SIZE + 8 , 12, $FF, 4
-	dspr SCREEN_HEIGHT * TILE_SIZE + 8 , 20, $FE, $24
-	dspr SCREEN_HEIGHT * TILE_SIZE + 16, 12, $FD, $44
+	dspr SCREEN_HEIGHT * TILE_SIZE + 2 , 14, $FD, 4
+	dspr SCREEN_HEIGHT * TILE_SIZE + 10,  6, $FE, 4
+	dspr SCREEN_HEIGHT * TILE_SIZE + 10, 14, $FF, 4
+	dspr SCREEN_HEIGHT * TILE_SIZE + 10, 22, $FE, $24
+	dspr SCREEN_HEIGHT * TILE_SIZE + 18, 14, $FD, $44
 	
 IntroHideDpadAnimation::
 	anim_set_loop_counter 16
