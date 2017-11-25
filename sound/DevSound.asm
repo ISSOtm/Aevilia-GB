@@ -2858,33 +2858,9 @@ CH4_UpdateRegisters:
 	cp	$ff
 	jr	z,.loadlast
 	ld	b,a
-	ld	a,[CH4ChanVol]
-	push	hl
-	call	MultiplyVolume
-	pop	hl
-	ld	a,[CH4VolLoop]
-	dec	a
-	jr	z,.zombieatpos0
-	ld	a,[CH4VolPos]
-	and	a
-	jr	z,.zombinit
-.zombieatpos0
 	ld	a,[CH4Vol]
 	cp	b
 	jr	z,.noreset3
-	ld	c,a
-	ld	a,b
-	ld	[CH4Vol],a
-	sub	c
-	and	$f
-	ld	c,a
-	ld	a,8
-.zombloop
-	ldh	[rNR42],a
-	dec	c
-	jr	nz,.zombloop
-	jr	.noreset3
-.zombinit
 	ld	a,b
 	ld	[CH4Vol],a
 	swap	a
@@ -2901,21 +2877,9 @@ CH4_UpdateRegisters:
 	jr	nz,.done
 	ld	a,[hl]
 	ld	[CH4VolPos],a
-	ld	a,1
-	ld	[CH4VolLoop],a
 	jr	.done
 .loadlast
 	ld	a,[hl]
-	push	af
-	swap	a
-	and	$f
-	ld	b,a
-	ld	a,[CH4ChanVol]
-	call	MultiplyVolume
-	swap	b
-	pop	af
-	and	$f
-	or	b
 	ldh	[rNR42],a
 	ld	a,$80
 	ldh	[rNR44],a
