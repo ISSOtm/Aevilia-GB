@@ -28,7 +28,7 @@ function drawHUD()
 	
 	wYPos = 0xC22C
 	wXPos = 0xC22E
-	wPlayerDir = 0xC22F
+	wPlayerDir = 0xC230
 	
 	playerboxxoffset = 2
 	playerboxyoffset = 8
