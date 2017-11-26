@@ -317,8 +317,10 @@ function drawHUD()
 	--	gui.DrawNew("Player Interact Point")
 		
 		gui.drawPixel(xpos - cameraxpos, ypos - cameraypos, 0xFFC0C0C0)
-		offsets = interactionoffsets[playerdir + 1]
-		gui.drawPixel(xpos - cameraxpos + offsets[2], ypos - cameraypos + offsets[1], 0xFFFFFF00)
+		if playerdir < 4 then
+			offsets = interactionoffsets[playerdir + 1]
+			gui.drawPixel(xpos - cameraxpos + offsets[2], ypos - cameraypos + offsets[1], 0xFFFFFF00)
+		end
 		
 	--	gui.DrawFinish()
 	end
