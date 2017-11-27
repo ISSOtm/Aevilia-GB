@@ -28,7 +28,7 @@ Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [Charmy](http:/
   Again, useful for debugging, not for playing. Except maybe if TASing, as the game slows down dramatically while using it.
 - _Makefile_, _rgbasm_, _rgblink_, _rgbfix_<br/>
   To build the game on systems supporting _make_ and Linux ELFs.
-- _compiler.bat_, _rgbasm.exe_, _rgblink.exe_, _rgbfix.exe_<br/>
+- _compiler.offline.exe_, _compiler.online.exe_, _rgbasm.exe_, _rgblink.exe_, _rgbfix.exe_, _oldcompiler.bat_<br/>
   To build the game on Windows.
 - _tools/*_<br/>
   Stuff to help building and modifying Aevilia, such as a map editor.
@@ -51,3 +51,17 @@ The game is open-source, you are allowed and actually encouraged to modify it. D
 You are not allowed to distribute your modified copy claiming it's the original. We (the AeviDev Team) reserve the right to shut down any modified copy of the game infringing this.
 
 tl;dr : play by the rules and we'll support you. Don't, and... just don't.
+
+
+# A Note on Compiling
+
+There are two EXEs for compiling and one BATCH file: _compiler.offline.exe_, _compiler.online.exe_, and _oldcompiler.bat_, to be precise.
+
+_compiler.offline.exe_ ("the Offline compiler") is for those who want to compile the ROM without sacrificing the ability to have a stroke in the process.
+The program will tell you exactly what you need to install (a lot) to get the five or so files you need on your system for compiling to work. There's also no instructions on how you need to set these downloaded programs up properly (yet). It's the Online compiler for the paranoid.
+
+_compiler.online.exe_ ("the Online compiler") is for those who are willing to let the program automatically download six or seven files and run them (and then delete them because no one likes clutter) so you can have your shiny new ROM with a one-click solution. The total download size is about 30MB, so it's light enough for those on tight bandwidths and/or mobile tethering and/or dial-up, too. The ultimate convenience tool!
+
+_oldcompiler.bat_ ("the Legacy compiler") uses the provided RGB<insert a couple letters here> filesto compile the ROM, but who likes BATCH files, amirite? If the above EXEs don't work, this might. This might also not work in a few situations when the above do. Both might not work. Who knows? Anyway, this one's slower than those above (not that it matters) and if your default language on your PC is a Cyrillic-based one (think Russian-type or Islamic-type letters) it'll fail.
+  
+  
