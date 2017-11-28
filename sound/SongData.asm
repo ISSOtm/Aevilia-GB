@@ -111,8 +111,26 @@ vol_ScareChordWave:
 	endr
 	db	4,$ff,4
 	
-vol_FileSelectArp:	db	5,4,0,$ff,0
-vol_Tink:			db	5,4,0,$ff,0
+vol_ScareChordNoise:
+	db	15,$fe,0
+	
+vol_FileSelectArp:		db	3,$fe,0
+vol_Tink:				db	5,4,0,$ff,0
+
+vol_FileSelectSaw:		db	15,15,15,15,7,$fe,4
+vol_FileSelectSquare:	db	7,7,7,7,3,$fe,4
+
+vol_FileSelectArp2:
+	rept	28
+	db	3
+	endr
+	rept	28
+	db	2
+	endr
+	rept	28
+	db	1
+	endr
+	db	0,$ff,0
 				
 ; =================================================================
 ; Arpeggio/Noise sequences
@@ -157,29 +175,41 @@ WaveTable:
 	dw	wave_Rand
 	dw	wave_ScareChord
 	dw	wave_Square
+	dw	wave_HalfSaw
+	dw	wave_FileSelectSquare1
+	dw	wave_FileSelectSquare2
 	
 wave_Bass1:				db	$02,$46,$8a,$ce,$ff,$fe,$ed,$dc,$ba,$98,$76,$54,$33,$22,$11,$00
 wave_Pulse:				db	$cc,$cc,$cc,$cc,$cc,$c0,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 wave_Rand:				db	$A6,$F0,$4D,$5F,$FC,$3B,$B7,$FF,$92,$EB,$A9,$8A,$9C,$2B,$45,$DA
 wave_ScareChord:		db	$ff,$ff,$ff,$ff,$00,$00,$00,$00,$ff,$ff,$ff,$ff,$f0,$00,$00,$00
 wave_Square:			db	$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$00,$00,$00,$00,$00,$00,$00,$00
+wave_HalfSaw:			db	$01,$23,$45,$67,$89,$ab,$cd,$ef,$00,$00,$00,$00,$00,$00,$00,$00
+wave_FileSelectSquare1:	db	$77,$64,$44,$56,$65,$44,$46,$77,$00,$13,$33,$21,$12,$33,$31,$00
+wave_FileSelectSquare2:	db	$44,$57,$77,$65,$56,$77,$75,$44,$33,$20,$00,$12,$21,$00,$02,$33
+
 	
-; use $c0 to use the wave buffer
-waveseq_Bass:			db	1,$ff
-waveseq_Pulse:			db	2,$ff
-waveseq_Rand:			db	3,$ff
-waveseq_ScareChordWave:	db	4,$ff
-waveseq_Buffer:			db	$c0,$ff
-waveseq_Square:			db	5,$ff
+; Wave sequences
+; Use $c0 to use the wave buffer
+waveseq_Bass:				db	1,$ff
+waveseq_Pulse:				db	2,$ff
+waveseq_Rand:				db	3,$ff
+waveseq_ScareChordWave:		db	4,$ff
+waveseq_Buffer:				db	$c0,$ff
+waveseq_Square:				db	5,$ff
 
-waveseq_12:				db	0,$ff
-waveseq_25:				db	1,$ff
-waveseq_50:				db	2,$ff
-waveseq_75:				db	3,$ff
+waveseq_HalfSaw:			db	6,$ff
+waveseq_FileSelectSquare:	db	7,7,7,7,8,$ff
 
-waveseq_Arp1:			db	0,0,1,1,1,2,2,3,3,3,2,2,1,1,1,$fe,0
+; Pulse sequences
+waveseq_12:					db	0,$ff
+waveseq_25:					db	1,$ff
+waveseq_50:					db	2,$ff
+waveseq_75:					db	3,$ff
 
-waveseq_ScareChord:		db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$fe,0
+waveseq_Arp1:				db	0,0,1,1,1,2,2,3,3,3,2,2,1,1,1,$fe,0
+
+waveseq_ScareChord:			db	0,0,0,1,1,1,2,2,2,2,0,0,0,0,0,0,0,0,0,0,$fe,0
 
 ; =================================================================
 ; Vibrato sequences
@@ -238,7 +268,10 @@ InstrumentTable:
 	dins	SquareWave
 	
 	dins	FileSelectArp
+	dins	FileSelectArp2
 	dins	Tink
+	dins	FileSelectSaw
+	dins	FileSelectSquare
 	
 ; Instrument format: [no reset flag],[voltable id],[arptable id],[wavetable id],[vibtable id]
 ; _ for no table
@@ -279,7 +312,7 @@ ins_Boss1Echo:			Instrument	0,WaveEcho,_,Pulse,_
 
 ins_ScareChord:			Instrument	0,ScareChord,Trill6,ScareChord,_
 ins_ScareChordWave:		Instrument	0,ScareChordWave,ScareChordTom,ScareChordWave,_
-ins_ScareChordNoise:	Instrument	0,_,S7,_,_
+ins_ScareChordNoise:	Instrument	0,ScareChordNoise,S7,_,_
 
 ins_NeoEcho:			Instrument	0,NeoEcho,_,50,_
 ins_WaveBassFade:		Instrument	0,WaveBassFade,_,Bass,WaveBass
@@ -287,7 +320,10 @@ ins_WaveBassFade:		Instrument	0,WaveBassFade,_,Bass,WaveBass
 ins_SquareWave:			Instrument	0,WaveBass,_,Square,_
 
 ins_FileSelectArp:		Instrument	0,FileSelectArp,Buffer,50,_
+ins_FileSelectArp2:		Instrument	0,FileSelectArp2,Buffer,50,_
 ins_Tink:				Instrument	0,Tink,Buffer,50,_
+ins_FileSelectSaw:		Instrument	0,FileSelectSaw,_,HalfSaw,_
+ins_FileSelectSquare:	Instrument	0,FileSelectSquare,_,FileSelectSquare,_
 
 ; =================================================================
 
@@ -490,14 +526,13 @@ Battle1_CH4:
 
 ; ================================================================
 
-PT_FileSelect:		dw	FileSelect_CH1,FileSelect_CH2,DummyChannel,FileSelect_CH4
+PT_FileSelect:		dw	FileSelect_CH1,FileSelect_CH2,FileSelect_CH3,FileSelect_CH4
 
 FileSelect_CH1:
-	db	SetInstrument,id_FileSelectArp
-	
 	db	SetLoopPoint
-	db	ChannelVolume,15
-	db	rest,64
+	db	SetInstrument,id_FileSelectArp
+	db	rest,128
+	db	rest,128	; rest,256 is invalid
 	
 	db	Arp,1,$38
 	db	E_4,32
@@ -506,35 +541,24 @@ FileSelect_CH1:
 	db	Arp,1,$38
 	db	E_4,8
 	
-;	db	Arp,1,$38
 	db	F#4,32
 	db	Arp,1,$47
 	db	D_4,24
 	db	Arp,1,$38
 	db	F#4,8
 	
-;	db	Arp,1,$38
 	db	E_4,32
+	db	Arp,1,$59
+	db	G_4,16
 	db	Arp,1,$47
-	db	C_4,16
 	db	C_5,8
 	db	Arp,1,$59
 	db	G_4,8
 	
 	db	Arp,1,$38
 	db	F#4,32
-	db	ChannelVolume,5
-	db	F#4,2,F#4,2
-	db	ChannelVolume,4
-	db	F#4,2,F#4,2
-	db	ChannelVolume,3
-	db	F#4,2,F#4,2
-	db	ChannelVolume,2
-	db	F#4,2,F#4,2
-	db	ChannelVolume,1
-	db	F#4,2,F#4,2
-	db	ChannelVolume,0
-	db	rest,12
+	db	SetInstrument,id_FileSelectArp2
+	db	F#4,32
 	
 	db	GotoLoopPoint
 	
@@ -548,6 +572,65 @@ FileSelect_CH2:
 	db	G_6,4
 	db	G_6,8
 	db	GotoLoopPoint
+	
+FileSelect_CH3:
+	db	SetInstrument,id_FileSelectSaw
+	db	SetLoopPoint
+	dbw	CallSection,.block1
+	db	A#2,2,B_2,2
+	dbw	CallSection,.block1
+	db	C_3,2,C#3,2
+	dbw	CallSection,.block2
+	db	C_3,2,C#3,2
+	dbw	CallSection,.block2
+	db	D_3,2,C#3,2
+	db	GotoLoopPoint
+	
+.block1
+	db	C_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	G_6,2,G_5,2
+	db	SetInstrument,id_FileSelectSaw
+	db	C_3,2,G_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	E_6,2,C_6,2
+	db	SetInstrument,id_FileSelectSaw
+	db	C_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	G_6,2
+	db	SetInstrument,id_FileSelectSaw
+	db	C_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	G_5,2,E_6,2
+	db	SetInstrument,id_FileSelectSaw
+	db	G_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	C_6,2
+	db	SetInstrument,id_FileSelectSaw
+	ret
+	
+.block2
+	db	D_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	A_6,2,F#6,2
+	db	SetInstrument,id_FileSelectSaw
+	db	D_3,2,A_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	D_6,2,A_6,2
+	db	SetInstrument,id_FileSelectSaw
+	db	D_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	F#6,2
+	db	SetInstrument,id_FileSelectSaw
+	db	D_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	D_6,2,A_6,2
+	db	SetInstrument,id_FileSelectSaw
+	db	A_3,2
+	db	SetInstrument,id_FileSelectSquare
+	db	F#6,2
+	db	SetInstrument,id_FileSelectSaw
+	ret
 	
 FileSelect_CH4:
 	db	SetLoopPoint
