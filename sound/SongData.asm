@@ -9,7 +9,7 @@
 SongSpeedTable:
 	db	6,6	; safe place
 	db	2,3	; battle 1
-	db	4,4	; menu
+	db	4,3 ; file select
 	db	4,4	; overworld
 	db	2,3	; boss 1
 	db	2,3	; scare chord
@@ -20,7 +20,7 @@ SongSpeedTable_End
 SongPointerTable:
 	dw	PT_SafePlace
 	dw	PT_Battle1
-	dw	PT_Menu
+	dw	PT_FileSelect
 	dw	PT_Overworld
 	dw	PT_Boss1
 	dw	PT_ScareChord
@@ -110,6 +110,9 @@ vol_ScareChordWave:
 	db	8
 	endr
 	db	4,$ff,4
+	
+vol_FileSelectArp:	db	5,4,0,$ff,0
+vol_Tink:			db	5,4,0,$ff,0
 				
 ; =================================================================
 ; Arpeggio/Noise sequences
@@ -234,6 +237,9 @@ InstrumentTable:
 
 	dins	SquareWave
 	
+	dins	FileSelectArp
+	dins	Tink
+	
 ; Instrument format: [no reset flag],[voltable id],[arptable id],[wavetable id],[vibtable id]
 ; _ for no table
 ;!!! REMEMBER TO ADD INSTRUMENTS TO THE INSTRUMENT POINTER TABLE!!!
@@ -279,6 +285,9 @@ ins_NeoEcho:			Instrument	0,NeoEcho,_,50,_
 ins_WaveBassFade:		Instrument	0,WaveBassFade,_,Bass,WaveBass
 
 ins_SquareWave:			Instrument	0,WaveBass,_,Square,_
+
+ins_FileSelectArp:		Instrument	0,FileSelectArp,Buffer,50,_
+ins_Tink:				Instrument	0,Tink,Buffer,50,_
 
 ; =================================================================
 
@@ -481,7 +490,68 @@ Battle1_CH4:
 
 ; ================================================================
 
-PT_Menu:		dw	Scale_CH1,DummyChannel,DummyChannel,DummyChannel
+PT_FileSelect:		dw	FileSelect_CH1,FileSelect_CH2,DummyChannel,FileSelect_CH4
+
+FileSelect_CH1:
+	db	SetInstrument,id_FileSelectArp
+	
+	db	SetLoopPoint
+	db	rest,64
+	
+	db	Arp,1,$38
+	db	E_4,32
+	db	Arp,1,$47
+	db	C_4,24
+	db	Arp,1,$38
+	db	E_4,8
+	
+;	db	Arp,1,$38
+	db	F#4,32
+	db	Arp,1,$47
+	db	D_4,24
+	db	Arp,1,$38
+	db	F#4,8
+	
+;	db	Arp,1,$38
+	db	E_4,32
+	db	Arp,1,$47
+	db	C_4,16
+	db	C_5,8
+	db	Arp,1,$59
+	db	G_4,8
+	
+	db	Arp,1,$38
+	db	F#4,32
+	db	ChannelVolume,5
+	db	F#4,2,F#4,2
+	db	ChannelVolume,4
+	db	F#4,2,F#4,2
+	db	ChannelVolume,3
+	db	F#4,2,F#4,2
+	db	ChannelVolume,2
+	db	F#4,2,F#4,2
+	db	ChannelVolume,1
+	db	F#4,2,F#4,2
+	db	ChannelVolume,0
+	db	rest,12
+	
+	db	GotoLoopPoint
+	
+FileSelect_CH2:
+	db	SetInstrument,id_Tink
+	
+	db	SetLoopPoint
+	db	G_6,6
+	db	G_6,6
+	db	G_6,8
+	db	G_6,4
+	db	G_6,8
+	db	GotoLoopPoint
+	
+FileSelect_CH4:
+	db	SetLoopPoint
+	Drum	CHH,8
+	db	GotoLoopPoint
 
 ; ================================================================
 
