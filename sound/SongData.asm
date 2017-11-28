@@ -112,7 +112,7 @@ vol_ScareChordWave:
 	db	4,$ff,4
 	
 vol_ScareChordNoise:
-	db	15,$fe,0
+	db	15,14,$fe,1
 	
 vol_FileSelectArp:		db	3,$fe,0
 vol_Tink:				db	5,4,0,$ff,0
@@ -312,7 +312,7 @@ ins_Boss1Echo:			Instrument	0,WaveEcho,_,Pulse,_
 
 ins_ScareChord:			Instrument	0,ScareChord,Trill6,ScareChord,_
 ins_ScareChordWave:		Instrument	0,ScareChordWave,ScareChordTom,ScareChordWave,_
-ins_ScareChordNoise:	Instrument	0,ScareChordNoise,S7,_,_
+ins_ScareChordNoise:	Instrument	1,ScareChordNoise,S7,_,_
 
 ins_NeoEcho:			Instrument	0,NeoEcho,_,50,_
 ins_WaveBassFade:		Instrument	0,WaveBassFade,_,Bass,WaveBass
