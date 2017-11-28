@@ -496,6 +496,7 @@ FileSelect_CH1:
 	db	SetInstrument,id_FileSelectArp
 	
 	db	SetLoopPoint
+	db	ChannelVolume,15
 	db	rest,64
 	
 	db	Arp,1,$38
