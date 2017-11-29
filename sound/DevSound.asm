@@ -344,11 +344,11 @@ CH1_CheckByte:
 	jp	UpdateCH2
 	
 .getCommand
-	sub	$80				; subtract 128 from command value
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH1_CheckByte
 .nodummy
+	sub	$80	; subtract 128 from command value
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -648,11 +648,11 @@ CH2_CheckByte:
 	jp	UpdateCH3
 	
 .getCommand
-	sub	$80
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH2_CheckByte
 .nodummy
+	sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -947,11 +947,11 @@ CH3_CheckByte:
 	jp	UpdateCH4
 	
 .getCommand
-	sub	$80
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH3_CheckByte
 .nodummy
+	sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -1276,11 +1276,11 @@ CH4_CheckByte:
 	jp	DoneUpdating
 	
 .getCommand
-	sub	$80
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH4_CheckByte
 .nodummy
+	sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument

@@ -147,8 +147,7 @@ s7	equ	$2d
 ; ($fe) otherwise the noise value will reset!
 
 arp_Kick:	db	$a0,$9a,$a5,$fe,2
-arp_Snare:	db	s7+$9d,s7+$97,s7+$94,$a3,$fe,3	; currently broken
-			;db	$9d,$97,$94,$a3,$fe,3			; temp until issues with above preset are fixed
+arp_Snare:	db	s7+$9d,s7+$97,s7+$94,$a3,$fe,3
 arp_Hat:	db	$a9,$ab,$fe,1
 arp_S7:	db	s7,$fe,0
 
@@ -172,7 +171,6 @@ WaveTable:
 	dw	DefaultWave
 	dw	wave_Bass1
 	dw	wave_Pulse
-	dw	wave_Rand
 	dw	wave_ScareChord
 	dw	wave_Square
 	dw	wave_HalfSaw
@@ -181,7 +179,6 @@ WaveTable:
 	
 wave_Bass1:				db	$02,$46,$8a,$ce,$ff,$fe,$ed,$dc,$ba,$98,$76,$54,$33,$22,$11,$00
 wave_Pulse:				db	$cc,$cc,$cc,$cc,$cc,$c0,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
-wave_Rand:				db	$A6,$F0,$4D,$5F,$FC,$3B,$B7,$FF,$92,$EB,$A9,$8A,$9C,$2B,$45,$DA
 wave_ScareChord:		db	$ff,$ff,$ff,$ff,$00,$00,$00,$00,$ff,$ff,$ff,$ff,$f0,$00,$00,$00
 wave_Square:			db	$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$00,$00,$00,$00,$00,$00,$00,$00
 wave_HalfSaw:			db	$01,$23,$45,$67,$89,$ab,$cd,$ef,$00,$00,$00,$00,$00,$00,$00,$00
@@ -193,13 +190,12 @@ wave_FileSelectSquare2:	db	$44,$57,$77,$65,$56,$77,$75,$44,$33,$20,$00,$12,$21,$
 ; Use $c0 to use the wave buffer
 waveseq_Bass:				db	1,$ff
 waveseq_Pulse:				db	2,$ff
-waveseq_Rand:				db	3,$ff
-waveseq_ScareChordWave:		db	4,$ff
+waveseq_ScareChordWave:		db	3,$ff
 waveseq_Buffer:				db	$c0,$ff
-waveseq_Square:				db	5,$ff
+waveseq_Square:				db	4,$ff
 
-waveseq_HalfSaw:			db	6,$ff
-waveseq_FileSelectSquare:	db	7,7,7,7,8,$ff
+waveseq_HalfSaw:			db	5,$ff
+waveseq_FileSelectSquare:	db	6,6,6,6,7,$ff
 
 ; Pulse sequences
 waveseq_12:					db	0,$ff
@@ -722,17 +718,17 @@ Boss1_CH1:
 Boss1_CH2:
 	db	SetInstrument,id_Boss1Bass
 	
-rept 4
+	rept 4
 	dbw	CallSection,.block0
-endr
+	endr
 	db	SetLoopPoint
-rept 2
+	rept 2
 	dbw	CallSection,.block1
-endr
+	endr
 	dbw	CallSection,.block3
-rept 3
+	rept 3
 	dbw	CallSection,.block2
-endr
+	endr
 	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
 	db	E_2,4,E_2,4,E_3,4,E_2,4,E_2,4,E_3,4,E_2,4,E_2,4
 	
@@ -770,17 +766,17 @@ Boss1_CH3:
 	
 	db	SetLoopPoint
 	db	SetInsAlternate,id_Boss1Wave,id_Boss1Echo
-rept 2
+	rept 2
 	dbw	CallSection,.block2
-endr
+	endr
 	db	SetInstrument,id_Boss1Wave
 	dbw	CallSection,.block4
-rept 3
+	rept 3
 	dbw	CallSection,.block3
-endr
-rept 4
+	endr
+	rept 4
 	dbw	CallSection,.block5
-endr
+	endr
 	
 	db	GotoLoopPoint
 	
@@ -897,15 +893,14 @@ NeoSafePlace_CH2:
 	db	SetInstrument,id_Echo2
 	db	SetLoopPoint
 	
-rept 30
+	rept 30
 	db	F_2,2
-endr
+	endr
 	db	G_2,2,A_2,2
-rept 30
+	rept 30
 	db	G_2,2
-endr
+	endr
 	db	A_2,2,G_2,2
-	
 	db	GotoLoopPoint
 
 NeoSafePlace_CH3:
