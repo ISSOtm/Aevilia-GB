@@ -112,7 +112,7 @@ vol_ScareChordWave:
 	db	4,$ff,4
 	
 vol_ScareChordNoise:
-	db	15,$fe,0
+	db	14,15,$fe,1
 	
 vol_FileSelectArp:		db	3,$fe,0
 vol_Tink:				db	5,4,0,$ff,0
