@@ -344,11 +344,11 @@ CH1_CheckByte:
 	jp	UpdateCH2
 	
 .getCommand
-	sub	$80				; subtract 128 from command value
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH1_CheckByte
 .nodummy
+	sub	$80	; subtract 128 from command value
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -648,11 +648,11 @@ CH2_CheckByte:
 	jp	UpdateCH3
 	
 .getCommand
-	sub	$80
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH2_CheckByte
 .nodummy
+	sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -947,11 +947,11 @@ CH3_CheckByte:
 	jp	UpdateCH4
 	
 .getCommand
-	sub	$80
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH3_CheckByte
 .nodummy
+	sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -1276,11 +1276,11 @@ CH4_CheckByte:
 	jp	DoneUpdating
 	
 .getCommand
-	sub	$80
-	cp	DummyCommand-$80
+	cp	DummyCommand
 	jr	c,.nodummy
 	jp	CH4_CheckByte
 .nodummy
+	sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -3238,7 +3238,7 @@ FreqTable:  ; TODO: Add at least one extra octave
 	dw	$706,$714,$721,$72d,$739,$744,$74f,$759,$762,$76b,$773,$77b ; octave 4
 	dw	$783,$78a,$790,$797,$79d,$7a2,$7a7,$7ac,$7b1,$7b6,$7ba,$7be ; octave 5
 	dw	$7c1,$7c4,$7c8,$7cb,$7ce,$7d1,$7d4,$7d6,$7d9,$7db,$7dd,$7df ; octave 6
-	dw	$7e0,$7e2,$7e4,$7e5,$7e7,$7e8,$7ea,$7eb,$7ec,$7ee,$7ee,$7ef ; octave 7 (not used directly, is slightly out of tune)
+	dw	$7e1,$7e3,$7e4,$7e6,$7e7,$7e9,$7ea,$7eb,$7ec,$7ed,$7ee,$7ef ; octave 7 (not used directly, is slightly out of tune)
 	
 NoiseTable:	; taken from deflemask
 	db	$a4	; 15 steps
