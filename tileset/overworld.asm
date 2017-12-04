@@ -361,7 +361,25 @@ OverworldTileset::
 	tile_attr $AF, 0, 1, 0, 0, 0, 0
 	tile_attr $B0, 0, 1, 0, 0, 0, 0
 	
-REPT 9
+	; Path and horizontal fence (left end)
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $AB, 0, 1, 0, 0, 0, 0
+	
+	; Path and horizontal fence
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $AA, 0, 1, 0, 0, 0, 0
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $AA, 0, 1, 0, 0, 0, 0
+	
+	; Path and horizontal fence and vertical fence (right)
+	tile_attr $9D, 0, 1, 0, 0, 0, 0
+	tile_attr $AA, 0, 1, 0, 0, 0, 0
+	tile_attr $AC, 0, 1, 0, 0, 0, 0
+	tile_attr $AF, 0, 1, 0, 0, 0, 0
+	
+REPT 6
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
 	tile_attr $A9, 0, 1, 0, 0, 0, 0
