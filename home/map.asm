@@ -2282,7 +2282,7 @@ MovePlayer::
 PLAYER_HITBOX_Y_OFFSET	equ 8
 PLAYER_HITBOX_X_OFFSET	equ 2
 PLAYER_HITBOX_Y_SIZE	equ 7
-PLAYER_HITBOX_X_SIZE	equ 11
+PLAYER_HITBOX_X_SIZE	equ 11 ; Collision is per-tile, so we need one extra collision point (since this > 8)
 	
 ; Detect player collision at coordinates given by wTempBuf
 ; Sets Z if can't go through
@@ -2316,7 +2316,6 @@ DetectPlayerCollision::
 	jr nc, .noCarry3
 	inc [hl]
 .noCarry3
-	inc hl
 	
 	ldh a, [hOverworldHeldButtons]
 	and DPAD_DOWN | DPAD_LEFT
@@ -2327,12 +2326,27 @@ DetectPlayerCollision::
 	
 	ld hl, wTempBuf + 2
 	ld a, [hl]
-	add a, PLAYER_HITBOX_X_SIZE
+	; NOTE : due to integer rounding, LEAVE THIS instead of "add a, PLAYER_HITBOX_X_SIZE / 2"
+	add a, PLAYER_HITBOX_X_SIZE - PLAYER_HITBOX_X_SIZE / 2
 	ld [hli], a
 	jr nc, .noCarry4
 	inc [hl]
 .noCarry4
-	inc hl
+	
+	ldh a, [hOverworldHeldButtons]
+	and DPAD_DOWN
+	jr z, .dontSampleBottom
+	call GetCollisionAt
+	ret z
+.dontSampleBottom
+	
+	ld hl, wTempBuf + 2
+	ld a, [hl]
+	add a, PLAYER_HITBOX_X_SIZE / 2
+	ld [hli], a
+	jr nc, .noCarry5
+	inc [hl]
+.noCarry5
 	
 	ldh a, [hOverworldHeldButtons]
 	and DPAD_DOWN | DPAD_RIGHT
@@ -2341,21 +2355,35 @@ DetectPlayerCollision::
 	ret z
 .dontSampleBottomRight
 	
-	ldh a, [hOverworldHeldButtons]
-	and DPAD_UP | DPAD_RIGHT
-	jr nz, .sampleTopRight ; Skip all calculations if this point isn't sampled
-	xor a
-	inc a ; Reset Z flag
-	ret
-.sampleTopRight
-	
 	ld hl, wTempBuf
 	ld a, [hl]
 	sub a, PLAYER_HITBOX_Y_SIZE
 	ld [hli], a
-	jr nc, .noCarry5
+	jr nc, .noCarry6
 	dec [hl]
-.noCarry5
+.noCarry6
+	
+	ldh a, [hOverworldHeldButtons]
+	and DPAD_UP | DPAD_RIGHT
+	jr z, .dontSampleTopRight
+	call GetCollisionAt
+	ret z
+.dontSampleTopRight
+	
+	ldh a, [hOverworldHeldButtons]
+	and DPAD_UP
+	jr nz, .sampleTop ; Skip all calculations if this point isn't sampled
+	inc a ; A was zero, so we need to return with NZ
+	ret
+.sampleTop
+	
+	ld hl, wTempBuf + 2
+	ld a, [hl]
+	sub a, PLAYER_HITBOX_X_SIZE / 2
+	ld [hli], a
+	jr nc, .noCarry7
+	dec [hl]
+.noCarry7
 	call GetCollisionAt
 	ret
 	
