@@ -28,9 +28,6 @@ PlayCredits::
 ;	ld c, 0
 	ld c, a
 	callacross LoadBGPalette_Hook
-	ld de, GrayPalette + 3
-	ld c, 0
-	callacross LoadOBJPalette_Hook
 	
 	; Display the first few lines
 	ld hl, CreditsFirstStrs
@@ -42,94 +39,125 @@ PlayCredits::
 	ld e, $E4
 	call CopyStrToVRAM
 	
+	; Display without moving for one second
 	ld bc, 60
 	call DelayBCFrames
 	
-	ld bc, 19
+	; Start scrolling up
+	ld hl, 19
 	ld d, 1
+	ld b, 0
 .scrollDownToStaff
-	ld e, c
-.waitToStaff
-	rst waitVBlank
-	dec e
-	jr nz, .waitToStaff
-	dec c
-	jr z, .applyCap_ToStaff
-	dec c
-	dec c
+	ld c, l ; Wait c frames (b stays zero)
+	call DelayBCFrames
+	dec l ; We will wait one less frame next frame
+	jr z, .applyCap_ToStaff ; (But we can't wait for less than one)
+	dec l
+	db $0E ; This will perform a "ld c, $XX" where XX is the hex of "inc l", effectively ignoring it
 .applyCap_ToStaff
-	inc c
-	inc b
-	ld a, b
+	inc l
+	inc h ; Move by one pixel
+	ld a, h
 	ldh [hSCY], a
-	cp $60
+	sub $60 ; The text will be off-screen at this line
 	jr nz, .scrollDownToStaff
 	
-	call ClearMovableMap
+	ld hl, $98C0
+	ld c, VRAM_ROW_SIZE * 2
+	; xor a
+	call FillVRAMLite
 	
 	
+StaffCredits::
+	ld de, GrayPalette
+	ld c, 0
+	callacross LoadOBJPalette_Hook
 	
 	; Roll the staff credits
-	ld a, [rLCDC]
-	set 2, a ; Set sprites in 8x16 mode
-	ld [rLCDC], a
+	; The staff credits are done a bit weirdly to work around the OAM size restriction
+	; How it's done is :
+	; Sprites are arranged in 4 rows of 10 each
+	; Sprites are set in 8x16 mode to double the amount of letters available (cool),
+	; BUT this requires the bottom tile to follow the top tile in indexes (less cool)
+	; So tiles IDs are fixed in OAM, and tiles are copied from the font loaded in VRAM (bank 0)
+	; to the tiles used by the sprites.
+	; That's why the code is more convoluted than just setting tile indexes in OAM !
 	
-	ld a, 8 + 4 * 7
+	ld a, 10 * 4 ; 8 lines (grouped by pairs) of 10 sprites each
+	; That's actually the full OAM. Nice.
 	ld [wNumOfSprites], a
 	
+	; Address where the credits are stored
 	ld hl, StaffCreditsStrs
-.doOneStaffCredits
+	
+	ld a, [rLCDC]
+	set 2, a ; Set sprites in 8x16 mode to allow displaying a ton of letters
+	db $11 ; Skip next read [ld de, $XXYY] to merge them (saves one byte and three cycles)
+.nextScreen
 	; Hide all until tiles are properly copied
 	ld a, [rLCDC]
 	res 1, a
 	ld [rLCDC], a
 	
+	xor a
+	ldh [hSCY], a
+	; First, clear all the sprite's tiles
+	; xor a
+	push hl ; Save the read addr
+	ld hl, v0Tiles0
+	ld bc, $A0 * VRAM_TILE_SIZE
+	call FillVRAM
+	
 	; Init OAM
-	push hl
 	ld hl, wVirtualOAM
-	ld de, $26
-	ld bc, (5 << 8) | 8
-	ld a, $18
+	ld de, $26 ; This will also
+	ld b, 4
+	ld a, $18 ; First two lines will be more to the left than other
+	; a = X pos
+	; b = Nb of lines remaining
+	; c = Nb of sprites remaining in cur line
+	; d = Tile ID
+	; e = Y pos
+.nextSpriteLine
+	ld c, 10
 .initSpriteLine
 	ld [hl], e
 	inc hl
 	ld [hli], a
-	add a, 16
+	add a, 8 ; Advance to next sprite (8 pixels wide)
 	ld [hl], d
-	inc d
-	inc d
-	inc d
+	inc d ; Advance by two tiles
 	inc d
 	inc hl
 	ld [hl], 0
 	inc hl
 	dec c
 	jr nz, .initSpriteLine
+	; Advance to next line
+	; Skip the unused tiles
 	ld a, d
-	dec a
-	and $F0
-	add a, $10
+	add a, 32 - 10 * 2
 	ld d, a
-	rrca
+	; The next X pos can be inferred from the tile ID
+	; (This allows offsetting the first line w/o "hacks")
+	rrca ; This divides by 2, since it's always even
 	add a, $30
 	ld e, a
 	ld a, $28
-	ld c, 7
 	dec b
-	jr nz, .initSpriteLine
+	jr nz, .nextSpriteLine
 	
-	; Clear all tiles
-	xor a
-	ld hl, v0Tiles0
-	ld bc, $A00
-	call FillVRAM
 	ld [wTransferSprites], a
-	rst waitVBlank ; Make sure SCY gets applied
+	rst waitVBlank ; Make sure SCY gets applied and sprites are transferred
 	
-	pop hl
+	; b will hold the current line we're on (for the second title line, and then diff even and odd lines)
+	ld b, 0
+	
+	; Remember : we need to copy the corresponding tile from its VRAM slot to the target one
 	ld de, v0Tiles0 + VRAM_TILE_SIZE
-	ld b, 0 ; Current mode
-.initTitleTiles
+.initNextTile
+	pop hl ; Get back read ptr
+.initTiles
 	ld a, [hli] ; Read one char
 	and a ; String end ?
 	jr z, .titleInitDone ; Done.
@@ -145,52 +173,76 @@ PlayCredits::
 	ld l, a
 	ld c, VRAM_TILE_SIZE
 	call CopyToVRAMLite ; Copy tile from font to title
-	pop hl ; Retrieve read ptr
-	ld a, e ; Skip next tile
+	ld a, e ; Skip next tile (since we only copy to every other slot)
 	add a, VRAM_TILE_SIZE
 	ld e, a
-	jr nc, .initTitleTiles
+	jr nc, .initNextTile ; noCarry
 	inc d
-	jr .initTitleTiles
+	jr .initNextTile
+	
+	; This is part of the later main loop, but placed here for efficiency
+.dontRefreshLine
+	dec d
+	jr nz, .goDownOnePixel
+	jr .goDownOnce
+	
 .titleInitDone
 	inc b
-	ld a, b ; Retrieve next mode
-	dec a ; Mode 1 : top title line
+	ld a, b ; Retrieve next line's ID
+	dec a ; Line 1 : top title line
 	ld de, v0Tiles0
-	jr z, .initTitleTiles
-	; Mode 2+ : any name str
-	inc a
-	rra ; Carry is always clear
-	ld e, 0
-	jr nc, .topLine
-	ld e, VRAM_TILE_SIZE
-.topLine
-	add a, a
-	add a, HIGH(v0Tiles0)
-	ld d, a ; $8200 onwards
-	ld a, [hl]
-	and a
-	jr nz, .initTitleTiles
+	jr z, .initTiles ; If so, init is *slightly* different
 	
+	; Line 2+ : any name str
+	ld a, b ; Get next line's ID
+	rra ; Carry is always clear, so this is /2
+	jr nc, .topOfSprite
+	ld e, VRAM_TILE_SIZE ; If the line is odd, offset to the other tile IDs (the ones at the bottom of sprites)
+.topOfSprite
+	add a, a ; [Line ID] AND $FE (since lines are grouped by two)
+	add a, HIGH(v0Tiles0) ; ...and a group takes 32 tiles, ie. two rows. This neatly falls in place :)
+	ld d, a ; And so the dest pointer is set !
+	
+	ld a, [hl] ; An empty string terminates the current screen
+	and a
+	jr nz, .initTiles
+	
+	push hl ; Save read ptr, because we're gonna use hl a LOT.
+	
+	; Init background
+	ld hl, vTileMap0
+	ld bc, VRAM_ROW_SIZE * SCREEN_HEIGHT
+	ld a, $A9
+	call FillVRAM
+	ld de, GrayPalette
+	ld c, 0
+	callacross LoadBGPalette_Hook
+	
+	; Set sprites as visible
 	ld a, [rLCDC]
 	set 1, a
 	ld [rLCDC], a
 	
-	push hl
-	ld c, 120
-.delayBetween
-	call DelayFrameFlickerSprites
-	dec c
-	jr nz, .delayBetween
+	; Wait two whole seconds...
+	ld bc, 120
+	call DelayBCFrames
 	
-	ld hl, $9980
-	ld e, -8 ; If < 0 : number of frames beteen lines ; if >= 0 : number of pixels per frame
-	ld b, 8 ; Number of pixels until next refresh
-.staff_goDownOnce
+	; b = Number of pixels until next refresh
+	; c = Number of frames to wait until next scroll (negated)
+	; d = Number of pixels to scroll on next scroll
+	; e has different meanings based on its sign :
+	;   If < 0  : number of frames until next line
+	;   If >= 0 : number of pixels to scroll next time
+	; (This is so the iteration is simply done by incrementing e, and it can be capped at 8)
+	ld hl, vTileMap0 ; First row that will go off-screen
+	ld e, -8
+	ld b, 8
+.goDownOnce
+	; If e is negative, scroll by one line over several frames
 	ld d, 1 ; 1 line,
 	ld c, e ; Multiple frames
 	bit 7, c ; Check if < 1 lpf (line per frame)
-	jr nz, .staff_delayNextPixel
+	jr nz, .delayNextPixel
 	ld c, $FF ; If not, 1 frame,
 	ld a, e ; multiple lines
 	and $F8
@@ -198,17 +250,15 @@ PlayCredits::
 	rrca
 	rrca
 	ld d, a
-.staff_delayNextPixel
-	push hl
-	call DelayFrameFlickerSprites ; Wait for a certain amount of frames
-	call DelayFrameFlickerSprites ; Make sure all sprites move together
-	pop hl
+.delayNextPixel
+	rst waitVBlank
 	inc c
-	jr nz, .staff_delayNextPixel
+	jr nz, .delayNextPixel
 	inc e
-	jr nz, .staff_goDownOnePixel
-	ld e, 8 ; Being < 8 would make a 256-frame wait.
-.staff_goDownOnePixel
+	jr nz, .goDownOnePixel
+	; Skip 0 through 7, as they mean "0 pixels w/ 1-frame delay"
+	ld e, 8
+.goDownOnePixel
 	ldh a, [hSCY]
 	inc a ; Scroll down by 1 pixel
 	ldh [hSCY], a
@@ -216,19 +266,19 @@ PlayCredits::
 	ld hl, wVirtualOAM + 1
 .scrollSpritesRight
 	ld a, [hl]
-	cp $A9
-	jr z, .lock
-	inc a
-	ld [hl], a
+	cp (SCREEN_WIDTH + 1) * 8
+	jr nc, .lock ; Don't scroll sprites right if they are past the right screen edge
+	inc [hl]
 .lock
 	ld a, l
 	add a, 4
 	ld l, a
-	cp $A1
+	cp 40 * OAM_SPRITE_SIZE + 1
 	jr nz, .scrollSpritesRight
+	ld [wTransferSprites], a
 	pop hl
 	dec b ; We scrolled by 1 line
-	jr nz, .staff_dontRefreshLine ; If that's not the 8th, don't refresh a line
+	jr nz, .dontRefreshLine ; If that's not the 8th, don't refresh a line
 	
 	ld b, d ; Save the value of d
 	ld c, VRAM_ROW_SIZE
@@ -238,23 +288,15 @@ PlayCredits::
 	ld d, b ; Restore d
 	ld b, 8 ; Reset to 8 lines
 	
-	ld a, h
-	cp $9C
-	jr nz, .staff_dontRefreshLine ; If that's not the end, keep going down
-	ld a, $60
-	ldh [hSCY], a
+	ldh a, [hSCY]
+	cp SCREEN_HEIGHT * TILE_SIZE
+	jp c, .dontRefreshLine ; If that's not the end, keep going down
 	pop hl
 	
 	inc hl
-	ld a, [hl]
+	ld a, [hl] ; Check if next byte isn't a zero
 	and a
-	jp nz, .doOneStaffCredits
-	jr .doneStaffCredits
-.staff_dontRefreshLine
-	dec d
-	jr nz, .staff_goDownOnePixel
-	jr .staff_goDownOnce
-.doneStaffCredits
+	jp nz, .nextScreen ; If not, then keep going
 	
 	
 	
@@ -326,19 +368,28 @@ PlayCredits::
 	ld a, $11
 	jp Start
 	
+	
 CreditsFirstStrs::
 	dstr "AEVILIA GB"
 	dstr "STAFF CREDITS"
 	
+	; Format :
+	; This is a list of "screens"
+	; For each screen :
+	;  First two strs are screen's title (bottom line first), may be empty
+	;  Then is a list of names (there can be up to 8 of them)
+	;  Each line may not exceed 10 characters (not including the final terminator)
+	;  The list must be NULL-terminated
+	; The list of screens must be NULL-terminated
 StaffCreditsStrs::
-	dstr "PROGRAMMING"
+	dstr "CODING"
 	db 0
 	dstr "ISSOtm"
 	dstr "DevEd"
 	db 0
 	
-	dstr "LEAD GRAPHICS"
-	db 0
+	dstr "GRAPHICS"
+	dstr "LEAD"
 	dstr "Kai"
 	db 0
 	
@@ -359,23 +410,23 @@ StaffCreditsStrs::
 	dstr "Charmy"
 	db 0
 	
-	dstr "SUPPORT"
-	dstr "3DS & WII U"
+	dstr "VC SUPPORT"
+	db 0
 	dstr "Parzival"
 	db 0
 	
-	dstr "PROGRAMMING"
+	dstr "CODING"
 	dstr "ADDITIONAL"
 	dstr "Kai"
 	db 0
 	
-	dstr "SPECIAL THANKS"
-	db 0
-	dstr "Torchickens"
-	dstr "GCL"
+	dstr "THANKS"
+	dstr "SPECIAL"
 	dstr "beware"
-	dstr "#gbdev"
-	dstr "GBDev Discord"
+	dstr "Evie"
+	dstr "GBDev IRC"
+	dstr " & Discord"
+	dstr "GCL"
 	dstr "Nintendo"
 	db 0
 	
