@@ -8,10 +8,10 @@ InteriorTilesetDark:: ; Basically a palette swap of the interior tileset. lol !
 	
 	db 0
 	
-	tile_attr $84, 0, 0, 0, 0, 0, 0
-	tile_attr $84, 0, 0, 0, 0, 0, 0
-	tile_attr $84, 0, 0, 0, 0, 0, 0
-	tile_attr $84, 0, 0, 0, 0, 0, 0
+	tile_attr $84, 0, 0, 0, 0, 0, 1
+	tile_attr $84, 0, 0, 0, 0, 0, 1
+	tile_attr $84, 0, 0, 0, 0, 0, 1
+	tile_attr $84, 0, 0, 0, 0, 0, 1
 	
 	tile_attr $80, 0, 2, 0, 0, 0, 0
 	tile_attr $80, 0, 2, 0, 0, 0, 0
