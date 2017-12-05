@@ -10,6 +10,7 @@ TODO.txt
 *.tmp
 *.state
 *.ls*
+*.sn*
 *.time
 *.clk
 dependencies.zip
