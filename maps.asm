@@ -10,7 +10,7 @@ MapROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(StarthamMap)
 	db BANK(TestHouse)
 	db BANK(IntroMap)
-	db BANK(TestForestMap)
+	db BANK(StarthamForestMap)
 	db BANK(PlayerHouse)
 	db BANK(PlayerHouse2F)
 	db BANK(StarthamHouse2)
@@ -20,7 +20,7 @@ MapPointers::
 	dw StarthamMap
 	dw TestHouse
 	dw IntroMap
-	dw TestForestMap
+	dw StarthamForestMap
 	dw PlayerHouse
 	dw PlayerHouse2F
 	dw StarthamHouse2
