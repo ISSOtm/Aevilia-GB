@@ -260,6 +260,8 @@ CH1_CheckByte:
 	jr	z,.endChannel
 	cp	$c9				; if $c9...
 	jr	z,.retSection
+	cp	release
+	jp	z,.release
 	cp	___				; if null note...
 	jr	z,.nullnote
 	bit	7,a				; if command...
@@ -343,12 +345,24 @@ CH1_CheckByte:
 	ld	[CH1Ptr+1],a
 	jp	UpdateCH2
 	
+.release
+	ld	a,[hl+]
+	dec	a
+	ld	[CH1Tick],a
+	ld	a,l
+	ld	[CH1Ptr],a
+	ld	a,h
+	ld	[CH1Ptr+1],a
+	ld	a,[CH1VolPos]
+	dec	a
+	ld	[CH1VolPos],a
+	jp	UpdateCH2
+	
 .getCommand
 	cp	DummyCommand
-	jr	c,.nodummy
-	jp	CH1_CheckByte
-.nodummy
-	sub	$80	; subtract 128 from command value
+	jp	nc,CH1_CheckByte
+	; Not needed since "add a" in command will ignore bit 7
+	; sub	$80	; subtract 128 from command value
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -556,9 +570,11 @@ UpdateCH2:
 CH2_CheckByte:
 	ld	a,[hl+]		; get byte
 	cp	$ff
-	jr	z,.endChannel
+	jp	z,.endChannel
 	cp	$c9
-	jr	z,.retSection
+	jp	z,.retSection
+	cp	release
+	jp	z,.release
 	cp	___
 	jp	z,.nullnote
 	bit	7,a			; check for command
@@ -647,12 +663,24 @@ CH2_CheckByte:
 	ld	[CH2Ptr+1],a
 	jp	UpdateCH3
 	
+.release
+	ld	a,[hl+]
+	dec	a
+	ld	[CH2Tick],a
+	ld	a,l
+	ld	[CH2Ptr],a
+	ld	a,h
+	ld	[CH2Ptr+1],a
+	ld	a,[CH2VolPos]
+	dec	a
+	ld	[CH2VolPos],a
+	jp	UpdateCH3
+	
 .getCommand
 	cp	DummyCommand
-	jr	c,.nodummy
-	jp	CH2_CheckByte
-.nodummy
-	sub	$80
+	jp	nc,CH2_CheckByte
+	; Not needed since "add a" in command will ignore bit 7
+	; sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -859,6 +887,8 @@ CH3_CheckByte:
 	jr	z,.endChannel
 	cp	$c9
 	jr	z,.retSection
+	cp	release
+	jp	z,.release
 	cp	___
 	jp	z,.nullnote
 	bit	7,a			; check for command
@@ -946,12 +976,24 @@ CH3_CheckByte:
 	ld	[CH3Ptr+1],a
 	jp	UpdateCH4
 	
+.release
+	ld	a,[hl+]
+	dec	a
+	ld	[CH3Tick],a
+	ld	a,l
+	ld	[CH3Ptr],a
+	ld	a,h
+	ld	[CH3Ptr+1],a
+	ld	a,[CH3VolPos]
+	dec	a
+	ld	[CH3VolPos],a
+	jp	UpdateCH4
+	
 .getCommand
 	cp	DummyCommand
-	jr	c,.nodummy
-	jp	CH3_CheckByte
-.nodummy
-	sub	$80
+	jp	nc,CH3_CheckByte
+	; Not needed since "add a" in command will ignore bit 7
+	; sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -1203,10 +1245,12 @@ CH4_CheckByte:
 	jr	z,.endChannel
 	cp	$c9
 	jr	z,.retSection
+	cp	release
+	jr	z,.release
 	cp	___
 	jr	z,.nullnote
 	bit	7,a			; check for command
-	jr	nz,.getCommand	
+	jp	nz,.getCommand	
 	; if we have a note...
 .getNote
 	ld	[CH4ModeBackup],a
@@ -1275,12 +1319,24 @@ CH4_CheckByte:
 	ld	[CH4Ptr+1],a
 	jp	DoneUpdating
 	
+.release
+	ld	a,[hl+]
+	dec	a
+	ld	[CH4Tick],a
+	ld	a,l
+	ld	[CH4Ptr],a
+	ld	a,h
+	ld	[CH4Ptr+1],a
+	ld	a,[CH4VolPos]
+	dec	a
+	ld	[CH4VolPos],a
+	jp	DoneUpdating
+	
 .getCommand
 	cp	DummyCommand
-	jr	c,.nodummy
-	jp	CH4_CheckByte
-.nodummy
-	sub	$80
+	jp	nc,CH4_CheckByte
+	; Not needed since "add a" in command will ignore bit 7
+	; sub	$80
 	call	JumpTableBelow
 	
 	dw	.setInstrument
@@ -1816,7 +1872,7 @@ CH1_UpdateRegisters:
 	ld	l,a
 	ld	a,[CH1VolLoop]
 	cp	$ff	; ended
-	jr	z,.done
+	jp	z,.done
 	ld	a,[CH1VolPos]
 	add	l
 	ld	l,a
@@ -1826,6 +1882,8 @@ CH1_UpdateRegisters:
 	ld	a,[hl+]
 	cp	$ff
 	jr	z,.loadlast
+	cp	$fd
+	jr	z,.done
 	ld	b,a
 	ld	a,[CH1ChanVol]
 	push	hl
@@ -2190,12 +2248,10 @@ CH2_UpdateRegisters:
 	ld	a,[hl+]
 	ld	h,[hl]
 	ld	l,a
-if !def(DemoSceneMode)
 	ld	a,[CH2VolLoop]
 	ld	c,a
 	cp	$ff	; ended
-	jr	z,.done
-endc
+	jp	z,.done
 	ld	a,[CH2VolPos]
 	add	l
 	ld	l,a
@@ -2205,6 +2261,8 @@ endc
 	ld	a,[hl+]
 	cp	$ff
 	jr	z,.loadlast
+	cp	$fd
+	jr	z,.done
 	ld	b,a
 	ld	a,[CH2ChanVol]
 	push	hl
@@ -2257,7 +2315,6 @@ endc
 	jr	.done
 .loadlast
 	ld	a,[hl]
-if !def(DemoSceneMode)
 	push	af
 	swap	a
 	and	$f
@@ -2268,7 +2325,6 @@ if !def(DemoSceneMode)
 	pop	af
 	and	$f
 	or	b
-endc
 	ldh	[rNR22],a
 	ld	a,d
 	or	$80
@@ -2540,6 +2596,8 @@ CH3_UpdateRegisters:
 .nocarry5
 	ld	a,[hl+]
 	cp	$ff
+	jr	z,.done
+	cp	$fd
 	jr	z,.done
 	ld	b,a
 	ld	a,[CH3ChanVol]
@@ -2857,6 +2915,9 @@ CH4_UpdateRegisters:
 	ld	a,[hl+]
 	cp	$ff
 	jr	z,.loadlast
+	cp	$fd
+	jr	z,.done
+	
 	ld	b,a
 	ld	a,[CH4Vol]
 	cp	b
@@ -3251,22 +3312,22 @@ NoiseTable:	; taken from deflemask
 	db	$1f,$1e,$1d,$1c,$0f,$0e,$0d,$0c,$0b,$0a,$09,$08
 	
 VolumeTable: ; used for volume multiplication
-	db $00, $00, $00, $00, $00, $00, $00, $00 ; 10
-	db $10, $10, $10, $10, $10, $10, $10, $10
-	db $00, $00, $00, $00, $10, $11, $11, $11 ; 32
-	db $21, $21, $21, $22, $32, $32, $32, $32
-	db $00, $00, $10, $11, $11, $21, $22, $22 ; 54
-	db $32, $32, $33, $43, $43, $44, $54, $54
-	db $00, $00, $11, $11, $22, $22, $32, $33 ; 76
-	db $43, $44, $54, $54, $65, $65, $76, $76
-	db $00, $00, $11, $21, $22, $33, $43, $44 ; 98
-	db $54, $55, $65, $76, $77, $87, $98, $98
-	db $00, $11, $11, $22, $33, $43, $44, $55 ; ba
-	db $65, $76, $77, $87, $98, $a9, $a9, $ba
-	db $00, $11, $22, $33, $43, $44, $55, $66 ; dc
-	db $76, $87, $98, $99, $a9, $ba, $cb, $dc
-	db $00, $11, $22, $33, $44, $55, $66, $77 ; fe
-	db $87, $98, $a9, $ba, $cb, $dc, $ed, $fe
+	db $00,$00,$00,$00,$00,$00,$00,$00 ; 10
+	db $10,$10,$10,$10,$10,$10,$10,$10
+	db $00,$00,$00,$00,$10,$11,$11,$11 ; 32
+	db $21,$21,$21,$22,$32,$32,$32,$32
+	db $00,$00,$10,$11,$11,$21,$22,$22 ; 54
+	db $32,$32,$33,$43,$43,$44,$54,$54
+	db $00,$00,$11,$11,$22,$22,$32,$33 ; 76
+	db $43,$44,$54,$54,$65,$65,$76,$76
+	db $00,$00,$11,$21,$22,$33,$43,$44 ; 98
+	db $54,$55,$65,$76,$77,$87,$98,$98
+	db $00,$11,$11,$22,$33,$43,$44,$55 ; ba
+	db $65,$76,$77,$87,$98,$a9,$a9,$ba
+	db $00,$11,$22,$33,$43,$44,$55,$66 ; dc
+	db $76,$87,$98,$99,$a9,$ba,$cb,$dc
+	db $00,$11,$22,$33,$44,$55,$66,$77 ; fe
+	db $87,$98,$a9,$ba,$cb,$dc,$ed,$fe
 
 ; ================================================================
 ; misc stuff

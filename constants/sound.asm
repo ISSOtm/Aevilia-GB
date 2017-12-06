@@ -17,6 +17,7 @@
 	enum_set $FF
 	enum_elem MUSIC_NONE
 	
+	
 	enum_start
 	enum_elem MUSICFADE_OUT
 	enum_elem MUSICFADE_IN
@@ -104,6 +105,8 @@ B_7		equ	$47
 C_8		equ $48
 rest	equ	$49
 ___		equ	$4A
+release	equ	$4B
+rel		equ	release
 
 fix		equ	C_2
 
