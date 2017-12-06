@@ -22,6 +22,19 @@
 	enum_elem MUSICFADE_OUT
 	enum_elem MUSICFADE_IN
 	enum_elem MUSICFADE_OUT_STOP
+	
+	enum_start
+	enum_elem SFX_NPC_SURPRISE
+	enum_elem SFX_TEXT_CONFIRM
+	enum_elem SFX_TEXT_DENY
+	enum_elem SFX_DOOR_ENTER
+	enum_elem SFX_TEXT_ADVANCE
+	enum_elem SFX_BATTLE_THUD
+	enum_elem SFX_MISC_BELL
+	enum_elem SFX_PHONE_RINGING
+	enum_elem SFX_PHONE_HANG_UP
+	enum_elem SFX_DOOR_KNOCK
+	enum_elem SFX_MISC_ZAP
 
 
 ; ================================================================
