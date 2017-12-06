@@ -1,4 +1,3 @@
-
 import urllib
 import os
 import time
@@ -6,14 +5,14 @@ import time
 deps_link = "https://stuff-for-my-programs.weebly.com/uploads/1/1/4/2/114279849/dependencies.zip"
 extractor_link = "https://stuff-for-my-programs.weebly.com/uploads/1/1/4/2/114279849/7za.exe"
 
-dll_list = ("libiconv2.dll", "libintl3.dll", "msvcp60.dll", "msvcrt.dll")
+dll_list = ["libiconv2.dll", "libintl3.dll", "msvcp60.dll", "msvcrt.dll"] # arrays are supposed to use brackets, not parenthesis.
 
 
-def check_file_in_PATH(file):
+def check_file_in_PATH(fileToCheck): # "file" is predefined by Python, so it'd err here.
 	path = os.getenv("PATH").split(";")
 	for dir in path:
-		if os.path.isfile(dir + file):
-			return True
+		if os.path.isfile(dir + fileToCheck):
+			return True # so you wish to only check for one file?
 	
 	return False
 	
@@ -26,7 +25,7 @@ def check_deps():
 def download_deps():
 	print "This version downloads repacked files from a server in order to run them. Nothing will be permanently installed."
 	print "If you don't like this, use the Offline Wrapper. It'll tell you what you need to download."
-	print "If you wish to download and unpack the files, type YES in capitals and press Enter."
+	print "If you wish to download and unpack the files, type YES and press Enter."
 	print "If you do not wish to, either close this program or type anything else."
 	
 	try:
@@ -34,7 +33,7 @@ def download_deps():
 	except EOFError:
 		return False
 	
-	if confirm_str != "YES":
+	if confirm_str != "YES" or confirm_str != "yes" or confirm_str != "Y" or confirm_str != "y":
 		return False
 	
 	
