@@ -45,13 +45,12 @@ all: $(bindir)/aevilia.gbc $(bindir)/aevilia_glitchmaps.gbc
 rebuild: clean all
 
 clean:
-	del $(objdir)\\*.o /f
-	del $(objdir)\\aevilia.* /f
-	del $(bindir)\\aevilia*.*
+	rm -f $(objdir)/*.o
+	rm -f $(bindir)/aevilia.gbc $(bindir)/aevilia.map $(bindir)/aevilia.sym
 
 $(bindir)/%.sym:
 	@if [ ! -d bin ]; then mkdir $(bindir); fi
-	del $(bindir)\\*.sym /f
+	rm $(@:.sym=.gbc)
 	make $(@:.sym=.gbc)
 	
 $(bindir)/%.gbc:

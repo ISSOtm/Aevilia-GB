@@ -45,47 +45,48 @@ all: $(bindir)/aevilia.gbc $(bindir)/aevilia_glitchmaps.gbc
 rebuild: clean all
 
 clean:
-	rm -f $(objdir)/*.o
-	rm -f $(bindir)/aevilia.gbc $(bindir)/aevilia.map $(bindir)/aevilia.sym
+	del $(objdir)\\*.o /f
+	del $(objdir)\\aevilia.* /f
+	del $(bindir)\\aevilia*.*
 
 $(bindir)/%.sym:
-	@if [ ! -d bin ]; then mkdir $(bindir); fi
-	rm $(@:.sym=.gbc)
+	@if not exist $(bindir) mkdir $(bindir)
+	del $(bindir)\\*.sym /f
 	make $(@:.sym=.gbc)
 	
 $(bindir)/%.gbc:
 
 $(bindir)/aevilia.gbc: $(objlist)
-	@if [ ! -d bin ]; then mkdir $(bindir); fi
+	@if not exist $(bindir) mkdir $(bindir)
 ifeq ($(DebugMode), 1)
-	@echo
+	@echo .
 	@echo "*** WARNING! COMPILING IN DEBUG MODE!"
 	@echo "*** DO NOT REDISTRIBUTE THIS ROM!"
 	@echo To disable debug mode, edit the Makefile.
-	@echo
+	@echo .
 endif
 	$(RGBLINK) $(LDFLAGS) -n $(bindir)/aevilia.sym -m $(bindir)/aevilia.map -o $@ $^
 	$(RGBFIX) $(FIXFLAGS) $(@)
 	
 $(bindir)/aevilia_glitchmaps.gbc: $(objlist:.o=_glitchmaps.o)
-	@if [ ! -d bin ]; then mkdir $(bindir); fi
+	@if not exist $(bindir) mkdir $(bindir)
 ifeq ($(DebugMode), 1)
-	@echo
+	@echo .
 	@echo "*** WARNING! COMPILING IN DEBUG MODE!"
 	@echo "*** DO NOT REDISTRIBUTE THIS ROM!"
 	@echo To disable debug mode, edit the Makefile.
-	@echo
+	@echo .
 endif
 	$(RGBLINK) $(LDFLAGS) -o $@ $^
 	$(RGBFIX) $(FIXFLAGS) $@
 	
 	
 $(objdir)/%.o: %.asm constants.asm macros.asm constants/*.asm macros/*.asm %/*.asm
-	@if [ ! -d obj ]; then mkdir $(objdir); fi
+	@if not exist $(objdir) mkdir $(objdir)
 	$(RGBASM) $(ASFLAGS) -o $@ $<
 	
 $(objdir)/%_glitchmaps.o: %.asm constants.asm macros.asm constants/*.asm macros/*.asm %/*.asm
-	@if [ ! -d obj ]; then mkdir $(objdir); fi
+	@if not exist $(objdir) mkdir $(objdir)
 	$(RGBASM) $(ASFLAGS) -D GlitchMaps -o $@ $<
 	
 	
