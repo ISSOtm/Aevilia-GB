@@ -594,7 +594,7 @@ CH2_CheckByte:
 	jr	z,.noreset
 	xor	a
 	ld	[CH2ArpPos],a
-	ld	a,[$c7cc]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
 	cp	3
 	jp	z,.noupdate
 	ldh	[rNR22],a
@@ -1959,7 +1959,7 @@ CH2_UpdateRegisters:
 	and	a
 	jp	z,CH3_UpdateRegisters
 	
-	ld	a,[$c7cc]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
 	cp	3
 	jr	z,.norest
 	ld	a,[CH2NoteBackup]
@@ -2032,7 +2032,7 @@ CH2_UpdateRegisters:
 	rla				; rotate left
 	rla				;   ""    ""
 	ld	e,a
-	ld	a,[$c7cc]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
 	cp	3
 	jp	z,.noreset2
 	ld	a,e
@@ -2219,7 +2219,7 @@ CH2_UpdateRegisters:
 	ld	a,h
 	ld	d,a	; for later restart uses
 	ld	[CH2TempFreq+1],a
-	ld	a,[$c7cc]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
 	cp	3
 	jp	z,.updateVolume
 	ld	a,l
@@ -2232,7 +2232,7 @@ CH2_UpdateRegisters:
 	ld	[hl+],a
 	ld	[hl],d
 .donesetFreq
-	ld	a,[$c7cc]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
 	cp	3
 	ld	a,e
 	jp	z,.updateVolume
