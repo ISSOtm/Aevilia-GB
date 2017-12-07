@@ -16,7 +16,6 @@
 	
 	enum_set $FF
 	enum_elem MUSIC_NONE
-	enum_elem SFX_NONE
 	
 	
 	enum_start
@@ -38,6 +37,9 @@
 	enum_elem SFX_MISC_ZAP
 	enum_elem SFX_TEXT_SELECT
 	enum_elem SFX_DOOR_OPEN
+	
+	enum_set $FF
+	enum_elem SFX_NONE
 
 
 ; ================================================================
