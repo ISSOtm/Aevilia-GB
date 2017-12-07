@@ -2695,7 +2695,8 @@ ProcessLoadZone:
 	ld a, [hli]
 	push af
 	ld a, [hl]
-	cp $FF
+	ld c, a
+	inc a
 	callacross nz, FXHammer_Trig
 	pop af
 	jp LoadMap
