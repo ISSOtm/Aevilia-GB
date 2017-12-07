@@ -424,3 +424,19 @@ PrintHex::
 	ld [de], a
 	inc de
 	ret
+
+; Initialize sound output
+; Destroys A and C
+InitSound:
+	ld	c,low(rNR52)
+	xor	a
+	ld	[c],a	; disable sound output (resets all sound regs)
+	set	7,a
+	ld	[c],a	; enable sound output
+	dec	c
+	or	$ff
+	ld	[c],a	; all sound channels to left+right speakers
+	dec	c
+	and	$77
+	ld	[c],a	; VIN output off + master volume max
+	ret

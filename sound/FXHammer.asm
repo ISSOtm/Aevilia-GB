@@ -7,7 +7,7 @@ FXHammer_SFXCH4	db
 ; these are only temporary names, I have no idea what they're actually for at the moment
 FXHammer_RAM1	db
 FXHammer_RAM2	db
-FXHammer_RAM3	db
+FXHammer_RAM3	dw
 
 FXHammerBank	equ	$10	; temporary value
 FXHammerData	equ	$4200
