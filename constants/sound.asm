@@ -16,6 +16,7 @@
 	
 	enum_set $FF
 	enum_elem MUSIC_NONE
+	enum_elem SFX_NONE
 	
 	
 	enum_start

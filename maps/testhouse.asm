@@ -16,7 +16,7 @@ TestHouseInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	load_zone $004B, $002E, 6, 5, THREAD2_LOADINGWALKDOWN, 0, MAP_STARTHAM, $FF
+	load_zone $004B, $002E, 6, 5, THREAD2_LOADINGWALKDOWN, 0, MAP_STARTHAM, SFX_NONE
 	
 TestHouseNPCs::
 	db 2

@@ -15,7 +15,7 @@ StarthamForestInteractions::
 	db 5
 	
 	db WALK_LOADZONE
-	load_zone $0068, $01C6, 25, 14, THREAD2_LOADINGWALKRIGHT, 2, MAP_STARTHAM, $FF
+	load_zone $0068, $01C6, 25, 14, THREAD2_LOADINGWALKRIGHT, 2, MAP_STARTHAM, SFX_NONE
 	
 	db WALK_INTERACT
 	interaction $0028, $0000, 9, 16, StarthamForestEndOfDemo

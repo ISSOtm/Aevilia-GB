@@ -15,7 +15,7 @@ StarthamLargeHouseInteractions::
 	db 1
 	
 	db WALK_LOADZONE
-	load_zone $0077, $003E, 10, $15, THREAD2_LOADINGWALKDOWN, 3, MAP_STARTHAM, $FF
+	load_zone $0077, $003E, 10, $15, THREAD2_LOADINGWALKDOWN, 3, MAP_STARTHAM, SFX_NONE
 	
 StarthamLargeHouseNPCs::
 	db 1
