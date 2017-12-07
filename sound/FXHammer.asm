@@ -1,13 +1,13 @@
 ; Disassembly of Aleksi Eeben's FX Hammer SFX player
 
-section	"FX Hammer RAM",WRAM0
+section	"FX Hammer RAM",WRAM0,ALIGN[3]
 
 FXHammer_SFXCH2	db
 FXHammer_SFXCH4	db
 ; these are only temporary names, I have no idea what they're actually for at the moment
 FXHammer_RAM1	db
-FXHammer_RAM2	db
-FXHammer_RAM3	db
+FXHammer_cnt	db
+FXHammer_ptr	dw
 
 FXHammerBank	equ	$10	; temporary value
 FXHammerData	equ	$4200
@@ -46,7 +46,7 @@ FXHammer_Trig:
 	ld	l,low(FXHammer_SFXCH4)
 	or	[hl]
 	ld	[hl],a
-	ld	l,low(FXHammer_RAM2)
+	ld	l,low(FXHammer_cnt)
 	ld	a,1
 	ld	[hl+],a
 	xor	a
@@ -61,9 +61,9 @@ FXHammer_Stop:
 	bit	1,[hl]
 	jr	z,.jmp_4084
 	ld	a,$08
-	ldh	[$ff17],a
+	ldh	[rNR22],a
 	ld	a,$80
-	ldh	[$ff19],a
+	ldh	[rNR24],a
 	ld	[hl],1
 .jmp_4084
 	ld	l,low(FXHammer_SFXCH4)
@@ -71,9 +71,9 @@ FXHammer_Stop:
 	bit	1,[hl]
 	jr	z,.jmp_4096
 	ld	a,$08
-	ldh	[$ff21],a
+	ldh	[rNR42],a
 	ld	a,$80
-	ldh	[$ff23],a
+	ldh	[rNR44],a
 	ld	[hl],1
 .jmp_4096
 	ld	l,low(FXHammer_RAM1)
@@ -84,7 +84,7 @@ FXHammer_Stop:
 	
 FXHammer_Update:
 	xor	a
-	ld	hl,FXHammer_RAM2
+	ld	hl,FXHammer_cnt
 	or	[hl]
 	ret	z
 	dec	[hl]
@@ -94,7 +94,7 @@ FXHammer_Update:
 	ld	d,[hl]
 	ld	e,a
 	ld	a,[de]
-	ld	l,low(FXHammer_RAM2)
+	ld	l,low(FXHammer_cnt)
 	ld	[hl-],a
 	or	a
 	jr	nz,.jmp_40b0
@@ -109,22 +109,22 @@ FXHammer_Update:
 	jr	nz,.jmp_40c7
 	ld	[hl],1
 	ld	a,$08
-	ldh	[$ff17],a
+	ldh	[rNR22],a
 	ld	a,$80
-	ldh	[$ff19],a
+	ldh	[rNR24],a
 	jr	.jmp_40e6
 .jmp_40c7
 	ld	b,a
-	ldh	a,[$ff25]
+	ldh	a,[rNR51]
 	and	$dd
 	or	b
-	ldh	[$ff25],a
+	ldh	[rNR51],a
 	inc	e
 	ld	a,[de]
-	ldh	[$ff17],a
+	ldh	[rNR22],a
 	inc	e
 	ld	a,[de]
-	ldh	[$ff16],a
+	ldh	[rNR21],a
 	inc	e
 	ld	a,[de]
 	ld	b,$42
@@ -170,11 +170,11 @@ FXHammer_Update:
 	ld	a,$80
 	ldh	[$ff23],a
 	inc	e
-	ld	l,low(FXHammer_RAM3)
+	ld	l,low(FXHammer_ptr)
 	ld	[hl],e
 	ret
 .jmp_4119
-	ld	l,low(FXHammer_RAM3)
+	ld	l,low(FXHammer_ptr)
 	ld	a,8
 	add	[hl]
 	ld	[hl],a
