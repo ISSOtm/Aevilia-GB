@@ -13,7 +13,7 @@ StarthamMap::
 	dw NO_SCRIPT ; Loading script (none)
 	
 StarthamInteractions::
-	db 12
+	db 13
 	
 	db WALK_LOADZONE
 	load_zone $0048, $0000, 25, 21, THREAD2_LOADINGWALKLEFT, 0, MAP_STARTHAM_FOREST, SFX_NONE
@@ -49,6 +49,9 @@ StarthamInteractions::
 	
 	db BTN_INTERACT
 	interaction $0050, $0050, 16, 16, StarthamEmptySign
+	
+	db BTN_INTERACT
+	interaction $00A0, $0040, 16, 16, StarthamDevEdTestScript
 	
 	db WALK_INTERACT | FLAG_DEP
 	flag_dep FLAG_RESET, FLAG_STARTHAM_SIBLING_ENTERED
