@@ -19,13 +19,14 @@ interaction: MACRO
 	ds 8
 ENDM
 
-; load_zone ypos, xpos, ysize, xsize, thread2, destWarp, destMap
+; load_zone ypos, xpos, ysize, xsize, thread2, destWarp, destMap, sfxID
 load_zone: MACRO
 	interact_box \1, \2, \3, \4
 	db \5 ; Thread 2
 	db \6 ; Warp ID
 	db \7 ; Map ID
-	ds 7
+	db \8 ; SFX ID
+	ds 6
 ENDM
 
 ; npc ypos, xpos, ysize, xsize, interactID, sprite, dir, palettes (*4), movtPerms, movtSpeed

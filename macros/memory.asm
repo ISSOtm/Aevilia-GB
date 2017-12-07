@@ -103,7 +103,8 @@ wWalkingLoadZone\1_xbox::		db
 wWalkingLoadZone\1_thread2ID::	db
 wWalkingLoadZone\1_destWarp::	db
 wWalkingLoadZone\1_destMap::	db
-wWalkingLoadZone\1_unused::		ds 7
+wWalkingLoadZone\1_sfxID::		db
+wWalkingLoadZone\1_unused::		ds 6
 ENDM
 
 button_loadzone: MACRO
@@ -114,7 +115,8 @@ wButtonLoadZone\1_xbox::		db
 wButtonLoadZone\1_thread2ID::	db
 wButtonLoadZone\1_destWarp::	db
 wButtonLoadZone\1_destMap::		db
-wButtonLoadZone\1_unused::		ds 7
+wButtonLoadZone\1_sfxID::		db
+wButtonLoadZone\1_unused::		ds 6
 ENDM
 
 

@@ -2692,7 +2692,12 @@ ProcessLoadZone:
 	ldh [hThread2ID], a
 	ld a, [hli]
 	ld [wTargetWarpID], a
+	ld a, [hli]
+	push af
 	ld a, [hl]
+	cp $FF
+	callacross nz, FXHammer_Trig
+	pop af
 	jp LoadMap
 	
 ProcessInteraction:

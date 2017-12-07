@@ -1,5 +1,69 @@
 
 
+enum_start: MACRO
+	IF _NARG == 0
+		enum_set 0
+	ELSE
+		enum_set \1
+	ENDC
+ENDM
+
+enum_set: MACRO
+enum_value = \1
+ENDM
+
+enum_skip: MACRO
+	enum_set (enum_value + 1)
+ENDM
+
+enum_elem: MACRO
+\1 = enum_value
+	enum_skip
+ENDM
+
+
+dn: MACRO
+	REPT _NARG / 2
+		db ((\1 & $0F) << 4) | (\2 & $0F)
+		shift
+		shift
+	ENDR
+	
+	; If there's an odd number of arguments, imply a 0 for the last arg
+	IF _NARG % 2 == 1
+		db (\1 & $0F) << 4
+	ENDC
+ENDM
+
+dbfill: MACRO
+	REPT \1
+		db \2
+	ENDR
+ENDM
+
+dwfill: MACRO
+	REPT \1
+		dw \2
+	ENDR
+ENDM
+
+
+dbor: MACRO
+value = 0
+	REPT _NARG
+value = value | \1
+		shift
+	ENDR
+	
+	db value
+ENDM
+
+dbw: MACRO
+	db \1
+	dw \2
+ENDM
+
+
 save_rom_bank: MACRO
 	ldh a, [hCurROMBank]
 	push af
@@ -68,15 +132,27 @@ ENDM
 ; Calls a function across ROM banks
 ; WARNING : only de and c are passed to the function intact!
 callacross: MACRO
-	ld b, BANK(\1)
-	ld hl, \1
-	call CallAcrossBanks
+	IF _NARG == 1
+		ld b, BANK(\1)
+		ld hl, \1
+		call CallAcrossBanks
+	ELSE
+		ld b, BANK(\2)
+		ld hl, \2
+		call \1, CallAcrossBanks
+	ENDC
 ENDM
 
 jpacross: MACRO
-	ld b, BANK(\1)
-	ld hl, \1
-	jp CallAcrossBanks
+	IF _NARG == 1
+		ld b, BANK(\1)
+		ld hl, \1
+		jp CallAcrossBanks
+	ELSE
+		ld b, BANK(\2)
+		ld hl, \2
+		jp \1, CallAcrossBanks
+	ENDC
 ENDM
 
 ; Usage : copyacross source dest length
