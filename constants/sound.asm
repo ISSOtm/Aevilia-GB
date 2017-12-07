@@ -27,7 +27,7 @@
 	enum_elem SFX_NPC_SURPRISE
 	enum_elem SFX_TEXT_CONFIRM
 	enum_elem SFX_TEXT_DENY
-	enum_elem SFX_DOOR_ENTER
+	enum_elem SFX_STAIRS
 	enum_elem SFX_TEXT_ADVANCE
 	enum_elem SFX_BATTLE_THUD
 	enum_elem SFX_MISC_BELL
@@ -36,6 +36,7 @@
 	enum_elem SFX_DOOR_KNOCK
 	enum_elem SFX_MISC_ZAP
 	enum_elem SFX_TEXT_SELECT
+	enum_elem SFX_DOOR_OPEN
 
 
 ; ================================================================
