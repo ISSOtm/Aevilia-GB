@@ -37,6 +37,14 @@
 	enum_elem SFX_MISC_ZAP
 	enum_elem SFX_TEXT_SELECT
 	enum_elem SFX_DOOR_OPEN
+	enum_elem SFX_MENU_OPEN
+	enum_elem SFX_MISC_RUMBLE		; loop this sound every 8 frames (could also be used as a "distant thud" sound)
+	enum_elem SFX_NPC_JUMP
+	enum_elem SFX_ARCADE_SHOOT
+	enum_elem SFX_ARCADE_HIT_ENEMY
+	enum_elem SFX_ARCADE_UFO		; loop this sound every 24 frames
+	enum_elem SFX_ARCADE_POWERUP
+	enum_elem SFX_ARCADE_YOU_LOSE
 	
 	enum_set $FF
 	enum_elem SFX_NONE
