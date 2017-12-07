@@ -97,7 +97,7 @@ PlayerHouseTVScript::
 	make_player_walk_to VERTICAL_AXIS, $30, 1
 	make_player_walk_to HORIZONTAL_AXIS, $0080, 1
 	turn_player DIR_UP
-	wait_user
+	wait_user_no_sfx
 	make_player_walk DIR_UP, 32, 1
 	delay 30
 	turn_player DIR_DOWN

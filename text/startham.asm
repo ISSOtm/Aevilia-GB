@@ -104,3 +104,13 @@ SECTION "Startham text strings", ROMX
 	dline 9, "inconvenience\,"
 	dline 10, "    ~ The Dev Team"
 	
+	set_text_prefix DevEdTestScript
+	dline 0, "Hello\, you have"
+	dline 1, "reached DevEd's"
+	dline 2, "Test Script."
+	dline 3, "Please enjoy this"
+	dline 4, "test script."
+	dline 5, "We hope you have"
+	dline 6, "enjoyed this test"
+	dline 7, "script."
+	dline 8, "*click*"

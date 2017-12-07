@@ -362,3 +362,34 @@ StarthamUnfinishedSouthConnection::
 	close_box
 	make_player_walk DIR_UP, 5, 1
 	done
+
+	set_text_prefix	DevEdTestScript
+StarthamDevEdTestScript::
+	play_sfx SFX_PHONE_RINGING
+	wait_sfx
+	delay 30
+	disp_box
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
+	wait_user
+	clear_box
+	print_line_id 3
+	print_line_id 4
+	fake_choice YesNoChoice
+	clear_box
+	delay 30
+	
+	play_sfx SFX_MISC_BELL
+	
+	wait_sfx
+	delay 120
+	print_line_id 5
+	print_line_id 6
+	print_line_id 7
+	wait_user
+	wait_sfx
+	play_sfx SFX_PHONE_HANG_UP
+	print_line_id 8
+	delay 60
+	done
