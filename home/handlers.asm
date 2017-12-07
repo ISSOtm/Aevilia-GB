@@ -593,13 +593,12 @@ STATHandler::
 	
 	ld a, BANK(DSVarsStart)
 	ld [rSVBK], a
-	ld a, BANK(SoundFX_Update)
-	ld [ROMBankLow], a
-	call SoundFX_Update
-	
 	ld a, BANK(DevSound_Play)
 	ld [ROMBankLow], a
 	call DevSound_Play ; Preserves all registers
+	ld a, BANK(SoundFX_Update)
+	ld [ROMBankLow], a
+	call SoundFX_Update
 	
 	ldh a, [hCurRAMBank]
 	push af

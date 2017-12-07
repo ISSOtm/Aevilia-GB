@@ -2221,7 +2221,7 @@ CH2_UpdateRegisters:
 	ld	[CH2TempFreq+1],a
 	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
 	cp	3
-	jp	z,.updateVolume
+	jr	z,.updateVolume
 	ld	a,l
 	ldh	[rNR23],a
 	ld	a,h
@@ -2235,7 +2235,7 @@ CH2_UpdateRegisters:
 	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
 	cp	3
 	ld	a,e
-	jp	z,.updateVolume
+	jr	z,.updateVolume
 	ldh	[rNR23],a
 	ld	a,d
 	ldh	[rNR24],a
