@@ -147,6 +147,10 @@ wait_user: MACRO
 	db WAIT_FOR_BUTTON
 ENDM
 
+wait_user_no_sfx: MACRO
+	db WAIT_FOR_BUTTON_NO_SFX
+ENDM
+
 
 ; print_str ptr_to_print
 ; Prints a line of text, scrolling the textbox is required
