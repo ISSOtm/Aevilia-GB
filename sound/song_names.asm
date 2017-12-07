@@ -13,6 +13,7 @@ SongNames::
 	dw .song5
 	dw .song6
 	dw .song7
+	dw .song8
 	
 .song0
 	dstr "Safe Place"
@@ -30,3 +31,5 @@ SongNames::
 	dstr "Neo Safe Place"
 .song7
 	dstr "Avocado Invaders"
+.song8
+	dstr "Forest"

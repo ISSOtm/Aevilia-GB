@@ -3,7 +3,7 @@
 StarthamForestMap::
 	db 0 ; Exterior map
 	
-	db MUSIC_OVERWORLD ; Music ID
+	db MUSIC_FOREST ; Music ID
 	
 	db 0
 	db TILESET_TEST
