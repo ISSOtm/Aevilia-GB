@@ -20,3 +20,4 @@ libintl3.dll
 make.exe
 msvcp60.dll
 msvcrt.dll
+sound/*.bak
