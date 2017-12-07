@@ -18,6 +18,7 @@
 	enum_elem PRINT_PIC
 	enum_elem PRINT_NAME_AND_DISP
 	enum_elem WAIT_FOR_BUTTON
+	enum_elem WAIT_FOR_BUTTON_NO_SFX
 	enum_elem PRINT_STRING
 	enum_elem EMPTY_LINE
 	enum_elem DELAY_FRAMES

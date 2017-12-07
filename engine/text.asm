@@ -195,6 +195,7 @@ TextCommandsPointers::
 	dw PrintPic
 	dw PrintNameAndWaitForTextbox
 	dw WaitForButtonPress
+	dw WaitForButtonPress
 	dw PrintLine
 	dw PrintEmptyLine
 	dw DelayNFrames
@@ -670,9 +671,11 @@ WaitForButtonPress::
 	ld [hli], a
 	ld [hl], a
 	
+	ld a, [wDigitBuffer]
+	cp WAIT_FOR_BUTTON_NO_SFX
 	push	bc
 	ld	c,SFX_TEXT_ADVANCE
-	callacross	SoundFX_Trig
+	callacross nz, SoundFX_Trig
 	pop	bc
 	
 	ld a, 1 ; Consumed command byte
