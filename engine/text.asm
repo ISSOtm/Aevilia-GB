@@ -667,6 +667,11 @@ WaitForButtonPress::
 	ld [hli], a
 	ld [hl], a
 	
+	push 	bc
+	ld	c,SFX_TEXT_ADVANCE
+	callacross	SoundFX_Trig
+	pop	bc
+	
 	ld a, 1 ; Consumed command byte
 	
 	ret
@@ -1799,7 +1804,7 @@ ENDR
 	ld a, 5
 	ret z ; Didn't select the second option
 	res TEXT_ZERO_FLAG, [hl]
-	ld a, [wDigitBuffer + 4]
+	ld a, [wDigitBuffer + 4]	
 	ret
 	
 	
