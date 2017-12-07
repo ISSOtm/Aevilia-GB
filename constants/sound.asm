@@ -11,6 +11,7 @@
 	enum_elem MUSIC_SCARECHORD
 	enum_elem MUSIC_NEO_SAFE_PLACE
 	enum_elem MUSIC_AVOCADO_INVADERS
+	enum_elem MUSIC_FOREST
 	
 	enum_elem MUSIC_INVALIDTRACK ; IDs >= this are invalid (except $FF)
 	

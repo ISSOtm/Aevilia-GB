@@ -7,14 +7,15 @@
 ; =================================================================
 
 SongSpeedTable:
-	db	6,6	; safe place
-	db	2,3	; battle 1
-	db	4,3 ; file select
-	db	4,4	; overworld
-	db	2,3	; boss 1
-	db	2,3	; scare chord
-	db	6,5 ; neo safe place
-	db	6,6	; avocado invaders
+	db	6,6		; safe place
+	db	2,3		; battle 1
+	db	4,3 	; file select
+	db	4,4		; overworld
+	db	2,3		; boss 1
+	db	2,3		; scare chord
+	db	6,5 	; neo safe place
+	db	6,6		; avocado invaders
+	db	6,$12	; forest
 SongSpeedTable_End
 	
 SongPointerTable:
@@ -26,6 +27,7 @@ SongPointerTable:
 	dw	PT_ScareChord
 	dw	PT_NeoSafePlace
 	dw	PT_AvocadoInvaders
+	dw	PT_Forest
 SongPointerTable_End
 
 if(SongSpeedTable_End-SongSpeedTable) != (SongPointerTable_End-SongPointerTable)
@@ -131,6 +133,24 @@ vol_FileSelectArp2:
 	db	1
 	endr
 	db	0,$ff,0
+	
+vol_ForestPulse:
+	db	12,11,10,9,8,7,6,5,4,3,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+	db	6,5,4,3,3,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	db	2,2,1,1,1,0,$ff,0
+	
+vol_ForestPulseEcho:
+	db	6,6,5,5,4,4,3,3,2,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0
+	db	3,3,2,2,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	db	1,1,1,1,0,$ff,0
+	
+vol_ForestBass:
+	db	15,15,15,15,15,15,15,15,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	db	7,7,7,7,7,7,7,7,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	db	3,3,3,3,3,3,3,3,3,0,$ff,0
+	
+vol_ForestFadeIn:
+	db	2,2,2,2,4,4,4,4,6,6,6,6,8,8,8,8,10,$fe,$10
 				
 ; =================================================================
 ; Arpeggio/Noise sequences
@@ -269,6 +289,11 @@ InstrumentTable:
 	dins	FileSelectSaw
 	dins	FileSelectSquare
 	
+	dins	ForestPulse
+	dins	ForestPulseEcho
+	dins	ForestBass
+	dins	ForestFadeIn
+	
 ; Instrument format: [no reset flag],[voltable id],[arptable id],[wavetable id],[vibtable id]
 ; _ for no table
 ;!!! REMEMBER TO ADD INSTRUMENTS TO THE INSTRUMENT POINTER TABLE!!!
@@ -320,6 +345,11 @@ ins_FileSelectArp2:		Instrument	0,FileSelectArp2,Buffer,50,_
 ins_Tink:				Instrument	0,Tink,Buffer,50,_
 ins_FileSelectSaw:		Instrument	0,FileSelectSaw,_,HalfSaw,_
 ins_FileSelectSquare:	Instrument	0,FileSelectSquare,_,FileSelectSquare,_
+
+ins_ForestPulse:		Instrument	0,ForestPulse,Pluck,50,_
+ins_ForestPulseEcho:	Instrument	0,ForestPulseEcho,Pluck,50,_
+ins_ForestBass:			Instrument	0,ForestBass,Pluck,Pulse,_
+ins_ForestFadeIn:		Instrument	0,ForestFadeIn,_,Pulse,_
 
 ; =================================================================
 
@@ -975,6 +1005,44 @@ AvocadoInvaders_CH3:
 	db	B_3,1,rest,1,B_2,1,rest,1
 	db	GotoLoopPoint
 
+; ================================================================
+
+PT_Forest:	dw	Forest_CH1,Forest_CH2,Forest_CH3,DummyChannel
+
+Forest_CH1:
+	db	SetInstrument,id_ForestPulse
+Forest_PulsePart:
+	db	SetLoopPoint
+	dbw	CallSection,.block1
+	db	F_5,22
+	dbw	CallSection,.block1
+	db	G_4,22
+	db	GotoLoopPoint
+	
+.block1
+	db	A#4,2
+	db	C_5,2
+	db	G_5,2
+	db	G_4,2
+	db	A#4,2
+	ret
+	
+Forest_CH2:
+	db	SetInstrument,id_ForestPulseEcho
+	db	rest,1
+	dbw	SetChannelPtr,Forest_PulsePart
+	
+Forest_CH3:
+	db	SetLoopPoint
+	db	SetInstrument,id_ForestBass
+	db	C_3,6,A#2,10
+	db	C_3,6,D#3,10
+	db	C_3,6,G_2,10
+	db	A#2,6,G_2,8
+	db	SetInstrument,id_ForestFadeIn
+	db	A#2,2
+	db	GotoLoopPoint
+	
 ; ================================================================
 
 Scale_CH1:
