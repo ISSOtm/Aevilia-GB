@@ -1,15 +1,13 @@
 ; Disassembly of Aleksi Eeben's FX Hammer SFX player
 
-section	"FX Hammer RAM",wram0
+section	"FX Hammer RAM",WRAM0
 
-FXHammerRAM		ds	5
-
-FXHammer_SFXCH2	equ	0
-FXHammer_SFXCH4	equ	1
+FXHammer_SFXCH2	db
+FXHammer_SFXCH4	db
 ; these are only temporary names, I have no idea what they're actually for at the moment
-FXHammer_RAM1	equ	2
-FXHammer_RAM2	equ	3
-FXHammer_RAM3	equ	4
+FXHammer_RAM1	db
+FXHammer_RAM2	db
+FXHammer_RAM3	db
 
 FXHammerBank	equ	$10	; temporary value
 FXHammerData	equ	$4200
@@ -29,7 +27,7 @@ SoundFX_Update:
 FXHammer_Trig:
 	ld	e,c
 	ld	d,high(FXHammerData)
-	ld	hl,FXHammerRAM+FXHammer_RAM1
+	ld	hl,FXHammer_RAM1
 	ld	a,[de]
 	cp	[hl]
 	jr	z,.jmp_4055
@@ -40,15 +38,15 @@ FXHammer_Trig:
 	ld	a,[de]
 	swap	a
 	and	$f
-	ld	l,low(FXHammerRAM+FXHammer_SFXCH2)
+	ld	l,low(FXHammer_SFXCH2)
 	or	[hl]
 	ld	[hl],a
 	ld	a,[de]
 	and	$f
-	ld	l,low(FXHammerRAM+FXHammer_SFXCH4)
+	ld	l,low(FXHammer_SFXCH4)
 	or	[hl]
 	ld	[hl],a
-	ld	l,low(FXHammerRAM+FXHammer_RAM2)
+	ld	l,low(FXHammer_RAM2)
 	ld	a,1
 	ld	[hl+],a
 	xor	a
@@ -59,7 +57,7 @@ FXHammer_Trig:
 	ret
 	
 FXHammer_Stop:
-	ld	hl,FXHammerRAM+FXHammer_SFXCH2
+	ld	hl,FXHammer_SFXCH2
 	bit	1,[hl]
 	jr	z,.jmp_4084
 	ld	a,$08
@@ -68,7 +66,7 @@ FXHammer_Stop:
 	ldh	[$ff19],a
 	ld	[hl],1
 .jmp_4084
-	ld	l,low(FXHammerRAM+FXHammer_SFXCH4)
+	ld	l,low(FXHammer_SFXCH4)
 	set	0,[hl]
 	bit	1,[hl]
 	jr	z,.jmp_4096
@@ -78,7 +76,7 @@ FXHammer_Stop:
 	ldh	[$ff23],a
 	ld	[hl],1
 .jmp_4096
-	ld	l,low(FXHammerRAM+FXHammer_RAM1)
+	ld	l,low(FXHammer_RAM1)
 	xor	a
 	ld	[hl+],a
 	ld	[hl],a
@@ -86,7 +84,7 @@ FXHammer_Stop:
 	
 FXHammer_Update:
 	xor	a
-	ld	hl,FXHammerRAM+FXHammer_RAM2
+	ld	hl,FXHammer_RAM2
 	or	[hl]
 	ret	z
 	dec	[hl]
@@ -96,13 +94,13 @@ FXHammer_Update:
 	ld	d,[hl]
 	ld	e,a
 	ld	a,[de]
-	ld	l,low(FXHammerRAM+FXHammer_RAM2)
+	ld	l,low(FXHammer_RAM2)
 	ld	[hl-],a
 	or	a
 	jr	nz,.jmp_40b0
 	ld	[hl],a
 .jmp_40b0
-	ld	l,low(FXHammerRAM+FXHammer_SFXCH2)
+	ld	l,low(FXHammer_SFXCH2)
 	bit	1,[hl]
 	jr	z,.jmp_40e5
 	inc	e
@@ -144,7 +142,7 @@ FXHammer_Update:
 	inc	e
 	inc	e
 .jmp_40e9
-	ld	l,low(FXHammerRAM+FXHammer_SFXCH4)
+	ld	l,low(FXHammer_SFXCH4)
 	bit	1,[hl]
 	jr	z,.jmp_4119
 	inc	e
@@ -172,11 +170,11 @@ FXHammer_Update:
 	ld	a,$80
 	ldh	[$ff23],a
 	inc	e
-	ld	l,low(FXHammerRAM+FXHammer_RAM3)
+	ld	l,low(FXHammer_RAM3)
 	ld	[hl],e
 	ret
 .jmp_4119
-	ld	l,low(FXHammerRAM+FXHammer_RAM3)
+	ld	l,low(FXHammer_RAM3)
 	ld	a,8
 	add	[hl]
 	ld	[hl],a
