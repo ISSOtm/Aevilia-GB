@@ -450,6 +450,8 @@ STATHandler::
 	ld a, $FF
 	ldh [hHDMALength], a
 	
+	ld a, BANK(wNumOfTileAnims)
+	ld [rSVBK], a
 	ld hl, wNumOfTileAnims
 	ld a, [hli]
 	and a
@@ -572,6 +574,8 @@ STATHandler::
 	pop hl
 	
 .doneAnimating
+	ld a, BANK(wNumOfTileAnims)
+	ld [rSVBK], a
 .dontAnim
 	ld a, l
 	and $F8
