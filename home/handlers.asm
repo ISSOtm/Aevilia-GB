@@ -431,9 +431,10 @@ STATHandler::
 	
 .musicTime
 	res 5, [hl] ; Disable mode 2 interrupt
-	
 	ld l, rIF & $FF
 	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
+	push de
+	push bc
 	
 	ldh a, [hHDMAInUse]
 	and a
@@ -453,8 +454,6 @@ STATHandler::
 	ld a, [hli]
 	and a
 	jp z, .noAnimators
-	push de
-	push bc
 	ld b, a
 	
 	ld a, [rVBK] ; Save VRAM bank
@@ -573,10 +572,6 @@ STATHandler::
 	pop hl
 	
 .doneAnimating
-	
-	ld a, 1
-	ld [rSVBK], a ; Restore WRAM bank.
-	
 .dontAnim
 	ld a, l
 	and $F8
@@ -586,8 +581,6 @@ STATHandler::
 	jp nz, .runAnimator
 	pop af
 	ld [rVBK], a ; Restore VRAM bank
-	pop bc
-	pop de
 .noAnimators
 	
 	
@@ -599,6 +592,8 @@ STATHandler::
 	ld a, BANK(SoundFX_Update)
 	ld [ROMBankLow], a
 	call SoundFX_Update
+	pop bc
+	pop de
 	
 	ldh a, [hCurRAMBank]
 	push af
