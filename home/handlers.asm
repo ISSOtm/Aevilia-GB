@@ -594,7 +594,7 @@ STATHandler::
 	ld [rVBK], a ; Restore VRAM bank
 	pop bc
 	pop de
-.noAnimators	
+.noAnimators
 	call DevSound_Play ; Preserves all registers
 	
 	ldh a, [hCurRAMBank]

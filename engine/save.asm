@@ -685,7 +685,8 @@ SelectFile:
 	; testing SFX - DevEd
 	push	af
 	ld	a,SFX_TEXT_SELECT
-	call	SoundFX_Trig
+	ld	c,a
+	callacross	SoundFX_Trig
 	pop	af
 	
 	; Highlight new file

@@ -14,18 +14,15 @@ FXHammer_RAM3	equ	4
 FXHammerBank	equ	$10	; temporary value
 FXHammerData	equ	$4200
 
-section	"FX Hammer entry points",rom0
+section	"FX Hammer",romx,bank[FXHammerBank]
 
 SoundFX_Trig:
-	ld	c,a
-	jpacross	FXHammer_Trig	; $404a
+	jp	FXHammer_Trig	; $404a
 SoundFX_Stop:
-	jpacross	FXHammer_Stop	; $4073
+	jp	FXHammer_Stop	; $4073
 SoundFX_Update:
-	jpacross	FXHammer_Update	; $409c
-	
-section	"FX Hammer",romx,bank[FXHammerBank]
-	
+	jp	FXHammer_Update	; $409c
+		
 ; thumbprint (this could be removed to save space)
 	db	"FX HAMMER Version 1.0 (c)2000 Aleksi Eeben (email:aleksi@cncd.fi)"
 	
