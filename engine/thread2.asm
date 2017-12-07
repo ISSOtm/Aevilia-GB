@@ -310,7 +310,7 @@ LoadingStairsUpLeft::
 	call MoveNPC0ToPlayer
 	jp ProcessNPCs
 	
-.startClimbing	
+.startClimbing
 	ld a, DIR_LEFT
 	jr FirstLoadingStairsUp
 
@@ -383,10 +383,6 @@ FirstLoadingStairsUp:
 	ldh [hLoadingWalkDirection], a
 	ld a, THREAD2_LOADINGSTAIRSUP
 	ldh [hThread2ID], a
-	push	bc
-	ld	c,SFX_DOOR_ENTER
-	callacross	SoundFX_Trig
-	pop	bc
 	
 LoadingStairsUp::
 	ld hl, wNPC0_steps
