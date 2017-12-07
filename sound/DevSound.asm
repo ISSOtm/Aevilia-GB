@@ -166,8 +166,19 @@ DevSound_Init::
 DevSound_Stop:
 	di ; Prevent DS_Play from happening
 	
+	; set up sound output
+	ld	c,low(rNR52)
 	xor	a
-	ldh	[rNR52],a
+	ld	[c],a	; disable sound output (resets all sound regs)
+	set	7,a
+	ld	[c],a	; enable sound output
+	dec	c
+	or	$ff
+	ld	[c],a	; all sound channels to left+right speakers
+	dec	c
+	and	$77
+	ld	[c],a	; VIN output off + master volume max
+	xor	a
 	ld	[CH1Enabled],a
 	ld	[CH2Enabled],a
 	ld	[CH3Enabled],a
