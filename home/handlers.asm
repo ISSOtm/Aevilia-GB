@@ -449,12 +449,6 @@ STATHandler::
 	ld a, $FF
 	ldh [hHDMALength], a
 	
-	ld a, BANK(DevSound_Play)
-	ld [ROMBankLow], a
-	ld a, BANK(DSVarsStart)
-	ld [rSVBK], a
-	
-	
 	ld hl, wNumOfTileAnims
 	ld a, [hli]
 	and a
@@ -595,6 +589,16 @@ STATHandler::
 	pop bc
 	pop de
 .noAnimators
+	
+	
+	ld a, BANK(DSVarsStart)
+	ld [rSVBK], a
+	ld a, BANK(SoundFX_Update)
+	ld [ROMBankLow], a
+	call SoundFX_Update
+	
+	ld a, BANK(DevSound_Play)
+	ld [ROMBankLow], a
 	call DevSound_Play ; Preserves all registers
 	
 	ldh a, [hCurRAMBank]

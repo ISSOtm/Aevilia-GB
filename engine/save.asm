@@ -682,13 +682,6 @@ SelectFile:
 	
 .moved
 	
-	; testing SFX - DevEd
-	push	af
-	ld	a,SFX_TEXT_SELECT
-	ld	c,a
-	callacross	SoundFX_Trig
-	pop	af
-	
 	; Highlight new file
 	ld hl, $98E3
 	ld b, a
@@ -720,6 +713,12 @@ SelectFile:
 	rst waitVBlank
 	xor a
 	call FileSelectHighlight
+	
+	; Play a little SFX (also served as a test)
+	push bc
+	ld	c,SFX_TEXT_SELECT
+	callacross	SoundFX_Trig
+	pop	bc
 	
 .noScreenUpdate
 	ld a, b

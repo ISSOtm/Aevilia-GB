@@ -27,7 +27,7 @@ SoundFX_Update:
 	db	"FX HAMMER Version 1.0 (c)2000 Aleksi Eeben (email:aleksi@cncd.fi)"
 	
 FXHammer_Trig:
-	ld	e,a
+	ld	e,c
 	ld	d,high(FXHammerData)
 	ld	hl,FXHammerRAM+FXHammer_RAM1
 	ld	a,[de]
