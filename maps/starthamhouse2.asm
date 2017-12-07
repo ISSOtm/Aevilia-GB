@@ -15,7 +15,7 @@ StarthamHouse2Interactions::
 	db 1
 	
 	db WALK_LOADZONE
-	load_zone $0087, $002E, 10, $15, THREAD2_LOADINGWALKDOWN, 4, MAP_STARTHAM, SFX_NONE
+	load_zone $0087, $002E, 10, $15, THREAD2_LOADINGWALKDOWN, 4, MAP_STARTHAM, SFX_STAIRS
 	
 StarthamHouse2NPCs::
 	db 2
