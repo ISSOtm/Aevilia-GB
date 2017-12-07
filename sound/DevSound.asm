@@ -1282,7 +1282,7 @@ CH4_CheckByte:
 	ld	[CH4VolPos],a
 	ld	[CH4VolLoop],a
 .noresetvol
-	ld	a,[$c7d9]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH4]
 	cp	3
 	jp	z,.noupdate
 	ldh	[rNR42],a
@@ -2273,7 +2273,7 @@ CH2_UpdateRegisters:
 	cp	$ff
 	jr	z,.loadlast
 	cp	$fd
-	jr	z,.done
+	jp	z,.done
 	ld	b,a
 	ld	a,[CH2ChanVol]
 	push	hl
@@ -2296,6 +2296,9 @@ if !def(DemoSceneMode)
 	sub	c
 	and	$f
 	ld	c,a
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
+	cp	3
+	jr	z,.zombinit
 	ld	a,8
 .zombloop
 	ldh	[rNR22],a
@@ -2304,6 +2307,9 @@ if !def(DemoSceneMode)
 	jr	.noreset3
 .zombinit
 endc
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
+	cp	3
+	jr	z,.noreset3
 	ld	a,b
 	ld	[CH2Vol],a
 	swap	a
@@ -2325,6 +2331,10 @@ endc
 	ld	[CH2VolLoop],a
 	jr	.done
 .loadlast
+	ld	a,[FXHammerRAM+FXHammer_SFXCH2]
+	cp	3
+	jr	z,.done
+
 	ld	a,[hl]
 	push	af
 	swap	a
@@ -2779,7 +2789,7 @@ CH4_UpdateRegisters:
 	and	a
 	jp	z,DoneUpdatingRegisters
 	
-	ld	a,[$c7d9]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH4]
 	cp	3
 	jr	z,.norest
 	ld	a,[CH4ModeBackup]
@@ -2901,7 +2911,7 @@ CH4_UpdateRegisters:
 	inc	h
 .nocarry2
 	
-	ld	a,[$c7d9]
+	ld	a,[FXHammerRAM+FXHammer_SFXCH4]
 	cp	3
 	jr	z,.updateVolume
 	ld	a,[hl+]
@@ -2937,6 +2947,11 @@ CH4_UpdateRegisters:
 	ld	[CH4Vol],a
 	swap	a
 	or	8
+	push	af
+	ld	a,[FXHammerRAM+FXHammer_SFXCH4]
+	cp	3
+	jr	z,.noreset3
+	pop	af
 	ldh	[rNR42],a
 	ld	a,$80
 	ldh	[rNR44],a
@@ -2951,10 +2966,14 @@ CH4_UpdateRegisters:
 	ld	[CH4VolPos],a
 	jr	.done
 .loadlast
+	ld	a,[FXHammerRAM+FXHammer_SFXCH4]
+	cp	3
+	jr	z,.noset2
 	ld	a,[hl]
 	ldh	[rNR42],a
 	ld	a,$80
 	ldh	[rNR44],a
+.noset2
 	ld	a,$ff
 	ld	[CH4VolLoop],a
 .done
