@@ -1087,6 +1087,11 @@ StartMenu::
 	ld [rVBK], a
 	
 	ld [SoundEnabled], a
+	
+	push	bc
+	ld	c,SFX_MENU_OPEN
+	callacross	SoundFX_Trig
+	pop	bc
 	call InterleaveFromMovableToFixed
 	
 .mainLoop
