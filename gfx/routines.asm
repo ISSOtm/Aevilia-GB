@@ -884,7 +884,8 @@ InterleaveFromMovableToFixed::
 	inc c
 	ld l, rSTAT & $FF
 .waitBlank
-	bit 1, [hl]
+	ld a, [hl]
+	and 3
 	jr nz, .waitBlank
 	dec l ; hl = rLCDC
 	ld a, e
@@ -892,7 +893,7 @@ InterleaveFromMovableToFixed::
 	jr c, .windowEnd ; Don't window if past max line
 	ld a, c
 	rra
-	jr nc, .dontWindow ; Don't window if on even line (NB: c is current +1)
+	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
 	ld a, 7
 	jr .doneWindowing
@@ -975,7 +976,8 @@ InterleaveFromFixedToMovable::
 	inc c
 	ld l, rSTAT & $FF
 .waitBlank
-	bit 1, [hl]
+	ld a, [hl]
+	and 3
 	jr nz, .waitBlank
 	dec l ; hl = rLCDC
 	ld a, e
@@ -983,7 +985,7 @@ InterleaveFromFixedToMovable::
 	jr c, .windowEnd ; Don't window if past max line
 	ld a, c
 	rra
-	jr nc, .dontWindow ; Don't window if on even line (NB: c is current +1)
+	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
 	ld a, 7
 	jr .doneWindowing
