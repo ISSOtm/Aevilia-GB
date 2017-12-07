@@ -73,6 +73,9 @@
 	enum_elem TEXT_MUSIC_FADE
 	enum_elem TEXT_MUSIC_PLAY
 	enum_elem TEXT_MUSIC_STOP
+	enum_elem TEXT_SFX_WAIT
+	enum_elem TEXT_SFX_PLAY
+	enum_elem TEXT_SFX_STOP
 	enum_elem OVERRIDE_TEXBOX_PAL
 	enum_elem CLOSE_TEXTBOX
 	enum_elem TEXT_GET_FLAG
@@ -644,4 +647,24 @@ ENDM
 ; end_animation textSlot
 end_animation: MACRO
 	db TEX_END_ANIM
+ENDM
+
+
+; wait_sfx
+; Waits until no SFX is playing
+wait_sfx: MACRO
+	db TEXT_SFX_WAIT
+ENDM
+
+; play_sfx sfx_id
+; Plays a sfx
+; music_id : ID of the sfx to be played
+play_sfx: MACRO
+	db TEXT_SFX_PLAY
+	db \1
+ENDM
+
+; Instantly stops the SFX
+stop_sfx: MACRO
+	db TEXT_SFX_STOP
 ENDM

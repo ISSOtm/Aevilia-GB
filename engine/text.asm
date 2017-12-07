@@ -250,6 +250,9 @@ TextCommandsPointers::
 	dw TextFadeMusic
 	dw TextPlayMusic
 	dw TextStopMusic
+	dw TextWaitSFX
+	dw TextPlaySFX
+	dw TextStopSFX
 	dw OverrideTextboxPalette
 	dw CloseTextbox
 	dw TextGetFlag
@@ -2128,6 +2131,32 @@ TextPlayMusic::
 	
 TextStopMusic::
 	call DS_Stop
+	ld a, 1
+	ret
+	
+	
+TextWaitSFX::
+	ld hl, FXHammer_SFXCH2
+	ld de, FXHammer_SFXCH4
+.wait
+	rst waitVBlank
+	bit 1, [hl]
+	jr nz, .wait
+	ld a, [de]
+	and 2
+	jr nz, .wait
+	inc a
+	ret
+	
+TextPlaySFX::
+	ld a, [wDigitBuffer + 1]
+	ld c, a
+	callacross FXHammer_Trig
+	ld a, 2
+	ret
+	
+TextStopSFX::
+	callacross FXHammer_Stop
 	ld a, 1
 	ret
 	
