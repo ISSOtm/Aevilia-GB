@@ -716,7 +716,7 @@ SelectFile:
 	
 	; Play a little SFX (also served as a test)
 	push bc
-	ld	c,SFX_TEXT_ADVANCE
+	ld	c,SFX_TEXT_SELECT
 	callacross	SoundFX_Trig
 	pop	bc
 	

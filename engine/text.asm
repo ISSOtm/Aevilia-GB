@@ -663,12 +663,12 @@ WaitForButtonPress::
 	rrca
 	jr nc, .waitLoop
 .end
-	
 	ld a, $12
 	ld [hli], a
 	ld [hl], a
 	
 	ld a, 1 ; Consumed command byte
+	
 	ret
 	
 	
@@ -1701,6 +1701,7 @@ ENDR
 	jr .loop
 	
 .done
+
 	ld a, [hl]
 	and a
 	ld hl, wTextFlags

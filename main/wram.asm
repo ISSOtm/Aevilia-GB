@@ -512,9 +512,11 @@ wNPCArray::
 SECTION	"DevSound variables",WRAMX
 
 wCurrentMusicID::
-	ds 1
+	ds	1
+wCurrentSFXID::
+	ds	1
 wChangeMusics::
-	ds 1
+	ds	1
 
 DSVarsStart:
 FadeType		ds	1

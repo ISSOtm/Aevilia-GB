@@ -140,6 +140,7 @@ SoundTestMenu::
 	ld [wYPos], a
 	ld [wXPos], a
 	ld [wCurrentMusicID], a
+	ld [wCurrentSFXID], a
 	jr .printMusicName
 	
 .mainLoop
@@ -173,7 +174,7 @@ SoundTestMenu::
 	ld c, a
 	ld [de], a
 	inc de
-	ld a, [wCurrentMusicID]
+	ld a, [wCurrentSFXID]
 	ld b, a
 	call PrintHex
 	ld a, c
@@ -211,6 +212,8 @@ SoundTestMenu::
 	dec [hl]
 	jr .printMusicName
 .decSFX
+	ld	hl,wCurrentSFXID
+	dec	[hl]
 	jr .mainLoop
 	
 .right
@@ -249,6 +252,8 @@ SoundTestMenu::
 	rst waitVBlank
 	jp .mainLoop
 .incSFX
+	ld	hl,wCurrentSFXID
+	inc	[hl]
 	jp .mainLoop
 	
 .fadein
@@ -262,9 +267,19 @@ SoundTestMenu::
 	jp .mainLoop
 	
 .play
+	ld a, [wYPos]
+	and a
+	jr nz, .playSFX
 	ld a, [wCurrentMusicID]
 	call DS_Init
 	jp .mainLoop
+.playSFX
+	push	bc
+	ld	a,[wCurrentSFXID]
+	ld	c,a
+	callacross	SoundFX_Trig
+	pop	bc
+	jp	.mainLoop
 	
 	
 .strings
