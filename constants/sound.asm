@@ -35,6 +35,7 @@
 	enum_elem SFX_PHONE_HANG_UP
 	enum_elem SFX_DOOR_KNOCK
 	enum_elem SFX_MISC_ZAP
+	enum_elem SFX_TEXT_SELECT
 
 
 ; ================================================================

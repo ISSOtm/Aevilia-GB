@@ -36,7 +36,7 @@ DevSound_JumpTable:
 
 DS_Init::
 	ld c, a
-	jpacross	DevSound_Init_Hook
+	jpacross	DevSound_Init_Hook	
 DS_Play::
 	jpacross	DevSound_Play
 DS_Stop::

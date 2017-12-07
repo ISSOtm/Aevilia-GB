@@ -681,6 +681,13 @@ SelectFile:
 	jr z, .moveAgain
 	
 .moved
+	
+	; testing SFX - DevEd
+	push	af
+	ld	a,SFX_TEXT_SELECT
+	call	SoundFX_Trig
+	pop	af
+	
 	; Highlight new file
 	ld hl, $98E3
 	ld b, a
@@ -719,12 +726,14 @@ SelectFile:
 	jp z, SelectFile ; Too far
 	
 FileSelected:
+
 	xor a
 	ld [wNumOfSprites], a
 	inc a
 	ld [wTransferSprites], a
 	
 	; A file has been selected!
+	
 	rst waitVBlank
 	ld a, 1
 	ld [rVBK], a
