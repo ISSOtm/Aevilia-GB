@@ -372,6 +372,7 @@ StarthamDevEdTestScript::
 	wait_sfx
 	delay 30
 	disp_box
+	
 	print_line_id 0
 	print_line_id 1
 	print_line_id 2

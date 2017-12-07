@@ -1152,6 +1152,13 @@ ENDC
 	inc hl
 	inc hl
 	
+	push	bc
+	push	hl
+	ld	c,SFX_TEXT_CONFIRM
+	callacross	SoundFX_Trig
+	pop	hl
+	pop	bc
+	
 	ld de, sNonVoidSaveFiles - 1
 	ldh a, [hSRAM32kCompat]
 	and a
