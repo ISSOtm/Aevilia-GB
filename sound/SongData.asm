@@ -183,6 +183,8 @@ arp_Boss1Echo1:	db	12,0,$ff
 
 arp_ScareChordTom:	db	22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,$ff
 
+arp_PluckLoop:	db	12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,$fe,0
+
 ; =================================================================
 ; Pulse/Wave sequences
 ; =================================================================
@@ -346,9 +348,9 @@ ins_Tink:				Instrument	0,Tink,Buffer,50,_
 ins_FileSelectSaw:		Instrument	0,FileSelectSaw,_,HalfSaw,_
 ins_FileSelectSquare:	Instrument	0,FileSelectSquare,_,FileSelectSquare,_
 
-ins_ForestPulse:		Instrument	0,ForestPulse,Pluck,50,_
-ins_ForestPulseEcho:	Instrument	0,ForestPulseEcho,Pluck,50,_
-ins_ForestBass:			Instrument	0,ForestBass,Pluck,Pulse,_
+ins_ForestPulse:		Instrument	0,ForestPulse,PluckLoop,50,_
+ins_ForestPulseEcho:	Instrument	0,ForestPulseEcho,PluckLoop,50,_
+ins_ForestBass:			Instrument	0,ForestBass,PluckLoop,Pulse,_
 ins_ForestFadeIn:		Instrument	0,ForestFadeIn,_,Pulse,_
 
 ; =================================================================
