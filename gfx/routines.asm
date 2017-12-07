@@ -867,7 +867,12 @@ InterleaveFromMovableToFixed::
 	ldh [hWX], a
 	rst waitVBlank
 .interleaveLoop
-	ld l, rLCDC & $FF
+	push bc
+	push de
+	callacross FXHammer_Update
+	pop de
+	pop bc
+	ld hl, rLCDC
 	res 1, [hl]
 	ld l, rLY & $FF
 	ld c, d
@@ -953,8 +958,13 @@ InterleaveFromFixedToMovable::
 	ldh [hWX], a
 	rst waitVBlank
 .interleaveLoop
+	push bc
+	push de
+	callacross FXHammer_Update
+	pop de
+	pop bc
 	ld c, d
-	ld l, rLCDC & $FF
+	ld hl, rLCDC
 	res 1, [hl]
 	ld l, rLY & $FF
 .oneScanline
