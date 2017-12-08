@@ -1,18 +1,31 @@
 import urllib
 import os
-import time
 	
 deps_link = "https://stuff-for-my-programs.weebly.com/uploads/1/1/4/2/114279849/dependencies.zip"
 extractor_link = "https://stuff-for-my-programs.weebly.com/uploads/1/1/4/2/114279849/7za.exe"
 
 dll_list = ["libiconv2.dll", "libintl3.dll", "msvcp60.dll", "msvcrt.dll"] # arrays are supposed to use brackets, not parenthesis.
+"""
+Downloaded File List:
+dependencies.zip:
+{
+msvcp60.dll
+msvcrt.dll
+libiconv2.dll
+libintl3.dll
+make.exe
+}
 
+7za.exe
+
+maybe later i'll use the shitty builtin zip module instead but i doubt it
+"""
 
 def check_file_in_PATH(fileToCheck): # "file" is predefined by Python, so it'd err here.
 	path = os.getenv("PATH").split(";")
 	for dir in path:
 		if os.path.isfile(dir + fileToCheck):
-			return True # so you wish to only check for one file?
+			return True
 	
 	return False
 	
@@ -82,10 +95,11 @@ def compile_rom():
 	# If we reach here, the user asked for cleanup. Ok.
 	
 	print "\nCleaning up...\n"
-	
 	for dll in dll_list:
-		os.system("del " + dll)
-	os.system("del make.exe")
+		os.system("del " + dll + " /f")
+	os.system("del make.exe /f")
+	os.system("del dependencies.zip /f")
+	os.system("del 7za.exe /f")
 	
 	print "Done! Exiting..."
 
