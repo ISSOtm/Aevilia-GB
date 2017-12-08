@@ -21,7 +21,7 @@ make.exe
 maybe later i'll use the shitty builtin zip module instead but i doubt it
 """
 
-def check_file_in_PATH(fileToCheck): # "file" is predefined by Python, so it'd err here.
+def in_PATH(fileToCheck): # "file" is predefined by Python, so it'd err here.
 	path = os.getenv("PATH").split(";")
 	for dir in path:
 		if os.path.isfile(dir + fileToCheck):
@@ -31,16 +31,12 @@ def check_file_in_PATH(fileToCheck): # "file" is predefined by Python, so it'd e
 	
 def check_deps():
 	for dll in dll_list:
-		if not check_file_in_PATH(dll):
+		if not in_PATH(dll):
 			return False
-	return check_file_in_PATH("make.exe")
+	return in_PATH("make.exe")
 	
 def download_deps():
-	print "This version downloads repacked files from a server in order to run them. Nothing will be permanently installed."
-	print "If you don't like this, use the Offline Wrapper. It'll tell you what you need to download."
-	print "If you wish to download and unpack the files, type YES and press Enter."
-	print "If you do not wish to, either close this program or type anything else."
-	
+	print "==================================\nAEVILIA GB Online Makefile Wrapper\n==================================\nWritten in Py2 by Parzival\nMaintained by Parzival and ISSOtm\nThis version downloads repacked files from a server in order to run them. Nothing will be permanently installed.\nIf you don't like this, use the Offline Wrapper. It'll tell you what you need to download.\n\nIf you wish to download and unpack the files, type YES and press Enter.\nIf you do not wish to, either close this program or type anything else."
 	try:
 		confirm_str = raw_input("\"YES\" to confirm > ")
 	except EOFError:
