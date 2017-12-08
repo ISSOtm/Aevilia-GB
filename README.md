@@ -55,7 +55,10 @@ tl;dr : play by the rules and we'll support you. Don't, and... just don't.
 
 # A Note on Compiling
 
-There are two EXEs for compiling and one BATCH file: _compiler.offline.exe_, _compiler.online.exe_, and _oldcompiler.bat_, to be precise.
+On Linux, compiling is done by typing `make` while in the root folder of this repository.
+
+
+There are two EXEs for compiling and one BATCH file: _compiler.offline.exe_, _compiler.online.exe_, and _oldcompiler.bat_, to be precise. These two EXEs are simply compiled versions of the `.py` files found in the `tools/` repository, so if you have Python and prefer to run them, copy them out of the `tools/` folder and run them (with Python 2.X).
 
 _compiler.offline.exe_ ("the Offline compiler") is for those who want to compile the ROM without sacrificing the ability to have a stroke in the process.
 The program will tell you exactly what you need to install (a lot) to get the five or so files you need on your system for compiling to work. There's also no instructions on how you need to set these downloaded programs up properly (yet). It's the Online compiler for the paranoid.
