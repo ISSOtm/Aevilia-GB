@@ -854,17 +854,14 @@ InterleaveFromMovableToFixed::
 	ld [hl], a ; Mute sound
 	ld l, rIE & $FF
 	ld b, [hl]
-	res 1, [hl]
+	ld [hl], 1
 	xor a
 	; e holds max scanline
 	ld e, a ; ld e, 0
 	; d holds first scanline
 	ld d, a ; ld d, 0
-	ldh [hWY], a
 	inc a
-	ldh [hEnableWindow], a
-	ld a, 7
-	ldh [hWX], a
+	ldh [hTilemapMode], a
 	rst waitVBlank
 .interleaveLoop
 	push bc
@@ -890,24 +887,25 @@ InterleaveFromMovableToFixed::
 	dec l ; hl = rLCDC
 	ld a, e
 	cp c
-	jr c, .windowEnd ; Don't window if past max line
+	jr c, .dontWindow ; Don't window if past max line
 	ld a, c
 	rra
 	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
-	ld a, 7
-	jr .doneWindowing
-.windowEnd
-	set 1, [hl]
-	ld hl, rLCDC
-	ld a, $A7
+	set 3, [hl]
+	ld a, 8 * TILE_SIZE
+	ld [rSCY], a
+	xor a
 	jr .doneWindowing
 .dontWindow
 	set 1, [hl]
-	ld a, $A6
+	res 3, [hl]
+	ldh a, [hSCY]
+	ld [rSCY], a
+	ldh a, [hSCX]
 .doneWindowing
-	ld [rWX], a
-	ld l, rLY & $FF
+	ld [rSCX], a
+	ld l, LOW(rLY)
 	ld a, [hl]
 	cp LY_VBLANK - 1
 	jr nz, .oneScanline
@@ -931,9 +929,9 @@ InterleaveFromMovableToFixed::
 	cp LY_VBLANK
 	jr nz, .interleaveLoop
 	
-	ld l, rIE & $FF
+	ld l, LOW(rIE)
 	ld [hl], b
-	ld l, rLCDC & $FF
+	ld l, LOW(rLCDC)
 	res 1, [hl] ; Disable sprites, otherwise they appear for a single frame
 	
 	xor a
@@ -947,16 +945,12 @@ InterleaveFromFixedToMovable::
 	ld hl, rNR51 ; L/R "connections"
 	xor a
 	ld [hl], a ; Mute sound
-	ld l, rIE & $FF
+	ld l, LOW(rIE)
 	ld b, [hl]
 	res 1, [hl]
 	ld de, ((LY_VBLANK - INTERLEAVE_SPEED) << 8) | (INTERLEAVE_LAST - INTERLEAVE_SPEED)
-	xor a
-	ldh [hWY], a
 	inc a
-	ldh [hEnableWindow], a
-	ld a, 7
-	ldh [hWX], a
+	ldh [hTilemapMode], a
 	rst waitVBlank
 .interleaveLoop
 	push bc
@@ -967,14 +961,14 @@ InterleaveFromFixedToMovable::
 	ld c, d
 	ld hl, rLCDC
 	res 1, [hl]
-	ld l, rLY & $FF
+	ld l, LOW(rLY)
 .oneScanline
 	ld a, c
 .waitScanline
 	cp [hl]
 	jr nz, .waitScanline
 	inc c
-	ld l, rSTAT & $FF
+	ld l, LOW(rSTAT)
 .waitBlank
 	ld a, [hl]
 	and 3
@@ -982,23 +976,25 @@ InterleaveFromFixedToMovable::
 	dec l ; hl = rLCDC
 	ld a, e
 	cp c
-	jr c, .windowEnd ; Don't window if past max line
+	jr c, .dontWindow ; Don't window if past max line
 	ld a, c
 	rra
 	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
-	ld a, 7
-	jr .doneWindowing
-.windowEnd
-	set 1, [hl]
-	ld a, $A7
+	set 3, [hl]
+	ld a, 8 * TILE_SIZE
+	ld [rSCY], a
+	xor a
 	jr .doneWindowing
 .dontWindow
 	set 1, [hl]
-	ld a, $A6
+	res 3, [hl]
+	ldh a, [hSCY]
+	ld [rSCY], a
+	ldh a, [hSCX]
 .doneWindowing
-	ld [rWX], a
-	ld l, rLY & $FF
+	ld [rSCX], a
+	ld l, LOW(rLY)
 	ld a, [hl]
 	cp LY_VBLANK - 1
 	jr nz, .oneScanline
@@ -1022,10 +1018,14 @@ InterleaveFromFixedToMovable::
 	ld e, a
 	jr nz, .interleaveLoop
 	
-	ldh [hEnableWindow], a
-	dec a
-	ld [rWX], a
-	ld l, rIE & $FF
+	ldh [hTilemapMode], a
+	ldh a, [hSCY]
+	ld [rSCY], a
+	ldh a, [hSCX]
+	ld [rSCX], a
+	ld l, LOW(rLCDC)
+	res 3, [hl]
+	ld l, LOW(rIE)
 	ld [hl], b
 	ret
 	
@@ -1065,7 +1065,7 @@ StartMenu::
 	rst waitVBlank
 	ld a, 1
 	ld [rVBK], a
-	ld hl, wTransferRows
+	ld hl, wTransferRows + 8
 	ld c, SCREEN_HEIGHT
 	rst fill
 	xor a
@@ -1073,21 +1073,21 @@ StartMenu::
 	call Fill
 	
 	ld hl, StartMenuStrs
-	ld de, wTextboxTileMap + SCREEN_WIDTH + 5
+	ld de, wFixedTileMap + SCREEN_WIDTH + 5
 	rst copyStr
-	ld e, (wTextboxTileMap + SCREEN_WIDTH * 3 + 1) & $FF
+	ld e, LOW(wFixedTileMap + SCREEN_WIDTH * 3 + 1)
 	rst copyStr
-	ld e, (wTextboxTileMap + SCREEN_WIDTH * 4 + 1) & $FF
+	ld e, LOW(wFixedTileMap + SCREEN_WIDTH * 4 + 1)
 	rst copyStr
-	ld e, (wTextboxTileMap + SCREEN_WIDTH * 5 + 1) & $FF
+	ld e, LOW(wFixedTileMap + SCREEN_WIDTH * 5 + 1)
 	rst copyStr
-	ld hl, wTextboxTileMap + SCREEN_WIDTH * 6 + 2
+	ld hl, wFixedTileMap + SCREEN_WIDTH * 6 + 2
 	ld c, SCREEN_WIDTH - 4
 	ld a, "_"
 	rst fill
 	
 	xor a
-	ld hl, vTileMap1
+	ld hl, vFixedMap
 	ld c, VRAM_ROW_SIZE * 6
 	call FillVRAMLite
 	ld c, SCREEN_WIDTH
@@ -1127,11 +1127,11 @@ ENDC
 	
 	; Restore the tilemap
 	xor a
-	ld hl, wTextboxTileMap + SCREEN_WIDTH * 6
+	ld hl, wFixedTileMap + SCREEN_WIDTH * 6
 	ld c, SCREEN_WIDTH
 	rst fill
 	inc a
-	ld [wTransferRows + 6], a
+	ld [wTransferRows + 14], a
 	ld [rVBK], a
 	ld hl, vTileMap1 + VRAM_ROW_SIZE * 5
 	ld c, VRAM_ROW_SIZE + SCREEN_WIDTH
@@ -1160,8 +1160,8 @@ ENDC
 	
 .saveGame
 	inc a ; Can't be $FF
-	ld [wTransferRows + 14], a
-	ld hl, wTextboxTileMap + SCREEN_WIDTH * 14
+	ld [wTransferRows + 22], a
+	ld hl, wFixedTileMap + SCREEN_WIDTH * 14
 	ld c, SCREEN_WIDTH - 2
 	xor a
 	rst fill
@@ -1197,10 +1197,10 @@ ENDC
 	ld [SRAMBank], a
 	
 	ld hl, DoneStr
-	ld de, wTextboxTileMap + SCREEN_WIDTH * 14 + 2
+	ld de, wFixedTileMap + SCREEN_WIDTH * 14 + 2
 	rst copyStr
 	inc a
-	ld [wTransferRows + 14], a
+	ld [wTransferRows + 22], a
 	jp .mainLoop
 	
 StartMenuStrs::
