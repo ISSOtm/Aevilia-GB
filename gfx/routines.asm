@@ -1068,6 +1068,7 @@ StartMenu::
 	ld hl, wTransferRows + 8
 	ld c, SCREEN_HEIGHT
 	rst fill
+	ld hl, wFixedTileMap
 	xor a
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	call Fill
