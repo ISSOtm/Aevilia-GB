@@ -141,7 +141,8 @@ TestIntroCutscene::
 	delay 60
 	make_player_walk DIR_UP, 10, 1
 	delay 20
-	; Play "Click!" SFX
+	play_sfx SFX_PHONE_HANG_UP
+	wait_sfx
 	text_asmcall .lightUp
 	delay 50
 	turn_player DIR_DOWN

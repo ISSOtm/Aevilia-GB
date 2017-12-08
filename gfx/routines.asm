@@ -842,3 +842,34 @@ FadeInToBlack:
 	jr nz, FadeInToBlack
 	ret
 	
+LoadPlayerGraphics::
+	ld hl, EvieTiles
+	ld a, [wPlayerGender]
+	and a
+	jr z, .loadEvie1
+	ld hl, TomTiles	
+	xor a
+.loadEvie1
+	ld [rVBK], a
+	ld de, vPlayerTiles
+	ld bc, VRAM_TILE_SIZE * 4 * 3
+	call CopyToVRAM
+	ld a, 1
+	ld [rVBK], a
+	ld de, vPlayerWalkingTiles
+	ld bc, VRAM_TILE_SIZE * 4 * 3
+	call CopyToVRAM
+	xor a
+	ld [rVBK], a
+	
+	ld hl, EvieDefaultPalette
+	ld a, [wPlayerGender]
+	and a
+	jr z, .loadEvie2
+	ld hl, TomDefaultPalette
+	xor a
+.loadEvie2
+	call LoadOBJPalette
+	xor a
+	jp LoadBGPalette
+	
