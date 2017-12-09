@@ -42,7 +42,7 @@ def download_deps():
 	except EOFError:
 		return False
 	
-	if confirm_str != "YES" or confirm_str != "yes" or confirm_str != "Y" or confirm_str != "y":
+	if confirm_str != "YES" and confirm_str != "yes" and confirm_str != "Y" and confirm_str != "y":
 		return False
 	
 	
