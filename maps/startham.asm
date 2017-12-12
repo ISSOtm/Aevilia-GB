@@ -384,9 +384,14 @@ StarthamDevEdTestScript::
 	clear_box
 	delay 30
 	
-	play_sfx SFX_MISC_BELL
-	
+	text_lda_imm	2
+	text_sta	hScreenShakeAmplitude
+	play_sfx SFX_BATTLE_THUD
+	delay 16
+	text_lda_imm	0
+	text_sta	hScreenShakeAmplitude
 	wait_sfx
+	
 	delay 120
 	print_line_id 5
 	print_line_id 6
