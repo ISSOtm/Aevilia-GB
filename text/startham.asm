@@ -59,8 +59,8 @@ SECTION "Startham text strings", ROMX
 	dline 3, "from the estate"
 	dline 4, "agency."
 	dline 5, "It's not like you"
-	dline 6, "already own a"
-	dline 7, "house already..."
+	dline 6, "own a house"
+	dline 7, "already..."
 	
 	
 	set_text_prefix StarthamMeetSiblingCutscene
