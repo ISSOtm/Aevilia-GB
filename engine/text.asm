@@ -94,18 +94,8 @@ ClearTextbox::
 	
 	ld hl, TextboxBorderTiles
 	ld de, vTextboxBorderTiles
-	ld c, TextboxBorderTilesEnd - TextboxBorderTiles
-	jp CopyToVRAMLite
-	
-TextboxBorderTiles::
-	dw $3814, $3814, $3814, $3814, $3814, $3814, $3814, $3814 ; Vertical edge
-	dw $0000, $7C00, $4738, $473F, $4738, $7C03, $3814, $3814 ; Corner
-	dw $0000, $0000, $FF00, $FFFF, $FF00, $00FF, $0000, $0000 ; Horizontal edge
-	dw $0000, $0000, $FF00, $FFFF, $FF00, $00FE, $0000, $0000 ; Tile on the arrow's left
-	dw $0000, $0000, $C700, $9383, $3900, $7C00, $FE00, $0000 ; Arrow (will be flipped, remember)
-	dw $0000, $1000, $F000, $F0F0, $F000, $10E0, $0000, $0000 ; Edge for name, left
-	dw $0000, $2000, $3F00, $3F3F, $3F00, $201F, $0000, $0000 ; Edge for name, right
-TextboxBorderTilesEnd::
+	ld bc, BANK(TextboxBorderTiles) << 8 | 7
+	jp TransferTilesAcross
 	
 ProcessText_Hook::
 	ld b, c
