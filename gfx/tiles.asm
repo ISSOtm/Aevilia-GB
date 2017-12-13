@@ -1284,6 +1284,12 @@ PlayerHouse2FDpadTiles::
 	dw $FF18, $FF7E, $FF7E, $FFFF, $FFFF, $FF7E, $FF7E, $FF18 ; Middle
 	
 	
+SECTION "Shadow graphics", ROMX,ALIGN[4]
+
+ShadowTile::
+	dw $0505, $2A2A, $5555, $AAAA, $5555, $2A2A, $1515, $0202
+	
+	
 SECTION "Strings and text", ROMX,BANK[1]
 	
 AeviliaStr::
