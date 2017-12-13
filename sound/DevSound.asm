@@ -50,7 +50,7 @@ DS_Fade::
 ; INPUT: a = ID of song to init
 ; ================================================================
 
-SECTION "DevSound engine", ROMX,BANK[5]
+SECTION "DevSound engine", ROMX
 
 ; Driver thumbprint (Please keep this in the DevSound ROM bank)
 db	"DevSound GB music player by DevEd | email: deved8@gmail.com"
