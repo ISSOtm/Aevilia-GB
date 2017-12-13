@@ -681,7 +681,7 @@ WaitForButtonPress::
 	cp WAIT_FOR_BUTTON_NO_SFX
 	push	bc
 	ld	c,SFX_TEXT_ADVANCE
-	callacross nz, SoundFX_Trig
+	callacross nz, FXHammer_Trig
 	pop	bc
 	
 	ld a, 1 ; Consumed command byte

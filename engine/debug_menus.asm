@@ -277,7 +277,7 @@ SoundTestMenu::
 	push	bc
 	ld	a,[wCurrentSFXID]
 	ld	c,a
-	callacross	SoundFX_Trig
+	callacross	FXHammer_Trig
 	pop	bc
 	jp	.mainLoop
 	

@@ -593,9 +593,9 @@ STATHandler::
 	ld a, BANK(DevSound_Play)
 	ld [ROMBankLow], a
 	call DevSound_Play ; Preserves all registers
-	ld a, BANK(SoundFX_Update)
+	ld a, BANK(FXHammer_Update)
 	ld [ROMBankLow], a
-	call SoundFX_Update
+	call FXHammer_Update
 	pop bc
 	pop de
 	
