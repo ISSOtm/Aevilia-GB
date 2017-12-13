@@ -1,25 +1,10 @@
+
 ; Disassembly of Aleksi Eeben's FX Hammer SFX player
 
-section	"FX Hammer RAM",WRAM0,ALIGN[3]
+SECTION	"FX Hammer",ROMX,ALIGN[8]
 
-FXHammer_SFXCH2	db
-FXHammer_SFXCH4	db
-; these are only temporary names, I have no idea what they're actually for at the moment
-FXHammer_RAM1	db
-FXHammer_cnt	db
-FXHammer_ptr	dw
-
-section	"FX Hammer",ROMX,ALIGN[8]
 FXHammerData::
-	incbin	"sound/SFXData.bin"
-
-	
-SoundFX_Trig:
-	jp	FXHammer_Trig	; $404a
-SoundFX_Stop:
-	jp	FXHammer_Stop	; $4073
-SoundFX_Update:
-	jp	FXHammer_Update	; $409c
+INCBIN	"sound/SFXData.bin"
 		
 ; thumbprint (this could be removed to save space)
 	db	"FX HAMMER Version 1.0 (c)2000 Aleksi Eeben (email:aleksi@cncd.fi)"

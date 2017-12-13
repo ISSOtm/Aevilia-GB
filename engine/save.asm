@@ -717,7 +717,7 @@ SelectFile:
 	; Play a little SFX (also served as a test)
 	push bc
 	ld	c,SFX_TEXT_SELECT
-	callacross	SoundFX_Trig
+	callacross	FXHammer_Trig
 	pop	bc
 	
 .noScreenUpdate

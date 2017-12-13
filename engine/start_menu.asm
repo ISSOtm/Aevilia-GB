@@ -230,7 +230,7 @@ StartMenu::
 	
 	push	bc
 	ld	c,SFX_MENU_OPEN
-	callacross	SoundFX_Trig
+	callacross	FXHammer_Trig
 	pop	bc
 	call InterleaveFromMovableToFixed
 	
@@ -300,7 +300,7 @@ ENDC
 	push	bc
 	push	hl
 	ld	c,SFX_TEXT_CONFIRM
-	callacross	SoundFX_Trig
+	callacross	FXHammer_Trig
 	pop	hl
 	pop	bc
 	

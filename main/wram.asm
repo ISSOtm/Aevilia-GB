@@ -667,6 +667,17 @@ RandomizerSpeed		ds	1
 arp_Buffer			ds	8
 
 
+section	"FX Hammer RAM",WRAM0,ALIGN[3]
+
+FXHammer_SFXCH2	db
+FXHammer_SFXCH4	db
+; these are only temporary names, I have no idea what they're actually for at the moment
+FXHammer_RAM1	db
+FXHammer_cnt	db
+FXHammer_ptr	dw
+
+
+
 SECTION "Battle", WRAMX,BANK[1]
 wBattleEncounterID::
 	ds 1
