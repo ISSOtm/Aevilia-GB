@@ -9,11 +9,11 @@ FXHammer_RAM1	db
 FXHammer_cnt	db
 FXHammer_ptr	dw
 
-FXHammerBank	equ	$10	; temporary value
-FXHammerData	equ	$4200
+section	"FX Hammer",ROMX,ALIGN[8]
+FXHammerData::
+	incbin	"sound/SFXData.bin"
 
-section	"FX Hammer",romx,bank[FXHammerBank]
-
+	
 SoundFX_Trig:
 	jp	FXHammer_Trig	; $404a
 SoundFX_Stop:
@@ -51,7 +51,7 @@ FXHammer_Trig:
 	ld	[hl+],a
 	xor	a
 	ld	[hl+],a
-	ld	a,$44
+	ld	a,HIGH(FXHammerData) + 2
 	add	e
 	ld	[hl],a
 	ret
@@ -127,7 +127,7 @@ FXHammer_Update:
 	ldh	[rNR21],a
 	inc	e
 	ld	a,[de]
-	ld	b,$42
+	ld	b,HIGH(FXHammerData)
 	ld	c,a
 	ld	a,[bc]
 	ldh	[$ff18],a
@@ -180,5 +180,4 @@ FXHammer_Update:
 	ld	[hl],a
 	ret
 	
-section	"FXHammer data",romx[FXHammerData],bank[FXHammerBank]
-	incbin	"sound/SFXData.bin"
+section	"FXHammer data",ROMX
