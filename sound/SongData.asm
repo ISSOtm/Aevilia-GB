@@ -898,7 +898,7 @@ ScareChord_CH4:
 
 ; ================================================================
 
-PT_NeoSafePlace	dw	NeoSafePlace_CH1,NeoSafePlace_CH2,NeoSafePlace_CH3,NeoSafePlace_CH4
+PT_NeoSafePlace	dw	NeoSafePlace_CH2,NeoSafePlace_CH1,NeoSafePlace_CH3,NeoSafePlace_CH4
 
 NeoSafePlace_CH1:
 	db	SetInsAlternate,id_Echo1,id_NeoEcho
