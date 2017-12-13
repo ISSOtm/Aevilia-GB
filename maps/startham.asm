@@ -412,18 +412,18 @@ PlayerJumpingAnimation::
 	anim_copy_tiles ShadowTile, 1, $7F, 1
 	anim_set_tiles 0, 2, $7F, 0
 	anim_set_pos 0, 2, 60, 60
-	anim_set_attribs 1, 1, $60, 0
+	anim_set_attribs 0, 2, $08, $60
 	
 	anim_set_loop_counter 8
 .movePlayerUp
 	anim_move_npc 0, -1, 0
-	delay 1
+	pause 1
 	anim_djnz_label .movePlayerUp
 	
 	anim_set_loop_counter 8
 .movePlayerDown
 	anim_move_npc 0, 1, 0
-	delay 1
+	pause 1
 	anim_djnz_label .movePlayerDown
 	done
 	
