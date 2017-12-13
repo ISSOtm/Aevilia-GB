@@ -179,5 +179,3 @@ FXHammer_Update:
 	add	[hl]
 	ld	[hl],a
 	ret
-	
-section	"FXHammer data",ROMX
