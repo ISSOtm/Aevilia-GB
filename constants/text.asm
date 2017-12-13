@@ -2,9 +2,9 @@
 
 ; --------- TEXT FLAGS ----------
 	enum_start
-	enum_elem TEXT_0_FLAG
-	enum_elem TEXT_1_FLAG
-	enum_elem TEXT_2_FLAG
+	enum_elem TEXT_UNUSED_FLAG
+	enum_elem TEXT_NO_FRAME_WAIT_FLAG
+	enum_elem TEXT_SAME_FRAME_FLAG
 	enum_elem TEXT_PIC_FLAG
 	enum_elem TEXT_ZERO_FLAG
 	enum_elem TEXT_PARITY_FLAG

@@ -97,19 +97,25 @@ ClearTextbox::
 	ld bc, BANK(TextboxBorderTiles) << 8 | 7
 	jp TransferTilesAcross
 	
+	
+	
 ProcessText_Hook::
 	ld b, c
 	ld h, d
 	ld l, e
 	
 ; Process the text pointed to by b:hl
-; Text is actually a byte stream, you should use the macros defined in text_constants.asm to build a text stream
+; Text is actually a byte stream, you should use the macros defined in constants/text.asm to build a text stream
 ProcessText::
 	push bc ; Save ROM bank
 	push hl ; Save read pointer
 	ld a, 1
 	call SwitchRAMBanks ; Switch to the text-related RAM bank
 	call ClearTextbox
+	ld hl, wTextFlags
+	res TEXT_NO_FRAME_WAIT_FLAG, [hl]
+.resetSameFrameFlag
+	res TEXT_SAME_FRAME_FLAG, [hl]
 .mainLoop
 	; Step 1 : copy data about to be processed
 	pop hl ; Retrieve read pointer
@@ -2072,7 +2078,7 @@ UpdateTextFlags::
 	ld b, a
 	ld hl, wTextFlags
 	ld a, [hl]
-	and (1 << TEXT_CARRY_FLAG) | (1 << TEXT_PIC_FLAG) ; Reset all flags, but preserve carry and pic flag
+	and $FF ^ (1 << TEXT_ZERO_FLAG | 1 << TEXT_PARITY_FLAG | 1 << TEXT_SIGN_FLAG) ; Reset all flags we're going to affect
 	ld [hl], a
 	
 	ld a, b ; Get accumulator value
