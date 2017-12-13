@@ -127,13 +127,13 @@ FXHammer_Update:
 	ldh	[rNR21],a
 	inc	e
 	ld	a,[de]
-	ld	b,HIGH(FXHammerData)
+	ld	b,high(FXHammerData)
 	ld	c,a
 	ld	a,[bc]
-	ldh	[$ff18],a
+	ldh	[rNR23],a
 	inc	c
 	ld	a,[bc]
-	ldh	[$ff19],a
+	ldh	[rNR24],a
 	jr	.jmp_40e9
 .jmp_40e5
 	inc	e
@@ -151,24 +151,24 @@ FXHammer_Update:
 	jr	nz,.jmp_4100
 	ld	[hl],1
 	ld	a,$08
-	ldh	[$ff21],a
+	ldh	[rNR42],a
 	ld	a,$80
-	ldh	[$ff23],a
+	ldh	[rNR44],a
 	jr	.jmp_4119
 .jmp_4100
 	ld	b,a
-	ldh	a,[$ff25]
+	ldh	a,[rNR51]
 	and	$77
 	or	b
-	ldh	[$ff25],a
+	ldh	[rNR51],a
 	inc	e
 	ld	a,[de]
-	ldh	[$ff21],a
+	ldh	[rNR42],a
 	inc	e
 	ld	a,[de]
-	ldh	[$ff22],a
+	ldh	[rNR43],a
 	ld	a,$80
-	ldh	[$ff23],a
+	ldh	[rNR44],a
 	inc	e
 	ld	l,low(FXHammer_ptr)
 	ld	[hl],e
