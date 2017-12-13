@@ -596,8 +596,7 @@ STATHandler::
 	ld a, BANK(FXHammer_Update)
 	ld [ROMBankLow], a
 	call FXHammer_Update
-	pop bc
-	pop de
+	
 	
 	ldh a, [hCurRAMBank]
 	push af
@@ -613,9 +612,6 @@ IF !DEF(GlitchMaps)
 	jr nc, .badThread2 ; Forbid invalid Thread 2 indexes
 ENDC
 	dec a ; Indexing thus starts at 1...
-	
-	push bc
-	push de
 	
 	ld b, a ; Save that index
 	ld a, BANK(Thread2Ptrs)
@@ -638,15 +634,14 @@ ENDC
 ;	ld [ROMBankLow], a
 	rst callHL
 	
-	pop de
-	pop bc
-	
 .noThread2
 	
 	pop af
 	ld [ROMBankLow], a
 	pop af
 	ld [rSVBK], a
+	pop bc
+	pop de
 	
 	ldh a, [hHDMALength] ; Check if HDMA was active
 	inc a
