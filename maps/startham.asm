@@ -397,3 +397,27 @@ StarthamDevEdTestScript::
 	print_line_id 8
 	delay 60
 	done
+	
+	
+SECTION "Player jumping animation", ROMX
+
+PlayerJumpingAnimation::
+	db 2
+	anim_copy_tiles wShadowTile, 1, $87F0
+	anim_set_tiles 0, 2, $7F, 0
+	anim_set_pos 0, 2, 60, 60
+	anim_set_attribs 1, 1, $60, 0
+	
+	anim_set_loop_counter 8
+.movePlayerUp
+	anim_move_npc 0, -1, 0
+	delay 1
+	anim_djnz_label .movePlayerUp
+	
+	anim_set_loop_counter 8
+.movePlayerDown
+	anim_move_npc 0, 1, 0
+	delay 1
+	anim_djnz_label .movePlayerDown
+	done
+	
