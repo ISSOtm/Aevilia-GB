@@ -387,6 +387,7 @@ StarthamDevEdTestScript::
 	text_lda_imm	2
 	text_sta	hScreenShakeAmplitude
 	play_sfx SFX_BATTLE_THUD
+	start_animation 0, PlayerJumpingAnimation
 	delay 16
 	text_lda_imm	0
 	text_sta	hScreenShakeAmplitude
@@ -408,7 +409,7 @@ SECTION "Player jumping animation", ROMX
 
 PlayerJumpingAnimation::
 	db 2
-	anim_copy_tiles wShadowTile, 1, $87F0
+	anim_copy_tiles ShadowTile, 1, $87F0, 1
 	anim_set_tiles 0, 2, $7F, 0
 	anim_set_pos 0, 2, 60, 60
 	anim_set_attribs 1, 1, $60, 0
