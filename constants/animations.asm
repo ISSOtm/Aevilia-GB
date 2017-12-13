@@ -75,8 +75,8 @@ ENDM
 ; Copies tiles to VRAM
 ; args : bank src bank dest len
 ; other syntax : src bank dest len (the src bank will be pulled from the label)
-; src and dest must be 16-byte aligned
-; len must be specified in tiles increments
+; src must be 16-byte aligned
+; dest and len must be specified in tiles increments
 anim_copy_tiles: MACRO
 	db ANIM_COPY_TILES
 	IF _NARG >= 5
