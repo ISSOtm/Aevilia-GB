@@ -166,17 +166,12 @@ ProcessText::
 	add hl, bc ; Move read pointer
 	push hl ; Save it
 	
-	; Step 5 : play animations
-	call PlayAnimations
-	call ExtendOAM
-	
+	; Step 5 : ensure at most one command is processed per frame, unless otherwise specified.
 	ld hl, wTextFlags
 	bit TEXT_SAME_FRAME_FLAG, [hl]
-	jr nz, .resetSameFrameFlag
+	jr nz, .resetSameFrameFlag ; "One-frame" flag must be reset if applied, even if "global" flag is set !!
 	bit TEXT_NO_FRAME_WAIT_FLAG, [hl]
 	jr nz, .mainLoop
-	
-	; Step 6 : ensure at most one command is processed per frame
 	rst waitVBlank
 	jr .mainLoop
 	

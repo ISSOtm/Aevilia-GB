@@ -385,22 +385,26 @@ STATHandler::
 	jr z, .waitHBlank ; If we're on the textbox's LY, it has priority
 	
 	; Then we have to perform a special effect
-	push bc
 	ld l, LOW(hSpecialEffectsBuf)
 	; Wait until HBlank so the effect won't nuke the current line
 	ld a, [hli] ; Get target
 	and a
 	jr z, .doneWithEffects
+	push bc
 	dec a
 	and 9
 	add LOW(rSCY)
 	ld c, a ; Get target in HRAM
-	ld a, [hli] ; Read value
+	ld a, [hl] ; Read value
+	ld l, LOW(rSTAT)
+.waitEffectHBlank
+	bit 1, [hl]
+	jr nz, .waitEffectHBlank
 	ld [c], a ; Write
+	pop bc
 .doneWithEffects
 	ldh a, [hTextboxLY] ; Make sure the textbox will render afterwards
 	ld [rLYC], a ; (the value is $FF is the textbox is de-activated, so no prob')
-	pop bc
 	ld hl, rSTAT
 	ld a, [rLY]
 	cp $8F
@@ -596,8 +600,7 @@ STATHandler::
 	ld a, BANK(FXHammer_Update)
 	ld [ROMBankLow], a
 	call FXHammer_Update
-	pop bc
-	pop de
+	
 	
 	ldh a, [hCurRAMBank]
 	push af
@@ -613,9 +616,6 @@ IF !DEF(GlitchMaps)
 	jr nc, .badThread2 ; Forbid invalid Thread 2 indexes
 ENDC
 	dec a ; Indexing thus starts at 1...
-	
-	push bc
-	push de
 	
 	ld b, a ; Save that index
 	ld a, BANK(Thread2Ptrs)
@@ -638,15 +638,14 @@ ENDC
 ;	ld [ROMBankLow], a
 	rst callHL
 	
-	pop de
-	pop bc
-	
 .noThread2
 	
 	pop af
 	ld [ROMBankLow], a
 	pop af
 	ld [rSVBK], a
+	pop bc
+	pop de
 	
 	ldh a, [hHDMALength] ; Check if HDMA was active
 	inc a

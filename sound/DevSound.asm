@@ -200,21 +200,11 @@ DevSound_Fade::
 ; ================================================================
 
 DevSound_Play:
-	; Since this routine is called during an interrupt (which may
-	; happen in the middle of a routine), preserve all register
-	; values just to be safe.
-	; Other registers are saved at `.doUpdate`.
-	push	af
 	ld	a,[SoundEnabled]
 	and	a
-	jr	nz,.doUpdate	; if sound is enabled, jump ahead
-	pop	af
-	ret
-	
-.doUpdate
+	ret	z				; if sound is disabled, don't do anything
 	push	bc
 	push	de
-	push	hl
 	; get song timer
 	ld	a,[GlobalTimer]	; get global timer
 	and	a				; is GlobalTimer non-zero?
@@ -2968,10 +2958,8 @@ CH4_UpdateRegisters:
 .done
 	
 DoneUpdatingRegisters:
-	pop	hl
 	pop	de
 	pop	bc
-	pop	af
 	ret
 
 ; ================================================================

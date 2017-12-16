@@ -651,7 +651,7 @@ ENDM
 
 ; end_animation textSlot
 end_animation: MACRO
-	db TEX_END_ANIM
+	db TEXT_END_ANIM
 ENDM
 
 
