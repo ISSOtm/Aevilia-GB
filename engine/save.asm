@@ -1568,6 +1568,11 @@ hram_block: MACRO
 	db \2
 ENDM
 
+flags_block: MACRO
+	dw (wFlags & $1FFF + 256 * \1) | (BANK(wFlags) << 13)
+	db 0 ; 256 bytes
+ENDM
+
 SaveBlocks::
 	; Bank 0
 	wram0_block wTargetWarpID, 2
@@ -1582,10 +1587,6 @@ SaveBlocks::
 	wramx_block wNPCArray, $90
 	wramx_block wNumOfNPCs, 1
 	
-flags_block: MACRO
-	dw (wFlags & $1FFF + 256 * \1) | (BANK(wFlags) << 13)
-	db 0 ; 256 bytes
-ENDM
 	enum_start
 REPT $10
 	flags_block enum_value
@@ -1595,13 +1596,3 @@ ENDR
 	
 	; Bank 1
 	dw 0 ; Terminate
-	
-ProgressTiles::
-	dw $0080, $0080, $0080, $0080, $0080, $0080, $0080, $0080
-	dw $00C0, $00C0, $00C0, $00C0, $00C0, $00C0, $00C0, $00C0
-	dw $00E0, $00E0, $00E0, $00E0, $00E0, $00E0, $00E0, $00E0
-	dw $00F0, $00F0, $00F0, $00F0, $00F0, $00F0, $00F0, $00F0
-	dw $00F8, $00F8, $00F8, $00F8, $00F8, $00F8, $00F8, $00F8
-	dw $00FC, $00FC, $00FC, $00FC, $00FC, $00FC, $00FC, $00FC
-	dw $00FE, $00FE, $00FE, $00FE, $00FE, $00FE, $00FE, $00FE
-	dw $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF, $00FF
