@@ -623,7 +623,7 @@ SelectFile:
 	and a
 	ld a, b
 	jr z, .notCompat
-	and $09 ; Only allow A and START
+	and $0D ; Only allow A, SELECT and START
 	; This prevents moving, acessing options, and outright performing the Konami Code (only the last input can be performed...)
 .notCompat
 	and a
