@@ -485,6 +485,12 @@ wNPCScriptsPointer::
 	
 SECTION "NPC counter", WRAMX,BANK[1]
 	
+wEmoteGfxID::
+	ds 1
+	
+wEmotePosition::
+	ds 1
+	
 ; Contains the number of NPCs (excluding NPC #0, which is always rendered)
 wNumOfNPCs::
 	ds 1
