@@ -1588,7 +1588,7 @@ SaveBlocks::
 	wramx_block wButtonLoadZones, 0
 	wramx_block wWalkInterCount, 7
 	wramx_block wNPCArray, $90
-	wramx_block wNumOfNPCs, 3
+	wramx_block wEmoteGfxID, 3
 	
 	enum_start
 REPT $10
