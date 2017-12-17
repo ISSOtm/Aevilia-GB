@@ -77,28 +77,6 @@ FileSelectOptions::
 	jr nz, .waitTextboxRose
 	inc [hl] ; Go past the window's normal boundary, which will make it continue rising
 	
-	; Perform rest of scrolling animation
-.scrollingLoop
-	rst waitVBlank
-	ld a, [hl]
-	cp TILE_SIZE * 14
-	jr c, .scrollingLoop
-	
-	; Keeping using the textbox system would require constantly overwriting wTextboxStatus,
-	; so instead we just move the window normally
-	; Besides, the textbox disables sprites, and we need one.
-	ld a, $1E
-	ldh [hWY], a
-	ld a, 7
-	ldh [hWX], a
-	
-	xor a ; Disable textbox trickery
-	ld [wTextboxStatus], a
-	inc a ; ld a, 1
-	ldh [hEnableWindow], a
-	ld [wNumOfSprites], a
-	ld [wTransferSprites], a
-	
 	ld hl, wVirtualOAM
 	ld a, $50
 	ld [hli], a
@@ -108,15 +86,37 @@ FileSelectOptions::
 	ld [hli], a
 	ld [hl], a
 	
-	ld a, $40
-	ld [wYPos], a
-	ld [wXPos], a
+	ld a, $1E
+	ldh [hWY], a
+	ld a, 7
+	ldh [hWX], a
+	
+	; Perform rest of scrolling animation
+.scrollingLoop
+	rst waitVBlank
+	ld a, [wTextboxStatus]
+	cp TILE_SIZE * 14
+	jr c, .scrollingLoop
+	
+	; Keeping using the textbox system would require constantly overwriting wTextboxStatus,
+	; so instead we just move the window normally
+	; Besides, the textbox disables sprites, and we need one.
+	xor a ; Disable textbox trickery
+	ld [wTextboxStatus], a
+	inc a ; ld a, 1
+	ldh [hEnableWindow], a
+	ld [wNumOfSprites], a
+	ld [wTransferSprites], a
 	
 	ld hl, CursorTile
 	ld de, $8010
 	ld bc, VRAM_TILE_SIZE
 	ld a, BANK(CursorTile)
 	call CopyAcrossToVRAM
+	
+	ld a, $40
+	ld [wYPos], a
+	ld [wXPos], a
 	
 	; Clear the area under the window
 	xor a
@@ -414,17 +414,8 @@ FileSelectOptions_Copy:
 .done
 	jp FileSelectOptions
 	
+	
 FileSelectOptionsEnd:
-	xor a
-	ld [wNumOfSprites], a
-	ld hl, $98C1
-	ld c, a ; ld c, 0
-	call FillVRAMLite
-	
-	ldh [hEnableWindow], a ; Disable "normal" window
-	ld a, $F2
-	ld [wTextboxStatus], a ; Make window begin its descent, the rest will be handled automatically.
-	
 DrawFileSelect::
 	; Clean up
 	ld c, $81
@@ -495,6 +486,18 @@ DrawFileSelect::
 	dec b
 	jr nz, .printSaveFilesLoop
 .donePrinting
+
+	ldh a, [hEnableWindow]
+	and a
+	jr z, .optionsNotShown
+	xor a
+	ldh [hEnableWindow], a ; Disable "normal" window
+	ld [wNumOfSprites], a
+	ld a, $F6
+	ld [wTextboxStatus], a ; Make window begin its descent, the rest will be handled automatically.
+	ld [wTransferSprites], a
+	rst waitVBlank
+.optionsNotShown
 	
 	; Copy tile used for corners
 	ld hl, SaveFileCornerTile
