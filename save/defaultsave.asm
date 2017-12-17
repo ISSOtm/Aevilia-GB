@@ -59,9 +59,12 @@ DefaultNPCArray:
 	db 0 ; wNPC0_xdispl
 	
 ; wNPC1_ypos to wNPC8_xdispl
-REPT 8 ; 8 NPCs
-	dbfill $10, 0 ; 1 NPC = $10 bytes
-ENDR
+	dbfill 8 * $10, 0 ; 1 NPC = $10 bytes
+	
+DefaultNumOfNPCs::
+	db 0 ; wNumOfNPCs
+	db $7F ; wEmoteGfxID
+	db 0 ; wEmotePosition
 
 DefaultFlags:
 	dbfill $1000, 0
