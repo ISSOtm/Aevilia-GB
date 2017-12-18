@@ -753,6 +753,8 @@ SetTextLoopCounter::
 	ld a, [wDigitBuffer + 1] ; Get counter
 	ld [wTextLoopCounter], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2 ; Consumed command byte + counter byte
 	ret
 	
@@ -765,21 +767,32 @@ CopyTextLoopCounter::
 	ld a, [hl]
 	ld [wTextLoopCounter], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3 ; Consumed command byte + counter pointer
 	ret
 	
 TextDjnz::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld a, 2 ; Consumed command byte + offset
 	ld hl, wTextLoopCounter
 	dec [hl]
 	ret z ; Done decrementing, no jr. Already set consumed bytes!
 	
 TextJR::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld a, [wDigitBuffer + 1] ; Get offset
 	; Say it's the number of bytes we consumed
 	ret
 	
 TextJR_Conditional::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld hl, wDigitBuffer
 	ld a, [hli]
 	sub TEXT_JR_NC - 2 ; So b will be at least 1 (if conditional is correct, though)
@@ -1304,6 +1317,8 @@ TextLDA::
 	ld a, [hl]
 	ld [wTextAcc], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -1311,6 +1326,8 @@ TextLDA_imm8::
 	ld a, [wDigitBuffer + 1]
 	ld [wTextAcc], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	
@@ -1323,6 +1340,8 @@ TextSTA::
 	ld a, [wTextAcc]
 	ld [hl], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -1455,6 +1474,9 @@ TextToggleFlags::
 	xor [hl]
 TextFlagOpsCommon:
 	ld [hl], a
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 1
 	ret
 	
@@ -1555,6 +1577,8 @@ UpdateTextFlags::
 	set TEXT_SIGN_FLAG, [hl]
 .positive
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 1
 	ret
 	
@@ -1562,6 +1586,9 @@ UpdateTextFlags::
 TextRAMBankswitch::
 	ld a, [wDigitBuffer + 1]
 	call SwitchRAMBanks
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	
@@ -1605,18 +1632,27 @@ TextWaitSFX::
 	ld a, [de]
 	and 2
 	jr nz, .wait
+	
 	inc a
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ret
 	
 TextPlaySFX::
 	ld a, [wDigitBuffer + 1]
 	ld c, a
 	callacross FXHammer_Trig
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	
 TextStopSFX::
 	callacross FXHammer_Stop
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 1
 	ret
 	
@@ -1652,7 +1688,9 @@ TextGetFlag::
 	ld e, a
 	call GetFlag
 	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
+	
 	res TEXT_ZERO_FLAG, [hl]
 	ret c ; If the flag is set, then it's NZ
 	set TEXT_ZERO_FLAG, [hl]
@@ -1664,6 +1702,9 @@ TextSetFlag::
 	ld d, [hl]
 	ld e, a
 	call SetFlag
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -1673,6 +1714,9 @@ TextResetFlag::
 	ld d, [hl]
 	ld e, a
 	call ResetFlag
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -1702,6 +1746,9 @@ TextLoadMap::
 	
 	
 TextStartAnim::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld hl, wDigitBuffer + 1
 	ld a, [hli]
 	ld c, a
@@ -1726,6 +1773,9 @@ TextStartAnim::
 	ret
 	
 TextEndAnim::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld a, [wDigitBuffer + 1]
 	and $07
 	ld l, a
