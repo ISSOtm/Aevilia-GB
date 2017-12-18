@@ -2256,10 +2256,10 @@ TextStartAnim::
 	push hl
 	call StartAnimation
 	pop hl
+	jr z, .allocationFailed
 	ld l, [hl]
 	ld h, 0
 	ld de, wTextAnimationSlots
-	jr z, .allocationFailed
 	add hl, de
 	ld a, [wNumOfAnimations]
 	ld [hl], a
@@ -2282,4 +2282,18 @@ TextEndAnim::
 	dec b
 	call nz, EndAnimation
 	ld a, 1
+	ret
+	
+	
+TextPlayAnims::
+	
+	
+	ld hl, wAnimation0_linkID
+	ld b, 8
+	ld de, 8
+.unfreezeAnims
+	res 4, [hl]
+	add hl, de
+	dec b
+	jr nz, .unfreezeAnims
 	ret
