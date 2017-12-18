@@ -1294,11 +1294,32 @@ SECTION "Emote graphics", ROMX,ALIGN[4]
 	
 EmoteTiles::
 
-TestEmoteTiles::
-	dw $0303, $0F0C, $1F10, $1F10, $3F20, $3F20, $3F20, $3F20
-	dw $3F20, $1F10, $1F1A, $253F, $1E19, $0F0E, $0F09, $0606
-	dw $C0C0, $F030, $F808, $F808, $FC04, $FC04, $FC04, $FC04
-	dw $FC04, $F808, $F858, $A4FC, $7898, $F070, $F090, $6060
+BlankEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $80FF, $80FF, $80FF, $80FF, $80FF
+	dw $80FF, $80FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $01FF, $01FF, $01FF, $01FF, $01FF
+	dw $01FF, $01FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+HappyEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $94FF, $80FF, $80FF, $80FF
+	dw $88FF, $87FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $11FF, $29FF, $01FF, $01FF, $01FF
+	dw $11FF, $E1FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+NeutralEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $88FF, $88FF, $80FF, $80FF
+	dw $88FF, $87FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $11FF, $11FF, $11FF, $01FF, $01FF
+	dw $11FF, $E1FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+SadEmoteTiles::
+	dw $
+	
+SadderEmoteTiles::
+	dw $
+	
+SurprisedEmoteTiles::
+	dw $
 	
 	
 SECTION "Strings and text", ROMX,BANK[1]

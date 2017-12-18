@@ -291,8 +291,8 @@ InteriorChairDarkPalette::
 	db $00, $00, $00
 	
 	
-TestEmotePalette::
+EmotePalette::
 	db $1F, $1F, $1F
-	db $10, $10, $10
+	db $1F, $00, $00
 	db $00, $00, $00
 	

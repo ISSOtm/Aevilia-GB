@@ -1691,6 +1691,7 @@ ENDR
 	cp $FE
 	jp z, .emoteNotPresent
 	
+	add a, a
 	add a, LOW(.emoteTilesPtrs)
 	ld l, a
 	adc a, HIGH(.emoteTilesPtrs)
@@ -1818,11 +1819,23 @@ ENDR
 	
 	
 .emoteTilesPtrs
-	dw TestEmoteTiles
-	dw TestEmotePalette
+	dw BlankEmoteTiles
+	dw EmotePalette
 	
-	dw TestEmoteTiles
-	dw TestEmotePalette
+	dw HappyEmoteTiles
+	dw EmotePalette
+	
+	dw NeutralEmoteTiles
+	dw EmotePalette
+	
+	dw SadEmoteTiles
+	dw EmotePalette
+	
+	dw SadderEmoteTiles
+	dw EmotePalette
+	
+	dw SurprisedEmoteTiles
+	dw EmotePalette
 	
 	
 ; Get NPC #a's offset from the camera
