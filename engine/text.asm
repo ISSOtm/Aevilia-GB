@@ -2124,6 +2124,8 @@ EndTextWithoutClosing:: ; To do so, bypasses the end of ProcessText and directly
 TextFadeMusic::
 	ld a, [wDigitBuffer + 1]
 	call DS_Fade
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	

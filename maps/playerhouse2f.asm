@@ -163,8 +163,8 @@ TestIntroCutscene::
 	text_lda_imm DIR_DOWN
 	text_sta wPlayerDir
 	gfx_fadein
-	play_music MUSIC_SAFE_PLACE
 	fade_music MUSICFADE_IN
+	play_music MUSIC_SAFE_PLACE
 	delay 30
 	make_player_walk DIR_DOWN | ROTATE_45 | ROTATE_CW, 19, 1
 	delay 10
