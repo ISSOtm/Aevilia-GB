@@ -1,6 +1,7 @@
 
 INCLUDE "constants/animations.asm"
 INCLUDE "constants/constants.asm"
+INCLUDE "constants/emotes.asm"
 INCLUDE "constants/flags.asm"
 INCLUDE "constants/maps.asm"
 INCLUDE "constants/memory.asm"
