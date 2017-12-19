@@ -51,7 +51,10 @@ v1Tiles0::
 vPlayerWalkingTiles::
 	dtile 4 * 3
 	
-	dtile 116
+	dtile 112
+	
+vEmoteTiles::
+	dtile 4
 	
 v1Tiles1::
 	dtile $80

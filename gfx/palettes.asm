@@ -290,3 +290,9 @@ InteriorChairDarkPalette::
 	db $13, $04, $10
 	db $00, $00, $00
 	
+	
+EmotePalette::
+	db $1F, $1F, $1F
+	db $1F, $00, $00
+	db $00, $00, $00
+	

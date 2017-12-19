@@ -77,6 +77,9 @@ ENDC
 .sameMusic
 	
 	callacross Fadeout
+	ldh a, [hGFXFlags]
+	set 6, a
+	ldh [hGFXFlags], a
 	
 	xor a
 	ldh [hThread2ID], a ; Avoid race conditions while loading the map
@@ -515,6 +518,9 @@ ENDC
 	call DS_Init
 .stillSameMusic
 	
+	ldh a, [hGFXFlags]
+	res 6, a
+	ldh [hGFXFlags], a
 	callacross Fadein
 	xor a
 	ld [wFadeSpeed], a
@@ -821,6 +827,9 @@ LoadTileset::
 	
 	; Insert more code here
 	; (If so, uncomment the above block of code and the corresponding one above)
+	
+	ld hl, wEmoteGfxID
+	res 7, [hl]
 	
 	restore_rom_bank
 	pop hl
@@ -1665,18 +1674,173 @@ ENDR
 	sub c
 	jp nz, .processNPC ; Too far to jr...
 	
-	inc a
-	ld [wTransferSprites], a
 	; Now, we set the number of sprites...
 	ld a, e
 	rra
 	and a
 	rra
 	ld [wNumOfSprites], a
+	
+	ld hl, wEmoteGfxID
+	ld a, [hli]
+	inc a
+	jr z, .unloadEmote
+	dec a
+	add a, a
+	jr c, .emoteGfxLoaded
+	cp $FE
+	jp z, .emoteNotPresent
+	
+	add a, a
+	add a, LOW(.emoteTilesPtrs)
+	ld l, a
+	adc a, HIGH(.emoteTilesPtrs)
+	sub l
+	ld h, a
+	ld a, [hli]
+	push hl
+	ld h, [hl]
+	ld l, a
+	ld de, vEmoteTiles
+	ld bc, BANK(EmoteTiles) << 8 | 4
+	ld a, BANK(vEmoteTiles)
+	ld [rVBK], a
+	call TransferTilesAcross
+	xor a
+	ld [rVBK], a
+	pop hl
+	inc hl
+	ld a, [hli]
+	ld e, a
+	ld d, [hl]
+	ld c, 7
+	callacross LoadOBJPalette_Hook
+	
+	ld hl, wEmoteGfxID
+	; Mark emote gfx as loaded
+	ld a, [hl]
+	set 7, a
+	ld [hli], a
+.emoteGfxLoaded
+	ld a, [hl] ; Get emote position
+	ld hl, wTempBuf
+	bit 7, a
+	jr nz, .atScreenBottom
+	; Attached to a NPC
+	and $0F
+	call GetNPCOffsetFromCam
+	ld bc, TILE_SIZE * 2
+	ld a, [de]
+	ld h, a
+	dec de
+	ld a, [de]
+	ld l, a
+	add hl, bc
+	ld a, h
+	and a
+	jr nz, .noEmote
+	ld a, l
+	cp (SCREEN_WIDTH + 2) * TILE_SIZE
+	jr nc, .noEmote
+	sub TILE_SIZE
+	ld c, a
+	
+	dec de
+	ld a, [de]
+	and a
+	jr nz, .noEmote
+	dec de
+	ld a, [de]
+	cp SCREEN_HEIGHT * TILE_SIZE
+	jr c, .gotCoords
+	ld a, [wEmotePosition]
+	; If bit 6 is set, the emote should stick to the bottom of the screen
+	; even if the NPC is below the screen (except if it's further away than 256 pixels)
+	bit 6, a
+	jr nz, .stickyBottom
+	ld a, [de]
+	cp (SCREEN_HEIGHT + 2) * TILE_SIZE
+	jr c, .gotCoords
+	jr .noEmote
+	
+.unloadEmote
+	dec hl
+	ld [hl], $7F
+	jr .noEmote
+	
+.atScreenBottom
+	and $7F
+	add a, TILE_SIZE * 2
+	ld c, a
+.stickyBottom
+	ld a, SCREEN_HEIGHT * TILE_SIZE
+	
+.gotCoords
+	ld b, a
+	ld hl, wVirtualOAM
+	ld de, $7C << 8 | LOW(TILE_SIZE)
+.drawEmote
+	ld a, b
+	ld [hli], a
+	ld a, c
+	ld [hli], a
+	ld a, d
+	ld [hli], a
+	ld a, $0F
+	ld [hli], a
+	
+	ld a, b
+	add a, e
+	ld b, a
+	jr nc, .dontMoveHoriz
+	ld a, c
+	add a, TILE_SIZE
+	ld c, a
+.dontMoveHoriz
+	ld a, e
+	cpl
+	inc a
+	ld e, a
+	inc d
+	ld a, d
+	cp $80
+	jr nz, .drawEmote
+	jr .emoteNotPresent
+	
+.noEmote
+	xor a
+	ld hl, wVirtualOAM
+	ld c, 4 * OAM_SPRITE_SIZE
+	rst fill
+.emoteNotPresent
+	ld a, 1
+	ld [wTransferSprites], a
 	ret
 	
 	
+.emoteTilesPtrs
+	dw BlankEmoteTiles
+	dw EmotePalette
+	
+	dw HappyEmoteTiles
+	dw EmotePalette
+	
+	dw NeutralEmoteTiles
+	dw EmotePalette
+	
+	dw SadEmoteTiles
+	dw EmotePalette
+	
+	dw SadderEmoteTiles
+	dw EmotePalette
+	
+	dw SurprisedEmoteTiles
+	dw EmotePalette
+	
+	
 ; Get NPC #a's offset from the camera
+; Returns with de = wTempBuf + 3 and bc = wCameraXPos + 1
+; Destroys all registers
 GetNPCOffsetFromCam::
 	add a, a
 	add a, a

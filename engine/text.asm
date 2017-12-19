@@ -265,160 +265,6 @@ TextCommandsPointers::
 	dw TextStartAnim
 	dw TextEndAnim
 	
-	
-; A clone of ProcessText, but for the battle engine!
-; Process the text pointed to by c:de
-; Text stream is the same as ProcessText, but :
-;  - Some commands will act differently
-;  - Some commands are effectively NOPs of varying sizes
-; This notably due to not having any textbox anymore - and thus not having to deal with it anyways
-ProcessBattleText::
-	ld b, a
-	ld h, d
-	ld l, e
-	push bc ; Save ROM bank
-	push hl ; Save read pointer
-	ld a, 1
-	call SwitchRAMBanks ; Switch to the text-related RAM bank
-	call ClearBattleTextbox
-.mainLoop
-	; Step 1 : copy data about to be processed
-	pop hl ; Retrieve read pointer
-	pop bc ; Retrieve ROM bank
-	push bc ; Place them back
-	push hl ; Not using "inc sp"s, because if a handler fires right now the stack is modified :P
-	ld de, wDigitBuffer
-	ld c, 5
-	call CopyAcrossLite ; Copy next 5 bytes for command to analyze
-	
-	; Step 2 : process copied data
-	ld hl, wDigitBuffer
-	ld a, [hli] ; Get command ID
-	; Check if ID is invalid (out of bounds)
-	; Also means we can't lose MSB on later "add a, a"
-	cp INVALID_TXT_COMMAND
-	; Print error message and end text
-	jr nc, .printErrorAndEnd
-	; Check if command is #0
-	and a
-	; End text normally if so
-	jr z, .end
-	
-	; Step 3 : run text command
-	; Get operation ID, we just ensured it is valid
-	add a, a ; Double a (MSB can only be zero because of above check :)
-	ld hl, BattleTextCommandsPointers - 2 ; - 2 because first offset is for a = 1
-	add a, l
-	ld l, a
-	jr nc, .noCarry1
-	inc h
-.noCarry1
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	rst callHL ; Call appropriate command
-	; Should return number of bytes consumed in a
-	
-	; Step 4 : prepare next call
-	pop hl ; Get read pointer back
-	; Put offset in bc
-	ld c, a
-	; Make b = 0 if c >= 0, and b = $FF if c < 0
-	rla ; Move MSB (sign bit) into carry
-	sbc a, a ; a <- a - a - carry : 0 if carry isn't set, $FF if set. Neat!
-	ld b, a
-	; bc now contains our movement offset
-	add hl, bc ; Move read pointer
-	push hl ; Save it
-	
-	; Step 5 : ensure at most one command is processed per frame
-	rst waitVBlank
-	jr .mainLoop
-	
-.printErrorAndEnd
-	debug_message "INVALID TEXT COMMAND $%A%"
-	call ClearBattleTextbox
-	ld hl, TextErrorStr
-	ld b, BANK(TextErrorStr)
-	call PrintKnownPointer ; Print text error string
-	ld bc, 40 ; Wait for user to read
-	call DelayBCFrames
-.end
-	add sp, 4 ; Free top 2 stack entries, they contain read pointer and ROM bank
-	ret
-	
-	
-	
-BattleTextCommandsPointers::
-	dw ClearBattleText
-	dw BattleDummy_4Bytes
-	dw BattlePrintName ; TODO
-	dw WaitForButtonPress
-	dw BattlePrintLine ; TODO
-	dw BattlePrintEmptyLine ; TODO
-	dw DelayNFrames
-	dw SetTextLoopCounter
-	dw CopyTextLoopCounter
-	dw TextDjnz
-	dw BattleDisplayNumber ; TODO
-	dw BattleDummy_1Byte
-	dw BattleDummy_1Byte
-	dw BattleDummy_1Byte
-	dw BattleDummy_1Byte
-	dw BattleDummy_5Bytes
-	dw BattleDummy_5Bytes
-	dw BattleDummy_4Bytes
-	dw BattleDummy_5Bytes
-	dw BattleMakeChoice ; TODO
-	dw BattleMakeChoice ; Difference between commands handled by function itself
-	dw SetFadeSpeed
-	dw Fadein_TextWrapper
-	dw Fadeout_TextWrapper
-	dw ReloadPalettes_TextWrapper
-	dw TextLDA
-	dw TextLDA_imm8
-	dw TextSTA
-	dw TextCMP
-	dw TextDEC
-	dw TextINC
-	dw TextADD
-	dw TextADC
-	dw TextADD_mem
-	dw TextSBC
-	dw TextSUB_mem
-	dw TextSetFlags
-	dw TextToggleFlags
-	dw TextCallFunc
-	dw InstantPrintLines
-	dw ReloadTextFlags
-	dw TextJR
-	dw TextJR_Conditional ; nc
-	dw TextJR_Conditional ; c
-	dw TextJR_Conditional ; p
-	dw TextJR_Conditional ; n
-	dw TextJR_Conditional ; pe
-	dw TextJR_Conditional ; po
-	dw TextJR_Conditional ; nz
-	dw TextJR_Conditional ; z
-	dw TextRAMBankswitch
-	dw TextAND
-	dw TextOR
-	dw TextXOR
-	dw TextBIT
-	dw EndTextWithoutClosing
-	dw TextFadeMusic
-	dw TextPlayMusic
-	dw TextStopMusic
-	dw OverrideTextboxPalette
-	dw CloseTextbox
-	dw TextGetFlag
-	dw TextSetFlag
-	dw TextResetFlag
-	dw TextToggleFlag
-	dw TextLoadMap
-	dw TextStartAnim
-	dw TextEndAnim
-	
 TextErrorStr::
 	db "TEXT ERROR."
 EmptyStr::
@@ -469,40 +315,6 @@ ClearText::
 	; a is nonzero
 	rst fill ; Mark rows as dirty
 	
-	; Consumed one byte
-	ret
-	
-	
-; Clears the whole battle textbox
-ClearBattleTextbox::
-	ld hl, wFixedTileMap + 1
-	ld a, 1
-	ld c, SCREEN_WIDTH - 2
-	rst fill
-	ld [wTransferRows + 5], a
-	
-; Clears all three textbox lines
-ClearBattleText::
-	ld hl, wFixedTileMap + SCREEN_WIDTH + 1
-	xor a
-	ld [wNumOfPrintedLines], a
-	ld b, SCREEN_WIDTH - 2
-	; Clear all 3 text rows
-	ld c, b
-	rst fill
-	inc hl
-	inc hl
-	ld c, b
-	rst fill
-	inc hl
-	inc hl
-	ld c, b
-	rst fill
-	
-	ld hl, wTransferRows + 6
-	ld c, 3
-	inc a ; a = $01
-	rst fill
 	; Consumed one byte
 	ret
 	
@@ -566,7 +378,6 @@ PrintPic::
 	ld c, 4
 	rst fill
 	
-BattleDummy_4Bytes::
 	ld a, 4 ; Consumed command byte + bank byte + pic ptr
 	ret
 	
@@ -618,23 +429,6 @@ PrintNameAndWaitForTextbox::
 	ld [hl], a ; Make textbox begin to appear
 .textboxAlreadyUp
 	call WaitForTextbox
-	
-	ld a, 4 ; Consumed command byte + bank byte + name ptr
-	ret
-	
-; Prints the name
-BattlePrintName::
-	ld hl, wDigitBuffer + 1
-	ld a, [hli] ; Get bank
-	ld b, a
-	ld a, [hli] ; Get pointer
-	ld h, [hl]
-	ld l, a
-	ld de, wTextboxName
-	call CopyStrAcross
-	
-	ld a, 1 ; Ask to transfer row
-	ld [wTransferRows], a
 	
 	ld a, 4 ; Consumed command byte + bank byte + name ptr
 	ret
@@ -935,212 +729,12 @@ PrintKnownPointer::
 	pop hl
 	ret
 	
-	
-; Prints a line of text
-BattlePrintLine::
-	ld hl, wDigitBuffer + 1
-	ld a, [hli] ; Get source bank
-	ld b, a
-	ld a, [hli] ; Get pointer
-	ld h, [hl]
-	ld l, a
-	call BattlePrintKnownPointer
-	
-	ld a, 4 ; Consumed command byte + bank byte + str ptr
-	ret
-	
-; Use this hook when "callacross"-ing BattlePrintKnownPointer ; put the print pointer in de instead of hl, and the bank in c instead of b
-BattlePrintKnownPointer_Hook::
-	ld h, d
-	ld l, e
-	ld b, c
-	
-BattlePrintKnownPointer::
-	ld a, [wNumOfPrintedLines]
-	and 3
-	cp 3
-	jp c, .printNewLine ; Too far to jr
-	
-	push hl ; Save read pointer
-	push bc ; Save bank
-	
-	ld b, 0
-.scrollLoop
-	rst waitVBlank
-	
-	ld a, [rWY] ; Calc scanline on which scroll will happen
-	add a, 15
-	cp $8F ; Check if it's displayed
-	jr nc, .effectIsOffscreen
-	ld c, a
-	
-	ld a, [rLCDC]
-	and $FD ; Reset "OBJ ON" bit to make sure not do display sprites on the last 8 scanlines
-	ld e, a ; Save LCDC for later restoring
-	ld hl, rWY ; Will be used for later writing
-	ld a, b
-	sub [hl]
-	ld d, a ; Precalc target SCY value
-	ld l, rSCX & $FF ; hl = rSCX
-.waitUntilText
-	ld a, [rLY]
-	cp c
-	jr c, .waitUntilText
-	
-	; Scroll register writes will be ignored until next line
-	; Values will be restored by VBlank handler (wSCY, wSCX, wTileMapMode, etc.)
-	xor a
-	ld [hld], a ; Write to SCX
-	ld [hl], d ; Write precalc'd value to SCY
-	
-.waitUntilLineEnds
-	rst isVRAMOpen
-	jr nz, .waitUntilLineEnds
-	
-	; Writing while the tilemap is transferred seems to cause graphical issues
-	ld a, $89
-	ld [rLCDC], a
-	
-	ld a, c
-	sub b
-	add a, 3 * 8 + 1
-	cp $90
-	jr c, .noCap
-	ld a, $8F
-.noCap
-	
-	ld c, a
-.waitUntilTextBottom
-	ld a, [rLY]
-	cp c
-	jr c, .waitUntilTextBottom
-	
-	ld a, 119
-	add a, b
-	ld [hl], a ; Force current "window" line to be 7th, since it should be blank
-	
-.blankUnderText
-	rst isVRAMOpen
-	jr z, .blankUnderText
-.waitLineEnd
-	rst isVRAMOpen
-	jr nz, .waitLineEnd
-	
-	dec [hl]
-	ld a, [rLY]
-	cp $8F
-	jr c, .blankUnderText
-	
-	ld a, e
-	ld [rLCDC], a
-	
-.effectIsOffscreen
-	ld a, b
-	cp 8
-	jr nz, .scrollLoop
-	
-	; Now we're going to race the beam. Goal : have the text box set up by the time it's rendered.
-	ld hl, $90A0
-	ld de, $9070
-	ld c, $10 * 6
-	call CopyToVRAMLite
-	ld l, e
-	dec h
-	ld c, $30
-	xor a
-	call FillVRAMLite
-	
-	ld hl, wTextboxLine2
-	ld de, wTextboxLine1
-	ld bc, wTextboxLine0
-.moveLines
-	ld a, [de]
-	ld [bc], a
-	inc bc
-	ld a, [hl]
-	ld [de], a
-	inc de
-	xor a
-	ld [hli], a
-	ld a, c
-	cp $54
-	jr nz, .moveLines
-	
-	ld hl, wTextboxLine0
-	ld de, vTextboxLine0
-.commitLines
-	ld c, 15
-	call CopyToVRAMLite
-	ld a, l
-	add a, 5
-	ld l, a
-	ld a, e
-	add a, $20 - 15
-	ld e, a
-	cp $A5
-	jr nz, .commitLines
-	
-	pop bc ; Retrieve bank
-	; Print at last line
-	ld de, wTextboxLine2
-	pop hl ; Get back read pointer
-	jr .printLine
-	
-.printNewLine
-	inc a
-	ld [wNumOfPrintedLines], a
-	ld de, wTextboxLine0 - SCREEN_WIDTH
-	ld c, a
-.calcDest
-	ld a, SCREEN_WIDTH
-	add a, e
-	ld e, a ; Cannot overflow
-	dec c
-	jr nz, .calcDest
-	
-.printLine
-	; Copy string across banks (b preserved thus far :D)
-	push de
-	call CopyStrAcross
-	ld d, h ; Get after-copy hl
-	ld e, l
-	pop hl
-	push de ; Save for later
-	ld d, vTextboxLine0 >> 8
-	ld a, [wNumOfPrintedLines]
-	and 3
-	inc a
-	add a, a ; Mult by 2
-	swap a ; Mult by 16 (since original 4 upper bits are zero)
-	add a, 5 ; Add pic offset
-	ld e, a
-	
-.printLoop
-	rst waitVBlank
-	ld a, [hli]
-	ld [de], a
-	inc de
-	and a
-	jr nz, .printLoop
-	ld d, h
-	ld e, l
-	pop hl
-	ret
-	
 PrintEmptyLine::
 	ld hl, EmptyStr
 	ld b, BANK(EmptyStr)
 	call PrintKnownPointer
 	
-BattleDummy_1Byte::
 	ld a, 1 ; Consumed command byte
-	ret
-	
-BattlePrintEmptyLine::
-	ld hl, EmptyStr
-	ld b, BANK(EmptyStr)
-	call BattlePrintKnownPointer
-	ld a, 1
 	ret
 	
 	
@@ -1159,6 +753,8 @@ SetTextLoopCounter::
 	ld a, [wDigitBuffer + 1] ; Get counter
 	ld [wTextLoopCounter], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2 ; Consumed command byte + counter byte
 	ret
 	
@@ -1171,21 +767,32 @@ CopyTextLoopCounter::
 	ld a, [hl]
 	ld [wTextLoopCounter], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3 ; Consumed command byte + counter pointer
 	ret
 	
 TextDjnz::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld a, 2 ; Consumed command byte + offset
 	ld hl, wTextLoopCounter
 	dec [hl]
 	ret z ; Done decrementing, no jr. Already set consumed bytes!
 	
 TextJR::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld a, [wDigitBuffer + 1] ; Get offset
 	; Say it's the number of bytes we consumed
 	ret
 	
 TextJR_Conditional::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld hl, wDigitBuffer
 	ld a, [hli]
 	sub TEXT_JR_NC - 2 ; So b will be at least 1 (if conditional is correct, though)
@@ -1238,55 +845,6 @@ DisplayNumber::
 	; hl contains remainder ; it cannot be invalid (except if I coded my divide function badly :P)
 	ld a, l
 	add a, "0" ; Add tile offset...
-	dec de ; Write to digit buffer
-	ld [de], a
-	
-	; Get hl / de back into hl, making sure it's not 0
-	ld h, b
-	ld l, c
-	
-	ld a, b
-	or c
-	jr nz, .loop ; If we printed all digits then it's done
-	
-	; de points to first digit
-	call PrintKnownPointer_Hook ; Setting b is pointless, we're in WRAM :D
-	
-	ld a, 4 ; Consumed command byte + display type byte + display ptr
-	ret
-	
-BattleDisplayNumber::
-	ld hl, wDigitBuffer + 1
-	ld a, [hli] ; Get display type
-	and a ; Check whether we display a byte or a word
-	
-	ld a, [hli] ; Get pointer
-	ld e, a
-	ld d, [hl]
-	
-	ld h, 0
-	jr z, .byte ; Z hasn't changed since "and a"
-	ld a, [de] ; Word? Get high byte!
-	ld h, a ; Also overwrite b, which was 1
-	inc de
-.byte
-	ld a, [de]
-	ld l, a
-	
-	xor a
-	ld de, wDigitBuffer + 4 ; Write destination
-	ld [de], a ; Make sure to terminate the string
-.loop
-	push de ; Save write offset
-	ld de, 10
-	call DivideHLByDE_KnownDE ; DE is known, skip the "divide by zero" check
-	add hl, de ; Get remainder in hl
-	pop de ; Get write offset back
-	
-	; hl contains remainder ; it cannot be invalid (except if I coded my divide function badly :P)
-	ld a, l
-	add a, "0" ; Add tile offset...
-.unknownDigit
 	dec de ; Write to digit buffer
 	ld [de], a
 	
@@ -1612,7 +1170,6 @@ TextMoveEntity_Common:
 	ld [hl], 0
 	call ProcessNPCs
 	
-BattleDummy_5Bytes::
 	ld a, 5
 	ret
 	
@@ -1724,96 +1281,6 @@ ENDR
 	ld a, [wDigitBuffer + 4]
 	ret
 	
-BattleMakeChoice::
-	ld hl, wDigitBuffer + 1
-	ld b, [hl]
-	inc hl
-	ld a, [hli]
-	ld h, [hl]
-	ld l, a
-	ld de, wTextboxLine2 + 1
-	call CopyStrAcross
-	xor a
-	ld [de], a
-	inc de
-	call CopyStrAcross
-	
-	ld hl, wTextboxLine2
-	ld de, vTextboxLine2
-	ld [hl], CURSOR_TILE
-.drawChoiceText1
-	rst waitVBlank
-	ld a, [hli]
-	ld [de], a
-	inc de
-	and a
-	jr nz, .drawChoiceText1
-	
-	push hl
-	ld [de], a
-	inc hl
-	inc de
-	
-.drawChoiceText2
-	rst waitVBlank
-	ld a, [hli]
-	ld [de], a
-	inc de
-	and a
-	jr nz, .drawChoiceText2
-	
-	pop hl
-	
-.loop
-	rst waitVBlank
-	ldh a, [hPressedButtons]
-	rrca
-	jr c, .done
-	rrca
-	jr nc, .checkDirections
-	ld b, a
-	ld a, [wDigitBuffer]
-	cp MAKE_B_CHOICE
-	ld a, b
-	jr nz, .checkDirections
-	
-	ld a, CURSOR_TILE
-	ld [hl], a
-	ld [wTransferRows + 4], a
-	xor a
-	ld [wTextboxLine2], a
-REPT 4
-	rst waitVBlank
-ENDR
-	jr .done
-	
-.checkDirections
-	and $30 >> 2
-	jr z, .loop
-	ld [wTransferRows + 4], a ; Next VBlank won't trigger soon, so this is ok
-	and $20 >> 2
-	jr nz, .goingLeft
-	ld [hl], CURSOR_TILE
-	xor a
-	jr .writeOtherCursor
-.goingLeft
-	ld [hl], 0
-	ld a, CURSOR_TILE
-.writeOtherCursor
-	ld [wTextboxLine2], a
-	jr .loop
-	
-.done
-	ld a, [hl]
-	and a
-	ld hl, wTextFlags
-	set TEXT_ZERO_FLAG, [hl] ; Set status
-	ld a, 5
-	ret z ; Didn't select the second option
-	res TEXT_ZERO_FLAG, [hl]
-	ld a, [wDigitBuffer + 4]
-	ret
-	
 	
 SetFadeSpeed::
 	ld a, [wDigitBuffer + 1]
@@ -1850,6 +1317,8 @@ TextLDA::
 	ld a, [hl]
 	ld [wTextAcc], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -1857,6 +1326,8 @@ TextLDA_imm8::
 	ld a, [wDigitBuffer + 1]
 	ld [wTextAcc], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	
@@ -1869,6 +1340,8 @@ TextSTA::
 	ld a, [wTextAcc]
 	ld [hl], a
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -2001,6 +1474,9 @@ TextToggleFlags::
 	xor [hl]
 TextFlagOpsCommon:
 	ld [hl], a
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 1
 	ret
 	
@@ -2101,6 +1577,8 @@ UpdateTextFlags::
 	set TEXT_SIGN_FLAG, [hl]
 .positive
 	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 1
 	ret
 	
@@ -2108,6 +1586,9 @@ UpdateTextFlags::
 TextRAMBankswitch::
 	ld a, [wDigitBuffer + 1]
 	call SwitchRAMBanks
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	
@@ -2124,6 +1605,8 @@ EndTextWithoutClosing:: ; To do so, bypasses the end of ProcessText and directly
 TextFadeMusic::
 	ld a, [wDigitBuffer + 1]
 	call DS_Fade
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	
@@ -2149,18 +1632,27 @@ TextWaitSFX::
 	ld a, [de]
 	and 2
 	jr nz, .wait
+	
 	inc a
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ret
 	
 TextPlaySFX::
 	ld a, [wDigitBuffer + 1]
 	ld c, a
 	callacross FXHammer_Trig
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 2
 	ret
 	
 TextStopSFX::
 	callacross FXHammer_Stop
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 1
 	ret
 	
@@ -2196,7 +1688,9 @@ TextGetFlag::
 	ld e, a
 	call GetFlag
 	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
+	
 	res TEXT_ZERO_FLAG, [hl]
 	ret c ; If the flag is set, then it's NZ
 	set TEXT_ZERO_FLAG, [hl]
@@ -2208,6 +1702,9 @@ TextSetFlag::
 	ld d, [hl]
 	ld e, a
 	call SetFlag
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -2217,6 +1714,9 @@ TextResetFlag::
 	ld d, [hl]
 	ld e, a
 	call ResetFlag
+	
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
 	ld a, 3
 	ret
 	
@@ -2246,6 +1746,9 @@ TextLoadMap::
 	
 	
 TextStartAnim::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld hl, wDigitBuffer + 1
 	ld a, [hli]
 	ld c, a
@@ -2256,10 +1759,10 @@ TextStartAnim::
 	push hl
 	call StartAnimation
 	pop hl
+	jr z, .allocationFailed
 	ld l, [hl]
 	ld h, 0
 	ld de, wTextAnimationSlots
-	jr z, .allocationFailed
 	add hl, de
 	ld a, [wNumOfAnimations]
 	ld [hl], a
@@ -2270,6 +1773,9 @@ TextStartAnim::
 	ret
 	
 TextEndAnim::
+	ld hl, wTextFlags
+	set TEXT_SAME_FRAME_FLAG, [hl]
+	
 	ld a, [wDigitBuffer + 1]
 	and $07
 	ld l, a
@@ -2282,4 +1788,18 @@ TextEndAnim::
 	dec b
 	call nz, EndAnimation
 	ld a, 1
+	ret
+	
+	
+TextPlayAnims::
+	
+	
+	ld hl, wAnimation0_linkID
+	ld b, 8
+	ld de, 8
+.unfreezeAnims
+	res 4, [hl]
+	add hl, de
+	dec b
+	jr nz, .unfreezeAnims
 	ret

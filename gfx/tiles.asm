@@ -1290,6 +1290,38 @@ ShadowTile::
 	dw $0505, $2A2A, $5555, $AAAA, $5555, $2A2A, $1515, $0202
 	
 	
+SECTION "Emote graphics", ROMX,ALIGN[4]
+	
+EmoteTiles::
+
+BlankEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $80FF, $80FF, $80FF, $80FF, $80FF
+	dw $80FF, $80FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $01FF, $01FF, $01FF, $01FF, $01FF
+	dw $01FF, $01FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+HappyEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $94FF, $80FF, $80FF, $80FF
+	dw $88FF, $87FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $11FF, $29FF, $01FF, $01FF, $01FF
+	dw $11FF, $E1FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+NeutralEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $88FF, $88FF, $80FF, $80FF
+	dw $88FF, $87FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $11FF, $11FF, $11FF, $01FF, $01FF
+	dw $11FF, $E1FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+SadEmoteTiles::
+	dw $
+	
+SadderEmoteTiles::
+	dw $
+	
+SurprisedEmoteTiles::
+	dw $
+	
+	
 SECTION "Strings and text", ROMX,BANK[1]
 	
 AeviliaStr::
