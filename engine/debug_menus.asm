@@ -53,7 +53,7 @@ HomeDebugMenu::
 	ld c, a ; ld c, 0
 	callacross LoadBGPalette_Hook
 	
-	ld c, 0
+	ld bc, 2 << 8
 	ld hl, $9901
 	
 .mainLoop
