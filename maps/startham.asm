@@ -238,6 +238,7 @@ StarthamMeetSiblingCutscene::
 	close_box
 	delay 20
 	turn_player DIR_UP
+	play_sfx	SFX_DOOR_OPEN
 	text_lda_imm THREAD2_OPENDOOR ; Start door-opening animation
 	text_sta hThread2ID
 	text_lda_imm $FF
