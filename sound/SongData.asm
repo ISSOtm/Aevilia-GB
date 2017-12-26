@@ -60,7 +60,7 @@ vol_Echo1:			db	$ff,$f1
 vol_Echo1a:			db	$ff,$c1
 vol_Echo1b:			db	$ff,$61
 vol_Echo2:			db	$ff,$f1
-vol_Echo2Quiet:		db	2,2,2,2,2,2,2,2,2,2,2,2,1,$ff,1
+vol_Echo2Quiet:		db	2,2,2,2,2,2,2,2,2,2,2,2,1,$fe,12
 vol_NeoEcho:		db	$ff,$53
 vol_WaveBass:		db	15,$ff,15
 vol_QuietLead:		db	$ff,$30
@@ -1049,3 +1049,4 @@ Forest_CH3:
 
 Scale_CH1:
 	db	SetInstrument,id_PulseLead1a,C_3,4,D_3,4,E_3,4,F_3,4,G_3,4,A_3,4,B_3,4,C_4,4,EndChannel
+	
