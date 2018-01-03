@@ -281,8 +281,8 @@ THE_CONSTANT = 42
 	dec a
 	call SwitchRAMBanks
 	
-	; 3DS VC doesn't flag rHDMA1 as readable, even though it should be
-	; What the fuck, Nintendo?
+	; 3DS VC doesn't flag rHDMA1 as readable, GG Nintendo
+	; Pan Docs flagged those as R/W - they are write-only.
 	ld a, [rHDMA1]
 	inc a
 	ld [rHDMA1], a
