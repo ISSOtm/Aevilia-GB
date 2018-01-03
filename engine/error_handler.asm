@@ -28,6 +28,8 @@ DebugFatalError::
 	dec a
 	rst fill
 	ld [rVBK], a
+	ld c, 0
+	callacross LoadFont
 	ld c, 1
 	ld de, GrayPalette
 	callacross LoadBGPalette_Hook
