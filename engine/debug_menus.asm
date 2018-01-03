@@ -854,12 +854,16 @@ TilesetViewerMenu::
 	; a = high
 	ld b, c
 	ld h, a
-	ld a, d
-	add a, 10 ; Skip over header
-	ld l, a
-	jr nc, .noCarry1
-	inc h
-.noCarry1
+	ld l, d
+	inc hl
+	inc hl
+	call GetByteAcross
+	and a
+	jr z, .fixedTileset
+	inc hl
+.fixedTileset
+	ld de, 8
+	add hl, de
 	call GetByteAcross ; Num of interactions
 	and a
 	jr z, .skippedInteractions
