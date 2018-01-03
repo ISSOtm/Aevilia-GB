@@ -981,9 +981,9 @@ TilesetViewerMenu::
 	ld hl, wEmoteGfxID
 	ld a, [hl]
 	add a, a
-	jr c, .ok
+	jr c, .emoteIDValid
 	xor a ; Was $80, which was decremented to $7F
-.ok
+.emoteIDValid
 	rrca
 	ld [hl], a
 	jp ProcessNPCs
