@@ -13,6 +13,8 @@ ROMBankLow		equ $2000
 ROMBankHigh		equ $3000
 SRAMBank		equ $4000
 
+ROMVersion		equ $014C
+
 rOAM			equ $FE00
 OAMEnd			equ $FEA0
 
