@@ -49,11 +49,13 @@ HomeDebugMenu::
 	and a
 	jr nz, .printString
 	
+	push bc
 	ld de, DefaultPalette
 	ld c, a ; ld c, 0
 	callacross LoadBGPalette_Hook
+	pop bcs
 	
-	ld bc, 2 << 8
+	ld c, 0
 	ld hl, $9901
 	
 .mainLoop
