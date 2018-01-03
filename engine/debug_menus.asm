@@ -53,7 +53,7 @@ HomeDebugMenu::
 	ld de, DefaultPalette
 	ld c, a ; ld c, 0
 	callacross LoadBGPalette_Hook
-	pop bcs
+	pop bc
 	
 	ld c, 0
 	ld hl, $9901
