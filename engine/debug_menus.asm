@@ -669,7 +669,7 @@ TilesetViewerMenu::
 .npcDown
 	ld a, [wYPos]
 	inc a
-	cp 6
+	cp 7
 	jr z, .NPCMainLoop
 .moveNPCCursor
 	ld c, a
@@ -817,6 +817,10 @@ TilesetViewerMenu::
 	db 8
 	dw .updateNPCPalettes
 	
+	dw wEmoteGfxID
+	db INVALID_EMOTE
+	dw .updateEmote
+	
 .loadMapNPCTiles
 	ld hl, v1Tiles0
 	call .resetTileBlock
@@ -941,7 +945,9 @@ TilesetViewerMenu::
 	pop bc
 	dec b
 	jr nz, .loadNPCTiles
-	ret
+	ld hl, wEmoteGfxID
+	res 7, [hl] ; Reload emote gfx
+	jp ProcessNPCs
 .loadSiblingGfx
 	push hl
 	ld a, [wPlayerGender]
@@ -965,6 +971,17 @@ TilesetViewerMenu::
 	inc e ; inc de
 	dec b
 	jr nz, .updatePaletteByte
+	jp ProcessNPCs
+	
+.updateEmote
+	ld hl, wEmoteGfxID
+	ld a, [hl]
+	add a, a
+	jr c, .ok
+	xor a ; Was $80, which was decremented to $7F
+.ok
+	rrca
+	ld [hl], a
 	jp ProcessNPCs
 	
 	
@@ -999,6 +1016,8 @@ TilesetViewerMenu::
 	dstr "PALETTE TR:  00 "
 	dw wFixedTileMap + SCREEN_WIDTH * 15
 	dstr "PALETTE BR:  00 "
+	dw wFixedTileMap + SCREEN_WIDTH * 16
+	dstr "  EMOTE ID:  00 "
 	db 0
 	
 	
