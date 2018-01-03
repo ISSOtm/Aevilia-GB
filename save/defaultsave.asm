@@ -6,7 +6,9 @@ DefaultSaveBank0::
 
 ; MAKES SURE THIS MATCHES `MagicString`!!
 DefaultSaveMagicString0::
-	dstr "Aevilia"
+	db "Aevilia"
+	
+	db ROM_VERSION
 	
 DefaultSaveChecksums0:
 	ds $F8

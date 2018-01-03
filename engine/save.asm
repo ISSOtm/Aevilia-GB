@@ -871,16 +871,22 @@ VerifyChecksums::
 	ld [SRAMBank], a ; Set SRAM bank
 	
 	; Calculate save file #e's validity
-	ld de, sFile1MagicString0
-	ld hl, MagicString
+	ld hl, sFile1MagicString0
+	ld de, MagicString
 .compareMagicStrings
 	ld a, [de]
+	and a ; If we reached the end of the magic string
+	jr z, .checkVersion
 	inc de
 	cp [hl]
 	jr nz, .endTests
 	inc hl
-	and a
-	jr nz, .compareMagicStrings
+	jr .compareMagicStrings
+	
+.checkVersion
+	ld a, [ROMVersion]
+	cp [hl]
+	jr nz, .endTests
 	
 	ld a, c ; Get back bank
 .calcOneBankSums
