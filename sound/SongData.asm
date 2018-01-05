@@ -344,7 +344,7 @@ ins_SquareWave:			Instrument	0,WaveBass,_,Square,_
 
 ins_FileSelectArp:		Instrument	0,FileSelectArp,Buffer,50,_
 ins_FileSelectArp2:		Instrument	0,FileSelectArp2,Buffer,50,_
-ins_Tink:				Instrument	0,Tink,Buffer,50,_
+ins_Tink:				Instrument	0,Tink,_,50,_
 ins_FileSelectSaw:		Instrument	0,FileSelectSaw,_,HalfSaw,_
 ins_FileSelectSquare:	Instrument	0,FileSelectSquare,_,FileSelectSquare,_
 
