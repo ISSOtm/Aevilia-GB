@@ -864,6 +864,7 @@ TilesetViewerMenu::
 .fixedTileset
 	ld de, 8
 	add hl, de
+	ld b, c
 	call GetByteAcross ; Num of interactions
 	and a
 	jr z, .skippedInteractions
