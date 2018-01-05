@@ -568,7 +568,7 @@ TilesetViewerMenu::
 	ld [rVBK], a
 	ld hl, $9E4C
 	ld de, VRAM_ROW_SIZE
-	ld b, 6
+	ld b, 7
 .writeFlipBits
 	rst isVRAMOpen
 	jr nz, .writeFlipBits
