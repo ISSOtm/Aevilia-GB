@@ -1377,7 +1377,7 @@ LoadFile::
 	ld a, [wSaveFileID]
 	add a, a
 	add a, a
-	db $01
+	db $11
 .compatMode
 	ld a, 2
 	
@@ -1437,7 +1437,7 @@ SaveFile::
 	ld a, [wSaveFileID]
 	add a, a
 	add a, a
-	db $01
+	db $11
 .compatMode
 	ld a, 2
 	
