@@ -1373,13 +1373,14 @@ LoadFile::
 	ld [SRAMEnable], a
 	ldh a, [hSRAM32kCompat]
 	and a
-	jr z, .notCompatMode
-	ld a, 2
-	jr .copyOneBank
-.notCompatMode
+	jr nz, .copyOneBank
 	ld a, [wSaveFileID]
 	add a, a
 	add a, a
+	db $01
+.compatMode
+	ld a, 2
+	
 .copyOneBank
 	push af
 	ld [SRAMBank], a
@@ -1432,14 +1433,13 @@ SaveFile::
 	ld [SRAMEnable], a
 	ldh a, [hSRAM32kCompat]
 	and a
-	jr z, .notCompatMode
-	ld a, 2
-	jr .compatMode
-.notCompatMode
+	jr nz, .compatMode
 	ld a, [wSaveFileID]
 	add a, a
 	add a, a
+	db $01
 .compatMode
+	ld a, 2
 	
 	ld [SRAMBank], a
 	ld hl, sFile1MagicString0
