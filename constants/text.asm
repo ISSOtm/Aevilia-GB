@@ -86,6 +86,7 @@
 	enum_elem TEXT_LOAD_MAP
 	enum_elem TEXT_START_ANIM
 	enum_elem TEXT_END_ANIM
+	enum_elem TEXT_PLAY_ANIMS
 	
 	enum_elem INVALID_TXT_COMMAND ; WARNING : TEXT COMMAND PROCESSOR MUST BE UPDATED IF IDS 128+ ARE USED!!!
 
@@ -590,6 +591,26 @@ stop_music: MACRO
 ENDM
 
 
+; wait_sfx
+; Waits until no SFX is playing
+wait_sfx: MACRO
+	db TEXT_SFX_WAIT
+ENDM
+
+; play_sfx sfx_id
+; Plays a sfx
+; music_id : ID of the sfx to be played
+play_sfx: MACRO
+	db TEXT_SFX_PLAY
+	db \1
+ENDM
+
+; Instantly stops the SFX
+stop_sfx: MACRO
+	db TEXT_SFX_STOP
+ENDM
+
+
 ; color_textbox ptr_to_palette
 ; Overrides the textbox's color palette
 ; ptr_to_palette : pointer to the palette to be loaded
@@ -654,22 +675,7 @@ end_animation: MACRO
 	db TEXT_END_ANIM
 ENDM
 
-
-; wait_sfx
-; Waits until no SFX is playing
-wait_sfx: MACRO
-	db TEXT_SFX_WAIT
-ENDM
-
-; play_sfx sfx_id
-; Plays a sfx
-; music_id : ID of the sfx to be played
-play_sfx: MACRO
-	db TEXT_SFX_PLAY
-	db \1
-ENDM
-
-; Instantly stops the SFX
-stop_sfx: MACRO
-	db TEXT_SFX_STOP
+play_animations: MACRO
+	db TEXT_PLAY_ANIMS
+	
 ENDM

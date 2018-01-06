@@ -1764,7 +1764,7 @@ TextStartAnim::
 	ld h, 0
 	ld de, wTextAnimationSlots
 	add hl, de
-	ld a, [wNumOfAnimations]
+;	ld a, [wNumOfAnimations]
 	ld [hl], a
 	ld a, 5
 	ret
@@ -1783,7 +1783,7 @@ TextEndAnim::
 	ld de, wTextAnimationSlots
 	add hl, de
 	ld b, [hl]
-	ld [hl], 0
+	ld [hl], $FF
 	inc b
 	dec b
 	call nz, EndAnimation

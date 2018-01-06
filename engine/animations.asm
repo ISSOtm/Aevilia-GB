@@ -6,52 +6,89 @@ SECTION "Animation engine", ROM0
 ; Z will be set if the allocation failed (no matter the reason)
 StartAnimation::
 	; First, check if a free animation slot exists.
-	ld hl, wNumOfAnimations
-	ld a, [hl]
-	cp 8
+	ld a, [wActiveAnimations + 7]
+	inc a
 	debug_message "%ZERO%FAILED TO ALLOCATE ANIMATION!!;Allocating animation in slot %A%...;"
 	ret z ; Return if all animations are used (!!!)
+	
+	ldh a, [hCurROMBank]
+	push af
+	ld a, c ; Bankswitch now to free c
+	rst bankswitch
+	
+	; Look for free (ie. unreferenced) slot
+	ld b, 0
+.lookForSlot
+	ld hl, wActiveAnimations
+	ld c, 0
+.checkInTable
+	ld a, [hli]
 	inc a
-	ld [hl], a ; Increment animation count
+	jr z, .checkedTable
+	dec a
+	cp b
+	jr nz, .checkInTable
+	inc b
+	inc c ; Sets c to non-zero, since this shouldn't occur 256 times
+	jr .checkInTable
+.checkedTable
+	; a = 0
+	or c ; We must repeat until we found a slot that's not in the list
+	jr nz, .lookForSlot
+	
+	ldh a, [hCurROMBank] ; Get back animation's bank
+	ld l, a ; Remember it, 'cause we're gonna bankswitch back
+	ld a, [de] ; Read nb of sprites
+	inc de
+	ld c, a ; Remember it for later
+	pop af
+	rst bankswitch
+	ld a, [wNumOfExtendedSprites]
+	add a, c ; Calculate total number of sprites
+	cp 40 + 1
+	jr nc, .spriteOverflow ; If it overflows, don't add the slot to the list
+	
+	; Add the new slot to the list
+	ld a, b
+	ld [hli], a
+	ld [hl], $FF
+	ld b, l ; Transfer animation's bank to another register
+	
 	dec a
 	add a, a ; Get pointer to target slot
 	add a, a
 	add a, a
-	add a, LOW(wAnimationTable)
+	add a, LOW(wAnimationSlots)
 	ld l, a
-	adc a, HIGH(wAnimationTable)
+	adc a, HIGH(wAnimationSlots)
 	sub l
 	ld h, a
+	
+	; b = Animation's bank
+	; c = Nb of sprites
+	; de = Ptr to animation
+	; hl = Ptr to animation's slot
+	
 	; Init the slot's data
-	ld [hl], $FF ; Init link
+	ld [hl], $0F ; Init link
 	inc l
 	xor a
 	ld [hli], a ; Init delay
-	ld [hl], c ; Init bank
-	inc l
-	inc de ; Skip over header
+	ld a, b
+	ld [hli], a ; Init bank
 	ld a, e
 	ld [hli], a ; Init ptr
 	ld [hl], d
 	inc l
 	dec de ; Go back to header
-	ldh a, [hCurROMBank]
-	push af
-	ld a, c
-	rst bankswitch
-	ld a, [de] ; Read nb of sprites
+	ld a, c ; Get back nb of sprites
 	ld [hli], a
-	pop af
-	rst bankswitch
 	
 	; Allocate the sprites in the extended OAM
 	ld a, [wNumOfExtendedSprites]
 	ld b, a
 	ld [hld], a ; Store first sprite's ID
-	ld c, [hl]
 	add a, c ; Add nb of sprites
-	cp 40 + 1
-	jr nc, .spriteOverflow
 	ld [wNumOfExtendedSprites], a ; Allocate these sprites
 	
 	; Finally, clear the animation's sprites, since we allocated them.
@@ -71,13 +108,11 @@ StartAnimation::
 	xor a
 	rst fill
 .dontClearSprites
-	ld a, 1
-	and a
+	xor a ; Return with NZ to indicate success
+	inc a
 	ret
 	
 .spriteOverflow
-	ld hl, wNumOfAnimations
-	dec [hl] ; Cancel allocation
 	debug_message "FAILED TO ALLOCATE ANIMATION: OAM FULL (Requested %C% sprites\, leading to %A% total.)"
 	xor a
 	ret
@@ -87,15 +122,22 @@ StartAnimation::
 ; Actually more complicated than starting one !
 ; (But that's because any animation slot may end, whereas starting appends the struct.)
 EndAnimation::
-	ld a, [wNumOfAnimations]
-	scf ; Subtract an extra 1, the slot to be freed
-	sbc b
-	debug_message "%CARRY%CANNOT END ANIMATION: SLOT %B% EMPTY;Ending animation slot %B%...;"
-	ret c ; Don't end an animation that doesn't exist
-	ld e, a ; This is how many animations are after this one
+	ld hl, wActiveAnimations
+.lookForSlot
+	ld a, [hli]
+	inc a
+	debug_message "%ZERO%CANNOT END ANIMATION: NO ANIMATIONS;Ending animation slot %B%...;"
+	ret z ; Don't end an animation that doesn't exist
+	dec a
+	cp b
+	jr nz, .lookForSlot
 	
-	ld hl, wNumOfAnimations
-	dec [hl]
+.removeSlot
+	ld a, [hld]
+	ld [hli], a
+	inc hl
+	inc a
+	jr nz, .removeSlot
 	
 	ld a, b ; Obtain ptr to target slot's sprite attribs
 	add a, a
@@ -114,34 +156,22 @@ EndAnimation::
 	; b = ID of slot
 	; c = ID of first sprite
 	; d = Number of sprites the animation has
-	; e = Number of animations after this one
 	
-	ld a, l ; Get on struct's first byte
-	and $F8
-	ld l, a
-	push hl ; Save this for clearing the struct later on
 	; Unlink animations
-	ld a, e
-	and a
-	jr z, .dontUnlinkStructs
+	ld hl, wAnimation0_linkID
 .unlinkStruct
-	ld a, l
-	add a, 8
-	ld l, a
 	ld a, [hl]
-	inc a
-	jr z, .structNotLinked
-	dec a
+	and $0F
 	cp b
-	jr c, .structNotLinked
-	jr nz, .structGonnaBeMoved
-	xor a ; ld a, $FF
-.structGonnaBeMoved
-	dec a
+	jr nz, .structNotLinked
+	ld a, [hl]
+	or $0F
 	ld [hl], a
 .structNotLinked
 	ld a, l
-	cp LOW(wAnimation7_linkID)
+	add a, 8
+	ld l, a
+	cp LOW(wAnimation7_linkID + 8)
 	jr nz, .unlinkStruct
 .dontUnlinkStructs
 	
@@ -155,11 +185,9 @@ EndAnimation::
 	jr .dontShiftOAM
 .numOfSpritesOK
 	
-	ld a, d
-	and a ; Don't shift OAM...
-	jr z, .dontShiftOAM ; ...if there aren't any sprites to be overwritten
 	ld a, d ; Get ID of first sprite of next anim
-	add a, a
+	add a, a ; Don't shift OAM...
+	jr z, .dontShiftOAM ; ...if there aren't any sprites to be overwritten
 	add a, a
 	ld l, a
 	ld h, 0 ; hl = offset
@@ -181,57 +209,32 @@ EndAnimation::
 	inc bc
 	jr .shiftOAM
 .dontShiftOAM
-	
-	; Move animation structs after the current one
-	pop hl
-	ld a, e ; Check how many there are
-	and a
-	ret z ; It was the last one !
-	push hl ; Save ptr to structs that will have to be modified
-	push de ; Save nb of sprites & nb of anims to modify
-	ld a, e ; Get number of animations to be modified
-	add a, a
-	add a, a
-	add a, a ; Multiply
-	ld c, a ; Store length
-	ld d, h
-	ld e, l ; Current struct will be dest of copy
-	ld a, l ; Add length of 1 struct for src of copy
-	add a, 8
-	ld l, a
-	jr nc, .noCarry
-	inc h
-.noCarry
-	rst copy
-	pop de
-	pop hl ; Get ptr to first struct that was copied
-	ld a, l
-	add a, 6
-	ld l, a ; Point to ID of first sprite
-	ld bc, 8 ; Length of struct
-.updateSpriteIDs
-	ld a, [hl]
-	sub d ; Subtract nb of sprites that the current anim has 
-	ld [hl], a
-	add hl, bc
-	dec e
-	jr nz, .updateSpriteIDs
-	inc a ; a wasn't $FF... well, normally.
+	ld a, 1
 	ld [wTransferSprites], a ; OAM has been updated !!1
 	ret
 	
 	
 PlayAnimations::
-	ld a, [wNumOfAnimations]
-	and a
-	ret z ; Don't do anything if there are no animations
+	ld hl, wActiveAnimations
+.playActiveAnims
+	ld a, [hli]
+	inc a
+	ret z ; End if the end of the list was reached
+	push hl
+	and $07
+	add a, a
+	add a, a
+	add a, a
+	add a, LOW(wAnimation0_linkID)
+	ld l, a
+	adc a, HIGH(wAnimation0_linkID)
+	sub l
+	ld h, a
 	
-	ld b, 0
-	ld hl, wAnimationTable
-.loop
 	ld a, [hli] ; Get link ID
 	inc a
-	jp nz, .checkLink
+	and $0F
+	jp nz, .skipAnimation
 	ld a, [hli]
 	and a
 	jp nz, .applyDelay
@@ -345,22 +348,11 @@ PlayAnimations::
 	ld d, [hl]
 	jp .processCommand
 	
-.checkLink
-	dec a ; The animation is linked
-	ld c, a
-	ld a, [wNumOfAnimations]
-	scf
-	sbc c ; Check if link ID is valid (< to nb of anims)
-	jr nc, .skipAnimation
-	; Failsafe : if the animation is waiting for one that didn't start yet, terminate it.
 .endAnim
-	push bc
-	push hl
 	call EndAnimation
 	pop hl
-	pop bc
 	dec hl
-	jr .tryProcessAnimation ; The number of animations has changed, so check again.
+	jp .playActiveAnims ; The number of animations has changed, so check again.
 	
 .applyDelay
 	dec a
@@ -368,20 +360,8 @@ PlayAnimations::
 	ld [hl], a
 	
 .skipAnimation
-	ld a, l
-	and $F8
-	add a, 8
-	ld l, a
-	jr nc, .noCarry
-	inc h
-.noCarry
-	inc b
-.tryProcessAnimation
-	ld a, [wNumOfAnimations]
-	scf
-	sbc b
-	jp nc, .loop
-	ret
+	pop hl
+	jp .playActiveAnims
 	
 	
 SECTION "Animation commands", ROMX
@@ -445,12 +425,22 @@ AnimationCall::
 	add a, a
 	add a, a
 	add a, a
-	add a, LOW(wAnimationTable)
+	add a, LOW(wAnimationSlots)
 	ld l, a
-	adc a, HIGH(wAnimationTable)
+	adc a, HIGH(wAnimationSlots)
 	sub l
 	ld h, a ; hl points to current animation's link
-	ld a, [wNumOfAnimations]
+	ld de, wActiveAnimations + 7
+.lookForSlot
+	ld a, [de]
+	dec de
+	inc a
+	jr nz, .lookForSlot
+	ld a, [de] ; Get last slot inserted, which must be our anim
+	ld c, a
+	ld a, [hl]
+	and $F0 ; Keep the "locking" bits
+	or c
 	ld [hl], a
 	ld a, 3
 	ret
@@ -528,19 +518,19 @@ AnimationCopyTiles::
 	ld c, a
 	ld a, [hld] ; Dest tile (low)
 	swap a
+	ld d, a
+	and $F0
 	ld e, a
+	ld a, d
 	and $0F
 	add a, HIGH(v0Tiles0)
 	ld d, a
-	ld a, e
-	and $F0
-	ld e, a
 	ld a, [hld] ; Dest tile (high)
 	rra
 	jr nc, .noCarry
-	swap d
-	inc d ; This can't overflow (for the best !)
-	swap d
+	ld a, d
+	add a, $10
+	ld d, a
 .noCarry
 	rra
 	sbc a, a ; A = -carry (you can check)

@@ -242,7 +242,7 @@ wTotalNumOfSprites::
 	
 SECTION "Animation table", WRAM0,ALIGN[3]
 	
-wAnimationTable::
+wAnimationSlots::
 	animation 0
 	animation 1
 	animation 2
@@ -262,8 +262,9 @@ wAnimationStacks::
 	animation_stack 6
 	animation_stack 7
 	
-wNumOfAnimations::
-	ds 1
+; List of the IDs of the active animation slots
+wActiveAnimations::
+	ds 9
 	
 ; Table of "offsets" for the NPC-targeting animation commands
 wAnimationTargetNPCs::

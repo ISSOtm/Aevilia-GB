@@ -121,7 +121,12 @@ ENDM
 
 
 animation: MACRO
-wAnimation\1_linkID::		db ; ID of the animation this one is waiting for
+; Bit 7 : Unused
+; Bit 6 : Unused
+; Bit 5 : Unused
+; Bit 4 : Locked by text processing
+; Bits 3-0 : ID of the animation this one is waiting for, or $F if not waiting.
+wAnimation\1_linkID::		db
 wAnimation\1_delay::		db
 wAnimation\1_bank::			db
 wAnimation\1_ptr::			dw
