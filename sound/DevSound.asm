@@ -1875,33 +1875,9 @@ CH1_UpdateRegisters:
 	cp	$fd
 	jr	z,.done
 	ld	b,a
-	ld	a,[CH1ChanVol]
-	push	hl
-	call	MultiplyVolume
-	pop	hl
-	ld	a,[CH1VolLoop]
-	dec	a
-	jr	z,.zombieatpos0
-	ld	a,[CH1VolPos]
-	and	a
-	jr	z,.zombinit
-.zombieatpos0
 	ld	a,[CH1Vol]
 	cp	b
 	jr	z,.noreset3
-	ld	c,a
-	ld	a,b
-	ld	[CH1Vol],a
-	sub	c
-	and	$f
-	ld	c,a
-	ld	a,8
-.zombloop
-	ldh	[rNR12],a
-	dec	c
-	jr	nz,.zombloop
-	jr	.noreset3
-.zombinit
 	ld	a,b
 	ld	[CH1Vol],a
 	swap	a
@@ -1919,21 +1895,9 @@ CH1_UpdateRegisters:
 	jr	nz,.done
 	ld	a,[hl]
 	ld	[CH1VolPos],a
-	ld	a,1
-	ld	[CH1VolLoop],a
 	jr	.done
 .loadlast
 	ld	a,[hl]
-	push	af
-	swap	a
-	and	$f
-	ld	b,a
-	ld	a,[CH1ChanVol]
-	call	MultiplyVolume
-	swap	b
-	pop	af
-	and	$f
-	or	b
 	ldh	[rNR12],a
 	ld	a,d
 	or	$80
@@ -2240,7 +2204,7 @@ CH2_UpdateRegisters:
 	ld	l,a
 	ld	a,[CH2VolLoop]
 	ld	c,a
-	cp	$ff	; ended
+	inc	a	; ended
 	jp	z,.done
 	ld	a,[CH2VolPos]
 	add	l
@@ -2254,38 +2218,9 @@ CH2_UpdateRegisters:
 	cp	$fd
 	jp	z,.done
 	ld	b,a
-	ld	a,[CH2ChanVol]
-	push	hl
-	call	MultiplyVolume
-	pop	hl
-	ld	a,[CH2VolLoop]
-	dec	a
-	jr	z,.zombieatpos0
-	ld	a,[CH2VolPos]
-	and	a
-	jr	z,.zombinit
-.zombieatpos0
 	ld	a,[CH2Vol]
 	cp	b
 	jr	z,.noreset3
-if !def(DemoSceneMode)
-	ld	c,a
-	ld	a,b
-	ld	[CH2Vol],a
-	sub	c
-	and	$f
-	ld	c,a
-	ld	a,[FXHammer_SFXCH2]
-	cp	3
-	jr	z,.zombinit
-	ld	a,8
-.zombloop
-	ldh	[rNR22],a
-	dec	c
-	jr	nz,.zombloop
-	jr	.noreset3
-.zombinit
-endc
 	ld	a,[FXHammer_SFXCH2]
 	cp	3
 	jr	z,.noreset3
@@ -2306,8 +2241,6 @@ endc
 	jr	nz,.done
 	ld	a,[hl]
 	ld	[CH2VolPos],a
-	ld	a,1
-	ld	[CH2VolLoop],a
 	jr	.done
 .loadlast
 	ld	a,[FXHammer_SFXCH2]
@@ -2315,16 +2248,6 @@ endc
 	jr	z,.done
 
 	ld	a,[hl]
-	push	af
-	swap	a
-	and	$f
-	ld	b,a
-	ld	a,[CH2ChanVol]
-	call	MultiplyVolume
-	swap	b
-	pop	af
-	and	$f
-	or	b
 	ldh	[rNR22],a
 	ld	a,d
 	or	$80
