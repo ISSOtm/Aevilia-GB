@@ -1595,6 +1595,9 @@ SaveBlocks::
 	wramx_block wWalkInterCount, 7
 	wramx_block wNPCArray, $90
 	wramx_block wEmoteGfxID, 3
+	wram0_block wAnimationSlots, 8 * 8
+	wram0_block wAnimationStacks, 8 * 8
+	wram0_block wActiveAnimations, 9 + 8 ; Also wAnimationTargetNPCs
 	
 	enum_start
 REPT $10

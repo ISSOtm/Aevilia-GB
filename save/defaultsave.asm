@@ -67,6 +67,19 @@ DefaultEmoteData::
 	db $7F ; wEmoteGfxID
 	db 0 ; wEmotePosition
 	db 0 ; wNumOfNPCs
+	
+DefaultAnimationSlots::
+	dbfill 8 * 8, 0
+	
+DefaultAnimationStacks::
+	dbfill 8 * 8, 0
+	
+DefaultActiveAnimations::
+	db $FF
+	dbfill 8, 0
+	
+; DefaultAnimationTargetNPCs::
+	dbfill 8, 0
 
 DefaultFlags:
 	dbfill $1000, 0
