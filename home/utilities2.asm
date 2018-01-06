@@ -304,15 +304,39 @@ TransferTilesAcross::
 	jr .done
 	
 .transferAgain
+	swap b
+	ld a, b
+	and $F0
+	ld c, a
+	ld a, b
+	and $0F
+	ld b, a
+	
+	ld a, e
+	add a, c
+	ld e, a
+	adc a, b
+	sub e
+	ld d, a
+	
+	ld a, l
+	add a, c
+	ld l, a
+	adc a, h
+	sub l
+	; ld h, a ; Unnecessary
+	
 	ld b, $7F
-	jr .waitHBlank
+	jr .startNewTransfer
 	
 .HDMAClear
 	inc a
 	ldh [hHDMAInUse], a
 	dec b ; We have to write 1 less than the number of tiles
-	ld c, LOW(rHDMA1)
+	
 	ld a, h
+.startNewTransfer
+	ld c, LOW(rHDMA1)
 	ld [c], a
 	inc c
 	ld a, l
@@ -338,9 +362,9 @@ TransferTilesAcross::
 	inc a
 	jr nz, .waitHDMA
 	ld a, b
-	sub $80
-	jr nc, .transferAgain
-	xor a
+	and $80
+	jr nz, .transferAgain
+	; xor a
 	ldh [hHDMAInUse], a
 .done
 	pop af
