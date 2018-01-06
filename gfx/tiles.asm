@@ -467,9 +467,9 @@ CopyrightTiles::
 	dwfill 8, 0
 	
 	
-SECTION "Title screen tiles", ROMX,ALIGN[4]
+SECTION "Title screen sprite tiles", ROMX,ALIGN[4]
 
-TitleScreenTiles::
+TitleScreenSpriteTiles::
 	; Eye tiles (00-01, 02-03)
 	dw $0040, $6090, $B000, $9000, $9000, $6090, $00E0, $0000
 	dwfill 8, 0
@@ -566,9 +566,9 @@ TitleScreenTiles::
 	dwfill 8, $0000
 	dw $0000, $0000, $0000, $0000, $0000, $0000, $8080, $0000
 	
-	dwfill 8 * ($7F - $4B), 0
 	
-	
+SECTION "Title screen BG tiles", ROMX,ALIGN[4]
+TitleScreenBGTiles::
 	; Blank tiles (80-81)
 	dwfill 8, $0000
 	dwfill 8, $00FF

@@ -446,9 +446,14 @@ CopyrightAnimation::
 ; ----------------------------------------------------------------
 	
 TitleScreen::
-	ld hl, TitleScreenTiles
+	ld hl, TitleScreenSpriteTiles
 	ld de, v0Tiles0
-	ld bc, BANK(TitleScreenTiles) << 8 | $E8
+	ld bc, BANK(TitleScreenSpriteTiles) << 8 | $4A
+	call TransferTilesAcross
+	
+	ld hl, TitleScreenBGTiles
+	ld de, v0Tiles1
+	ld bc, BANK(TitleScreenBGTiles) << 8 | $68
 	call TransferTilesAcross
 	
 	ld de, TitleScreenLogoPalette0
