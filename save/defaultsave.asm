@@ -81,7 +81,9 @@ DefaultSaveBank1::
 
 ; Also make sure this matches `MagicString`.
 DefaultSaveMagicString1::
-	dstr "Aevilia"
+	db "Aevilia"
+	
+	db ROM_VERSION
 	
 DefaultSaveChecksums1::
 	ds $F8
