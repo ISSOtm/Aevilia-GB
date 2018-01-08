@@ -155,3 +155,10 @@ ENDU
 hHDMAInUse::
 	ds 1
 	
+	
+; Contains the ID of the currently processed animation
+hCurrentAnimationID::
+	ds 1
+hCurrentAnimation::
+	ds 2
+	

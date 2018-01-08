@@ -1,61 +1,53 @@
 
 SECTION "Animation engine", ROM0
 
+
 ; Start animation at c:de
 ; This will allocate the animation in the earliest slot available
 ; Z will be set if the allocation failed (no matter the reason)
 StartAnimation::
-	; First, check if a free animation slot exists.
-	ld a, [wActiveAnimations + 7]
-	inc a
-	debug_message "%ZERO%FAILED TO ALLOCATE ANIMATION!!;Allocating animation in slot %A%...;"
-	ret z ; Return if all animations are used (!!!)
-	
+	; First, check if the animation can be started
 	ldh a, [hCurROMBank]
 	push af
-	ld a, c ; Bankswitch now to free c
+	ld a, c
 	rst bankswitch
 	
-	; Look for free (ie. unreferenced) slot
-	ld b, 0
-.lookForSlot
-	ld hl, wActiveAnimations
-	ld c, 0
-.checkInTable
-	ld a, [hli]
-	inc a
-	jr z, .checkedTable
-	dec a
-	cp b
-	jr nz, .checkInTable
-	inc b
-	inc c ; Sets c to non-zero, since this shouldn't occur 256 times
-	jr .checkInTable
-.checkedTable
-	; a = 0
-	or c ; We must repeat until we found a slot that's not in the list
-	jr nz, .lookForSlot
+	; - Check sprites first
+	ld a, [de] ; Get nb of sprites
+	ld c, a ; Save it, it will be re-used later
 	
-	ldh a, [hCurROMBank] ; Get back animation's bank
-	ld l, a ; Remember it, 'cause we're gonna bankswitch back
-	ld a, [de] ; Read nb of sprites
-	inc de
-	ld c, a ; Remember it for later
-	pop af
-	rst bankswitch
 	ld a, [wNumOfExtendedSprites]
-	add a, c ; Calculate total number of sprites
+	add a, c
 	cp 40 + 1
-	jr nc, .spriteOverflow ; If it overflows, don't add the slot to the list
+	jr nc, .spriteOverflow
 	
-	; Add the new slot to the list
-	ld a, b
-	ld [hli], a
+	; - Then check if a slot is available
+	ld a, [wActiveAnimations + 8]
+	inc a
+	jr z, .noSlotFree
+	
+	
+	; Second, look for a free slot
+	ld b, $FF
+.restartSearch
+	inc b ; Look for next slot ID
+	ld hl, wActiveAnimations
+	
+.lookUpSlot
+	ld a, [hli] ; Get ID
+	cp b ; If it matches currently selected slot, look for next one
+	jr z, .restartSearch
+	inc a
+	jr nz, .lookUpSlot ; If reached end of list, slot is free !
+	
+	; Add slot ID to list
+	; (hl points to byte after terminator)
 	ld [hl], $FF
-	ld b, l ; Transfer animation's bank to another register
+	dec hl
+	ld [hl], b
 	
-	dec a
-	add a, a ; Get pointer to target slot
+	; Get ptr to slot (ID in a)
+	add a, a
 	add a, a
 	add a, a
 	add a, LOW(wAnimationSlots)
@@ -64,40 +56,42 @@ StartAnimation::
 	sub l
 	ld h, a
 	
-	; b = Animation's bank
-	; c = Nb of sprites
-	; de = Ptr to animation
-	; hl = Ptr to animation's slot
-	
-	; Init the slot's data
-	ld [hl], $0F ; Init link
-	inc l
-	xor a
-	ld [hli], a ; Init delay
-	ld a, b
-	ld [hli], a ; Init bank
-	ld a, e
-	ld [hli], a ; Init ptr
-	ld [hl], d
-	inc l
-	dec de ; Go back to header
-	ld a, c ; Get back nb of sprites
+	; Third, fill the slot
+	; - Set link to $0F
+	ld a, $0F
 	ld [hli], a
+	; - Set delay to 0
+	xor a
+	ld [hli], a
+	; - Set bank and ptr to c and de (obv)
+	ldh a, [hCurROMBank]
+	ld [hli], a
+	inc de
+	ld a, e
+	ld [hli], a
+	ld a, d
+	ld [hli], a
+	; - Set number of sprites to number read from header
+	ld a, c
+	ld [hli], a
+	; - Set ID of 1st sprite to current nb of sprites
+	ld de, wNumOfExtendedSprites
+	ld a, [de]
+	ld [hli], a
+	ld b, a ; Store ID of 1st sprite for OAM clearing below
+	add a, c ; Add animation's sprites
+	ld [de], a ; Write back
+	; - Set loop counter to 0
+	ld [hl], 0
 	
-	; Allocate the sprites in the extended OAM
-	ld a, [wNumOfExtendedSprites]
-	ld b, a
-	ld [hld], a ; Store first sprite's ID
-	add a, c ; Add nb of sprites
-	ld [wNumOfExtendedSprites], a ; Allocate these sprites
+	; Also clear sprites in OAM if some were allocated
+	ld a, c
+	add a, a
+	jr z, .noSprites
+	add a, a
+	ld c, a
 	
-	; Finally, clear the animation's sprites, since we allocated them.
-	ld a, c ; Nb of sprites
-	add a, a
-	jr z, .dontClearSprites ; If no sprites, don't clear
-	add a, a
-	ld c, a ; Length
-	ld a, b ; ID of first sprite
+	ld a, b
 	add a, a
 	add a, a
 	add a, LOW(wExtendedOAM)
@@ -105,15 +99,33 @@ StartAnimation::
 	adc a, HIGH(wExtendedOAM)
 	sub l
 	ld h, a
+	
 	xor a
 	rst fill
-.dontClearSprites
-	xor a ; Return with NZ to indicate success
-	inc a
+	
+	
+.noSprites
+	pop af
+	rst bankswitch
+	
+	xor a
+	inc a ; Return with NZ to indicate success
 	ret
 	
 .spriteOverflow
-	debug_message "FAILED TO ALLOCATE ANIMATION: OAM FULL (Requested %C% sprites\, leading to %A% total.)"
+	debug_message "TOO MANY SPRITES !"
+IF DEF(DebugMode)
+	jr .failedAnimationAllocation
+ENDC
+	
+.noSlotFree
+	debug_message "NO FREE SLOT !"
+	
+.failedAnimationAllocation
+	debug_message "CANNOT START ANIMATION %C%:%DE%"
+	
+	pop af
+	rst bankswitch
 	xor a
 	ret
 	
@@ -221,15 +233,19 @@ PlayAnimations::
 	inc a
 	ret z ; End if the end of the list was reached
 	push hl
+	dec a
 	and $07
+	ldh [hCurrentAnimationID], a
 	add a, a
 	add a, a
 	add a, a
 	add a, LOW(wAnimation0_linkID)
 	ld l, a
+	ldh [hCurrentAnimation], a
 	adc a, HIGH(wAnimation0_linkID)
 	sub l
 	ld h, a
+	ldh [hCurrentAnimation+1], a
 	
 	ld a, [hli] ; Get link ID
 	inc a
@@ -420,17 +436,11 @@ StartNewAnim::
 AnimationCall::
 	call StartNewAnim
 	jr z, ForceAnimationEnd ; If the animation failed to start, don't do anything else.
-	ld hl, sp+3 ; Points to current animation's ID
-	ld a, [hl] ; Get current animation's ID
-	add a, a
-	add a, a
-	add a, a
-	add a, LOW(wAnimationSlots)
+	ldh a, [hCurrentAnimation] ; Get current animation's ptr
 	ld l, a
-	adc a, HIGH(wAnimationSlots)
-	sub l
+	ldh a, [hCurrentAnimation+1]
 	ld h, a ; hl points to current animation's link
-	ld de, wActiveAnimations + 7
+	ld de, wActiveAnimations + 8
 .lookForSlot
 	ld a, [de]
 	dec de
@@ -448,7 +458,7 @@ AnimationCall::
 	
 ; Repoints the saved read ptr to a 00
 ForceAnimationEnd::
-	ld hl, sp+2 ; Saved read ptr
+	ld hl, sp+4 ; Saved read ptr
 	ld [hl], LOW(NullByte)
 	inc hl
 	ld [hl], HIGH(NullByte)
@@ -458,9 +468,8 @@ ForceAnimationEnd::
 	
 AnimationCallSection::
 	ld hl, sp+2
-	ld a, [hli] ; Get bank
-	ld b, a
-	ld a, [hli] ; Get anim ID
+	ld b, [hl] ; Get bank
+	ldh a, [hCurrentAnimationID]
 	swap a
 	add a, LOW(wAnimationStacks)
 	ld e, a
@@ -550,16 +559,12 @@ AnimationCopyTiles::
 	ret
 	
 AnimationCopySprites::
-	ld hl, sp+3
-	ld a, [hl]
-	add a, a
-	add a, a
-	add a, a
-	add a, LOW(wAnimation0_nbOfSprites)
+	ldh a, [hCurrentAnimation]
+	add a, LOW(wAnimation0_nbOfSprites - wAnimation0_linkID)
 	ld l, a
-	adc a, HIGH(wAnimation0_nbOfSprites)
-	sub l
-	ld h, a ; de points to the animation's number of sprites
+	ldh a, [hCurrentAnimation+1]
+	adc a, HIGH(wAnimation0_nbOfSprites - wAnimation0_linkID)
+	ld h, a ; hl points to the animation's number of sprites
 	ld a, [hli]
 	ld e, a ; Nb of sprites
 	ld d, [hl] ; ID of 1st sprite
@@ -849,34 +854,28 @@ ENDR
 	
 	
 AnimationSetLoopCounter::
-	ld hl, sp+3
-	ld a, [hl]
-	add a, a
-	add a, a
-	add a, a
-	ld l, a
-	ld h, 0
-	ld de, wAnimation0_loopCounter
-	add hl, de
+	call GetLoopCounterPtr
 	ld a, [wLargerBuf]
 	ld [hl], a
 	ld a, 1
 	ret
 	
 AnimationDjnz::
-	ld hl, sp+3
-	ld a, [hl]
-	add a, a
-	add a, a
-	add a, a
-	ld l, a
-	ld h, 0
-	ld de, wAnimation0_loopCounter
-	add hl, de
+	call GetLoopCounterPtr
 	ld a, 1
 	dec [hl]
 	ret z
 	ld a, [wLargerBuf]
+	ret
+	
+	
+GetLoopCounterPtr::
+	ldh a, [hCurrentAnimation]
+	add a, LOW(wAnimation0_loopCounter - wAnimation0_linkID)
+	ld l, a
+	ldh a, [hCurrentAnimation+1]
+	adc a, HIGH(wAnimation0_loopCounter - wAnimation0_linkID)
+	ld h, a
 	ret
 	
 	
@@ -885,8 +884,7 @@ GetNPCPtrFromAnimID::
 	jr z, .gotNPCID
 	and $07
 	ld b, a ; Save offset
-	ld hl, sp+1
-	ld a, [hl]
+	ldh a, [hCurrentAnimationID]
 	add a, LOW(wAnimationTargetNPCs)
 	ld l, a
 	adc a, HIGH(wAnimationTargetNPCs)
@@ -904,15 +902,13 @@ GetNPCPtrFromAnimID::
 	
 	
 GetAnimSpriteInfo::
-	ld hl, sp+5 ; Compensate for the extra return addr
-	ld a, [hl]
-	add a, a
-	add a, a
-	add a, a
+	ldh a, [hCurrentAnimation]
+	add a, LOW(wAnimation0_nbOfSprites - wAnimation0_linkID)
 	ld l, a
-	ld h, 0
-	ld de, wAnimation0_nbOfSprites
-	add hl, de
+	ldh a, [hCurrentAnimation+1]
+	adc a, HIGH(wAnimation0_nbOfSprites - wAnimation0_linkID)
+	ld h, a
+	
 	ld a, [hli]
 	ld b, a ; Nb of sprites
 	ld c, [hl] ; ID of 1st sprite
