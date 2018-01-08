@@ -95,8 +95,9 @@ PitEffect:
 	ld a, [de]
 	inc de
 	and a
-	rra
+	rra ; Get 1/4 speed bit
 	jr nc, .noQuarterScroll
+	; If (c & 3) != 0, don't do 1/4 scroll
 	bit 0, c
 	jr nz, .noQuarterScroll
 	bit 1, c
@@ -105,11 +106,11 @@ PitEffect:
 	dec a
 .noQuarterScroll
 	and a
-	rra
+	rra ; Get 1/2 speed bit
 	jr nc, .noHalfScroll
-	bit 0, c ; Scroll these by half the speed
+	bit 0, c ; If (c & 1) != 0, don't do 1/2 scroll
 	jr nz, .noHalfScroll
-	dec a ; Done by alternating between this and the lower
+	dec a
 .noHalfScroll
 	add [hl]
 	ld [hli], a
