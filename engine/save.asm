@@ -1373,7 +1373,7 @@ LoadFile::
 	ld [SRAMEnable], a
 	ldh a, [hSRAM32kCompat]
 	and a
-	jr nz, .copyOneBank
+	jr nz, .compatMode
 	ld a, [wSaveFileID]
 	add a, a
 	add a, a
