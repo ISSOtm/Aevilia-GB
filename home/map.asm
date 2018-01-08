@@ -498,6 +498,7 @@ ENDC
 	call RedrawMap
 	call MoveNPC0ToPlayer
 	call ProcessNPCs
+	call ExtendOAM
 	
 	ld a, [wChangeMusics]
 	and a
