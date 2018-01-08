@@ -249,6 +249,7 @@ ENDC
 	
 .exitMenu
 	call ProcessNPCs ; Re-process NPC sprites which we had cleared
+	call ExtendOAM
 	ld a, 1
 	ld [SoundEnabled], a
 	call InterleaveFromFixedToMovable
