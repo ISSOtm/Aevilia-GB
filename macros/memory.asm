@@ -149,6 +149,12 @@ wAnimationStack\1_bank4::	db
 wAnimationStack\1_ptr4::	dw
 ENDM
 
+animation_gfx_hook: MACRO
+wAnimationGfxHook\1_animID::	db
+wAnimationGfxHook\1_buffer::	ds 6
+wAnimationGfxHook\1_unused::	db
+ENDM
+
 
 dtile: MACRO
 	ds VRAM_TILE_SIZE * (\1)

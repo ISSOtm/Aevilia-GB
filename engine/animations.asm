@@ -196,6 +196,7 @@ EndAnimation::
 	debug_message "WARNING: NUMBER OF SPRITES NEGATIVE (%A%) AFTER ENDING ANIMATION!!"
 	jr .dontShiftOAM
 .numOfSpritesOK
+	push bc
 	
 	ld a, d ; Get ID of first sprite of next anim
 	add a, a ; Don't shift OAM...
@@ -215,14 +216,31 @@ EndAnimation::
 .shiftOAM
 	ld a, l
 	cp LOW(wExtendedOAM + $A0)
-	jr z, .dontShiftOAM
+	jr z, .doneShiftingOAM
 	ld a, [hli]
 	ld [bc], a
 	inc bc
 	jr .shiftOAM
+.doneShiftingOAM
+	pop bc
+	
 .dontShiftOAM
 	ld a, 1
 	ld [wTransferSprites], a ; OAM has been updated !!1
+	
+	; Clear the animation's hooks
+	ld hl, wAnimationGfxHooks
+	ld de, 8 ; Struct length
+	ld c, 8
+.clearHooks
+	ld a, [hl]
+	cp b
+	jr z, .notMyHook
+	ld [hl], $FF
+.notMyHook
+	add hl, de
+	dec c
+	jr nz, .clearHooks
 	ret
 	
 	
@@ -555,6 +573,29 @@ AnimationCopyTiles::
 	call TransferTilesAcross
 	xor a
 	ld [rVBK], a
+	
+	; Attempt to create a graphics hook that will re-load the gfx on save/load
+	ld hl, wAnimationGfxHooks
+	ld de, 8
+	ld b, 8
+.lookForHook
+	ld a, [hl]
+	inc a
+	jr z, .foundHook
+	add hl, de
+	dec b
+	jr nz, .lookForHook
+	jr .abortHookCreation
+.foundHook
+	ldh a, [hCurrentAnimationID]
+	ld [hli], a
+	ld d, h
+	ld e, l
+	ld hl, wLargerBuf
+	ld c, 6
+	rst copy
+	
+.abortHookCreation
 	ld a, 6
 	ret
 	

@@ -262,6 +262,16 @@ wAnimationStacks::
 	animation_stack 6
 	animation_stack 7
 	
+wAnimationGfxHooks::
+	animation_gfx_hook 0
+	animation_gfx_hook 1
+	animation_gfx_hook 2
+	animation_gfx_hook 3
+	animation_gfx_hook 4
+	animation_gfx_hook 5
+	animation_gfx_hook 6
+	animation_gfx_hook 7
+	
 ; List of the IDs of the active animation slots
 wActiveAnimations::
 	ds 9

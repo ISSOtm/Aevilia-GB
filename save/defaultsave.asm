@@ -13,9 +13,11 @@ DefaultSaveMagicString0::
 DefaultSaveChecksums0:
 	ds $F8
 	
+	
 DefaultSaveWarp:
 	db 0 ; wTargetWarpID
 	db 2 ; wLoadedMap
+	
 	
 DefaultPlayerData:
 	dw $70 ; wYPos
@@ -32,17 +34,21 @@ DefaultPlayerData:
 DefaultButtonFilter:
 	db $FF ; hOverworldButtonFilter
 	
+	
 DefaultRNG:
 	dw 0 ; hRandInt
+	
 	
 ; These two will be overridden by the map loading anyways
 DefaultInteractions:
 	dbfill $400, 0
 	
+	
 DefaultInteractionCounts:
 	dbfill 4, 0 ; wWalkInterCount - wBtnLoadZoneCount
 	db 0 ; wNumOfNPCScripts
 	dw 0 ; wNPCScriptsPointer
+	
 	
 ; NPC 0 is never overridden, so we initialize it here
 DefaultNPCArray:
@@ -63,10 +69,12 @@ DefaultNPCArray:
 ; wNPC1_ypos to wNPC8_xdispl
 	dbfill 8 * $10, 0 ; 1 NPC = $10 bytes
 	
+	
 DefaultEmoteData::
 	db $7F ; wEmoteGfxID
 	db 0 ; wEmotePosition
 	db 0 ; wNumOfNPCs
+	
 	
 DefaultAnimationSlots::
 	dbfill 8 * 8, 0
@@ -80,6 +88,24 @@ DefaultActiveAnimations::
 	
 ; DefaultAnimationTargetNPCs::
 	dbfill 8, 0
+	
+	
+DefaultExtendedOAM::
+	dbfill $A0, 0
+	
+	dbfill 3, 0
+	
+	
+DefaultOAMMode::
+	db 0
+	
+	
+DefaultAnimGfxHooks::
+REPT 8
+	db $FF
+	ds 7
+ENDR
+	
 
 DefaultFlags:
 	dbfill $1000, 0

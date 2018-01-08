@@ -691,7 +691,7 @@ FileLoaded::
 .noCarry
 	
 	ld a, 1
-	call SwitchRAMBanks ; === CAUTION!! LOADED WRAM BANK MAY NOT BE 01 BEFORE THIS POINT!!! ===
+	call SwitchRAMBanks
 	
 	homecall LoadPlayerGraphics
 	
@@ -703,6 +703,35 @@ FileLoaded::
 	dec a
 	ld [wLoadedTileset], a ; Force loading tileset
 	ld [wCurrentMusicID], a ; Force changing musics
+	
+	ld hl, wAnimationGfxHooks
+.loadAnimGfx
+	ld de, 8
+	ld a, [hl]
+	inc a
+	jr z, .skipHook
+	
+	ld a, $FF
+	ld [hli], a ; Make room
+	ld de, wLargerBuf
+	ld c, 6
+	rst copy
+	push hl
+	callacross AnimationCopyTiles
+	pop hl
+	ld de, 1
+	
+.skipHook
+	add hl, de
+	ld a, l
+	sub LOW(wAnimationGfxHook7_animID + 8)
+	jr nz, .loadAnimGfx
+	
+	dec a ; ld a, $FF
+	ld hl, wAnimationGfxHooks
+	ld c, 8 * 8
+	rst fill
+	
 	
 	ld a, [wLoadedMap] ; Get map ID, set by save file
 	call LoadMap + 3 ; + 3 to skip putting a into wLoadedMap... :p
