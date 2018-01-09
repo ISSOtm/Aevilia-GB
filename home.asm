@@ -712,7 +712,7 @@ FileLoaded::
 	jr z, .skipHook
 	
 	ld a, $FF
-	ld [hli], a ; Make room
+	ld [hli], a ; Make room (the point is that all hooks will be shuffled, but preserved)
 	ld de, wLargerBuf
 	ld c, 6
 	rst copy
@@ -726,11 +726,6 @@ FileLoaded::
 	ld a, l
 	sub LOW(wAnimationGfxHook7_animID + 8)
 	jr nz, .loadAnimGfx
-	
-	dec a ; ld a, $FF
-	ld hl, wAnimationGfxHooks
-	ld c, 8 * 8
-	rst fill
 	
 	
 	ld a, [wLoadedMap] ; Get map ID, set by save file
