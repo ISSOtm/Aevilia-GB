@@ -1776,6 +1776,7 @@ TextStartAnim::
 	ld [hl], a
 	ld a, 5
 	ret
+	
 .allocationFailed
 	xor a ; Try again
 	ret
@@ -1791,11 +1792,13 @@ TextEndAnim::
 	ld de, wTextAnimationSlots
 	add hl, de
 	ld b, [hl]
-	ld [hl], $FF
-	inc b
-	dec b
+	
+	ld a, $FF
+	ld [hl], a
+	cp b ; Don't end slot if it was empty
 	call nz, EndAnimation
-	ld a, 1
+	
+	ld a, 2
 	ret
 	
 	
@@ -1877,3 +1880,4 @@ TextPlayAnims::
 	
 	ld a, 2
 	ret
+
