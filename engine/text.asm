@@ -1760,11 +1760,19 @@ TextStartAnim::
 	call StartAnimation
 	pop hl
 	jr z, .allocationFailed
-	ld l, [hl]
-	ld h, 0
-	ld de, wTextAnimationSlots
+	ld e, [hl] ; Get ID of the slot to be used
+	ld d, 0
+	
+	ld hl, wActiveAnimations + 8
+.getAllocatedID
+	ld a, [hld]
+	inc a
+	jr nz, .getAllocatedID
+	ld a, [hl] ; Get the ID of the last animation
+	; Since it's the one that was just allocated
+	
+	ld hl, wTextAnimationSlots
 	add hl, de
-;	ld a, [wNumOfAnimations]
 	ld [hl], a
 	ld a, 5
 	ret
