@@ -1800,14 +1800,80 @@ TextEndAnim::
 	
 	
 TextPlayAnims::
+	ld hl, wAnimation0_linkID
+	ld de, 8
+	ld b, e ; ld b, 8
+.freezeAnims
+	set 4, [hl]
+	add hl, de
+	dec b
+	jr nz, .freezeAnims
+	
+	ld bc, wTextAnimationSlots
+.unfreezeTextAnims
+	ld a, [bc]
+	inc a
+	jr z, .slotEmpty
+	
+	dec a
+	and $07
+	add a, a
+	add a, a
+	add a, a
+	add a, LOW(wAnimation0_linkID)
+	ld l, a
+	adc a, HIGH(wAnimation0_linkID)
+	sub l
+	ld h, a
+	res 4, [hl]
+	
+.slotEmpty
+	inc bc
+	dec e
+	jr nz, .unfreezeTextAnims
+	
+	
+.play
+	rst waitVBlank
+	call PlayAnimations
+	call ProcessNPCs
+	call ExtendOAM
+	ld a, 1
+	ld [wTransferSprites], a
+	
+	ld hl, wDigitBuffer + 1
+	ld a, [hl]
+	and $F8
+	add a, 8
+	jr nz, .decrementFrame
+	
+	; Check if target animation is playing
+	ld a, [hl]
+	and $07
+	ld b, a
+	ld hl, wActiveAnimations
+.lookUpSlot
+	ld a, [hli]
+	cp b
+	jr z, .play ; If animation is still playing, keep on truckin'
+	inc a
+	jr nz, .lookUpSlot
+	jr .stopPlaying ; If animation isn't running anymore, stop
+	
+.decrementFrame
+	dec [hl]
+	jr nz, .play
+.stopPlaying
 	
 	
 	ld hl, wAnimation0_linkID
-	ld b, 8
 	ld de, 8
+	ld b, e ; ld b, 8
 .unfreezeAnims
 	res 4, [hl]
 	add hl, de
 	dec b
 	jr nz, .unfreezeAnims
+	
+	ld a, 2
 	ret
