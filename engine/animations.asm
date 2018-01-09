@@ -348,7 +348,8 @@ PlayAnimations::
 	debug_message "BAD ANIM COMMAND %A%"
 .animationEnding
 	; We're going to check if the animation has a return pointer in store
-	ld a, b
+	ldh a, [hCurrentAnimationID]
+	ld b, a
 	swap a
 	add a, LOW(wAnimationStacks)
 	ld l, a
@@ -359,11 +360,13 @@ PlayAnimations::
 	and a
 	jr nz, .returnFromSection ; If it's not, return !
 	pop hl
-	ld de, -5 ; Move back to beginning of animation
-	add hl, de
 	pop af
 	rst bankswitch
-	jr .endAnim
+	call EndAnimation
+	pop hl
+	dec hl
+	jp .playActiveAnims ; The number of animations has changed, so check again.
+	
 .returnFromSection
 	dec a
 	ld [hli], a
@@ -381,12 +384,6 @@ PlayAnimations::
 	ld e, a
 	ld d, [hl]
 	jp .processCommand
-	
-.endAnim
-	call EndAnimation
-	pop hl
-	dec hl
-	jp .playActiveAnims ; The number of animations has changed, so check again.
 	
 .applyDelay
 	dec a
