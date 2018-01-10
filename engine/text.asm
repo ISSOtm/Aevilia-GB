@@ -1854,7 +1854,11 @@ TextPlayAnims::
 	; Check if target animation is playing
 	ld a, [hl]
 	and $07
-	ld b, a
+	ld l, a
+	ld h, 0
+	ld bc, wTextAnimationSlots
+	add hl, bc
+	ld b, [hl]
 	ld hl, wActiveAnimations
 .lookUpSlot
 	ld a, [hli]
