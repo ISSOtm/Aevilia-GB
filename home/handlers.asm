@@ -439,6 +439,8 @@ STATHandler::
 	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
 	push de
 	push bc
+	ldh a, [hCurRAMBank]
+	push af
 	
 	ldh a, [hHDMAInUse]
 	and a
@@ -602,8 +604,6 @@ STATHandler::
 	call FXHammer_Update
 	
 	
-	ldh a, [hCurRAMBank]
-	push af
 	ldh a, [hCurROMBank]
 	push af
 	
