@@ -264,6 +264,7 @@ TextCommandsPointers::
 	dw TextLoadMap
 	dw TextStartAnim
 	dw TextEndAnim
+	dw TextPlayAnims
 	
 TextErrorStr::
 	db "TEXT ERROR."

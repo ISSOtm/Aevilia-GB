@@ -673,9 +673,12 @@ ENDM
 ; end_animation textSlot
 end_animation: MACRO
 	db TEXT_END_ANIM
+	db \1
 ENDM
 
+; play_animations nbFrames
+; If nbFrames & $F8 == $F8, then it instead waits until animation nbFrames & $07 finishes
 play_animations: MACRO
 	db TEXT_PLAY_ANIMS
-	
+	db \1
 ENDM
