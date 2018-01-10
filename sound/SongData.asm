@@ -200,6 +200,7 @@ WaveTable:
 	dw	wave_FileSelectSquare2
 	
 wave_Bass1:				db	$02,$46,$8a,$ce,$ff,$fe,$ed,$dc,$ba,$98,$76,$54,$33,$22,$11,$00
+wave_Bass2:				db	$f9,$52,$14,$7c,$f7,$36,$be,$b8,$54,$23,$34,$57,$9a,$cd,$ef,$ff
 wave_Pulse:				db	$cc,$cc,$cc,$cc,$cc,$c0,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
 wave_ScareChord:		db	$ff,$ff,$ff,$ff,$00,$00,$00,$00,$ff,$ff,$ff,$ff,$f0,$00,$00,$00
 wave_Square:			db	$aa,$aa,$aa,$aa,$aa,$aa,$aa,$aa,$00,$00,$00,$00,$00,$00,$00,$00
@@ -904,13 +905,13 @@ NeoSafePlace_CH1:
 	db	SetInsAlternate,id_Echo1,id_NeoEcho
 	db	SetLoopPoint
 	db	F_5,2,B_4,2,A_4,2,F_5,2,G_4,2,A_4,2,A_4,2,G_4,2
-rept 3
+	rept 3
 	dbw	CallSection,.block0
-endr
+	endr
 	db	G_5,2,A_4,2,D_5,2,G_5,2,B_4,2,D_5,2,D_5,2,B_4,2
-rept 3
+	rept 3
 	dbw	CallSection,.block1
-endr
+	endr
 	db	GotoLoopPoint
 	
 .block0
@@ -924,17 +925,28 @@ endr
 NeoSafePlace_CH2:
 	db	SetInstrument,id_Echo2
 	db	SetLoopPoint
-	
-rept 30
-	db	F_2,2
-endr
+	rept	3
+	dbw	CallSection,.block1
+	endr
 	db	G_2,2,A_2,2
-rept 30
-	db	G_2,2
-endr
+	rept	3
+	dbw	CallSection,.block2
+	endr
 	db	A_2,2,G_2,2
 	
 	db	GotoLoopPoint
+	
+.block1
+	rept	10
+	db	F_2,2
+	endr
+	ret
+	
+.block2
+	rept	10
+	db	G_2,2
+	endr
+	ret
 
 NeoSafePlace_CH3:
 	db	SetLoopPoint

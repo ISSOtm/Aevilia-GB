@@ -415,16 +415,30 @@ PlayerJumpingAnimation::
 	anim_set_pos 0, 2, 60, 60
 	anim_set_attribs 0, 2, $08, $60
 	
-	anim_set_loop_counter 8
-.movePlayerUp
+; sorry about the mess! - DevEd
+.movePlayer
+	anim_move_player -3, 0
+	pause 1
+	anim_move_player -3, 0
+	pause 1
+	anim_move_player -2, 0
+	pause 1
+	anim_move_player -2, 0
+	pause 1
 	anim_move_player -1, 0
 	pause 1
-	anim_djnz_label .movePlayerUp
-	
-	anim_set_loop_counter 8
-.movePlayerDown
+	anim_move_player -1, 0
+	pause 3
 	anim_move_player 1, 0
 	pause 1
-	anim_djnz_label .movePlayerDown
+	anim_move_player 1, 0
+	pause 1
+	anim_move_player 2, 0
+	pause 1
+	anim_move_player 2, 0
+	pause 1
+	anim_move_player 3, 0
+	pause 1
+	anim_move_player 3, 0
 	done
 	
