@@ -389,7 +389,7 @@ StarthamDevEdTestScript::
 	text_sta	hScreenShakeAmplitude
 	play_sfx SFX_BATTLE_THUD
 	start_animation 0, PlayerJumpingAnimation
-	delay 16
+	play_animations $F8 | 0
 	text_lda_imm	0
 	text_sta	hScreenShakeAmplitude
 	wait_sfx
@@ -417,13 +417,13 @@ PlayerJumpingAnimation::
 	
 	anim_set_loop_counter 8
 .movePlayerUp
-	anim_move_npc 0, -1, 0
+	anim_move_player -1, 0
 	pause 1
 	anim_djnz_label .movePlayerUp
 	
 	anim_set_loop_counter 8
 .movePlayerDown
-	anim_move_npc 0, 1, 0
+	anim_move_player 1, 0
 	pause 1
 	anim_djnz_label .movePlayerDown
 	done
