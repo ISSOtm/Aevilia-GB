@@ -1597,7 +1597,7 @@ SaveBlocks::
 	wramx_block wEmoteGfxID, 3
 	wram0_block wAnimationSlots, 8 * 8
 	wram0_block wAnimationStacks, 8 * 8
-	wram0_block wActiveAnimations, 9 + 8 ; Also wAnimationTargetNPCs
+	wram0_block wActiveAnimations, 9 + 8 + 8 ; Also wAnimationTargetNPCs and wTextAnimationSlots
 	wramx_block wExtendedOAM, $A0 + 3
 	hram_block hOAMMode, 1
 	wramx_block wAnimationGfxHooks, 8 * 8

@@ -89,6 +89,9 @@ DefaultActiveAnimations::
 ; DefaultAnimationTargetNPCs::
 	dbfill 8, 0
 	
+DefaultTextAnimationSlots::
+	dbfill 8, $FF
+	
 	
 DefaultExtendedOAM::
 	dbfill $A0, 0
