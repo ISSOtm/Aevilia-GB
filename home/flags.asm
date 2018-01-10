@@ -16,7 +16,7 @@ GetFlag::
 	ld a, [rSVBK]
 	ld b, a
 	ld a, BANK(wFlags)
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	
 	ld a, e
 	and $07
@@ -41,14 +41,14 @@ ENDR
 	ld d, a ; Save for wrapping funcs
 	
 	ld a, b
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	ret
 	
 	
 SetFlag::
 	call GetFlag
 	ld a, BANK(wFlags)
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	ld a, d
 	scf
 	
@@ -60,13 +60,13 @@ SetFlag::
 	
 	ld [hl], c
 	ld a, b
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	ret
 	
 ResetFlag::
 	call GetFlag
 	ld a, BANK(wFlags)
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	ld a, d
 	and a ; Reset carry
 	
@@ -78,13 +78,13 @@ ResetFlag::
 	
 	ld [hl], c
 	ld a, b
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	ret
 	
 ToggleFlag::
 	call GetFlag
 	ld a, BANK(wFlags)
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	ld a, d
 	ccf
 	
@@ -96,6 +96,6 @@ ToggleFlag::
 	
 	ld [hl], c
 	ld a, b
-	ld [rSVBK], a
+	call SwitchRAMBanks
 	ret
 	
