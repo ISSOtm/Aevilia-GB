@@ -413,6 +413,8 @@ AnimationCommands::
 	dw AnimationCopyTiles
 	dw AnimationCopySprites
 	dw AnimationMoveSprites
+	dw AnimationMovePlayer
+	dw AnimationTurnPlayer
 	dw AnimationMoveNPC
 	dw AnimationTurnNPC
 	dw AnimationSetSpritePos
@@ -689,6 +691,69 @@ AnimationMoveSprites::
 .preventOverflow
 	ld a, 4
 	ld [wTransferSprites], a
+	ret
+	
+	
+AnimationMovePlayer::
+	ld hl, wYPos
+	ld de, wLargerBuf
+	ld a, [de]
+	inc de
+	bit 7, a
+	jr z, .moveDown
+	cpl
+	inc a ; Negate
+	ld b, a ; Save
+	ld a, [hl]
+	sub b
+	ld [hli], a
+	jr nc, .movedVert
+	dec [hl]
+	jr .movedVert
+.moveDown
+	add a, [hl]
+	ld [hli], a
+	jr nc, .movedVert
+	inc [hl]
+.movedVert
+	inc hl
+	ld a, [de]
+	bit 7, a
+	jr z, .moveRight
+	cpl
+	inc a
+	ld b, a
+	ld a, [hl]
+	sub b
+	ld [hli], a
+	jr nc, .movedHoriz
+	dec [hl]
+	jr .movedHoriz
+.moveRight
+	add a, [hl]
+	ld [hli], a
+	jr nc, .movedHoriz
+	inc [hl]
+.movedHoriz
+	call MoveNPC0ToPlayer
+	
+	ld a, 2
+	ret
+	
+	
+AnimationTurnPlayer::
+	ld hl, wPlayerDir
+	ld de, wLargerBuf
+	ld a, [de]
+	and 3 ; Get only the targeted bits
+	ld e, a
+	ld a, [hl]
+	and $FC ; Keep all the unchanged bits
+	or e
+	ld [hl], a
+	call MoveNPC0ToPlayer
+	
+	ld a, 1
 	ret
 	
 	

@@ -11,6 +11,8 @@
 	enum_elem ANIM_COPY_TILES
 	enum_elem ANIM_COPY_SPRITES
 	enum_elem ANIM_MOVE_SPRITES
+	enum_elem ANIM_MOVE_PLAYER
+	enum_elem ANIM_TURN_PLAYER
 	enum_elem ANIM_MOVE_NPC
 	enum_elem ANIM_TURN_NPC
 	enum_elem ANIM_SET_SPR_POS
@@ -107,6 +109,21 @@ anim_copy_sprites: MACRO
 	ENDC
 	db \2
 	db \3
+ENDM
+
+; Moves the player
+; args : yvect xvect
+; Both vector coordinates are signed 
+anim_move_player: MACRO
+	db ANIM_MOVE_PLAYER
+	db \1, \2
+ENDM
+
+; Moves sprites on-screen
+; arg : dir
+anim_turn_player: MACRO
+	db ANIM_TURN_PLAYER
+	db \1
 ENDM
 
 ; Moves sprites on-screen
