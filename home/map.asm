@@ -573,84 +573,13 @@ LoadTileset::
 .copyMoreTiles
 	ld c, a ; Save the number of tiles
 	push bc ; Save the tileset's ROM bank
-	
 	ld a, [hli] ; Get the source ROM bank
 	ld b, a ; Save it
 	ld a, [hli] ; Get the source pointer
 	push hl
 	ld h, [hl]
 	ld l, a
-	
-	ld a, b
-	rst bankswitch ; Switch to the source bank
-	
-	ldh a, [hHDMAInUse]
-	and a
-	jr nz, .useStandardCopy ; If HDMA is busy, use the standard copy function instead
-	
-	; Reserve HDMA for use
-	inc a ; ld a, 1
-	ldh [hHDMAInUse], a
-	
-	ld a, h
-	ld [rHDMA1], a
-	ld a, l
-	ld [rHDMA2], a
-	ld a, d
-	ld [rHDMA3], a
-	ld a, e
-	ld [rHDMA4], a
-	; Calculate DE after transfer
-	ld a, c
-	swap a
-	and $0F
-	ld b, a ; Store high byte
-	ld a, c
-	swap a
-	and $F0 ; Get low byte
-	add a, e ; Add
-	ld e, a
-	adc a, b ; Add high byte
-	sub e
-	add a, d
-	ld d, a
-	ld a, c ; Get the number of tiles back
-	dec a ; Must write (numOfTiles - 1) !
-	or $80 ; Add HDMA flag
-	ld c, a ; Save this
-.waitHBlank
-	ld a, [rSTAT]
-	and 3
-	jr nz, .waitHBlank
-.waitNotHBlank
-	ld a, [rSTAT]
-	and 3
-	jr z, .waitNotHBlank
-	ld a, c ; Get back value to be written
-	ld c, LOW(rHDMA5)
-	ld hl, $CC00
-	ld [$FF00+c], a
-.waitTransferComplete
-	ld a, [$FF00+c]
-	inc a
-	jr nz, .waitTransferComplete ; This is $FF when transfer has completed
-	; Now, we don't need HDMA1-HDMA5 anymore
-	xor a
-	ldh [hHDMAInUse], a
-	jr .copiedTileBlock
-	
-.useStandardCopy
-	swap c
-	ld a, c
-	and $0F
-	ld b, a
-	ld a, c
-	and $F0
-	ld c, a
-	call CopyToVRAM
-	; de has been updated
-	
-.copiedTileBlock
+	call TransferTilesAcross
 	pop hl
 	inc hl
 	pop bc
