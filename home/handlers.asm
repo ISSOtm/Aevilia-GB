@@ -434,14 +434,7 @@ STATHandler::
 	reti
 	
 .musicTime
-	res 5, [hl] ; Disable mode 2 interrupt
-	ld l, rIF & $FF
-	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
-	push de
-	push bc
-	ldh a, [hCurRAMBank]
-	push af
-	
+	; Do HDMA first to ensure it's done before Mode 0 (this causes issues)
 	ldh a, [hHDMAInUse]
 	and a
 	jr z, .HDMAInactive
@@ -455,6 +448,16 @@ STATHandler::
 .HDMAInactive
 	ld a, $FF
 	ldh [hHDMALength], a
+	
+	
+	; hl = rSTAT
+	res 5, [hl] ; Disable mode 2 interrupt
+	ld l, rIF & $FF
+	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
+	push de
+	push bc
+	ldh a, [hCurRAMBank]
+	push af
 	
 	ld a, BANK(wNumOfTileAnims)
 	ld [rSVBK], a
