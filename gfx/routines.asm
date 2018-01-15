@@ -248,7 +248,7 @@ LoadOBJPalette_Hook::
 ; Struct is the same as BG palette, without first 3 color bytes (bcuz transparent, lel)
 ; Registers are modified the same way, too
 LoadOBJPalette::
-	ld c, rOBPI & $FF
+	ld c, LOW(rOBPI)
 	ld b, a
 	add a, a
 	add a, a
@@ -267,7 +267,7 @@ LoadPalette_Common:
 	call SwitchRAMBanks
 	ld h, d
 	ld l, e
-	ld d, wOBJPalettes >> 8
+	ld d, HIGH(wOBJPalettes)
 	ld a, b
 	add a, a
 	add a, b
@@ -279,7 +279,7 @@ LoadPalette_Common:
 	jr z, .copy
 	ld b, OBJ_PALETTE_STRUCT_SIZE ; OBJ palettes have a different size,
 	ld a, e ; and are stored in a different array
-	add a, (wOBJPalettes & $FF) + 3
+	add a, LOW(wOBJPalettes) + 3
 	ld e, a
 .copy
 	ld a, [hli]
@@ -290,13 +290,13 @@ LoadPalette_Common:
 	jr nz, .copy
 	pop af
 	ld [rSVBK], a
+	pop hl
 	
 	; Check if palette should be committed to the screen
 	ldh a, [hGFXFlags]
 	bit 6, a
-	jr nz, .popOffAndQuit
+	ret nz
 	
-	pop hl
 	ld b, 3
 	bit 1, c
 	jr nz, .writeByte
@@ -311,10 +311,6 @@ LoadPalette_Common:
 	pop bc
 	dec b
 	jr nz, .writeByte
-	ret
-	
-.popOffAndQuit ; For side effect compatibility
-	add sp, 2 ; Remove original pointer from the stack
 	ret
 	
 	
@@ -381,7 +377,7 @@ PaletteCommon_Custom: ; Call with colors in b and de
 ; Use for example after GrayOutPicture
 ReloadPalettes::
 	ld hl, wBGPalettes
-	ld c, rBGPI & $FF - 1
+	ld c, LOW(rBGPI) - 1
 .reloadPaletteSet
 	inc c
 	ld a, $80 ; Palette 0, color 0, auto-increment
@@ -393,9 +389,9 @@ ReloadPalettes::
 	ld a, e
 	ld [$FF00+c], a
 	ld a, l
-	cp wOBJPalettes & $FF
+	cp LOW(wOBJPalettes)
 	jr z, .reloadPaletteSet
-	cp wPalettesEnd & $FF
+	cp LOW(wPalettesEnd)
 	jr nz, .reloadBGPalettes
 	ret
 	
@@ -414,7 +410,7 @@ TransitionToFixedMap::
 	ret
 	
 CopyToFixedMap::
-	ld h, vTileMap0 >> 8
+	ld h, HIGH(vTileMap0)
 	ldh a, [hSCY]
 	and -TILE_SIZE
 	ldh [hSCY], a
@@ -442,9 +438,9 @@ CopyToFixedMap::
 	ld c, SCREEN_WIDTH
 	push hl
 	ld a, h
-	cp vTileMap1 >> 8
+	cp HIGH(vTileMap1)
 	jr nz, .copyLoop ; No vertical wrap
-	ld h, vTileMap0 >> 8
+	ld h, HIGH(vTileMap0)
 .copyLoop
 	rst isVRAMOpen
 	jr nz, .copyLoop
@@ -452,7 +448,7 @@ CopyToFixedMap::
 	ld [de], a
 	inc de
 	ld a, l
-	and (VRAM_ROW_SIZE - 1)
+	and VRAM_ROW_SIZE - 1
 	jr nz, .noHorizontalWrap
 	ld a, l
 	sub VRAM_ROW_SIZE
@@ -483,7 +479,7 @@ CopyToFixedMap::
 GrayOutPicture::
 	ld hl, wBGPalettes
 	rst waitVBlank
-	ld c, rBGPI & $FF
+	ld c, LOW(rBGPI)
 .palettesLoop
 	ld a, $80
 	ld [$FF00+c], a
@@ -551,8 +547,8 @@ GrayOutPicture::
 	
 	inc c
 	ld a, c
-	cp $6C
-	jr nz, .palettesLoop
+	cp LOW(rOBPI)
+	jr z, .palettesLoop
 	ret
 	
 	
@@ -574,7 +570,7 @@ FadeOutToWhite:
 .maxSpeed
 	rst waitVBlank
 	ld hl, wBGPalettes
-	ld c, rBGPI & $FF
+	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
 	ld [$FF00+c], a
@@ -622,7 +618,7 @@ FadeOutToWhite:
 	jr nz, .onePalette
 	inc c
 	ld a, c
-	cp rOBPI & $FF
+	cp LOW(rOBPI)
 	jr z, .nextPaletteSet
 	
 	ld a, [wFadeCount]
@@ -644,7 +640,7 @@ FadeOutToBlack:
 .maxSpeed
 	rst waitVBlank
 	ld hl, wBGPalettes
-	ld c, rBGPI & $FF
+	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
 	ld [$FF00+c], a
@@ -689,7 +685,7 @@ FadeOutToBlack:
 	jr nz, .onePalette
 	inc c
 	ld a, c
-	cp rOBPI & $FF
+	cp LOW(rOBPI)
 	jr z, .nextPaletteSet
 	
 	ld a, [wFadeCount]
@@ -717,7 +713,7 @@ FadeInToWhite:
 .maxSpeed
 	rst waitVBlank
 	ld hl, wBGPalettes
-	ld c, rBGPI & $FF
+	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
 	ld [$FF00+c], a
@@ -765,7 +761,7 @@ FadeInToWhite:
 	jr nz, .onePalette
 	inc c
 	ld a, c
-	cp rOBPI & $FF
+	cp LOW(rOBPI)
 	jr z, .nextPaletteSet
 	
 	ld a, [wFadeCount]
@@ -787,7 +783,7 @@ FadeInToBlack:
 .maxSpeed
 	rst waitVBlank
 	ld hl, wBGPalettes
-	ld c, rBGPI & $FF
+	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
 	ld [$FF00+c], a
@@ -832,7 +828,7 @@ FadeInToBlack:
 	jr nz, .onePalette
 	inc c
 	ld a, c
-	cp rOBPI & $FF
+	cp LOW(rOBPI)
 	jr z, .nextPaletteSet
 	
 	ld a, [wFadeCount]
@@ -865,7 +861,7 @@ LoadPlayerGraphics::
 	ld hl, EvieDefaultPalette
 	ld a, [wPlayerGender]
 	and a
-	jr z, .loadEvie2
+	jr z, .loadEvie2 ; a is already zero
 	ld hl, TomDefaultPalette
 	xor a
 .loadEvie2

@@ -10,7 +10,7 @@ InterleaveFromMovableToFixed::
 	ld hl, rNR51 ; L/R connectors
 	xor a
 	ld [hl], a ; Mute sound
-	ld l, rIE & $FF
+	ld l, LOW(rIE)
 	ld b, [hl]
 	ld [hl], 1
 	xor a
@@ -29,7 +29,7 @@ InterleaveFromMovableToFixed::
 	pop bc
 	ld hl, rLCDC
 	res 1, [hl]
-	ld l, rLY & $FF
+	ld l, LOW(rLY)
 	ld c, d
 .oneScanline
 	ld a, c
@@ -37,7 +37,7 @@ InterleaveFromMovableToFixed::
 	cp [hl]
 	jr nz, .waitScanline
 	inc c
-	ld l, rSTAT & $FF
+	ld l, LOW(rSTAT)
 .waitBlank
 	ld a, [hl]
 	and 3
@@ -228,10 +228,8 @@ StartMenu::
 	
 	ld [SoundEnabled], a
 	
-	push	bc
-	ld	c,SFX_MENU_OPEN
-	callacross	FXHammer_Trig
-	pop	bc
+	ld c,SFX_MENU_OPEN
+	callacross FXHammer_Trig
 	call InterleaveFromMovableToFixed
 	
 .mainLoop
@@ -298,13 +296,6 @@ ENDC
 	inc hl
 	inc hl
 	
-	push	bc
-	push	hl
-	ld	c,SFX_TEXT_CONFIRM
-	callacross	FXHammer_Trig
-	pop	hl
-	pop	bc
-	
 	ld de, sNonVoidSaveFiles - 1
 	ldh a, [hSRAM32kCompat]
 	and a
@@ -325,6 +316,8 @@ ENDC
 	ld [SRAMEnable], a
 	ld [SRAMBank], a
 	
+	ld c,SFX_TEXT_CONFIRM
+	callacross FXHammer_Trig
 	ld hl, DoneStr
 	ld de, wFixedTileMap + SCREEN_WIDTH * 14 + 2
 	rst copyStr

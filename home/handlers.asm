@@ -106,7 +106,7 @@ VBlankHandler::
 	xor a
 	ld [bc], a ; Mark row as transferred
 	ld hl, wTextboxTileMap
-	ld d, vTileMap1 >> 8
+	ld d, HIGH(vTileMap1)
 	ld a, c
 	add a, a
 	ld b, a
@@ -187,7 +187,7 @@ ENDR
 	; Copy DMA routine then call it
 	; Prevents DMA hijacking :D
 	ld hl, DMAScript
-	ld c, hDMAScript & $FF
+	ld c, LOW(hDMAScript)
 .copyDMARoutine
 	ld a, [hli]
 	ld [$FF00+c], a
@@ -197,7 +197,7 @@ ENDR
 	; b's value was determined through testing...
 	; less means returning before the CPU has access (crash),
 	; and more means CPU time is wasted
-	ld bc, (41 << 8) + (rDMA & $FF)
+	ld bc, (41 << 8) + LOW(rDMA)
 	ldh a, [hOAMMode]
 	and a
 	ld a, HIGH(wVirtualOAM)
@@ -288,7 +288,7 @@ ENDR
 .noSpecialEffects
 	
 	; Due to a hardware bug exclusive to the DMG, editing STAT immediately schedules a LCD interrupt (but not on the CGB)
-	ld l, rIF & $FF
+	ld l, LOW(rIF)
 	res 1, [hl] ; Thus, we remove it.
 	
 	ldh a, [hCurRAMBank] ; Restore WRAM bank
@@ -330,7 +330,7 @@ UpdateJoypadState:: ; Initially part of VBlank, but may be used independently
 	cp CONSOLE_GBA
 .setGBA
 	ld a, $AF
-	jr nz, .setGBA + 1 ; Probably the worst hack in this entire game.
+	jr nz, .setGBA + 1 ; Probably the worst ASM hack in this entire game.
 	ld b, a
 	ld a, c
 	cp CONSOLE_GBC
@@ -378,11 +378,10 @@ STATHandler::
 	
 	; LY=LYC : check if it's textbox or special effects time
 	ld a, [rLYC]
-	ld h, a
+	ld l, a
 	ldh a, [hTextboxLY]
-	cp h
-	ld h, $FF
-	jr z, .waitHBlank ; If we're on the textbox's LY, it has priority
+	cp l
+	jr z, .doTextbox ; If we're on the textbox's LY, it has priority
 	
 	; Then we have to perform a special effect
 	ld l, LOW(hSpecialEffectsBuf)
@@ -410,15 +409,17 @@ STATHandler::
 	cp $8F
 	jr .endMode2
 	
+.doTextbox
+	ld l, LOW(rSTAT)
 .waitHBlank
 	bit 1, [hl]
 	jr nz, .waitHBlank
 	
-	dec hl ; ld hl, rLCDC
+	dec l ; ld hl, rLCDC
 	res 1, [hl] ; Zero OBJ bit
 	set 3, [hl] ; Switch to textbox's tilemap
 	
-	ld l, rSCX & $FF
+	ld l, LOW(rSCX)
 	xor a
 	ld [hld], a ; Stick to left edge, go to rSCY
 	dec a
@@ -426,7 +427,7 @@ STATHandler::
 	ld a, [rLY]
 	cpl
 	ld [hli], a
-	cp $8F ^ $FF ; Check if we were on last scanline ; if yes, we need to return quickly (VBlank is incoming)
+	cp $8F ^ $FF ; Check if we were on last scanline ; If yes, we need to return quickly (VBlank is incoming)
 .endMode2
 	jp nz, .end
 	pop hl
@@ -434,7 +435,7 @@ STATHandler::
 	reti
 	
 .musicTime
-	; Do HDMA first to ensure it's done before Mode 0 (this causes issues)
+	; Do HDMA first to ensure it's done before Mode 0 (this otherwise causes issues)
 	ldh a, [hHDMAInUse]
 	and a
 	jr z, .HDMAInactive
@@ -444,15 +445,15 @@ STATHandler::
 	jr z, .HDMAInactive
 	dec a ; The transfer is active, thus, it must be stopped
 	ld [rHDMA5], a ; Write a value with bit 7 reset, which stops the transfer
-	db $21 ; Absorbs the next two bytes, which trashes hl but we don't care
+	db $FE ; Absorbs the next byte, which turns into "cp $XX", and we don't care
 .HDMAInactive
-	ld a, $FF
+	dec a
 	ldh [hHDMALength], a
 	
 	
 	; hl = rSTAT
 	res 5, [hl] ; Disable mode 2 interrupt
-	ld l, rIF & $FF
+	ld l, LOW(rIF)
 	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
 	push de
 	push bc
@@ -509,10 +510,7 @@ STATHandler::
 	and a
 	jr nz, .useStandardCopy
 	
-	inc a
-	ldh [hHDMAInUse], a
-	
-	ld c, rHDMA1 & $FF
+	ld c, LOW(rHDMA1)
 	; Write copy's source pointer
 	ld a, d ; Get back swap'd frame
 	and $0F
@@ -528,12 +526,12 @@ STATHandler::
 	
 	ld a, e
 	and $0F
-	add a, v0Tiles1 >> 8
+	add a, HIGH(v0Tiles1)
 	ld [$FF00+c], a ; rHDMA3
 	inc c
 	ld a, e
 	and $F0
-;	add a, v0Tiles1 & $FF ; This is $00
+;	add a, LOW(v0Tiles1) ; This is $00
 	ld [$FF00+c], a ; rHDMA4
 	inc c
 	
@@ -550,8 +548,6 @@ STATHandler::
 	ld a, [$FF00+c]
 	inc a
 	jr nz, .waitTransferDone
-	; xor a
-	ldh [hHDMAInUse], a
 	jr .doneAnimating
 	
 .useStandardCopy
@@ -569,7 +565,7 @@ STATHandler::
 	
 	ld a, e
 	and $0F
-	add a, v0Tiles1 >> 8
+	add a, HIGH(v0Tiles1)
 	ld d, a
 	ld a, e
 	and $F0
@@ -627,9 +623,9 @@ ENDC
 	ld a, b
 	add a, a
 ;	add a, b  Currently, only 2-byte entries since all Thread 2 functions must be in the same bank as the pointers
-	add a, Thread2Ptrs & $FF
+	add a, LOW(Thread2Ptrs)
 	ld l, a
-	adc Thread2Ptrs >> 8
+	adc HIGH(Thread2Ptrs)
 	sub l
 	ld h, a
 ;	ld a, [hli] ; Read bank

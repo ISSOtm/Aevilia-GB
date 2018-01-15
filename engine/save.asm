@@ -309,9 +309,9 @@ FileSelectOptions_Erase:
 	dec a ; 02 or 05
 	rrca ; 01 or 02!
 .gotDaID
-	add a, sNonVoidSaveFiles & $FF
+	add a, LOW(sNonVoidSaveFiles)
 	ld l, a
-	ld h, sNonVoidSaveFiles >> 8
+	ld h, HIGH(sNonVoidSaveFiles)
 	ld a, SRAM_UNLOCK
 	ld [SRAMEnable], a
 	ld a, BANK(sNonVoidSaveFiles)
@@ -399,15 +399,15 @@ FileSelectOptions_Copy:
 	dec a ; 02 or 05
 	rrca ; 01 or 02!
 .gotDaID
-	add a, sNonVoidSaveFiles & $FF
+	add a, LOW(sNonVoidSaveFiles)
 	ld l, a
-	ld h, sNonVoidSaveFiles >> 8
+	ld h, HIGH(sNonVoidSaveFiles)
 	ld a, SRAM_UNLOCK
 	ld [SRAMEnable], a
 	ld a, BANK(sNonVoidSaveFiles)
 	ld [SRAMBank], a
-	ld [hl], 0 ; Mark save file as empty
 	xor a
+	ld [hl], a ; Mark save file as empty
 	ld [SRAMBank], a
 	ld [SRAMEnable], a
 	
