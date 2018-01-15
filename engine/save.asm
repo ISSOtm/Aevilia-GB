@@ -325,6 +325,8 @@ FileSelectOptions_Erase:
 	jp FileSelectOptions
 	
 FileSelectOptions_Copy:
+	jp FileSelectOptions
+	
 	ld hl, CopyWhichFileStr
 	call CopyStrToVRAM
 	
