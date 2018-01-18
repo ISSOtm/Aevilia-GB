@@ -64,8 +64,8 @@ TitleScreenDevSoftPalette::
 	db $00, $00, $00
 TitleScreenLogoPalette0::
 	db $0B, $10, $1B
-	db $05, $09, $15
 	db $05, $0D, $15
+	db $05, $09, $15
 	db $00, $00, $00
 TitleScreenLogoPalette1::
 	db $0B, $10, $1B
