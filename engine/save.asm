@@ -434,9 +434,7 @@ DrawFileSelect::
 	ld hl, v0Tiles2
 	ld c, VRAM_TILE_SIZE
 	call FillVRAMLite
-	ld hl, vTileMap0
-	ld bc, VRAM_ROW_SIZE * (SCREEN_HEIGHT + 5)
-	call FillVRAM
+	call ClearMovableMap
 	; Redraw "Aevilia GB" string
 	; Do last to avoid displaying anything
 	ld c, 0
