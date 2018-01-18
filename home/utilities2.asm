@@ -285,7 +285,7 @@ ClearMovableMap::
 	
 ; Transfer c tiles from b:hl to de using HDMA if available
 ; (This assumes hl and de are aligned)
-; NOTE : don't try to transfer more than 128 tiles !!
+; NOTE : transfers (c & $7F) tiles only
 TransferTilesAcross::
 	ldh a, [hCurROMBank]
 	push af
@@ -303,39 +303,11 @@ TransferTilesAcross::
 	jr nz, .tryAgain ; If any tiles remain, try again to use HDMA
 	jr .done
 	
-.transferAgain
-	swap b
-	ld a, b
-	and $F0
-	ld c, a
-	ld a, b
-	and $0F
-	ld b, a
-	
-	ld a, e
-	add a, c
-	ld e, a
-	adc a, b
-	sub e
-	ld d, a
-	
-	ld a, l
-	add a, c
-	ld l, a
-	adc a, h
-	sub l
-	; ld h, a ; Unnecessary
-	
-	ld b, $7F
-	jr .startNewTransfer
-	
 .HDMAClear
 	inc a
 	ldh [hHDMAInUse], a
-	dec b ; We have to write 1 less than the number of tiles
 	
 	ld a, h
-.startNewTransfer
 	ld c, LOW(rHDMA1)
 	ld [c], a
 	inc c
@@ -355,15 +327,27 @@ TransferTilesAcross::
 	rst isVRAMOpen
 	jr z, .waitNotHBlank
 	ld a, b
+	dec a ; We have to write 1 less than the number of tiles
 	or $80
 	ld [c], a ; Start HDMA
+	
+	; While waiting for it, compute the post-transfer de
+	swap b
+	ld a, b
+	and $F0
+	ld l, a
+	ld a, b
+	and $07 ; Mask out upper bit here too
+	ld h, a
+	add hl, de
+	ld d, h
+	ld e, l
+	
+	ld c, LOW(rHDMA5)
 .waitHDMA
 	ld a, [c]
 	inc a
 	jr nz, .waitHDMA
-	ld a, b
-	and $80
-	jr nz, .transferAgain
 	; xor a
 	ldh [hHDMAInUse], a
 .done
