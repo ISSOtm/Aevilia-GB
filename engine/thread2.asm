@@ -602,6 +602,24 @@ LoadingStairsDown::
 	
 	
 ScrollClouds::
+	ld hl, wIntroInterrupted
+	ldh a, [hPressedButtons]
+	and BUTTON_START | BUTTON_B | BUTTON_A
+	or [hl]
+	ld [hld], a
+	jr z, .dontInterrupt
+	ld a, [hl] ; If interruption requested, check if interruptable
+	and a
+	jr z, .dontInterrupt
+	; Interruption requested and allowed, DO IT !
+	ld [hl], 0 ; Prevent further interruptions
+	
+	ld hl, sp+14
+	ld a, LOW(SkipIntroLogos)
+	ld [hli], a
+	ld [hl], HIGH(SkipIntroLogos)
+	
+.dontInterrupt
 	ld hl, hSpecialEffectsBuf + 1
 	ld c, LOW(hCloudScrollCount)
 	ld a, [c]

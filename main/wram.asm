@@ -28,11 +28,29 @@ wMapHeight::
 	
 	
 SECTION "Player data", WRAM0,ALIGN[2]
+
+UNION
+wIntroInterruptable::
+	ds 1
+wIntroInterrupted::
+	ds 1
+	
+wIntroSP::
+	ds 2
+	
+wIntroScrollSpeed::
+	ds 1
+wIntroPauseLength::
+	ds 1
+	
+NEXTU
+
 ; Coordinates within the map
 wYPos::
 	ds 2
 wXPos::
 	ds 2
+
 ; Direction the player is facing
 wPlayerDir::
 	ds 1
@@ -40,6 +58,7 @@ wPlayerDir::
 ; If non-zero, joypads inputs can't move the player
 wUnlinkJoypad::
 	ds 1
+ENDU
 	
 ; If non-zero, collision detection will be disabled
 wNoClipActive::

@@ -28,6 +28,10 @@ PlayIntro::
 	xor a
 	ld [rVBK], a
 	
+	ld [wIntroInterruptable], a
+	ld [wIntroInterrupted], a
+	ld [wIntroSP], sp
+	
 	ldh [hSpecialEffectsBuf + 1], a ; Cloud scroll offset
 	ld a, 2 ; SCX
 	ldh [hSpecialEffectsBuf], a
@@ -45,10 +49,6 @@ PlayIntro::
 	ld c, 5 * VRAM_ROW_SIZE
 	call CopyToVRAMLite
 	
-	ld bc, 120
-	call DelayBCFrames
-	
-	
 	ld de, TitleScreenAeviDevPalette
 	ld c, 1
 	callacross LoadBGPalette_Hook
@@ -56,12 +56,20 @@ PlayIntro::
 	ld c, 1
 	callacross LoadOBJPalette_Hook
 	
+	ld a, 1
+	ld [wIntroInterruptable], a
+	ld bc, 120
+	call DelayBCFrames
+	; xor a
+	ld [wIntroInterruptable], a
+	
+	
 	ld a, $5B
 	ldh [hSCX], a
-	ld a, 13 ; Speed
-	ld [wXPos], a
-	ld a, 60 ; Number of frames to stand still
-	ld [wXPos + 1], a
+	ld a, 13
+	ld [wIntroScrollSpeed], a
+	ld a, 60
+	ld [wIntroPauseLength], a
 	
 	ld a, 1
 	ld [rVBK], a
@@ -112,6 +120,7 @@ PlayIntro::
 	ld a, 18
 	ld [wNumOfSprites], a
 	ld [wTransferSprites], a
+	ld [wIntroInterruptable], a
 	
 	ld c, LOW(hSCX)
 	ld hl, hSpecialEffectsBuf + 1
@@ -120,30 +129,30 @@ PlayIntro::
 	ldh a, [hFrameCounter]
 	and 1
 	jr nz, .animateAeviDev
-	ld a, [wXPos]
+	ld a, [wIntroScrollSpeed]
 	and a
 	jr nz, .move
-	ld a, [wXPos + 1] ; Decrement the wait counter
+	ld a, [wIntroPauseLength] ; Decrement the wait counter
 	dec a
-	ld [wXPos + 1], a
+	ld [wIntroPauseLength], a
 	jr nz, .animateAeviDev
 	inc a ; If we finished waiting, set speed to non-zero
-	ld [wXPos], a
+	ld [wIntroScrollSpeed], a
 	jr .animateAeviDev
 	
 .move
 	ld d, a
-	ld a, [wXPos + 1]
+	ld a, [wIntroPauseLength]
 	and a
 	ld a, d
-	jr nz, .moveLeft
+	jr nz, .decrementSpeed
 	inc a
 	cp $12
 	jr z, .aeviDevDone
 	inc a
-.moveLeft
+.decrementSpeed
 	dec a
-	ld [wXPos], a
+	ld [wIntroScrollSpeed], a
 	ld a, [c]
 	sub d
 	ld [c], a
@@ -186,17 +195,18 @@ PlayIntro::
 .aeviDevDone
 	ld bc, 20
 	call DelayBCFrames
+	; xor a
+	ld [wIntroInterruptable], a
 	
 ; -------------------------------------------------------------
 	
 DevSoftAnimation::
-	ld a, $4E
+	ld a, $5C
 	ldh [hSCX], a
-	ld a, 12 ; Speed
-	ld [wXPos], a
+	ld a, 13
+	ld [wIntroScrollSpeed], a
 	ld a, 60 ; Number of frames to stand still
-	ld [wXPos + 1], a
-	rst waitVBlank
+	ld [wIntroPauseLength], a
 	
 	ld de, TitleScreenDevSoftPalette
 	ld c, 1
@@ -219,66 +229,71 @@ DevSoftAnimation::
 	ld b, 5
 	call TitleScreen.copyToScreen
 	
+	ld a, 1
+	ld [wIntroInterruptable], a
+	
 .animateReloadHL
 	ld hl, hSpecialEffectsBuf + 1
 .animate
 	ld c, LOW(hSCX)
 	rst waitVBlank
 	ldh a, [hFrameCounter]
-	and 1
-	jr nz, .animate
-	ld a, [wXPos]
+	rrca
+	jr c, .animate
+	
+	ld a, [wIntroScrollSpeed]
 	and a
 	jr nz, .move
-	ld a, [wXPos + 1] ; Decrement the wait counter
+	ld a, [wIntroPauseLength] ; Decrement the wait counter
 	dec a
-	ld [wXPos + 1], a
+	ld [wIntroPauseLength], a
 	cp 45
 	jr z, .printMessage
 	and a
 	jr nz, .animate
+	
 	ld hl, vTileMap0 + VRAM_ROW_SIZE * 3
 	ld c, SCREEN_WIDTH
 	call FillVRAMLite ; Clear message
 	inc a ; If we finished waiting, set speed to non-zero
-	ld [wXPos], a
+	ld [wIntroScrollSpeed], a
 	jr .animate
 	
 .printMessage
 	ld hl, .message
 	ld de, vTileMap0 + VRAM_ROW_SIZE * 3 + 2
 	call CopyStrToVRAM
-	jr .animate
+	jr .animateReloadHL
 	
 .message
 	dstr "SOUND ENGINE BY"
 	
 .move
 	ld d, a
-	ld a, [wXPos + 1]
+	ld a, [wIntroPauseLength]
 	and a
 	ld a, d
 	jr nz, .moveLeft
 	inc a
-	cp $12
-	jr z, .done
+	cp $13
+	jr z, DevSoftDone
 	inc a
 .moveLeft
 	dec a
-	ld [wXPos], a
+	ld [wIntroScrollSpeed], a
 	ld a, [c]
 	sub d
 	ld [c], a
-	cp $A5
+	cp $A6
 	jr nz, .animate
-	ld hl, $98AF
+	ld hl, $98AA
 	ld b, 5
 .clearRightOfLogo
-	ld c, 5
+	ld c, 10
 	xor a
 	call FillVRAMLite
 	ld a, l
-	add VRAM_ROW_SIZE - 5
+	add VRAM_ROW_SIZE - 10
 	ld l, a
 	jr nc, .noCarry
 	inc h
@@ -287,11 +302,40 @@ DevSoftAnimation::
 	jr nz, .clearRightOfLogo
 	jr .animateReloadHL
 	
-.done
+SkipIntroLogos::
+	xor a
+	ldh [hSCY], a
+	ld [rSCY], a
+	ld [wFadeSpeed], a
+	callacross Fadeout
+	
+	ld hl, wIntroSP
+	ld a, [hli]
+	ld h, [hl]
+	ld l, a
+	ld sp, hl
+	
+	ld hl, vTileMap0 + VRAM_ROW_SIZE * 2
+	xor a
+	ld c, a ; ld c, 0
+	call FillVRAMLite
+	ld hl, $9A40
+	ld c, a ; ld c, 0
+	call FillVRAMLite
+	ld [wNumOfSprites], a
+	inc a
+	ld [wTransferSprites], a
+	
+	callacross Fadein
+	jr CopyrightAnimation
+	
+DevSoftDone::
+	xor a
+	ld [wIntroInterruptable], a
 	ld hl, vTileMap0 + VRAM_ROW_SIZE * 5
 	ld c, VRAM_ROW_SIZE * 5
-	xor a
 	call FillVRAMLite
+	
 	ld [wNumOfSprites], a
 	inc a
 	ld [wTransferSprites], a
@@ -347,12 +391,13 @@ CopyrightAnimation::
 	
 	ld a, $DE
 	ldh [hSCY], a
-	ld hl, wYPos + 1
+	ld hl, wIntroPauseLength
 	ld a, 40
 	ld [hld], a
 	ld [hl], 12
 .animate0
 	rst waitVBlank
+	; Reset SCY to 0 for the clouds
 .wait0
 	ld a, [rLY]
 	sub 88
@@ -376,6 +421,7 @@ CopyrightAnimation::
 	cp LOW(wVirtualOAM + OAM_SPRITE_SIZE * 9)
 	jr nz, .scrollSprites0
 	ld [wTransferSprites], a
+	
 	ld a, [hl]
 	and a
 	jr z, .waitAfterAnim0
@@ -400,7 +446,7 @@ CopyrightAnimation::
 	ld b, 2
 	call TitleScreen.copyToScreen
 	
-	ld hl, wYPos
+	ld hl, wIntroScrollSpeed
 	ld [hl], 0
 .animate1
 	rst waitVBlank
@@ -433,7 +479,7 @@ CopyrightAnimation::
 	inc [hl]
 	jr .animate1
 	
-.done
+.done:
 	xor a
 	ldh [hSCY], a
 	ld hl, vTileMap0 + VRAM_ROW_SIZE * 24
@@ -446,6 +492,9 @@ CopyrightAnimation::
 ; ----------------------------------------------------------------
 	
 TitleScreen::
+	ld bc, 20
+	call DelayBCFrames
+	
 	ld hl, TitleScreenSpriteTiles
 	ld de, v0Tiles0
 	ld bc, BANK(TitleScreenSpriteTiles) << 8 | $4A
@@ -497,10 +546,7 @@ TitleScreen::
 	ld a, $90
 	ldh [hWY], a
 	
-	ld bc, 20
-	call DelayBCFrames
-	
-	ld b, $90
+	ld b, a ; ld b, $90
 .moveWindowUp
 	rst waitVBlank
 	dec b
@@ -649,12 +695,32 @@ ENDR
 	cp $89
 	jr nz, .writeVersion
 	
+	ld hl, .pressSTARTStr
+	ld de, $9B04
+	call CopyStrToVRAM
+	
+	ld bc, $7B
+	xor a
 .wait
 	rst waitVBlank
+.waitPressSTART
+	ld a, [rLY]
+	cp 40
+	jr nz, .waitPressSTART
+	ld a, $97
+	ld [rSCY], a
+.waitBelowPressSTART
+	ld a, [rLY]
+	cp 48
+	jr nz, .waitBelowPressSTART
+	xor a
+	ld [rSCY], a
+	
 	ldh a, [hPressedButtons]
 	and BUTTON_A | BUTTON_START
-	jr nz, .end
-	jr .wait
+	or b
+	ld b, a
+	jr z, .wait
 	
 .end
 	callacross Fadeout
@@ -785,6 +851,9 @@ ENDR
 	dspr 119,107+$7E,70, 4
 	dspr 119,115+$7E,72, 4
 	dspr 119,123+$7E,74, 4
+	
+.pressSTARTStr
+	dstr "PRESS START!"
 	
 	
 	
