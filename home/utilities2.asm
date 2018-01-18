@@ -285,7 +285,6 @@ ClearMovableMap::
 	
 ; Transfer c tiles from b:hl to de using HDMA if available
 ; (This assumes hl and de are aligned)
-; NOTE : transfers (c & $7F) tiles only
 TransferTilesAcross::
 	ldh a, [hCurROMBank]
 	push af

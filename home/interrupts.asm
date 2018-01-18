@@ -17,6 +17,7 @@ STAT_int::
 	ld a, [rSTAT]
 	push hl
 	jp STATHandler
+	nop
 	
 ; Timer
 Timer_int::
