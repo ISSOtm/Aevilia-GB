@@ -94,5 +94,6 @@ $(objdir)/%_glitchmaps.o: %.asm constants.asm macros.asm constants/*.asm macros/
 $(objdir)/maps.o: maps/*.blk
 $(objdir)/maps_glitchmaps.o: maps/*.blk
 
-$(objdir)/sound.o: sound/NoiseData.bin
-$(objdir)/sound_glitchmaps.o: sound/NoiseData.bin
+$(objdir)/sound.o: sound/*.bin sound/DevSound/DevSound_*.asm sound/DevSound/NoiseData.bin
+$(objdir)/sound_glitchmaps.o: sound/*.bin sound/DevSound/DevSound_*.asm sound/DevSound/NoiseData.bin
+

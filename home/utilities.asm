@@ -91,6 +91,7 @@ CallAcrossBanks::
 	push af
 	ld a, b
 	rst bankswitch
+	ld a, c ; DevSound's functions expect their argument in a, but we pass it via c
 	rst callHL
 	pop af
 	rst bankswitch

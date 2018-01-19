@@ -22,12 +22,12 @@ MBCType = 0x1B
 # ROMSize = 0x02
 SRAMSize = 0x04
 
-bindir = ./bin
-objdir = ./obj
+bindir = bin
+objdir = obj
 
 objlist = $(objdir)/main.o $(objdir)/battle.o $(objdir)/engine.o $(objdir)/home.o $(objdir)/gfx.o $(objdir)/maps.o $(objdir)/save.o $(objdir)/sound.o $(objdir)/text.o $(objdir)/tileset.o
 
-ASFLAGS  = -E -p $(FillValue)
+ASFLAGS  = -E -p $(FillValue) -i sound/DevSound/
 LDFLAGS  = 
 FIXFLAGS = -Cjv -i $(GameID) -k $(NewLicensee) -l $(OldLicensee) -m $(MBCType) -n $(ROMVersion) -p $(FillValue) -r $(SRAMSize) -t $(GameTitle)
 
@@ -93,5 +93,6 @@ $(objdir)/%_glitchmaps.o: %.asm constants.asm macros.asm constants/*.asm macros/
 $(objdir)/maps.o: maps/*.blk
 $(objdir)/maps_glitchmaps.o: maps/*.blk
 
-$(objdir)/sound.o: sound/NoiseData.bin
-$(objdir)/sound_glitchmaps.o: sound/NoiseData.bin
+$(objdir)/sound.o: sound/*.bin sound/DevSound/DevSound_*.asm sound/DevSound/NoiseData.bin
+$(objdir)/sound_glitchmaps.o: sound/*.bin sound/DevSound/DevSound_*.asm sound/DevSound/NoiseData.bin
+
