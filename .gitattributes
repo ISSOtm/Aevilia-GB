@@ -1,11 +1,11 @@
 
-*.exe	binary diff=hex
-*.bin	binary diff=hex
-*.blk	binary diff=hex
-*.zip	binary diff=hex
+*.exe	binary
+*.bin	binary
+*.blk	binary
+*.zip	binary
 
-rgbasm	binary diff=hex
-rgblink	binary diff=hex
-rgbfix	binary diff=hex
+rgbasm	binary
+rgblink	binary
+rgbfix	binary
 
-*.dmf	binary diff=hex
+*.dmf	binary
