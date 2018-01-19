@@ -33,7 +33,7 @@ _compiler.online.exe_ ("the Online compiler") is for those who are willing to le
 
 Aevilia is licensed under the Apache 2.0 license (please refer to the [LICENSE](http://github.com/ISSOtm/Aevilia-GB/blob/master/LICENSE) file).
 
-[DevSound](http://github.com/DevEd2/DevSound/) is licensed under the MIT license (please refer to [its own LICENSE file](http://github.com/DveEd2/DevSound/blob/master/LICENSE)).
+[DevSound](http://github.com/DevEd2/DevSound/) is licensed under the MIT license (please refer to [its own LICENSE file](http://github.com/DevEd2/DevSound/blob/master/LICENSE)).
 
 The gist of these licenses is that re-use of the code/assets present in these repositories is allowed, even for commercial uses, as long as the licenses are included, and the modifications are clearly stated (in the case of Aevilia's license). If you want more info, you can always read the whole licenses (although I wish that to nobody), ask us (there's contact info below), or even just google what you're allowed to do.
 
@@ -62,8 +62,8 @@ The gist of these licenses is that re-use of the code/assets present in these re
 
 # Contacting us
 
-Replace "@..." with "@gmail.com" in any of these~
-ISSOtm   : eldredhabert@... (if you speak French, that's my main language !)
-DevEd    : deved8@...
-Parzival : parzivalwolfram@...
+Replace "@..." with "@gmail.com" in any of these.
+- ISSOtm   : eldredhabert@... (if you speak French, that's my main language !)
+- DevEd    : deved8@...
+- Parzival : parzivalwolfram@...
   
