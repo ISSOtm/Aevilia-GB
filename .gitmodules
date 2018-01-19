@@ -1,6 +1,3 @@
 [submodule "sound/DevSound"]
 	path = sound/DevSound
 	url = http://github.com/DevEd2/DevSound.git
-[submodule "soud/DevSound"]
-	path = soud/DevSound
-	url = http://github.com/DevEd2/DevSound.git
