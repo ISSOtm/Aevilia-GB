@@ -31,9 +31,9 @@ ASFLAGS  = -E -p $(FillValue)
 LDFLAGS  = 
 FIXFLAGS = -Cjv -i $(GameID) -k $(NewLicensee) -l $(OldLicensee) -m $(MBCType) -n $(ROMVersion) -p $(FillValue) -r $(SRAMSize) -t $(GameTitle)
 
-RGBASM = ./rgbasm
-RGBLINK = ./rgblink
-RGBFIX = ./rgbfix
+RGBASM = rgbasm
+RGBLINK = rgblink
+RGBFIX = rgbfix
 
 ifeq ($(DebugMode), 1)
 ASFLAGS := $(ASFLAGS) -D DebugMode
