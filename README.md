@@ -1,39 +1,37 @@
-# Aevilia-GB
+# Aevilia GB
 
 A RPG for the Game Boy Color, written in pure Sharp LR35602 (aka GBz80) assembly.
 
 Note : this is neither a tutorial nor a walkthrough for the game.
 
 
-# Credits
-
-Most programming was done by [ISSOtm](http://github.com/ISSOtm/).
-
-[Sound engine](http://github.com/DevEd2/DevSound/) by [DevEd](http://github.com/DevEd2/) and [Pigu](http://github.com/Pigu-A/), soundtrack by [DevEd](http://github.com/DevEd2/).
-
-Most graphics were drawn by [Kai](http://github.com/kaikun97).
-
-Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [Charmy](http://github.com/CharmyBee99).
+- [Licensing](#licensing)
+- [Contents](#contents)
+- [Credits](#credits)
+- [Contact](#contact)
 
 
-# A Note on Compiling
+# Compiling The Game
 
-On Linux, compiling is done by typing `make` while in the root folder of this repository.
+If you are looking for one of stable versions, check out the [stable releases](http://github.com/ISSOtm/Aevilia-GB/releases/tag/stable) page.
+
+If you want to build the ROM from source, please refer to the [INSTALL.md](http://github.com/ISSOtm/Aevilia-GB/blob/master/INSTALL.md) file.
 
 
-There are two EXEs for compiling: _compiler.offline.exe_, _compiler.online.exe_. These two EXEs are simply compiled versions of the `.py` files found in the `tools/` repository, so if you have Python and prefer to run them, copy them out of the `tools/` folder and run them (with Python 2.X).
+# Running The Game
 
-_compiler.offline.exe_ ("the Offline compiler") is for those who want to compile the ROM without sacrificing the ability to have a stroke in the process.
-The program will tell you exactly what you need to install (a lot) to get the five or so files you need on your system for compiling to work. There's also no instructions on how you need to set these downloaded programs up properly (yet). It's the Online compiler for the paranoid.
+To play the game, you can either play it on hardware, or use an emulator.
 
-_compiler.online.exe_ ("the Online compiler") is for those who are willing to let the program automatically download six or seven files and run them (and then delete them because no one likes clutter) so you can have your shiny new ROM with a one-click solution. The total download size is about 30MB, so it's light enough for those on tight bandwidths and/or mobile tethering and/or dial-up, too. The ultimate convenience tool!
+For hardware, we recommend the [Everdrive X5](https://krikzz.com/store/home/47-everdrive-gb.html) flashcart, although any flashcart should work. We may also release cartridges of the game, when it's finished.
+
+If you're looking for emulator advice, check out [our wiki page](http://github.com/ISSOtm/Aevilia-GB/wiki/Emulators) about that.
 
 
 # Licensing
 
 Aevilia is licensed under the Apache 2.0 license (please refer to the [LICENSE](http://github.com/ISSOtm/Aevilia-GB/blob/master/LICENSE) file).
 
-[DevSound](http://github.com/DevEd2/DevSound/) is licensed under the MIT license (please refer to [its own LICENSE file](http://github.com/DveEd2/DevSound/blob/master/LICENSE)).
+[DevSound](http://github.com/DevEd2/DevSound/) is licensed under the MIT license (please refer to [its own LICENSE file](http://github.com/DevEd2/DevSound/blob/master/LICENSE)).
 
 The gist of these licenses is that re-use of the code/assets present in these repositories is allowed, even for commercial uses, as long as the licenses are included, and the modifications are clearly stated (in the case of Aevilia's license). If you want more info, you can always read the whole licenses (although I wish that to nobody), ask us (there's contact info below), or even just google what you're allowed to do.
 
@@ -60,9 +58,20 @@ The gist of these licenses is that re-use of the code/assets present in these re
   Some fun the team had while messing with corruptors and this very game. Note that all of these are older builds and ~90% are unplayable.
 
 
-# Contacting us
+# Credits
 
-Replace "@..." with "@gmail.com" in any of these
+Most programming was done by [ISSOtm](http://github.com/ISSOtm/).
+
+[Sound engine](http://github.com/DevEd2/DevSound/) by [DevEd](http://github.com/DevEd2/) and [Pigu](http://github.com/Pigu-A/), soundtrack by [DevEd](http://github.com/DevEd2/).
+
+Most graphics were drawn by [Kai](http://github.com/kaikun97).
+
+Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [Charmy](http://github.com/CharmyBee99).
+
+
+# Contact
+
+Replace "@..." with "@gmail.com" in any of these.
 
 ISSOtm   : eldredhabert@... (if you speak French, that's my main language !)
 
