@@ -1,6 +1,6 @@
 # Aevilia-GB
 
-A RPG for the Game Boy Color, written in pure assembly.
+A RPG for the Game Boy Color, written in pure Sharp LR35602 (aka GBz80) assembly.
 
 Note : this is neither a tutorial nor a walkthrough for the game.
 
@@ -62,8 +62,11 @@ The gist of these licenses is that re-use of the code/assets present in these re
 
 # Contacting us
 
-Replace "@..." with "@gmail.com" in any of these~
+Replace "@..." with "@gmail.com" in any of these
+
 ISSOtm   : eldredhabert@... (if you speak French, that's my main language !)
+
 DevEd    : deved8@...
+
 Parzival : parzivalwolfram@...
   
