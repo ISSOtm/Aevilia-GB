@@ -72,10 +72,7 @@ Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [Charmy](http:/
 # Contact
 
 Replace "@..." with "@gmail.com" in any of these.
-
-ISSOtm   : eldredhabert@... (if you speak French, that's my main language !)
-
-DevEd    : deved8@...
-
-Parzival : parzivalwolfram@...
+- ISSOtm   : eldredhabert@... (if you speak French, that's my main language !)
+- DevEd    : deved8@...
+- Parzival : parzivalwolfram@...
   
