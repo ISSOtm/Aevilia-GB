@@ -194,17 +194,15 @@ ScoldStr::
 ; Destroys a
 DisableLCD::
 	ld a, [rLCDC]
-	and $80 ; Check if LCD is on
+	bit 7, a ; Check if LCD is on
 	ret z ; Quit if it's not
-	
-	; Mask LCD
-	ld a, [rLCDC]
-	and $7F
 	
 	; Wait until VBlank (REQUIRED)
 	rst waitVBlank
 	
 	; Power LCD down.
+	ld a, [rLCDC]
+	res 7, a
 	ld [rLCDC], a
 	ret
 	
@@ -212,11 +210,9 @@ DisableLCD::
 ; Destroys a
 EnableLCD::
 	ld a, [rLCDC]
-	and $80
+	bit 7, a
 	ret nz ; Return if already on
-	
-	ld a, [rLCDC]
-	or $80
+	set 7, a
 	ld [rLCDC], a
 	ret
 	
@@ -234,7 +230,7 @@ LoadBGPalette::
 	ld b, a
 	add a, a
 	add a, a
-	ld c, rBGPI & $FF
+	ld c, LOW(rBGPI)
 	jr LoadPalette_Common
 	
 	
@@ -256,15 +252,11 @@ LoadOBJPalette::
 LoadPalette_Common:
 	add a, a
 	or $80 ; Enable auto-increment
-	ld [$FF00+c], a
+	ld [c], a
 	inc c
 	ld d, h
 	ld e, l
 	push hl
-	ld a, [rSVBK]
-	push af
-	ld a, BANK(wOBJPalettes)
-	call SwitchRAMBanks
 	ld h, d
 	ld l, e
 	ld d, HIGH(wOBJPalettes)
@@ -288,14 +280,12 @@ LoadPalette_Common:
 	inc de
 	dec b
 	jr nz, .copy
-	pop af
-	ld [rSVBK], a
 	pop hl
 	
 	; Check if palette should be committed to the screen
 	ldh a, [hGFXFlags]
 	bit 6, a
-	ret nz
+	jr nz, .advanceAndReturn
 	
 	ld b, 3
 	bit 1, c
@@ -304,17 +294,27 @@ LoadPalette_Common:
 .writeByte
 	push bc
 	call PaletteCommon
-	ld [$FF00+c], a
+	ld [c], a
 	ld a, e
-	ld [$FF00+c], a
+	ld [c], a
 	
 	pop bc
 	dec b
 	jr nz, .writeByte
 	ret
 	
+.advanceAndReturn
+	ld de, BG_PALETTE_STRUCT_SIZE
+	bit 1, c
+	jr z, .advance
+	ld e, OBJ_PALETTE_STRUCT_SIZE
+.advance
+	add hl, de
+	ret
+	
 	
 ; Used to convert a 3-byte raw palette into a 2-byte "mixed" one
+; Converts from (R,G,B) : ([hl],[hl+1],[hl+2]) to (hi,lo) : (b,e)
 PaletteCommon::
 	; We need to mix all three colors together, making sure they are all in range $00-$1F
 	ld a, [hli]
@@ -326,7 +326,7 @@ PaletteCommon::
 	ld a, [hli]
 	and $1F
 	ld d, a
-PaletteCommon_Custom: ; Call with colors in b and de
+PaletteCommon_Custom: ; Call with (R,G,B) : (b,d,e)
 	ldh a, [hGFXFlags]
 	bit 7, a
 	ld a, b
@@ -381,13 +381,13 @@ ReloadPalettes::
 .reloadPaletteSet
 	inc c
 	ld a, $80 ; Palette 0, color 0, auto-increment
-	ld [$FF00+c], a
+	ld [c], a
 	inc c
 .reloadBGPalettes
 	call PaletteCommon
-	ld [$FF00+c], a
+	ld [c], a
 	ld a, e
-	ld [$FF00+c], a
+	ld [c], a
 	ld a, l
 	cp LOW(wOBJPalettes)
 	jr z, .reloadPaletteSet
@@ -482,73 +482,78 @@ GrayOutPicture::
 	ld c, LOW(rBGPI)
 .palettesLoop
 	ld a, $80
-	ld [$FF00+c], a
+	ld [c], a
 	inc c
-	ld b, 8
+	ld e, 8
 .loop
-	ld d, 4
-.oneColor
-	ld a, [hli]
-	and $1F
-	ld e, a
-	ld a, [hli]
-	and $1F
-	add a, e
-	ld e, a
-	ld a, [hli]
-	and $1F
-	add a, e
-	
-	ld e, 0
-	cp 3
-	jr c, .divEnd
-.divideBy3
-	inc e
-	sub 3
-	jr c, .divEnd
-	jr nz, .divideBy3
-.divEnd
-	push de
-	ld a, e
-	rrca
-	rrca
-	rrca
-	and $E0
-	or e
-	ld d, a
-.waitVRAM1
-	rst isVRAMOpen
-	jr nz, .waitVRAM1
-	ld a, d
-	ld [$FF00+c], a
-	ld a, e
-	rlca
-	rlca
-	and $7C
-	ld d, a
-	ld a, e
-	and $18
-	rrca
-	rrca
-	rrca
-	or d
-	ld d, a
-.waitVRAM2
-	rst isVRAMOpen
-	jr nz, .waitVRAM2
-	ld a, d
-	pop de
-	ld [$FF00+c], a
-	
-	dec d
-	jr nz, .oneColor
-	dec b
+	call GrayOutPalette_Custom
+	dec e
 	jr nz, .loop
 	
 	inc c
 	ld a, c
 	cp LOW(rOBPI)
 	jr z, .palettesLoop
+	ret
+	
+; Gray out palette #c (c = 8 means OBJ palette #0)
+GrayOutPalette::
+	ld a, c
+	and $0F
+	ld c, LOW(rBGPI)
+	
+	add a, a
+	jr nc, .notOBJ
+	inc c
+	inc c
+.notOBJ
+	add a, a ; * 4
+	ld l, a ; Save for below
+	add a, a ; * 8
+	or $80
+	ld [c], a
+	inc c
+	
+	add a, a ; * 16
+	sub l ; * 12
+	ld l, a
+	ld h, HIGH(wBGPalettes)
+	
+	
+GrayOutPalette_Custom::
+	ld d, 4
+.oneColor
+	ld a, [hli]
+	and $1F
+	ld b, a
+	ld a, [hli]
+	and $1F
+	add a, b
+	ld b, a
+	ld a, [hli]
+	and $1F
+	add a, b
+	
+	ld b, 0
+	cp 3
+	jr c, .divEnd
+.divideBy3
+	inc b
+	sub 3
+	jr c, .divEnd
+	jr nz, .divideBy3
+.divEnd
+	push de
+	ld d, b
+	ld e, b
+	call PaletteCommon_Custom
+	ld [c], a
+	ld a, e
+	ld [c], a
+	pop de
+	
+	dec d
+	jr nz, .oneColor
 	ret
 	
 	
@@ -558,6 +563,7 @@ Fadeout::
 	ld a, [wFadeSpeed]
 	add a, a
 	jr c, FadeOutToBlack
+	
 FadeOutToWhite:
 	ld a, [wFadeSpeed]
 	and $7F
@@ -573,7 +579,7 @@ FadeOutToWhite:
 	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
-	ld [$FF00+c], a
+	ld [c], a
 	inc c
 	ld b, 4 * 8
 .onePalette
@@ -611,9 +617,9 @@ FadeOutToWhite:
 	rst isVRAMOpen
 	jr nz, .waitVRAM
 	ld a, d
-	ld [$FF00+c], a
+	ld [c], a
 	ld a, e
-	ld [$FF00+c], a
+	ld [c], a
 	dec b
 	jr nz, .onePalette
 	inc c
@@ -643,7 +649,7 @@ FadeOutToBlack:
 	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
-	ld [$FF00+c], a
+	ld [c], a
 	inc c
 	ld b, 4 * 8
 .onePalette
@@ -678,9 +684,9 @@ FadeOutToBlack:
 	rst isVRAMOpen
 	jr nz, .waitVRAM
 	ld a, d
-	ld [$FF00+c], a
+	ld [c], a
 	ld a, e
-	ld [$FF00+c], a
+	ld [c], a
 	dec b
 	jr nz, .onePalette
 	inc c
@@ -716,7 +722,7 @@ FadeInToWhite:
 	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
-	ld [$FF00+c], a
+	ld [c], a
 	inc c
 	ld b, 4 * 8
 .onePalette
@@ -754,9 +760,9 @@ FadeInToWhite:
 	rst isVRAMOpen
 	jr nz, .waitVRAM
 	ld a, d
-	ld [$FF00+c], a
+	ld [c], a
 	ld a, e
-	ld [$FF00+c], a
+	ld [c], a
 	dec b
 	jr nz, .onePalette
 	inc c
@@ -786,7 +792,7 @@ FadeInToBlack:
 	ld c, LOW(rBGPI)
 .nextPaletteSet
 	ld a, $80
-	ld [$FF00+c], a
+	ld [c], a
 	inc c
 	ld b, 4 * 8
 .onePalette
@@ -815,15 +821,10 @@ FadeInToBlack:
 .notWhiteD
 	ld d, a
 	call PaletteCommon_Custom
-	ld d, a
 	pop bc
-.waitVRAM
-	rst isVRAMOpen
-	jr nz, .waitVRAM
-	ld a, d
-	ld [$FF00+c], a
+	ld [c], a
 	ld a, e
-	ld [$FF00+c], a
+	ld [c], a
 	dec b
 	jr nz, .onePalette
 	inc c
@@ -837,6 +838,99 @@ FadeInToBlack:
 	inc a
 	jr nz, FadeInToBlack
 	ret
+	
+	
+; Applies fade [wFadeCount] to palette c (c = 8 means OBJ palette 0)
+; Also takes wFadeSpeed bit 7 into account
+FadePalette::
+	ld a, e
+	ld c, LOW(rBGPI)
+	
+	and $0F
+	add a, a
+	jr nc, .notOBJ
+	inc c
+	inc c
+.notOBJ
+	add a, a ; * 4
+	ld l, a ; Save for below
+	add a, a ; * 8
+	or $80
+	ld [c], a
+	inc c
+	
+	add a, a ; * 16
+	sub l ; * 12
+	ld l, a
+	ld h, HIGH(wBGPalettes)
+	ld b, 4
+	
+	ld a, [wFadeSpeed]
+	add a, a
+	jr nc, FadePaletteWhite
+	
+FadePaletteBlack:
+.oneColor
+	push bc
+	
+	ld c, 3
+.oneComponent
+	ld b, d ; Transfer already-computed components around
+	ld d, e
+	ld a, [wFadeCount]
+	ld e, a ; e has been copied to d, so we can use it as temp
+	
+	ld a, [hli]
+	and $1F
+	sub e
+	jr nc, .dontCap
+	xor a
+.dontCap
+	ld e, a
+	dec c
+	jr nz, .oneComponent
+	
+	call PaletteCommon_Custom
+	pop bc
+	ld [c], a
+	ld a, e
+	ld [c], a
+	
+	dec b
+	jr nz, .oneColor
+	ret
+	
+FadePaletteWhite:
+.oneColor
+	push bc
+	
+	ld c, 3
+.oneComponent
+	ld b, d ; Transfer already-computed components around
+	ld d, e
+	ld a, [wFadeCount]
+	ld e, a ; e has been copied to d, so we can use it as temp
+	
+	ld a, [hli]
+	and $1F
+	add a, e
+	jr nc, .dontCap
+	ld a, $1F
+.dontCap
+	ld e, a
+	dec c
+	jr nz, .oneComponent
+	
+	call PaletteCommon_Custom
+	pop bc
+	ld [c], a
+	ld a, e
+	ld [c], a
+	
+	dec b
+	jr nz, .oneColor
+	ret
+	
 	
 LoadPlayerGraphics::
 	ld hl, EvieTiles
