@@ -114,7 +114,7 @@ OverworldLoop::
 	ld [wFadeSpeed], a
 	callacross Fadeout
 	
-	ld a, [wCurrentMusicID]
+	ld a, [wMapMusicID]
 	call DS_Init
 	call RedrawMap
 	call ProcessNPCs

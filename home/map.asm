@@ -70,7 +70,7 @@ ENDC
 	jr z, .sameMusic ; If we have the same music, do nothing
 .forceMutedMusic
 	ld a, [hl]
-	ld [wCurrentMusicID], a ; Store intended music ID
+	ld [wMapMusicID], a ; Store intended music ID
 	ld a, 2
 	ld [wChangeMusics], a ; Schedule music changing
 	call DS_Fade ; Fade out and kill music once it's done (fade type 2)
@@ -508,7 +508,7 @@ ENDC
 	ld a, [SoundEnabled]
 	and a
 	jr nz, .waitMusicIsDown
-	ld a, [wCurrentMusicID]
+	ld a, [wMapMusicID]
 	inc a
 	jr z, .stillSameMusic ; Music $FF = no music
 	ld e, a

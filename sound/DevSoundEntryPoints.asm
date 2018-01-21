@@ -5,6 +5,7 @@ DevSound_JumpTable:
 
 DS_Init::
 	ld c, a
+	ld [wCurrentMusicID], a
 	jpacross	DevSound_Init	
 DS_Play::
 	jpacross	DevSound_Play

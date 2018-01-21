@@ -543,6 +543,9 @@ wNPCArray::
 
 SECTION "Sound variables",WRAM0
 
+wMapMusicID::
+	ds 1
+	
 wCurrentMusicID::
 	ds 1
 wCurrentSFXID::
