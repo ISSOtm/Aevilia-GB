@@ -199,9 +199,9 @@ IntroMapScript::
 	; Calculate status script pointer
 	and %1111 ; Only bits 0-3 are used for status
 	add a, a ; This is pretty standard, 2 bytes per pointer
-	add a, IntroScripts & $FF
+	add a, LOW(IntroScripts)
 	ld l, a
-	ld h, IntroScripts >> 8 ; hl points to the next pointer (the purpose / usage of which differs based on index parity)
+	ld h, HIGH(IntroScripts) ; hl points to the next pointer (the purpose / usage of which differs based on index parity)
 	; Note : this assumes there's no carry. May not be true, if then move the pointer array around
 	
 	; Depending on status parity, the pointer should be interpreted differently
@@ -296,7 +296,7 @@ IntroChooseGender::
 	
 	; Coming right up is graying out the two palettes of the character that's not chosen
 	ld e, 8 ; Two palettes, thus 8 colors
-.grayOutOneColor
+.grayOutOneColor ; Not using the built-in func, since this one needs to darken the character
 	; Recipe to gray out a color :
 	; 1. Sum the three shades in the color (R, G, B)
 	; 2. Divide that by 3, thusly getting the mean of the shades
