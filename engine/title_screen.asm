@@ -497,7 +497,7 @@ TitleScreen::
 	
 	ld hl, TitleScreenSpriteTiles
 	ld de, v0Tiles0
-	ld bc, BANK(TitleScreenSpriteTiles) << 8 | $4A
+	ld bc, BANK(TitleScreenSpriteTiles) << 8 | $4C
 	call TransferTilesAcross
 	
 	ld hl, TitleScreenBGTiles
