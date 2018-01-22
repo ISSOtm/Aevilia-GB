@@ -77,6 +77,7 @@
 	enum_elem TEXT_SFX_WAIT
 	enum_elem TEXT_SFX_PLAY
 	enum_elem TEXT_SFX_STOP
+	enum_elem TEXT_PLAY_MAP_MUSIC
 	enum_elem OVERRIDE_TEXBOX_PAL
 	enum_elem CLOSE_TEXTBOX
 	enum_elem TEXT_GET_FLAG

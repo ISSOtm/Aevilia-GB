@@ -255,6 +255,7 @@ TextCommandsPointers::
 	dw TextWaitSFX
 	dw TextPlaySFX
 	dw TextStopSFX
+	dw TextPlayMapMusic
 	dw OverrideTextboxPalette
 	dw CloseTextbox
 	dw TextGetFlag
@@ -1654,6 +1655,13 @@ TextStopSFX::
 	
 	ld hl, wTextFlags
 	set TEXT_SAME_FRAME_FLAG, [hl]
+	ld a, 1
+	ret
+	
+	
+TextPlayMapMusic::
+	ld a, [wMapMusicID]
+	call DS_Init
 	ld a, 1
 	ret
 	
