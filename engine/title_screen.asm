@@ -700,7 +700,7 @@ ENDR
 	call CopyStrToVRAM
 	; xor a
 	ld [wTitleScreenScrollDelay], a
-	ld a, $7F
+	ld a, $80
 	ld [wTitleScreenScrollX], a
 	
 	ld bc, $7B
@@ -721,12 +721,12 @@ ENDR
 	dec hl ; Go to X
 	ld a, [hl]
 	and $7F
-	cp $FE & $7F
+	sub $FE & $7F
 	jr nz, .decrementReg ; Don't lock if not at extremes
 	inc hl
-	ld a, 120
 	ld [hld], a
 .decrementReg
+	dec [hl]
 	dec [hl]
 	ld a, [wTitleScreenScrollX]
 	ld [rSCX], a
