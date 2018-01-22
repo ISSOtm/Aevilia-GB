@@ -698,6 +698,10 @@ ENDR
 	ld hl, .pressSTARTStr
 	ld de, $9B04
 	call CopyStrToVRAM
+	; xor a
+	ld [wTitleScreenScrollDelay], a
+	ld a, $7F
+	ld [wTitleScreenScrollX], a
 	
 	ld bc, $7B
 	xor a
@@ -707,14 +711,32 @@ ENDR
 	ld a, [rLY]
 	cp 40
 	jr nz, .waitPressSTART
+	
 	ld a, $97
 	ld [rSCY], a
+	ld hl, wTitleScreenScrollDelay
+	ld a, [hl] ; Check if delay is active
+	and a
+	jr nz, .decrementReg ; If so, decrement it
+	dec hl ; Go to X
+	ld a, [hl]
+	and $7F
+	cp $FE & $7F
+	jr nz, .decrementReg ; Don't lock if not at extremes
+	inc hl
+	ld a, 120
+	ld [hld], a
+.decrementReg
+	dec [hl]
+	ld a, [wTitleScreenScrollX]
+	ld [rSCX], a
 .waitBelowPressSTART
 	ld a, [rLY]
 	cp 48
 	jr nz, .waitBelowPressSTART
 	xor a
 	ld [rSCY], a
+	ld [rSCX], a
 	
 	ldh a, [hPressedButtons]
 	and BUTTON_A | BUTTON_START

@@ -44,6 +44,14 @@ wIntroPauseLength::
 	ds 1
 	
 NEXTU
+	ds 2 ; Intro interruptable / interrupted
+	
+wTitleScreenScrollX::
+	ds 1
+wTitleScreenScrollDelay::
+	ds 1
+	
+NEXTU
 
 ; Coordinates within the map
 wYPos::
