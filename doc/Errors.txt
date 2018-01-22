@@ -20,11 +20,47 @@ The call-time trap is placed in `rst $38`, which triggers the error screen if th
 The run-time trap is in the Mode 2 ("music") interrupt handler. Basically, this handler will trigger the error screen if it detects its return address is in WRAM. Note that bypassing this trap is fairly simple : prepend a `di` to your WRAM code, and end it with a `reti`.
 
 Error screen walkthrough :
-The error screen will differ based on which trap activated. The call-time one will have all registers in the state they were when `rst $38` was called.The run-time one will have all registers at their state when the interrupt fired. The difference should be that the run-time will have [sp] pointing to RAM... except if a `rst $38` was called from RAM :P
+The error screen will differ based on which trap activated. The call-time one will have all registers in the state they were when `rst $38` was called. The run-time one will have all registers at their state when the interrupt fired. The difference should be that the run-time will have [sp] pointing to RAM... except if a `rst $38` was called from RAM.
+
+
+ERROR #1
+"CANNOT DIV BY ZERO"
+
+The division function DivideHLByDE was called with DE null. Please note that it is possible to bypass this check with DivideHLByDE_KnownDE, but this is only intended if DE is **known** to be non-zero (for example if dividing by a constant).
+
+
+ERROR #2
+"WOOPS, WRONG DOOR"
+
+LoadMap was called with a wrong warp ID (ie. the ID was above the number of warps the map has).
+
+
+ERROR #3
+"WHERE AM I??"
+
+LoadMap was called with a map ID above the last valid ID.
+
+
+ERROR #4
+"INVALID BATTLE TRANSITION"
+
+An invalid battle transition was called.
+
+
+ERROR #5
+"NONEXISTANT ENEMY"
+
+This error is never called. (Yet)
+
+
+ERROR #6
+"BAD THREAD 2 POINTER"
+
+This error occurs when the Thread 2 ID is set to an invalid value (hence an invalid call would occur).
 
 
 ERROR #ERROR
 "UNKNOWN ERROR!!!"
 
 The error screen has been triggered with an invalid error code. Good luck investigating that.
-At least the error handler should be completely safe and always behave normally (this being the most "abnormal" state). IThe opposite would have been a shame - imagine ACE induced by the error handler ! xD
+At least the error handler should be completely safe and always behave normally (this being the most "abnormal" state). The opposite would have been a shame - imagine ACE induced by the error handler !
