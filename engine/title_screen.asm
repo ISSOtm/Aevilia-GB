@@ -721,9 +721,10 @@ ENDR
 	dec hl ; Go to X
 	ld a, [hl]
 	and $7F
-	sub $FE & $7F
+	cp $FE & $7F
 	jr nz, .decrementReg ; Don't lock if not at extremes
 	inc hl
+	ld a, $FE
 	ld [hld], a
 .decrementReg
 	dec [hl]
@@ -743,6 +744,18 @@ ENDR
 	or b
 	ld b, a
 	jr z, .wait
+	
+	ld hl, wTitleScreenScrollDelay
+	xor a
+	ld [hld], a
+	ld a, [hl]
+	dec a
+	dec a
+	ld [hl], a
+	cp $7A
+	jr c, .wait
+	cp $82
+	jr nc, .wait
 	
 .end
 	callacross Fadeout
