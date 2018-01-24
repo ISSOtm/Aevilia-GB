@@ -179,6 +179,7 @@ PitEffect:
 	dec a
 	jr nz, .waitVBlankEnd
 	nop
+	nop
 	
 	; Perform pit effect
 .lineEffect
