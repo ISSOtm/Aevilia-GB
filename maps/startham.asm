@@ -7,7 +7,7 @@ StarthamMap::
 	db MUSIC_OVERWORLD ; Music ID
 	
 	db 0 ; Tileset is fixed
-	db TILESET_TEST ; Tileset
+	db TILESET_OVERWORLD ; Tileset
 	dw NO_SCRIPT ; Script (none)
 	map_size 29, 18 ; Width, height
 	dw NO_SCRIPT ; Loading script (none)
