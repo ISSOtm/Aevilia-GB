@@ -20,8 +20,10 @@ vDMGFontTiles::
 	
 	dtile $24
 	
+	
 v0Tiles1::
 	dtile $80
+	
 	
 v0Tiles2::
 	dtile 1
@@ -46,6 +48,8 @@ vFontTiles::
 	
 	dtile $24
 	
+	
+	
 SECTION "Tiles bank 1", VRAM[$8000],BANK[1]
 v1Tiles0::
 vPlayerWalkingTiles::
@@ -67,13 +71,17 @@ vAlternateFontTiles::
 	
 	dtile $24
 	
+	
+	
 SECTION "Tile Maps", VRAM[$9800],BANK[0]
 vTileMap0::
 	ds $400
 	
-vTileMap1::
-vTextboxTileMap::
 	
+vTileMap1::
+	ds $100
+	
+vTextboxTileMap::
 	ds 5
 vTextboxName::
 	ds 27
@@ -106,16 +114,18 @@ vTextboxPicRow3::
 vTextboxLine2::
 	ds 27
 	
-	ds VRAM_ROW_SIZE * 3
+vTextboxBottomBorder::
+	ds VRAM_ROW_SIZE
 	
 vFixedMap::
 	ds SCREEN_HEIGHT * VRAM_ROW_SIZE
 	
-	ds $C0
+	
 	
 SECTION "Attribute Maps", VRAM[$9800],BANK[1]
 vAttrMap0::
 	ds $400
+	
 	
 vAttrMap1::
 	ds $400

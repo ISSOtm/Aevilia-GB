@@ -508,7 +508,7 @@ PrintKnownPointer::
 	push hl ; Save read pointer
 	push bc ; Save bank
 	
-	ld b, 0
+	ld b, $40
 .scrollLoop
 	rst waitVBlank
 	
@@ -554,7 +554,7 @@ PrintKnownPointer::
 	sub [hl]
 	dec a
 	ld d, a ; Precalc target SCY value
-	ld l, rSCY & $FF ; hl = rSCY
+	ld l, LOW(rSCY) ; hl = rSCY
 .waitUntilText
 	ld a, [rLY]
 	cp c
@@ -574,7 +574,7 @@ PrintKnownPointer::
 	
 	ld a, c
 	sub b
-	add a, 3 * 8 + 1
+	add a, 3 * 8 + 1 + $40
 	cp $90
 	jr c, .noCap
 	ld a, $8F
@@ -611,7 +611,7 @@ PrintKnownPointer::
 	
 .effectIsOffscreen
 	ld a, b
-	cp 8
+	cp $48
 	jp nz, .scrollLoop ; Too far (though by REALLY not much)
 	
 	; Now we're going to race the beam. Goal : have the text box set up by the time it's rendered.
@@ -651,7 +651,7 @@ PrintKnownPointer::
 	jr nz, .moveLines
 	
 	ld hl, wTextboxTileMap + SCREEN_WIDTH * 2
-	ld de, vTileMap1 + VRAM_ROW_SIZE * 2
+	ld de, vTextboxTileMap + VRAM_ROW_SIZE * 2
 .commitLines
 	ld c, SCREEN_WIDTH
 	call CopyToVRAMLite
