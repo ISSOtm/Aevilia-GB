@@ -51,7 +51,7 @@ InterleaveFromMovableToFixed::
 	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
 	set 3, [hl]
-	ld a, 8 * TILE_SIZE
+	ld a, TILE_SIZE * 14
 	ld [rSCY], a
 	xor a
 	jr .doneWindowing
@@ -140,7 +140,7 @@ InterleaveFromFixedToMovable::
 	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
 	set 3, [hl]
-	ld a, 8 * TILE_SIZE
+	ld a, TILE_SIZE * 14
 	ld [rSCY], a
 	xor a
 	jr .doneWindowing
@@ -192,7 +192,7 @@ StartMenu::
 	rst waitVBlank
 	ld a, 1
 	ld [rVBK], a
-	ld hl, wTransferRows + 8
+	ld hl, wTransferRows + 6
 	ld c, SCREEN_HEIGHT
 	rst fill
 	ld hl, wFixedTileMap

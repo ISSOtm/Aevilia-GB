@@ -97,7 +97,7 @@ SECTION "GFX and text", WRAM0,ALIGN[8]
 ; WARNING : high byte of all 18 bytes must be the same! (ie must not cross a 256-byte boundary)
 ; If this has to be moved, make sure to change **ALL** instances where this is used!
 wTransferRows::
-	ds SCREEN_HEIGHT + 8
+	ds 6 + SCREEN_HEIGHT
 	
 ; The "fixed" tile map, transferred on VBlanks
 ; 18 rows of 20 tiles each
@@ -133,8 +133,7 @@ wTextboxPicRow3::
 wTextboxLine2::
 	ds 15
 	; End row 4
-	
-	ds SCREEN_WIDTH * 3
+	ds SCREEN_WIDTH
 	
 wFixedTileMap::
 	ds SCREEN_HEIGHT * SCREEN_WIDTH

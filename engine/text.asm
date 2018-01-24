@@ -389,7 +389,7 @@ PrintPic::
 ; And if the textbox is already fully up, it will not rise again
 PrintNameAndWaitForTextbox::
 	; Erase previous name
-	ld hl, vTileMap1 + 1
+	ld hl, vTextboxTileMap + 1
 	ld c, SCREEN_WIDTH - 2
 	ld a, $12
 	call FillVRAMLite

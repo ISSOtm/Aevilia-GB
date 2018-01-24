@@ -67,7 +67,7 @@ VBlankHandler::
 	ldh a, [hTilemapMode]
 	and a
 	jr z, .mobileMap
-	ld a, TILE_SIZE * 8
+	ld a, TILE_SIZE * 14
 	ld [rSCY], a
 	ld a, [rLCDC]
 	or $08
