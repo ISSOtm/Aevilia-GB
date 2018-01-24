@@ -24,16 +24,42 @@ FileSelectOptionStrings::
 	dstr "COPY FILE..."
 	dstr "ERASE FILE..."
 	
-FileSelectOptions::
-	ld a, 1
-	ld [wTextboxStatus], a
-	ld [rVBK], a
+FileSelectOptionsReset::
+	ld hl, wTextboxTileMap
+	ld c, SCREEN_WIDTH * 6
+	xor a
+	rst fill
+	inc a
+	ld hl, wTransferRows
+	ld c, 6
+	rst fill
 	
-	ld hl, $9C00
-	ld c, $20
+	ld [rVBK], a
+	xor a
+	ld hl, vTextboxTileMap
+	ld c, VRAM_ROW_SIZE * 6
+	call FillVRAMLite
+	ld [rVBK], a
+	jr FileSelectOptions.reset
+	
+FileSelectOptions::
+	ld c, LOW(hWY)
+	ld a, LY_VBLANK - 2
+	ld [c], a
+	inc c
+	ld a, 7
+	ld [c], a
+	inc c
+	; ld a, 1
+	ld [c], a
+	
+	ld a, 1
+	ld [rVBK], a
+	ld hl, vTileMap1
+	ld c, VRAM_ROW_SIZE
 	ld a, $40
 	call FillVRAMLite
-	ld c, $20
+	ld c, VRAM_ROW_SIZE
 	xor a
 	call FillVRAMLite
 	
@@ -47,21 +73,22 @@ FileSelectOptions::
 	
 	xor a
 	ld [rVBK], a
-	
+		
 	ld hl, $9C00
-	ld c, $20
+	ld c, VRAM_ROW_SIZE
 	ld a, "_"
 	call FillVRAMLite
 	xor a
-	ld c, $21
+	ld c, VRAM_ROW_SIZE + 1
 	call FillVRAMLite
 	ld c, 13
 	ld a, "_"
 	call FillVRAMLite
 	xor a
-	ld bc, $122
+	ld bc, VRAM_ROW_SIZE * 12 - 14
 	call FillVRAM
 	
+.reset
 	ld hl, FileSelectOptionStrings
 	ld de, $9C21
 	call CopyStrToVRAM
@@ -70,25 +97,30 @@ FileSelectOptions::
 	ld e, $C4
 	call CopyStrToVRAM
 	
-	ld hl, wTextboxStatus
-.waitTextboxRose
+	ld c, LOW(hWY)
+	ld hl, rLCDC
+.riseOptions
 	rst waitVBlank
-	ld a, [hl]
-	cp $31
-	jr nz, .waitTextboxRose
-	inc [hl] ; Go past the its normal boundary, which will make it continue rising
-	
+	ld a, [c]
+	ld b, a
+.waitWindowLY
+	ld a, [rLY]
+	cp b
+	jr nz, .waitWindowLY
+	res 1, [hl]
+	ld a, b
+	sub 4
+	ld [c], a
+	cp $1E + 1
+	jr nc, .riseOptions
 	ld a, $1E
-	ldh [hWY], a
-	ld a, 7
-	ldh [hWX], a
+	ld [c], a
 	
-	; Perform rest of scrolling animation
-.scrollingLoop
-	rst waitVBlank
-	ld a, [wTextboxStatus]
-	cp TILE_SIZE * 14
-	jr c, .scrollingLoop
+	ld hl, CursorTile
+	ld de, $8010
+	ld bc, VRAM_TILE_SIZE
+	ld a, BANK(CursorTile)
+	call CopyAcrossToVRAM
 	
 	ld hl, wVirtualOAM
 	ld a, $50
@@ -99,21 +131,8 @@ FileSelectOptions::
 	ld [hli], a
 	ld [hl], a
 	
-	; Keeping using the textbox system would require constantly overwriting wTextboxStatus,
-	; so instead we just move the window normally
-	; Besides, the textbox disables sprites, and we need one.
-	xor a ; Disable textbox trickery
-	ld [wTextboxStatus], a
-	inc a ; ld a, 1
-	ldh [hEnableWindow], a
 	ld [wNumOfSprites], a
 	ld [wTransferSprites], a
-	
-	ld hl, CursorTile
-	ld de, $8010
-	ld bc, VRAM_TILE_SIZE
-	ld a, BANK(CursorTile)
-	call CopyAcrossToVRAM
 	
 	ld a, $40
 	ld [wYPos], a
@@ -317,13 +336,15 @@ FileSelectOptions_Erase:
 	ld [SRAMEnable], a
 	ld a, BANK(sNonVoidSaveFiles)
 	ld [SRAMBank], a
-	ld [hl], 0 ; Mark save file as empty
 	xor a
+	ld [hl], a ; Mark save file as empty
+	
+	; xor a
 	ld [SRAMBank], a
 	ld [SRAMEnable], a
 	
 .done
-	jp FileSelectOptions
+	jp FileSelectOptions.reset
 	
 FileSelectOptions_Copy:
 	jp FileSelectOptions
@@ -435,8 +456,13 @@ DrawFileSelect::
 	ld hl, v0Tiles2
 	ld c, VRAM_TILE_SIZE
 	call FillVRAMLite
+	
+	; xor a
+	ld [wNumOfSprites], a
+	inc a
+	ld [wTransferSprites], a
+	
 	call ClearMovableMap
-	; Redraw "Aevilia GB" string
 	; Do last to avoid displaying anything
 	ld c, 0
 	ld de, GrayPalette
@@ -487,18 +513,6 @@ DrawFileSelect::
 	dec b
 	jr nz, .printSaveFilesLoop
 .donePrinting
-
-	ldh a, [hEnableWindow]
-	and a
-	jr z, .optionsNotShown
-	xor a
-	ldh [hEnableWindow], a ; Disable "normal" window
-	ld [wNumOfSprites], a
-	ld a, $F6
-	ld [wTextboxStatus], a ; Make window begin its descent, the rest will be handled automatically.
-	ld [wTransferSprites], a
-	rst waitVBlank
-.optionsNotShown
 	
 	; Copy tile used for corners
 	ld hl, SaveFileCornerTile
@@ -511,11 +525,6 @@ DrawFileSelect::
 	ld de, wVirtualOAM
 	ld c, 4 * (4 + 9)
 	rst copy
-	
-	; Transfer sprites
-	ld a, 4 + 9
-	ld [wNumOfSprites], a
-	ld [wTransferSprites], a
 	
 	; Draw the console strings on-screen
 	ldh a, [hConsoleType]
@@ -554,11 +563,41 @@ DrawFileSelect::
 	ld [wYPos], a
 	ldh [hFrameCounter], a
 	
-	; Wait until the options window (managed by the textbox code at this point) is down to avoid gfx issues
-.waitTextboxDown
-	ld a, [wTextboxStatus]
+	; Transfer sprites
+	ld a, 4 + 9
+	ld [wNumOfSprites], a
+	
+	; Wait until the options window is down, if it was displayed
+	ld c, LOW(hEnableWindow)
+	ld a, [c]
 	and a
-	jr nz, .waitTextboxDown
+	jr z, .notOptions
+	dec c
+	dec c
+	ld hl, rLCDC
+.removeWindow
+	rst waitVBlank
+	ld a, [c]
+	ld [wTransferSprites], a
+	ld b, a
+.waitWindowLY
+	ld a, [rLY]
+	cp b
+	jr nz, .waitWindowLY
+	res 1, [hl]
+	ld a, b
+	add a, 4
+	ld [c], a
+	cp LY_VBLANK
+	jr c, .removeWindow
+	inc c
+	inc c
+	xor a
+	ld [c], a
+.notOptions
+	
+	ld a, 1
+	ld [wTransferSprites], a
 	
 	ldh a, [hSRAM32kCompat]
 	and a
@@ -1179,11 +1218,8 @@ TechCrewName::
 	dstr "Tech crew"
 	
 ConfirmDeletionText::
-	display_quick
 	print_pic GameTiles
 	print_name GameName
-	text_lda_imm 0
-	text_sta hEnableWindow
 	print_line .line0
 	print_line .line1
 	wait_user
@@ -1206,7 +1242,6 @@ ConfirmDeletionText::
 	dstr "DELETE"
 	
 ConfirmCopyText::
-	display_quick
 	print_pic GameTiles
 	print_name GameName
 	text_lda_imm 0
