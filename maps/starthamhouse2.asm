@@ -31,6 +31,15 @@ StarthamHouse2NPCs::
 	
 	db 0
 	
+StarthamHouse2Palettes::
+	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	
 StarthamHouse2WarpToPoints::
 	db 1 ; Number of warp-to points
 	

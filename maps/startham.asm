@@ -76,6 +76,15 @@ StarthamNPCs::
 	full_ptr GenericBoyATiles
 	db 0
 	
+StarthamPalettes::
+	dw GenericBoyAPalette
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	
 StarthamWarpToPoints::
 	db 5 ; Number of warp-to points
 	

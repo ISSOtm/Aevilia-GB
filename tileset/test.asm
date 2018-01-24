@@ -104,10 +104,3 @@ ENDR
 	dw 0
 	dw 0
 	
-	dw TestWarriorTopPalette
-	dw TestWarriorBottomPalette
-	dw 0
-	dw 0
-	dw 0
-	dw 0
-	dw 0

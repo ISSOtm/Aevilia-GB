@@ -549,10 +549,3 @@ ENDR
 	dw WaterPalette
 	dw RockPalette
 	
-	dw GenericBoyAPalette
-	dw 0
-	dw 0
-	dw 0
-	dw 0
-	dw 0
-	dw 0

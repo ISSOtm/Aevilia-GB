@@ -33,6 +33,15 @@ TestHouseNPCs::
 	db 1
 	full_ptr TestHouseNPCTiles
 	
+TestHousePalettes::
+	dw TestWarriorTopPalette
+	dw TestWarriorBottomPalette
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	
 TestHouseWarpToPoints::
 	db 1 ; Number of warp-to points
 	

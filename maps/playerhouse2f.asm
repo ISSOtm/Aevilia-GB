@@ -39,6 +39,15 @@ PlayerHouse2FNPCs::
 	db 1 ; Number of NPC tile sets
 	full_ptr InteriorBlanketCoverTile
 	
+PlayerHouse2FPalettes::
+	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
+	dw 0
+	dw InteriorWallPalette + 3
+	dw DefaultPalette
+	dw 0
+	dw 0
+	dw 0
+	
 PlayerHouse2FWarpToPoints::
 	db 2 ; Number of warp-to points
 	

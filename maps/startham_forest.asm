@@ -32,6 +32,15 @@ StarthamForestInteractions::
 StarthamForestNPCs::
 	db 0
 	
+StarthamForestPalettes::
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	
 StarthamForestWarpToPoints::
 	db 1
 	

@@ -350,7 +350,49 @@ LoadNPCs:
 	jr nz, .NPCTilesLoop
 .noNPCTiles
 	
-.noNPCs	
+.noNPCs
+	; Load OBJ palettes
+	ld de, wOBJPalette6_color2
+	ld c, 14
+	rst copy
+	push hl
+	ldh a, [hCurROMBank]
+	push af
+	ld a, BANK(DefaultPalette)
+	rst bankswitch
+	
+	ld hl, wOBJPalette6_color2
+	ld de, wOBJPalette1_color0
+.loadOBJPalettes
+	inc de
+	inc de
+	inc de
+	ld a, [hli]
+	push hl
+	ld h, [hl]
+	ld l, a
+	or h
+	ld c, OBJ_PALETTE_STRUCT_SIZE
+	jr nz, .loadPalette
+	; Load opposite gender's palette
+	ld a, [wPlayerGender]
+	and a
+	ld hl, EvieDefaultPalette
+	jr nz, .loadPalette
+	ld hl, TomDefaultPalette
+.loadPalette
+	rst copy
+.paletteLoaded
+	
+	pop hl
+	inc hl
+	ld a, e
+	cp LOW(wPalettesEnd)
+	jr nz, .loadOBJPalettes
+	pop af
+	rst bankswitch
+	
+	pop hl
 	push hl
 	ld a, [hli] ; Get number of warp-to points
 	ld c, a
@@ -687,14 +729,14 @@ LoadTileset::
 	ld de, wOBJPalette6_color2
 	ld c, 14
 	rst copy
-	push hl
-	save_rom_bank
+;	push hl
+;	save_rom_bank
 	ld a, BANK(DefaultPalette)
 	rst bankswitch
 	
 	ld hl, wOBJPalette6_color2
 	ld de, wBGPalette1_color0
-.loadTilesetBGPalettes
+.loadBGPalettes
 	ld a, [hli]
 	push hl
 	ld h, [hl]
@@ -705,53 +747,7 @@ LoadTileset::
 	inc hl
 	ld a, e
 	cp LOW(wOBJPalettes)
-	jr nz, .loadTilesetBGPalettes
-	
-	restore_rom_bank
-	pop hl
-	ld de, wOBJPalette6_color2
-	ld c, 14
-	rst copy
-;	push hl
-;	save_rom_bank
-	ld a, BANK(DefaultPalette)
-	rst bankswitch
-	
-	ld hl, wOBJPalette6_color2
-	ld de, wOBJPalette1_color0
-.loadTilesetOBJPalettes
-	inc de
-	inc de
-	inc de
-	ld a, [hli]
-	push hl
-	ld h, [hl]
-	ld l, a
-	or h
-	ld c, OBJ_PALETTE_STRUCT_SIZE
-	jr nz, .normalPalette
-	; Load opposite gender's palette
-	save_rom_bank
-	ld a, BANK(EvieDefaultPalette)
-	rst bankswitch
-	ld a, [wPlayerGender]
-	and a
-	ld hl, EvieDefaultPalette
-	jr nz, .loadOppositeGenderPalette
-	ld hl, TomDefaultPalette
-.loadOppositeGenderPalette
-	rst copy
-	restore_rom_bank
-	jr .paletteLoaded
-.normalPalette
-	rst copy
-.paletteLoaded
-	pop hl
-	inc hl
-	ld a, e
-	cp LOW(wPalettesEnd)
-	jr nz, .loadTilesetOBJPalettes
-	
+	jr nz, .loadBGPalettes
 ;	restore_rom_bank
 ;	pop hl
 	
