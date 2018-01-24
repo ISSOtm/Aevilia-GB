@@ -18,6 +18,7 @@ FileSelectHighlight::
 	jr nz, .highlightLoop
 	ret
 	
+	
 FileSelectOptionStrings::
 	dstr "MANAGE FILES"
 	dstr "COPY FILE..."
@@ -75,16 +76,7 @@ FileSelectOptions::
 	ld a, [hl]
 	cp $31
 	jr nz, .waitTextboxRose
-	inc [hl] ; Go past the window's normal boundary, which will make it continue rising
-	
-	ld hl, wVirtualOAM
-	ld a, $50
-	ld [hli], a
-	ld a, $48
-	ld [hli], a
-	ld a, 1
-	ld [hli], a
-	ld [hl], a
+	inc [hl] ; Go past the its normal boundary, which will make it continue rising
 	
 	ld a, $1E
 	ldh [hWY], a
@@ -97,6 +89,15 @@ FileSelectOptions::
 	ld a, [wTextboxStatus]
 	cp TILE_SIZE * 14
 	jr c, .scrollingLoop
+	
+	ld hl, wVirtualOAM
+	ld a, $50
+	ld [hli], a
+	ld a, $48
+	ld [hli], a
+	ld a, 1
+	ld [hli], a
+	ld [hl], a
 	
 	; Keeping using the textbox system would require constantly overwriting wTextboxStatus,
 	; so instead we just move the window normally
