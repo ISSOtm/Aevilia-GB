@@ -1763,6 +1763,33 @@ ENDR
 	dw SurprisedEmoteTiles
 	dw EmotePalette
 	
+	dw EmbarrassedEmoteTiles
+	dw EmotePalette
+	
+	dw ColericEmoteTiles
+	dw EmotePalette
+	
+	dw AngryEmoteTiles
+	dw EmotePalette
+	
+	dw InLoveEmoteTiles
+	dw EmotePalette
+	
+	dw TongueEmoteTiles
+	dw EmotePalette
+	
+	dw WinkEmoteTiles
+	dw EmotePalette
+	
+	dw WinkTongueEmoteTiles
+	dw EmotePalette
+	
+	dw QuestionMarkEmoteTiles
+	dw EmotePalette
+	
+	dw ExclamationMarkEmoteTiles
+	dw EmotePalette
+	
 	
 ; Get NPC #a's offset from the camera
 ; Returns with de = wTempBuf + 3 and bc = wCameraXPos + 1

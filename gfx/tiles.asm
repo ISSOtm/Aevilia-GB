@@ -1313,13 +1313,129 @@ NeutralEmoteTiles::
 	dw $11FF, $E1FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
 	
 SadEmoteTiles::
-	dw $
+	dw $7F7F, $80FF, $80FF, $88FF, $88FF, $88FF, $80FF, $80FF
+	dw $80FF, $87FF, $88FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $11FF, $11FF, $11FF, $01FF, $01FF
+	dw $01FF, $E1FF, $11FF, $01FF, $3EFE, $40C0, $8080, $0000
 	
 SadderEmoteTiles::
-	dw $
+	dw $7F7F, $80FF, $80FF, $80FF, $80FF, $8CFF, $90FF, $80FF
+	dw $80FF, $87FF, $88FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $01FF, $01FF, $31FF, $09FF, $01FF
+	dw $01FF, $E1FF, $11FF, $01FF, $3EFE, $40C0, $8080, $0000
 	
 SurprisedEmoteTiles::
-	dw $
+	dw $7F7F, $88FF, $94FF, $80FF, $88FF, $88FF, $88FF, $80FF
+	dw $81FF, $82FF, $82FF, $81FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $11FF, $29FF, $01FF, $11FF, $11FF, $11FF, $01FF
+	dw $81FF, $41FF, $41FF, $81FF, $3EFE, $40C0, $8080, $0000
+	
+EmbarrassedEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $94FF, $80FF, $80FF, $80FF
+	dw $88FF, $87FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $05FF, $15FF, $2BFF, $0BFF, $05FF, $01FF
+	dw $11FF, $E1FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+ColericEmoteTiles::
+	dw $7F7F, $80FF, $88FF, $84FF, $88FF, $88FF, $88FF, $80FF
+	dw $80FF, $87FF, $88FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $1BF5, $25FB, $15FB, $1BF5, $11FF, $01FF
+	dw $01FF, $E1FF, $11FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+AngryEmoteTiles::
+	dw $7F7F, $80FF, $88FF, $84FF, $88FF, $88FF, $88FF, $80FF
+	dw $80FF, $87FF, $88FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $11FF, $21FF, $11FF, $11FF, $11FF, $01FF
+	dw $01FF, $E1FF, $11FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+InLoveEmoteTiles::
+	dw $7F7F, $80FF, $94EB, $9CE3, $9CE3, $88F7, $80FF, $80FF
+	dw $81FF, $82FF, $82FF, $81FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $29D7, $39C7, $39C7, $11EF, $01FF, $01FF
+	dw $81FF, $41FF, $41FF, $81FF, $3EFE, $40C0, $8080, $0000
+	
+TongueEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $88FF, $88FF, $80FF, $80FF
+	dw $87FF, $83FE, $83FE, $81FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $11FF, $11FF, $11FF, $01FF, $01FF
+	dw $E1FF, $C17F, $C17F, $81FF, $3EFE, $40C0, $8080, $0000
+	
+WinkEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $88FF, $88FF, $80FF, $80FF
+	dw $88FF, $87FF, $80FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $01FF, $11FF, $31FF, $01FF, $01FF
+	dw $11FF, $E1FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+WinkTongueEmoteTiles::
+	dw $7F7F, $80FF, $80FF, $88FF, $88FF, $88FF, $80FF, $80FF
+	dw $87FF, $83FE, $83FE, $81FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $01FF, $11FF, $31FF, $01FF, $01FF
+	dw $E1FF, $C17F, $C17F, $81FF, $3EFE, $40C0, $8080, $0000
+	
+QuestionMarkEmoteTiles::
+	dw $7F7F, $80FF, $83FF, $84FF, $80FF, $80FF, $80FF, $81FF
+	dw $81FF, $80FF, $81FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $C1FF, $21FF, $21FF, $21FF, $C1FF, $01FF
+	dw $01FF, $01FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+ExclamationMarkEmoteTiles::
+	dw $7F7F, $80FF, $81FF, $81FF, $81FF, $81FF, $81FF, $81FF
+	dw $81FF, $80FF, $81FF, $80FF, $7C7F, $0203, $0203, $0101
+	dw $FEFE, $01FF, $01FF, $01FF, $01FF, $01FF, $01FF, $01FF
+	dw $01FF, $01FF, $01FF, $01FF, $3EFE, $40C0, $8080, $0000
+	
+	
+SECTION "Cindy", ROMX,ALIGN[4]
+
+CindyTiles::
+	DB $03,$03,$0F,$0C,$1F,$10,$1F,$10
+	DB $3F,$21,$3E,$22,$3C,$24,$3A,$2A
+	DB $3A,$2A,$3C,$24,$1F,$1F,$2D,$24
+	DB $1B,$18,$0F,$0E,$0D,$09,$06,$06
+	DB $C0,$C0,$F0,$30,$F8,$08,$F8,$88
+	DB $7C,$44,$7C,$44,$3C,$24,$5C,$54
+	DB $5C,$54,$3C,$24,$F8,$F8,$B4,$24
+	DB $D8,$18,$F0,$70,$B0,$90,$60,$60
+	DB $03,$03,$0F,$0C,$1F,$10,$1F,$10
+	DB $3F,$20,$3F,$20,$3F,$20,$3F,$20
+	DB $3F,$29,$17,$16,$1A,$10,$25,$20
+	DB $1F,$18,$0F,$0E,$0D,$09,$06,$06
+	DB $C0,$C0,$F0,$30,$F8,$08,$F8,$08
+	DB $FC,$04,$FC,$04,$FC,$04,$FC,$04
+	DB $FC,$94,$E8,$68,$58,$08,$A4,$04
+	DB $F8,$18,$F0,$70,$B0,$90,$60,$60
+	DB $03,$03,$0F,$0C,$1F,$10,$3F,$20
+	DB $3F,$28,$37,$34,$17,$17,$14,$14
+	DB $11,$11,$0B,$0A,$07,$07,$05,$04
+	DB $07,$04,$02,$02,$07,$04,$03,$03
+	DB $C0,$C0,$F0,$30,$F8,$08,$FC,$04
+	DB $FC,$04,$FC,$04,$FC,$04,$FC,$84
+	DB $FC,$84,$FC,$04,$FC,$E4,$B8,$98
+	DB $D0,$50,$20,$20,$E0,$20,$E0,$E0
+	DB $00,$00,$03,$03,$0F,$0C,$1F,$10
+	DB $1F,$10,$3F,$21,$3E,$22,$3C,$24
+	DB $3A,$2A,$3A,$2A,$3C,$24,$1F,$1F
+	DB $15,$14,$0B,$0A,$0F,$09,$06,$06
+	DB $00,$00,$C0,$C0,$F0,$30,$F8,$08
+	DB $F8,$88,$7C,$44,$7C,$44,$3C,$24
+	DB $5C,$54,$5C,$54,$3C,$24,$F8,$F8
+	DB $C8,$48,$F0,$30,$C0,$C0,$00,$00
+	DB $00,$00,$03,$03,$0F,$0C,$1F,$10
+	DB $3F,$20,$3F,$28,$37,$34,$17,$17
+	DB $14,$14,$11,$11,$0B,$0A,$07,$07
+	DB $1F,$1D,$27,$24,$1F,$13,$0C,$0C
+	DB $00,$00,$C0,$C0,$F0,$30,$F8,$08
+	DB $FC,$04,$FC,$04,$FC,$04,$FC,$04
+	DB $FC,$84,$FC,$84,$FC,$04,$FC,$E4
+	DB $78,$38,$A8,$A8,$F8,$C8,$30,$30
+	DB $00,$00,$03,$03,$0F,$0C,$1F,$10
+	DB $1F,$10,$3F,$20,$3F,$20,$3F,$20
+	DB $3F,$20,$3F,$29,$1E,$1E,$16,$14
+	DB $15,$14,$0B,$0A,$0F,$09,$06,$06
+	DB $00,$00,$C0,$C0,$F0,$30,$F8,$08
+	DB $F8,$08,$FC,$04,$FC,$04,$FC,$04
+	DB $FC,$04,$FC,$94,$78,$68,$68,$28
+	DB $C8,$48,$B0,$30,$C0,$C0,$00,$00
 	
 	
 SECTION "Strings and text", ROMX,BANK[1]
