@@ -72,9 +72,10 @@ StarthamNPCs::
 	db $02 ; Number of NPC scripts
 	dw StarthamNPCScripts
 	
-	db 2 ; Number of NPC tile sets
+	db 3 ; Number of NPC tile sets
 	full_ptr GenericBoyATiles
 	db 0
+	full_ptr KasumiTiles
 	
 StarthamPalettes::
 	dw GenericBoyAPalette

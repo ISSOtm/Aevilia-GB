@@ -46,8 +46,9 @@ PlayerHouseNPCs::
 	db 1 ; Number of NPC scripts
 	dw PlayerHouseNPCScripts ; Obligatory no matter the above value
 	
-	db 1 ; Number of NPC tile sets
+	db 2 ; Number of NPC tile sets
 	db 0 ; Special trigger : load opposite gender's tiles (if Evie, load Tom, etc.)
+	full_ptr KasumiTiles
 	
 PlayerHousePalettes::
 	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
