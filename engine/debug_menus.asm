@@ -890,7 +890,7 @@ TilesetViewerMenu::
 	ld b, c
 	call GetByteAcross ; NPC count
 	add a, a
-	ret z ; If no NPCs, then nothing to load
+	jr z, .noTiles ; If no NPCs, then nothing to load
 	add a, a
 	add a, a
 	sub b ; Trick : b was already loaded with the original copy of a !
@@ -906,7 +906,7 @@ TilesetViewerMenu::
 	call GetByteAcross ; get tile count
 	inc hl
 	and a
-	ret z ; If no tiles...
+	jr z, .noTiles ; If no tiles...
 	ld de, $80C0
 	ld b, a
 .loadNPCTiles
@@ -950,9 +950,47 @@ TilesetViewerMenu::
 	pop bc
 	dec b
 	jr nz, .loadNPCTiles
+	
+	db $FE
+.noTiles
+	; Load map's palettes
+	inc hl
+	ld de, wOBJPalette6_color2
+	ld b, c
+	ld c, 14
+	call CopyAcrossLite
+	
+	ld hl, wOBJPalette6_color2
+	ld c, 1
+.loadOBJPalettes
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	push hl
+	or e
+	jr nz, .loadPalette
+	; Load opposite gender's palette
+	ld a, [wPlayerGender]
+	and a
+	ld de, EvieDefaultPalette
+	jr nz, .loadPalette
+	ld de, TomDefaultPalette
+.loadPalette
+	push bc
+	callacross LoadOBJPalette_Hook
+	pop bc
+	
+	pop hl
+	inc c
+	ld a, c
+	cp 8
+	jr nz, .loadOBJPalettes
+	
 	ld hl, wEmoteGfxID
 	res 7, [hl] ; Reload emote gfx
 	jp ProcessNPCs
+	
 .loadSiblingGfx
 	push hl
 	ld a, [wPlayerGender]
