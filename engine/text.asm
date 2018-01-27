@@ -289,7 +289,7 @@ ClearText::
 	ld c, SCREEN_WIDTH - 6
 	jr nz, .picPresent
 	ld c, SCREEN_WIDTH - 2
-	ld l, wTextboxPicRow1 & $FF
+	ld l, LOW(wTextboxPicRow1)
 .picPresent
 	ld a, l
 	add a, SCREEN_WIDTH
@@ -352,7 +352,7 @@ PrintPic::
 	ld [hl], a
 	inc a
 	
-	ld l, wTextboxPicRow1 & $FF
+	ld l, LOW(wTextboxPicRow1)
 	ld [hli], a
 	inc a
 	ld [hli], a
@@ -360,7 +360,7 @@ PrintPic::
 	ld [hl], a
 	inc a
 	
-	ld l, wTextboxPicRow2 & $FF
+	ld l, LOW(wTextboxPicRow2)
 	ld [hli], a
 	inc a
 	ld [hli], a
@@ -368,7 +368,7 @@ PrintPic::
 	ld [hl], a
 	inc a
 	
-	ld l, wTextboxPicRow3 & $FF
+	ld l, LOW(wTextboxPicRow3)
 	ld [hli], a
 	inc a
 	ld [hli], a
@@ -400,7 +400,7 @@ PrintNameAndWaitForTextbox::
 	ld de, wTextboxName
 	ld c, 12 ; 16 characters at most
 	jr nz, .picPresent
-	ld e, (wTextboxName - 4) & $FF
+	ld e, LOW(wTextboxName - 4)
 	ld c, 16
 .picPresent
 
@@ -629,7 +629,7 @@ PrintKnownPointer::
 	bit TEXT_PIC_FLAG, [hl]
 	ld bc, wTextboxPicRow1
 	jr z, .picNotPresent
-	ld c, wTextboxLine0 & $FF
+	ld c, LOW(wTextboxLine0)
 .picNotPresent
 	ld hl, SCREEN_WIDTH
 	add hl, bc ; Move to second line
@@ -647,7 +647,7 @@ PrintKnownPointer::
 	xor a
 	ld [hli], a
 	ld a, c
-	cp (wTextboxLine0 + 14) & $FF
+	cp LOW(wTextboxLine0 + 14)
 	jr nz, .moveLines
 	
 	ld hl, wTextboxTileMap + SCREEN_WIDTH * 2
@@ -658,7 +658,7 @@ PrintKnownPointer::
 	ld a, e
 	add a, VRAM_ROW_SIZE - SCREEN_WIDTH
 	ld e, a
-	cp (vTileMap1 + VRAM_ROW_SIZE * 6) & $FF
+	cp LOW(vTileMap1 + VRAM_ROW_SIZE * 6)
 	jr nz, .commitLines
 	
 	pop bc ; Retrieve bank
@@ -699,12 +699,12 @@ PrintKnownPointer::
 	ld e, l
 	pop hl
 	push de ; Save for later
-	ld d, vTextboxLine0 >> 8
+	ld d, HIGH(vTextboxLine0)
 	ld a, [wNumOfPrintedLines]
 	and 3
 	add a, a ; Mult by 2
 	swap a ; Mult by 16 (since original 4 upper bits are zero)
-	add a, vTextboxPicRow0 & $FF
+	add a, LOW(vTextboxPicRow0)
 	ld e, a
 	ld c, 18
 	ld a, [wTextFlags]
@@ -968,7 +968,7 @@ MakePlayerWalk_Hook:
 .dontTurnPlayer
 	dec hl
 	dec hl ; wXPos
-	ld d, wNPC0_steps & $FF
+	ld d, LOW(wNPC0_steps)
 	call TextMoveEntity_Common
 	dec a ; This command doesn't require the NPC ID byte
 	ret
@@ -987,7 +987,7 @@ MakeNPCWalkTo::
 	inc hl
 	ld d, [hl]
 	swap a ; Get pointer to coord ; a "| HORIZONTAL_AXIS << 4" will select the proper coord (offsetting by 2)
-	add a, wNPC1_ypos & $FF
+	add a, LOW(wNPC1_ypos)
 	ld c, a
 	adc a, HIGH(wNPC1_ypos)
 	sub c
@@ -1033,9 +1033,9 @@ MakeNPCWalk::
 	ld a, [hli]
 	and 7 ; Max out! Hehehe, no buffer overflow :D
 	swap a
-	add a, wNPC1_sprite & $FF
+	add a, LOW(wNPC1_sprite)
 	ld e, a
-	adc a, wNPC1_sprite >> 8
+	adc a, HIGH(wNPC1_sprite)
 	sub e
 	ld d, a ; Now we're pointing at the NPC's facing direction
 	ld a, [hli] ; Get direction of movement
@@ -1067,7 +1067,7 @@ MakeNPCWalk::
 ; d = low byte of pointer to entity's step counter
 TextMoveEntity_Common:
 	push hl
-	ld h, wNPCArray >> 8
+	ld h, HIGH(wNPCArray)
 	ld l, d
 	ld [hl], b ; Reset entity's movement steps
 	inc hl
@@ -1149,7 +1149,7 @@ TextMoveEntity_Common:
 	push bc
 	push de
 	push hl
-	ld h, wNPCArray >> 8
+	ld h, HIGH(wNPCArray)
 	ld l, d ; Get pointer to entity's steps in hl
 	dec [hl]
 	call MoveNPC0ToPlayer
@@ -1167,7 +1167,7 @@ TextMoveEntity_Common:
 	jr nz, .movementLoop
 	
 	; Reset entity's movement
-	ld h, wNPCArray >> 8
+	ld h, HIGH(wNPCArray)
 	ld l, d
 	ld [hl], 0
 	call ProcessNPCs
@@ -1191,7 +1191,7 @@ MakeChoice::
 	ld l, a
 	ld de, wTextboxLine2 + 1
 	jr nz, .picPresent
-	ld e, (wTextboxLine2 - 3) & $FF
+	ld e, LOW(wTextboxLine2 - 3)
 .picPresent
 	call CopyStrAcross ; Preserves c
 	xor a
@@ -1203,8 +1203,8 @@ MakeChoice::
 	ld de, vTextboxLine2 - 4
 	bit TEXT_PIC_FLAG, c
 	jr z, .picNotPresent
-	ld l, wTextboxLine2 & $FF
-	ld e, vTextboxLine2 & $FF
+	ld l, LOW(wTextboxLine2)
+	ld e, LOW(vTextboxLine2)
 .picNotPresent
 	ld b, h
 	ld c, l
@@ -1516,7 +1516,7 @@ InstantPrintLines::
 	ld de, wTextboxPicRow1
 	ld c, 18
 	jr z, .picNotPresent
-	ld e, wTextboxLine0 & $FF
+	ld e, LOW(wTextboxLine0)
 	ld c, 15
 .picNotPresent
 	ld a, 3
