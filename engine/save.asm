@@ -1036,142 +1036,76 @@ CopyWhichFileStr::
 FileIDsStr::
 	dstr "1  2  3"
 	
+DLCName::
+	dstr "DLC MENU"
+	
 	
 SECTION "File select text", ROMX
 
+	set_text_prefix CompatExplanationText
 CompatExplanationText::
 	print_name TechCrewName
-	print_line .line0
-	print_line .line1
-	print_line .line2
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
 	wait_user
-	print_line .line3
-	print_line .line4
-	print_line .line5
+	print_line_id 3
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	clear_box
-	print_line .line6
-	print_line .line7
+	print_line_id 6
+	print_line_id 7
 	delay 30
-	print_line .line8
+	print_line_id 8
 	wait_user
 	clear_box
-	print_line .line9
+	print_line_id 9
 	wait_user
-	print_line .line10
-	print_line .line11
+	print_line_id 10
+	print_line_id 11
 	delay 120
-	print_line .line12
+	print_line_id 12
 	wait_user
 	clear_box
-	print_line .line13
-	print_line .line14
-	print_line .line15
+	print_line_id 13
+	print_line_id 14
+	print_line_id 15
 	wait_user
-	print_line .line16
-	print_line .line17
-	print_line .line18
+	print_line_id 16
+	print_line_id 17
+	print_line_id 18
 	wait_user
 	clear_box
-	print_line .line19
+	print_line_id 19
 	delay 60
-	print_line .line20
-	print_line .line21
+	print_line_id 20
+	print_line_id 21
 	delay 120
 	wait_user
 	clear_box
-	print_line .line22
-	print_line .line23
+	print_line_id 22
+	print_line_id 23
 	wait_user
-	print_line .line24
-	print_line .line25
+	print_line_id 24
+	print_line_id 25
 	wait_user
-	print_line .line26
-	print_line .line27
-	wait_user
-	clear_box
-	print_line .line28
-	print_line .line29
-	print_line .line30
+	print_line_id 26
+	print_line_id 27
 	wait_user
 	clear_box
-	print_line .line31
-	print_line .line32
+	print_line_id 28
+	print_line_id 29
+	print_line_id 30
+	wait_user
+	clear_box
+	print_line_id 31
+	print_line_id 32
 	wait_user
 	done
 	
-.line0
-	dstr "You may notice"
-.line1
-	dstr "there's only 1"
-.line2
-	db "save file,",0
-.line3
-	dstr "out of the 3"
-.line4
-	dstr "promised on the"
-.line5
-	dstr "tin."
-.line6
-	dstr "You might be"
-.line7
-	dstr "wondering:"
-.line8
-	dstr "Why?"
-.line9
-	dstr "Because"
-.line10
-	dstr "THERE CAN BE ONLY"
-.line11
-	dstr "ONE..."
-.line12
-	dstr "save file."
-.line13
-	db "Nah,"
-	dstr " actually your"
-.line14
-	dstr "emulator is having"
-.line15
-	dstr "trouble with save"
-.line16
-	db "data,"
-	dstr " so we're"
-.line17
-	dstr "allowed only 1/4"
-.line18
-	dstr "of what we asked."
-.line19
-	dstr "BUT!"
-.line20
-	dstr "WE STILL MANAGED"
-.line21
-	dstr "TO FIT ONE FILE!"
-.line22
-	dstr "At the cost of the"
-.line23
-	db "two others,",0
-.line24
-	dstr "(they were a bit"
-.line25
-	db "grumpy,"
-	dstr " though)"
-.line26
-	dstr "and at the cost of"
-.line27
-	dstr "the backups."
-.line28
-	db "Thus,"
-	dstr " I really"
-.line29
-	dstr "recommend you use"
-.line30
-	dstr "another emulator."
-.line31
-	dstr "But do as you"
-.line32
-	db "wish,"
-	dstr " man!"
 	
+	set_text_prefix CompatFileCorruptedText
 CompatFileCorruptedText::
 	text_lda_imm SRAM_UNLOCK
 	text_sta SRAMEnable
@@ -1182,223 +1116,126 @@ CompatFileCorruptedText::
 	text_sta SRAMEnable
 	text_sta SRAMBank
 	print_name TechCrewName
-	print_line .line0
-	print_line .line1
+	print_line_id 0
+	print_line_id 1
 	wait_user
-	print_line .line2
-	print_line .line3
-	print_line .line4
+	print_line_id 2
+	print_line_id 3
+	print_line_id 4
 	wait_user
 	clear_box
-	print_line .line5
-	print_line .line6
+	print_line_id 5
+	print_line_id 6
 	wait_user
-	print_line .line7
+	print_line_id 7
 	wait_user
 	done
 	
-.line0
-	dstr "The file is"
-.line1
-	dstr "corrupted!"
-.line2
-	dstr "And since we're in"
-.line3
-	dstr "Compatibility Mode"
-.line4
-	dstr "there's no backup."
-.line5
-	dstr "So the file has"
-.line6
-	dstr "been deleted."
-.line7
-	dstr "Sorry!"
-	
-TechCrewName::
-	dstr "Tech crew"
-	
+	set_text_prefix ConfirmDeletionText
 ConfirmDeletionText::
 	print_pic GameTiles
 	print_name GameName
-	print_line .line0
-	print_line .line1
+	print_line_id 0
+	print_line_id 1
 	wait_user
 	clear_box
-	print_line .line2
-	print_line .line3
-	fake_choice .choice
+	print_line_id 2
+	print_line_id 3
+	fake_choice NoDeleteChoiceText
 	done
 	
-.line0
-	dstr "REALLY DELETE"
-.line1
-	dstr "THIS FILE?"
-.line2
-	dstr "THIS CAN'T BE"
-.line3
-	dstr "CANCELLED."
-.choice
-	dstr "NO"
-	dstr "DELETE"
-	
+	set_text_prefix ConfirmCopyText
 ConfirmCopyText::
 	print_pic GameTiles
 	print_name GameName
 	text_lda_imm 0
 	text_sta hEnableWindow
-	print_line .line0
-	print_line .line1
+	print_line_id 0
+	print_line_id 1
 	wait_user
 	clear_box
-	print_line .line2
-	print_line .line3
-	fake_choice .choice
+	print_line_id 2
+	print_line_id 3
+	fake_choice NoCopyChoiceText
 	done
 	
-.line0
-	dstr "REALLY COPY"
-.line1
-	dstr "THIS FILE?"
-.line2
-	dstr "THIS CAN'T BE"
-.line3
-	dstr "CANCELLED."
-.choice
-	dstr "NO"
-	dstr "COPY"
-	
+	set_text_prefix ConfirmLoadText
 ConfirmLoadText::
 	print_pic GameTiles
 	print_name GameName
-	print_line .line0
-	print_line .line1
+	print_line_id 0
+	print_line_id 1
 	fake_b_choice YesNoCapsChoice
 	done
-.line0
-	dstr "OK TO LOAD"
-.line1
-	dstr "THIS FILE?"
 	
+	set_text_prefix CorruptedFileText
 CorruptedFileText::
 	print_pic GameTiles
 	print_name GameName
-	print_line .line0
-	print_line .line1
+	print_line_id 0
+	print_line_id 1
 	wait_user
 	clear_box
-	print_line .line2
-	print_line .line3
+	print_line_id 2
+	print_line_id 3
 	wait_user
-	print_line .line4
-	print_line .line5
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	clear_box
-	print_line .line6
+	print_line_id 6
 	empty_line
 	fake_b_choice YesNoCapsChoice
 	done
 	
-.line0
-	dstr "THE SAVE WAS"
-.line1
-	dstr "CORRUPTED!"
-.line2
-	db "LUCKILY,"
-	dstr " I"
-.line3
-	db "HAVE A BACKUP,",0
-.line4
-	dstr "SO I CAN"
-.line5
-	dstr "RESTORE IT."
-.line6
-	dstr "SHOULD I?"
-	
+	set_text_prefix BackupCorruptedText
 BackupCorruptedText::
 	print_pic GameTiles
 	print_name GameName
-	print_line .line0
-	print_line .line1
-	print_line .line2
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
 	wait_user
 	clear_box
-	print_line .line3
-	print_line .line4
-	print_line .line5
+	print_line_id 3
+	print_line_id 4
+	print_line_id 5
 	wait_user
 	clear_box
-	print_line .line6
-	print_line .line7
+	print_line_id 6
+	print_line_id 7
 	wait_user
-	print_line .line8
+	print_line_id 8
 	wait_user
 	done
 	
-.line0
-	dstr "YOU CERTAINLY"
-.line1
-	dstr "DID YOUR"
-.line2
-	dstr "WORST."
-.line3
-	dstr "EVEN THE"
-.line4
-	dstr "BACKUP"
-.line5
-	dstr "IS CORRUPTED!"
-.line6
-	db "SO, "
-	dstr "LET'S"
-.line7
-	dstr "START OVER."
-.line8
-	dstr "OKAY?"
-	
+	set_text_prefix EmptyFileText
 EmptyFileText::
 	print_pic GameTiles
 	print_name GameName
-	print_line EmptyFileLine0
-	print_line EmptyFileLine1
-	print_line EmptyFileLine2
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
 	wait_user
-	print_line EmptyFileLine3
-	print_line EmptyFileLine4
+	print_line_id 3
+	print_line_id 4
 	empty_line
 	fake_b_choice YesNoCapsChoice
 	done
-EmptyFileLine0::
-	dstr "WELCOME TO"
-EmptyFileLine1::
-	dstr "A BRAND"
-EmptyFileLine2::
-	dstr "NEW FILE!"
-EmptyFileLine3::
-	dstr "SHOULD I"
-EmptyFileLine4::
-	dstr "LOAD IT?"
-
-
-DLCName::
-	dstr "DLC MENU"
+	
+	
+	set_text_prefix DLCUnavailableText
 DLCUnavailableText::
 	print_pic GameTiles
 	print_name GameName
-	print_line DLCUnavailableLine0
-	print_line DLCUnavailableLine1
-	print_line DLCUnavailableLine2
+	print_line_id 0
+	print_line_id 1
+	print_line_id 2
 	wait_user
 	clear_box
-	print_line DLCUnavailableLine3
+	print_line_id 3
 	wait_user
 	done
-DLCUnavailableLine0::
-	dstr "DLC is unavai-"
-DLCUnavailableLine1::
-	dstr "lable because"
-DLCUnavailableLine2::
-	dstr "it's not."
-DLCUnavailableLine3::
-	dstr "Deal with it."
 	
 	
 SECTION "Save file management", ROMX
