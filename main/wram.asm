@@ -222,7 +222,7 @@ wPalettesEnd:
 	
 	
 	
-SECTION "Staged OAM", WRAMX,BANK[0],ALIGN[8]
+SECTION "Staged OAM", WRAMX,BANK[1],ALIGN[8]
 
 wStagedOAM::
 	ds 40 * OAM_SPRITE_SIZE
