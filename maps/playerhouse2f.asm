@@ -9,7 +9,7 @@ PlayerHouse2F::
 	dw PlayerHouse2FTilesetScript
 	dw PlayerHouse2FHideDpad
 	map_size 10, 9
-	dw PlayerHouse2FMuteMusic
+	dw PlayerHouse2FSetupIntroCutscene
 	
 PlayerHouse2FInteractions::
 	db 2
@@ -84,13 +84,19 @@ PlayerHouse2FHideDpad::
 	ld de, FLAG_2F_DPAD_HIDDEN
 	jp SetFlag
 	
-PlayerHouse2FMuteMusic::
+PlayerHouse2FSetupIntroCutscene::
 	ld de, FLAG_INTRO_CUTSCENE_PLAYED
 	call GetFlag
 	ret c
+	
 	xor a
 	ld [wChangeMusics], a ; This won't load the new music
-	ret
+	ld de, InteriorMainDarkPalette + 3
+	ld c, 1
+	callacross LoadOBJPalette_Hook
+	ld de, InteriorWallDarkPalette + 3
+	ld c, 3
+	jpacross LoadOBJPalette_Hook
 	
 PlayerHouse2FLoadIntroGfx::
 	ld hl, EvieSleepingPajamasTiles
@@ -163,7 +169,7 @@ TestIntroCutscene::
 	delay 20
 	set_fade_speed $81
 	gfx_fadeout
-	text_lda hGFXFlags ; Don't commit the player palettes while the screen is black
+	text_lda hGFXFlags ; Don't commit the palettes while the screen is black
 	text_or $40
 	text_sta hGFXFlags
 	text_asmcall LoadPlayerGraphics ; To cancel the pajamas graphics
@@ -187,6 +193,18 @@ TestIntroCutscene::
 .lightUp
 	ld a, TILESET_INTERIOR
 	call LoadTileset
+	
+	ld hl, hGFXFlags
+	set 6, [hl]
+	ld de, InteriorMainPalette + 3
+	ld c, 1
+	callacross LoadOBJPalette_Hook
+	ld de, InteriorWallPalette + 3
+	ld c, 3
+	callacross LoadOBJPalette_Hook
+	ld hl, hGFXFlags
+	res 6, [hl]
+	
 	jpacross ReloadPalettes
 	
 SECTION "Intro awake gfx loader", ROMX
