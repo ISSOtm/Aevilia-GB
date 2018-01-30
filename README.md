@@ -13,7 +13,9 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 
 # Compiling The Game
 
-If you are looking for one of stable versions, check out the [stable releases](http://github.com/ISSOtm/Aevilia-GB/releases/tag/stable) page.
+If you are looking for one of stable versions, check out the [stable releases](http://github.com/ISSOtm/Aevilia-GB/releases/tag/stable) page [NOTE : currently returns a 404, since there are none :p].
+
+Nightlies (ROM rebuilt daily) can be found [here](http://issotm.github.io/aevilia_nightly.gbc)
 
 If you want to build the ROM from source, please refer to the [INSTALL.md](http://github.com/ISSOtm/Aevilia-GB/blob/master/INSTALL.md) file.
 
