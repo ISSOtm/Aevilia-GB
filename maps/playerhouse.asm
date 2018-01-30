@@ -7,7 +7,7 @@ PlayerHouse::
 	
 	db 0 ; Tileset is fixed
 	db TILESET_INTERIOR
-	dw NO_SCRIPT ; No map script
+	dw PlayerHousePlayKnock ; No map script
 	map_size 10, 9
 	dw NO_SCRIPT ; No loading script
 	
@@ -72,6 +72,19 @@ INCBIN "maps/playerhouse.blk"
 	
 PlayerHouseNPCScripts::
 	dw PlayerHouseSiblingTVScript
+	
+	
+PlayerHousePlayKnock::
+	ldh a, [hFrameCounter]
+	and $7F
+	ret nz
+	
+	ld de, FLAG_STARTHAM_SIBLING_ENTERED
+	call GetFlag
+	ret nz
+	
+	ld c, SFX_DOOR_KNOCK
+	jpacross FXHammer_Trig
 	
 	
 	set_text_prefix PlayerHouseSiblingTVScript
