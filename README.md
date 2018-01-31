@@ -1,5 +1,7 @@
 # Aevilia GB
 
+[![Build status badge](https://img.shields.io/badge/dynamic/json.svg?label=build&colorB=green&query=status&uri=https%3A%2F%2Fissotm.github.io%2Fbuild.json)](https://issotm.github.io/aevilia.html)
+
 A RPG for the Game Boy Color, written in pure Sharp LR35602 (aka GBz80) assembly.
 
 Note : this is neither a tutorial nor a walkthrough for the game.
