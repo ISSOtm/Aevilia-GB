@@ -5,7 +5,9 @@ Please note that this repository has a submodule (DevSound) ; if the compilation
 
 # Compiling
 
-Please note that [RGBDS](http://github.com/rednex/rgbds) should be installed on your computer first. Versions prior to [0.3.3](https://github.com/rednex/rgbds/releases/tag/v0.3.3) will not work, and later versions aren't guaranteed to work.
+Please note that [RGBDS](http://github.com/rednex/rgbds) should be installed on your computer first. Here is a list of versions that have been confirmed to work at least once (if doubting, use the recommended version)
+- [0.3.5](https://github.com/rednex/rgbds/releases/tag/v0.3.5) *recommended*
+- [0.3.3](https://github.com/rednex/rgbds/releases/tag/v0.3.3)
 
 ## Linux
 
