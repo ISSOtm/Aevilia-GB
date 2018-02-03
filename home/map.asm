@@ -417,7 +417,7 @@ ENDC
 	inc h
 .noCarry2
 	ld a, $FF ; For saving, make sure to preserve player position
-	ld [wTargetWarpID], a ; UNLESS THIS IS EXPLICITELY OVERRIDDEN
+	ld [wTargetWarpID], a ; UNLESS THIS IS EXPLICITLY OVERRIDDEN
 	ld de, wYPos
 	ld c, 4
 	rst copy
@@ -531,6 +531,9 @@ ENDC
 	; Hack : this compiles as 20 FF
 	; If the jump occurs, it will land on the $FF byte, which will execute a "rst callHL".
 	; tl;dr : this is "rst nz, callHL" ^^
+	
+	; HAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAX
+	; -P
 	jr nz, @+1
 	
 	ld a, [wCameraYPos]
@@ -1107,7 +1110,7 @@ MoveCamera::
 	ld a, l
 	and $F0
 	cp c
-	pop bc ; Get movement vector back, LSByte will be trashed but what counts is MSByte
+	pop bc ; Get movement vector back, LSByte will be trashed but what counts is MSByte | i feel like doing this is dumb but eh whatever. -P
 	jr z, .dontRedrawRow
 	ld hl, wTempBuf + 2
 	ld de, wLargerBuf
@@ -1366,6 +1369,11 @@ StopPlayerMovement::
 	
 ; Aside from "THIS FUNCTION IS FUCKING HUUUUUGE", there's not much to say
 ; In fact, it's so huge there are a couple JRs in here that died because their target was too far away
+;
+; THERE'S ONLY ONE WAY TO DO THAT:
+; MOAR JRs!!! MUAHAHAHAHAHAHAHAHAHAHAHAHAHAHAHAAA...
+;
+;-P
 ProcessNPCs::
 	ld a, BANK(wNPCArray)
 	call SwitchRAMBanks
@@ -2544,7 +2552,7 @@ GetNPCCollisionAt::
 	ld hl, wWalkingLoadZones
 	ld e, wWalkingLoadZone1_ypos - wWalkingLoadZone0_ypos
 	call ScanForInteraction
-	ccf ; C reset if detection occured
+	ccf ; C reset if detection occurred
 	sbc a, a ; Will set a to zero if...
 	ret z ; Return if interaction has been found
 .dontScanLoadZones
@@ -2841,10 +2849,13 @@ ProcessInteraction:
 ; Parameters :
 ; hl = pointer to table (ELEMENTS MUST BE ALIGNED TO THEIR SIZE!!) (Otherwise  v )
 ; a = number of elements
-; e = length of one element (MUST BE A POWER OF 2!!!) (Otherwise          rewrite code so it pushes base ptr, operates, pops it, and adds the size)
+; e = length of one element (MUST BE A POWER OF 2!!!) (Otherwise rewrite code so it pushes base ptr, operates, pops it, and adds the size)
 ; wTempBuf = coords of scanned point
 ; Destroys all registers, preserves wTempBuf
 ; If an element can be interacted with, will return with C flag set and hl pointing to corresponding X hitbox size
+;
+; why the fuck were there so many spaces in "(Otherwise rewrite code so it pushes base ptr"?
+; -P
 ScanForInteraction::
 	ld b, a
 .lookForInteraction

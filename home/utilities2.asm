@@ -103,6 +103,7 @@ CopyAcross::
 ; Thus, doesn't copy if VRAM isn't available
 CopyAcrossToVRAM::
 	; If this function looks kamoulox-esque, see CopyAcross
+	; what is? -P
 	push bc
 	ld b, a
 	ldh a, [hCurROMBank]

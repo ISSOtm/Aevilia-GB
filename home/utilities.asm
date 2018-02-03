@@ -156,7 +156,7 @@ SlowDownCPU::
 	ret nc ; Not at double-speed
 	
 SwitchCPUSpeed:
-	ld a, SELECT_NONE ; Prevent missclicking...
+	ld a, SELECT_NONE ; Prevent misclicking...
 	ld [rJOYP], a
 	ld a, 1
 	ld [rKEY1], a ; Request speed switch

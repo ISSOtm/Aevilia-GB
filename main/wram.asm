@@ -390,7 +390,7 @@ wBlockMetadata::
 	struct_blk 63
 wBlockMetadataEnd:
 	
-	; Make SURE this is 256-byte alighed, or modify GetCollisionAt
+	; Make SURE this is 256-byte aligned, or modify GetCollisionAt
 wTileAttributes::
 	ds 256
 wTileAttributesEnd:
@@ -424,7 +424,7 @@ wTileAnimationsEnd:
 SECTION "Animation frame storage", WRAMX,BANK[3]
 	
 wTileFrames::
-	ds VRAM_TILE_SIZE * 16 * 16 ; Allow 16 frames per tile (and there are a maxiumum of 16 tiles to be animated)
+	ds VRAM_TILE_SIZE * 16 * 16 ; Allow 16 frames per tile (and there are a maximum of 16 tiles to be animated)
 wTileFramesEnd:
 	
 	
@@ -565,7 +565,7 @@ SECTION	"FX Hammer RAM",WRAM0,ALIGN[3]
 
 FXHammer_SFXCH2	db
 FXHammer_SFXCH4	db
-; these are only temporary names, I have no idea what they're actually for at the moment
+; These are only temporary names, I have no idea what they're actually for at the moment
 FXHammer_RAM1	db
 FXHammer_cnt	db
 FXHammer_ptr	dw
