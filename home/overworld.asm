@@ -16,7 +16,7 @@ OverworldLoop::
 	inc a
 	ldh [hOverworldFrameCounter], a
 	
-	; Update our own button adresses
+	; Update our own button addresses
 	ldh a, [hOverworldHeldButtons] ; Get previously held buttons
 	cpl ; Complement to create a mask
 	ld b, a ; Save it
