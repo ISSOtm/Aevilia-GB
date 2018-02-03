@@ -2,8 +2,8 @@
 
 try:
 	from PIL import Image
-except e:
-	print("Please ensure that the Py2 module \"pillow\" is installed.")
+except ModuleNotFoundError:
+	print("Please ensure that module \"Pillow\" is installed, and is compatible with your Python version.")
 	exit(1)
 
 from sys import argv
@@ -15,34 +15,20 @@ if len(argv) < 3:
 
 try:
 	outfile = open(argv[2], "w")
-except e:
+except IOError:
 	print("Cannot open {file} for writing.".format(file= argv[2]))
 	exit(1)
 
 # Stage 1 - Get pixel data
 try:
-	img = Image.open(argv[1])
-except e:
+	img = Image.open(argv[1]).convert("RGB")
+except IOError:
 	print("Failed to open image!")
 	outfile.close()
 	exit(1)
-
-try:
-	pixels = img.load() 
-except e:
-	print("Failed to copy image data to RAM!")
-	outfile.close()
-	img.close()
-	exit(1)
-
+	
+pixels = img.load()
 width, height = img.size
-
-try:
-	img.close()
-except e:
-	print("Failed to unload image!")
-	outfile.close()
-	exit(1)
 
 if width % 8 != 0 or height % 8 != 0:
 	print("The image must contain an integer amount of tiles. (Your picture must be a multiple of 8 in both height and width.)")
@@ -54,7 +40,7 @@ if width * height >= 256 * 8 * 8:
 	outfile.close()
 	exit(1)
 
-print("{name}:\n\tSize: {h}h * {w}w, {tiles} tiles. \n\tFormat: {fileFormat}\n\n".format(name= argv[1], h= height, w= width, tiles= height * width // 64, fileFormat= str(img.format)))
+print("{name}:\n\tSize: {h}h * {w}w, {tiles} tiles.\n\n".format(name= argv[1], h= height, w= width, tiles= height * width // 64))
 
 # Stage 2 - Turn pixel data into tiles
 tiles = []
@@ -86,20 +72,38 @@ while y < height:
 		x += 8
 
 # Stage 3 - Generate palettes
-tile_palettes = [[]] * len(tiles)
-is_tile_invalid = False
+tile_palettes = []
+is_image_invalid = False
+
 for i in range(len(tiles)): # Iterate over all tiles
+	tile_palettes.append([])
+	
 	for color in tiles[i]: # Iterate over every pixel
 		
 		if not color in tile_palettes[i]:
 			tile_palettes[i].append(color)
-			if len(tile_palettes[i]) == 5: # If we added a fifth color, tell the tile is wrong
-				is_tile_invalid = True # We'll still iterate over all tiles, to report them all
-				print("Tile #{id} has too many colors! (vert #{y}, horiz #{x})".format(id= i, y= i // (width // 8), x= i % (width // 8)))
-				print("Faulty palette: Number " + str(i) + " , " + str(tile_palettes[i]))
+	
 	tile_palettes[i].sort(key= lambda x: sum(x) / 3, reverse= True) # Sort palettes by greyscale, in reverse order (ie. darkest is last)
+	
+	if len(tile_palettes[i]) > 4: # Check if there aren't too many colors in the palette
+		is_image_invalid = True
+		print("Tile #{id} has too many colors! (vert #{y}, horiz #{x})".format(id= i, y= i // (width // 8), x= i % (width // 8)))
+		faulty_tile = []
+		line = []
+		x = 0
+		for color in tiles[i]:
+			line.append(tile_palettes[i].index(color))
+			
+			x += 1
+			if x == 8:
+				x = 0
+				faulty_tile.append(str(line))
+				line = []
+		
+		print("Here is a color map:\n[{tile}]\n".format(tile= "\n ".join(faulty_tile)))
+		
 
-if is_tile_invalid:
+if is_image_invalid:
 	outfile.close()
 	exit(1)
 
