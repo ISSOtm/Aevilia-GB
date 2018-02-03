@@ -13,18 +13,11 @@ if len(argv) < 3:
 	print("Usage:\n\t{scriptname} file/to/open.png out/put/file.txt".format(scriptname= argv[0]))
 	exit(1)
 
-try:
-	outfile = open(argv[2], "w")
-except IOError:
-	print("Cannot open {file} for writing.".format(file= argv[2]))
-	exit(1)
-
 # Stage 1 - Get pixel data
 try:
 	img = Image.open(argv[1]).convert("RGB")
 except IOError:
 	print("Failed to open image!")
-	outfile.close()
 	exit(1)
 	
 pixels = img.load()
@@ -32,12 +25,10 @@ width, height = img.size
 
 if width % 8 != 0 or height % 8 != 0:
 	print("The image must contain an integer amount of tiles. (Your picture must be a multiple of 8 in both height and width.)")
-	outfile.close()
 	exit(1)
 	
 if width * height >= 256 * 8 * 8:
 	print("Only a maximum of 256 tiles are allowed! (Your image would end up being {tiles} tiles.)".format(tiles= width * height / 64))
-	outfile.close()
 	exit(1)
 
 print("{name}:\n\tSize: {h}h * {w}w, {tiles} tiles.\n\n".format(name= argv[1], h= height, w= width, tiles= height * width // 64))
@@ -104,7 +95,6 @@ for i in range(len(tiles)): # Iterate over all tiles
 		
 
 if is_image_invalid:
-	outfile.close()
 	exit(1)
 
 # Stage 4 - Generate hex tiles
@@ -128,6 +118,12 @@ for i in range(len(tiles)):
 			counter = 0
 	
 	hex_tiles.append(hex_tile)
+
+try:
+	outfile = open(argv[2], "w")
+except IOError:
+	print("Cannot open {file} for writing.".format(file= argv[2]))
+	exit(1)
 
 # Stage 5 - Produce output
 for tile in hex_tiles:
