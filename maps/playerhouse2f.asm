@@ -137,8 +137,11 @@ TestIntroCutscene::
 	gfx_fadeout
 	text_lda_imm $80
 	text_sta wNPC3_ypos + 1
-	text_asmcall IntroCutscene
+	text_asmcall MatrixPit
 	text_asmcall RedrawMap
+	text_asmcall PlayerHouse2FLoadBlanket
+	text_asmcall ProcessNPCs ; Blanket needs to be loaded prior to this
+	text_asmcall ReloadPalettes
 	delay 30
 	text_asmcall IntroLoadAwakePajamas
 	delay 60

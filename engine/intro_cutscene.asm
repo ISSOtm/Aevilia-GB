@@ -14,22 +14,8 @@ IntroCutscenePitSpeeds::
 	db 2 << 2 | 2
 	
 	
-; So badass it requires its own ASM func.
-; Hell yeah.
-IntroCutscene::
-	; Part 1 : falling into a pit
-	call PitEffect
-	
-	; Part 2 : designing the next parts
-	
-	; Reload the map we were in
-	call RedrawMap ; Re-draw the map that was overwritten
-	callacross ReloadPalettes ; Reload palettes that we blacked out
-	callacross PlayerHouse2FLoadBlanket
-	jp ProcessNPCs ; And finally, display NPCs again.
-	
 ; Uses the Demotronic trick to make the player "fall" into a Matrix-like pit
-PitEffect:
+MatrixPit::
 	xor a
 	ld [wNumOfSprites], a
 	inc a
