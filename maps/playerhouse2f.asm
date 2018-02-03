@@ -31,7 +31,7 @@ PlayerHouse2FNPCs::
 	npc $0050, $0050, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0 ; Bottom-left plant
 	
 	flag_dep FLAG_RESET, FLAG_INTRO_CUTSCENE_PLAYED
-	npc $0002, $0089, 0, 0, 0, 1, DIR_UP, 4, 4, 4, 4, 0, 0 ; ZZZ sprite
+	npc $0002, $0089, 0, 0, 0, 1, DIR_UP, 2, 2, 2, 2, 0, 0 ; ZZZ sprite
 	
 	db 0 ; Number of NPC scripts
 	dw 0 ; Obligatory no matter the above value
@@ -41,9 +41,9 @@ PlayerHouse2FNPCs::
 	
 PlayerHouse2FPalettes::
 	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
-	dw 0
-	dw InteriorWallPalette + 3
 	dw DefaultPalette
+	dw InteriorWallPalette + 3
+	dw 0
 	dw 0
 	dw 0
 	dw 0
