@@ -31,7 +31,7 @@ if width * height >= 256 * 8 * 8:
 	print("Only a maximum of 256 tiles are allowed! (Your image would end up being {tiles} tiles.)".format(tiles= width * height / 64))
 	exit(1)
 
-print("{name}:\n\tSize: {h}h * {w}w, {tiles} tiles.\n\n".format(name= argv[1], h= height, w= width, tiles= height * width // 64))
+print("{name}:\n\tSize: {h}h * {w}w, {tiles} tiles. \n\tFormat: {fileFormat}\n\n".format(name= argv[1], h= height, w= width, tiles= height * width // 64, fileFormat= str(img.format)))
 
 # Stage 2 - Turn pixel data into tiles
 tiles = []

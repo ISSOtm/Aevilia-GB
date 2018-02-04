@@ -1,4 +1,4 @@
-img2tileset is a tool written by Parzival and ISSOtm for the purpose of allowing easy conversion from PNG/JPG/BMP/GIF to a tileset.
+img2tileset is a tool written by Parzival and ISSOtm for the purpose of allowing easy conversion from PNG/JPG/BMP to a tileset.
 
 There are two versions:
 img2tileset Single and img2tileset Batch.
