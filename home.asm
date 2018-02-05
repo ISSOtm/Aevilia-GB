@@ -39,7 +39,7 @@ Init::
 	
 .waitVBlank
 	ldh a, [rLY]
-	cp 144
+	cp LY_VBLANK
 	jr nz, .waitVBlank
 	xor a
 	ld [rLCDC], a ; Shut screen down for init
