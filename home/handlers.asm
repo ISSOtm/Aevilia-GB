@@ -67,7 +67,7 @@ VBlankHandler::
 	ldh a, [hTilemapMode]
 	and a
 	jr z, .mobileMap
-	ld a, TILE_SIZE * 8
+	ld a, TILE_SIZE * 14
 	ld [rSCY], a
 	ld a, [rLCDC]
 	or $08
@@ -106,7 +106,7 @@ VBlankHandler::
 	xor a
 	ld [bc], a ; Mark row as transferred
 	ld hl, wTextboxTileMap
-	ld d, HIGH(vTileMap1)
+	ld d, HIGH(vTextboxTileMap)
 	ld a, c
 	add a, a
 	ld b, a
@@ -246,9 +246,8 @@ ENDR
 	ld [wTextboxStatus], a
 .displayTextbox
 	and $7F
-	ld b, a
-	ld a, LY_VBLANK
-	sub b
+	cpl
+	add a, LY_VBLANK + 1
 	ldh [hTextboxLY], a
 	ld [rLYC], a
 	
@@ -426,8 +425,9 @@ STATHandler::
 	ld [rWX], a ; Put window off-screen
 	ld a, [rLY]
 	cpl
+	add a, $40
 	ld [hli], a
-	cp $8F ^ $FF ; Check if we were on last scanline ; If yes, we need to return quickly (VBlank is incoming)
+	cp LOW(($8F ^ $FF) + $40) ; Check if we were on last scanline ; If yes, we need to return quickly (VBlank is incoming)
 .endMode2
 	jp nz, .end
 	pop hl

@@ -333,10 +333,3 @@ ENDR
 	dw CharSelectTomPalette0
 	dw CharSelectTomPalette1
 	
-	dw IntroNPCPalette
-	dw 0
-	dw 0
-	dw 0
-	dw 0
-	dw 0
-	dw 0

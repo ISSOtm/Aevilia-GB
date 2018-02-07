@@ -6,7 +6,7 @@ StarthamForestMap::
 	db MUSIC_FOREST ; Music ID
 	
 	db 0
-	db TILESET_TEST
+	db TILESET_OVERWORLD
 	dw NO_SCRIPT ; Script (none)
 	map_size 30, 18 ; Width, height
 	dw NO_SCRIPT ; Loading script (none)
@@ -31,6 +31,15 @@ StarthamForestInteractions::
 	
 StarthamForestNPCs::
 	db 0
+	
+StarthamForestPalettes::
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
 	
 StarthamForestWarpToPoints::
 	db 1

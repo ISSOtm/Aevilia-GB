@@ -9,24 +9,24 @@ INCBIN	"sound/SFXData.bin"
 ; thumbprint (this could be removed to save space)
 	db	"FX HAMMER Version 1.0 (c)2000 Aleksi Eeben (email:aleksi@cncd.fi)"
 	
-FXHammer_Trig:
-	ld	e,c
-	ld	d,high(FXHammerData)
+	; Call with SFX ID in c
+FXHammer_Trig::
+	ld	b,high(FXHammerData)
 	ld	hl,FXHammer_RAM1
-	ld	a,[de]
+	ld	a,[bc]
 	cp	[hl]
-	jr	z,.jmp_4055
+	jr	z,.continue
 	ret	c
-.jmp_4055
+.continue
 	ld	[hl],a
-	inc	d
-	ld	a,[de]
+	inc	b
+	ld	a,[bc]
 	swap	a
 	and	$f
 	ld	l,low(FXHammer_SFXCH2)
 	or	[hl]
 	ld	[hl],a
-	ld	a,[de]
+	ld	a,[bc]
 	and	$f
 	ld	l,low(FXHammer_SFXCH4)
 	or	[hl]
@@ -37,7 +37,7 @@ FXHammer_Trig:
 	xor	a
 	ld	[hl+],a
 	ld	a,HIGH(FXHammerData) + 2
-	add	e
+	add	c
 	ld	[hl],a
 	ret
 	

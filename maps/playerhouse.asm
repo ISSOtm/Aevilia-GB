@@ -7,7 +7,7 @@ PlayerHouse::
 	
 	db 0 ; Tileset is fixed
 	db TILESET_INTERIOR
-	dw NO_SCRIPT ; No map script
+	dw PlayerHousePlayKnock ; No map script
 	map_size 10, 9
 	dw NO_SCRIPT ; No loading script
 	
@@ -46,8 +46,18 @@ PlayerHouseNPCs::
 	db 1 ; Number of NPC scripts
 	dw PlayerHouseNPCScripts ; Obligatory no matter the above value
 	
-	db 1 ; Number of NPC tile sets
+	db 2 ; Number of NPC tile sets
 	db 0 ; Special trigger : load opposite gender's tiles (if Evie, load Tom, etc.)
+	full_ptr KasumiTiles
+	
+PlayerHousePalettes::
+	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
 	
 PlayerHouseWarpToPoints::
 	db 2 ; Number of warp-to points
@@ -62,6 +72,19 @@ INCBIN "maps/playerhouse.blk"
 	
 PlayerHouseNPCScripts::
 	dw PlayerHouseSiblingTVScript
+	
+	
+PlayerHousePlayKnock::
+	ldh a, [hFrameCounter]
+	and $7F
+	ret nz
+	
+	ld de, FLAG_STARTHAM_SIBLING_ENTERED
+	call GetFlag
+	ret nz
+	
+	ld c, SFX_DOOR_KNOCK
+	jpacross FXHammer_Trig
 	
 	
 	set_text_prefix PlayerHouseSiblingTVScript

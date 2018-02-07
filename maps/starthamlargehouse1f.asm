@@ -28,6 +28,15 @@ StarthamLargeHouseNPCs::
 	
 	db 0 ; Number of NPC tile sets
 	
+StarthamLargeHouseHousePalettes::
+	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	
 StarthamLargeHouseWarpToPoints::
 	db 1 ; Number of warp-to points
 	

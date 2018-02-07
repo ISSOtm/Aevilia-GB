@@ -7,7 +7,7 @@ StarthamMap::
 	db MUSIC_OVERWORLD ; Music ID
 	
 	db 0 ; Tileset is fixed
-	db TILESET_TEST ; Tileset
+	db TILESET_OVERWORLD ; Tileset
 	dw NO_SCRIPT ; Script (none)
 	map_size 29, 18 ; Width, height
 	dw NO_SCRIPT ; Loading script (none)
@@ -72,9 +72,19 @@ StarthamNPCs::
 	db $02 ; Number of NPC scripts
 	dw StarthamNPCScripts
 	
-	db 2 ; Number of NPC tile sets
+	db 3 ; Number of NPC tile sets
 	full_ptr GenericBoyATiles
 	db 0
+	full_ptr KasumiTiles
+	
+StarthamPalettes::
+	dw GenericBoyAPalette
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
 	
 StarthamWarpToPoints::
 	db 5 ; Number of warp-to points

@@ -1,6 +1,8 @@
 # Aevilia GB
 
-A RPG for the Game Boy Color, written in pure Sharp LR35602 (aka GBz80) assembly.
+[![Build status badge](https://img.shields.io/badge/dynamic/json.svg?label=build&colorB=green&query=status&uri=https%3A%2F%2Fissotm.github.io%2Fbuild.json)](https://issotm.github.io/aevilia.html)
+
+A RPG for the Game Boy Color, written in pure Sharp LR35902 (aka GBz80) assembly.
 
 Note : this is neither a tutorial nor a walkthrough for the game.
 
@@ -13,7 +15,9 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 
 # Compiling The Game
 
-If you are looking for one of stable versions, check out the [stable releases](http://github.com/ISSOtm/Aevilia-GB/releases/tag/stable) page.
+If you are looking for one of stable versions, check out the [stable releases](http://github.com/ISSOtm/Aevilia-GB/releases/tag/stable) page [NOTE : currently returns a 404, since there are none :p].
+
+Nightlies (ROM rebuilt daily) can be found [here](http://issotm.github.io/aevilia_nightly.gbc)
 
 If you want to build the ROM from source, please refer to the [INSTALL.md](http://github.com/ISSOtm/Aevilia-GB/blob/master/INSTALL.md) file.
 
@@ -72,7 +76,7 @@ Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [Charmy](http:/
 # Contact
 
 Replace "@..." with "@gmail.com" in any of these.
-- ISSOtm   : eldredhabert@... (if you speak French, that's my main language !)
+- ISSOtm   : eldredhabert0@... (if you speak French, that's my main language !)
 - DevEd    : deved8@...
 - Parzival : parzivalwolfram@...
-  
+- Charmy   : amazingcharm4757@...

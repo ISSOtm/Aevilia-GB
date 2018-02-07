@@ -97,7 +97,7 @@ SECTION "GFX and text", WRAM0,ALIGN[8]
 ; WARNING : high byte of all 18 bytes must be the same! (ie must not cross a 256-byte boundary)
 ; If this has to be moved, make sure to change **ALL** instances where this is used!
 wTransferRows::
-	ds SCREEN_HEIGHT + 8
+	ds 6 + SCREEN_HEIGHT
 	
 ; The "fixed" tile map, transferred on VBlanks
 ; 18 rows of 20 tiles each
@@ -133,8 +133,7 @@ wTextboxPicRow3::
 wTextboxLine2::
 	ds 15
 	; End row 4
-	
-	ds SCREEN_WIDTH * 3
+	ds SCREEN_WIDTH
 	
 wFixedTileMap::
 	ds SCREEN_HEIGHT * SCREEN_WIDTH
@@ -223,7 +222,7 @@ wPalettesEnd:
 	
 	
 	
-SECTION "Staged OAM", WRAMX,BANK[0],ALIGN[8]
+SECTION "Staged OAM", WRAMX,BANK[1],ALIGN[8]
 
 wStagedOAM::
 	ds 40 * OAM_SPRITE_SIZE
@@ -391,7 +390,7 @@ wBlockMetadata::
 	struct_blk 63
 wBlockMetadataEnd:
 	
-	; Make SURE this is 256-byte alighed, or modify GetCollisionAt
+	; Make SURE this is 256-byte aligned, or modify GetCollisionAt
 wTileAttributes::
 	ds 256
 wTileAttributesEnd:
@@ -425,7 +424,7 @@ wTileAnimationsEnd:
 SECTION "Animation frame storage", WRAMX,BANK[3]
 	
 wTileFrames::
-	ds VRAM_TILE_SIZE * 16 * 16 ; Allow 16 frames per tile (and there are a maxiumum of 16 tiles to be animated)
+	ds VRAM_TILE_SIZE * 16 * 16 ; Allow 16 frames per tile (and there are a maximum of 16 tiles to be animated)
 wTileFramesEnd:
 	
 	
@@ -566,7 +565,7 @@ SECTION	"FX Hammer RAM",WRAM0,ALIGN[3]
 
 FXHammer_SFXCH2	db
 FXHammer_SFXCH4	db
-; these are only temporary names, I have no idea what they're actually for at the moment
+; These are only temporary names, I have no idea what they're actually for at the moment
 FXHammer_RAM1	db
 FXHammer_cnt	db
 FXHammer_ptr	dw

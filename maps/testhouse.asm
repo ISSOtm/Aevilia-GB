@@ -22,7 +22,7 @@ TestHouseNPCs::
 	db 2
 	
 	dw NO_FLAG_DEP
-	npc $0020, $0020, 16, 16, 0, $01, DIR_LEFT, 1, 2, 1, 2, 0, 0 ; Test battle
+	npc $0020, $0020, 16, 16, 0, $01, DIR_LEFT, 2, 3, 2, 3, 0, 0 ; Test battle
 	
 	dw NO_FLAG_DEP
 	npc $0030, $0060, 0, 0, 0, $0A, DIR_LEFT, 1, 1, 1, 1, 0, 0
@@ -32,6 +32,15 @@ TestHouseNPCs::
 	
 	db 1
 	full_ptr TestHouseNPCTiles
+	
+TestHousePalettes::
+	dw InteriorMainPalette + 3 ; Used by the "floor-behind-potted-plants" NPCs ; skip color #0
+	dw TestWarriorTopPalette
+	dw TestWarriorBottomPalette
+	dw 0
+	dw 0
+	dw 0
+	dw 0
 	
 TestHouseWarpToPoints::
 	db 1 ; Number of warp-to points

@@ -25,23 +25,6 @@ MapPointers::
 	dw PlayerHouse2F
 	dw StarthamHouse2
 	dw StarthamLargeHouse
-	
-	
-SECTION "Tileset pointers", ROMX[$4300]
-
-TilesetROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
-	db BANK(OverworldTileset)
-	db BANK(TestInteriorTileset)
-	db BANK(IntroTileset)
-	db BANK(InteriorTileset)
-	db BANK(InteriorTilesetDark)
-	
-TilesetPointers::
-	dw OverworldTileset
-	dw TestInteriorTileset
-	dw IntroTileset
-	dw InteriorTileset
-	dw InteriorTilesetDark
 
 
 ; ** Map header structure : **
@@ -56,13 +39,6 @@ TilesetPointers::
 ;   Byte     - A constant identifying the following structure
 ;   Struct   - The corresponding structure
 ; Bytestream - Blocks
-
-
-; ** Tileset structure **
-; Byte		- Number of tiles
-; Tiles		- VRAM tile data
-; blk_meta	- Block metadata
-; palette	- Pointers to BG Palettes 2-8
 
 
 INCLUDE "maps/startham.asm"

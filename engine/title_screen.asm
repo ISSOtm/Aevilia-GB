@@ -700,7 +700,7 @@ ENDR
 	call CopyStrToVRAM
 	; xor a
 	ld [wTitleScreenScrollDelay], a
-	ld a, $7F
+	ld a, $80
 	ld [wTitleScreenScrollX], a
 	
 	ld bc, $7B
@@ -724,9 +724,10 @@ ENDR
 	cp $FE & $7F
 	jr nz, .decrementReg ; Don't lock if not at extremes
 	inc hl
-	ld a, 120
+	ld a, $FE
 	ld [hld], a
 .decrementReg
+	dec [hl]
 	dec [hl]
 	ld a, [wTitleScreenScrollX]
 	ld [rSCX], a
@@ -743,6 +744,18 @@ ENDR
 	or b
 	ld b, a
 	jr z, .wait
+	
+	ld hl, wTitleScreenScrollDelay
+	xor a
+	ld [hld], a
+	ld a, [hl]
+	dec a
+	dec a
+	ld [hl], a
+	cp $7A
+	jr c, .wait
+	cp $82
+	jr nc, .wait
 	
 .end
 	callacross Fadeout

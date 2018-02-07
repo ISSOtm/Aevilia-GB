@@ -65,6 +65,15 @@ IntroMapNPCs::
 	db BANK(RightEyeTiles)
 	dw RightEyeTiles - 16 * 4 * 2
 	
+IntroMapPalettes::
+	dw IntroNPCPalette
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	dw 0
+	
 IntroMapWarpToPoints::
 	db 2
 	

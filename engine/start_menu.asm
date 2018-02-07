@@ -51,7 +51,7 @@ InterleaveFromMovableToFixed::
 	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
 	set 3, [hl]
-	ld a, 8 * TILE_SIZE
+	ld a, TILE_SIZE * 14
 	ld [rSCY], a
 	xor a
 	jr .doneWindowing
@@ -140,7 +140,7 @@ InterleaveFromFixedToMovable::
 	jr c, .dontWindow ; Don't window if on odd line (NB: c is current +1)
 	res 1, [hl]
 	set 3, [hl]
-	ld a, 8 * TILE_SIZE
+	ld a, TILE_SIZE * 14
 	ld [rSCY], a
 	xor a
 	jr .doneWindowing
@@ -192,7 +192,7 @@ StartMenu::
 	rst waitVBlank
 	ld a, 1
 	ld [rVBK], a
-	ld hl, wTransferRows + 8
+	ld hl, wTransferRows + 6
 	ld c, SCREEN_HEIGHT
 	rst fill
 	ld hl, wFixedTileMap
@@ -258,7 +258,7 @@ ENDC
 	ld c, SCREEN_WIDTH
 	rst fill
 	inc a
-	ld [wTransferRows + 14], a
+	ld [wTransferRows + 12], a
 	ld [rVBK], a
 	ld hl, vTileMap1 + VRAM_ROW_SIZE * 5
 	ld c, VRAM_ROW_SIZE + SCREEN_WIDTH
@@ -287,7 +287,7 @@ ENDC
 	
 .saveGame
 	inc a ; Can't be $FF
-	ld [wTransferRows + 22], a
+	ld [wTransferRows + 20], a
 	ld hl, wFixedTileMap + SCREEN_WIDTH * 14
 	ld c, SCREEN_WIDTH - 2
 	xor a
@@ -322,7 +322,7 @@ ENDC
 	ld de, wFixedTileMap + SCREEN_WIDTH * 14 + 2
 	rst copyStr
 	inc a
-	ld [wTransferRows + 22], a
+	ld [wTransferRows + 20], a
 	jp .mainLoop
 	
 StartMenuStrs::

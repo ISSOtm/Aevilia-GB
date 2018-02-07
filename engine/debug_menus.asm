@@ -25,7 +25,7 @@ HomeDebugMenu::
 	call FillVRAM
 	ld [rVBK], a
 	
-	ld hl, wTransferRows + 8
+	ld hl, wTransferRows + 6
 	inc a ; ld a, 1
 	ld c, SCREEN_HEIGHT
 	rst fill
@@ -128,13 +128,13 @@ SoundTestMenu::
 	ldh [hTilemapMode], a
 	
 	ld [rVBK], a
-	ld hl, $9E48
+	ld hl, vFixedMap + VRAM_ROW_SIZE * 10 + 8
 	ld b, $20
 .waitVRAM
 	rst isVRAMOpen
 	jr nz, .waitVRAM
 	ld [hl], b
-	ld l, $A8
+	ld l, LOW(vFixedMap + VRAM_ROW_SIZE * 13 + 8)
 	ld [hl], b
 	xor a
 	ld [rVBK], a
@@ -148,8 +148,8 @@ SoundTestMenu::
 .mainLoop
 	rst waitVBlank
 	ld a, 1
-	ld [wTransferRows + 18], a
-	ld [wTransferRows + 21], a
+	ld [wTransferRows + 16], a
+	ld [wTransferRows + 19], a
 	ldh a, [hPressedButtons]
 	ld l, a
 	rst waitVBlank
@@ -250,7 +250,7 @@ SoundTestMenu::
 	ld de, wFixedTileMap + SCREEN_WIDTH * 11
 	call CopyStrAcross
 	ld a, 1
-	ld [wTransferRows + 19], a
+	ld [wTransferRows + 17], a
 	rst waitVBlank
 	jp .mainLoop
 .incSFX
@@ -355,7 +355,7 @@ TilesetViewerMenu::
 	ld b, a
 	call PrintHex
 	
-	ld hl, wTransferRows + 8
+	ld hl, wTransferRows + 6
 	ld c, SCREEN_HEIGHT
 	ld a, 1
 	rst fill
@@ -366,8 +366,8 @@ TilesetViewerMenu::
 	rst isVRAMOpen
 	jr nz, .waitVRAM
 	ld a, $20
-	ld [$9E4C], a
-	ld [$9E6C], a
+	ld [vFixedMap + VRAM_ROW_SIZE * 10 + 12], a
+	ld [vFixedMap + VRAM_ROW_SIZE * 11 + 12], a
 	
 .toggleGender
 	ld a, [wPlayerGender]
@@ -449,7 +449,7 @@ TilesetViewerMenu::
 	ld e, l
 	inc de
 	ld a, b
-	add a, 18
+	add a, 16
 	ld l, a
 	ld h, HIGH(wTransferRows)
 	ld [hl], a
@@ -482,7 +482,7 @@ TilesetViewerMenu::
 	dec b
 	jr nz, .printBank
 	
-	ld hl, wTransferRows + 11
+	ld hl, wTransferRows + 9
 	ld c, 14
 	inc a
 	rst fill
@@ -566,7 +566,7 @@ TilesetViewerMenu::
 	rst fill
 	
 	ld [rVBK], a
-	ld hl, $9E4C
+	ld hl, vFixedMap + VRAM_ROW_SIZE * 10 + 12
 	ld de, VRAM_ROW_SIZE
 	ld b, 7
 .writeFlipBits
@@ -647,7 +647,7 @@ TilesetViewerMenu::
 	ld e, l
 	inc de
 	ld a, b
-	add a, 18
+	add a, 16
 	ld l, a
 	ld h, HIGH(wTransferRows)
 	ld [hl], a
@@ -714,7 +714,7 @@ TilesetViewerMenu::
 	inc hl
 	ld [hl], d
 	ld a, b
-	add a, 18
+	add a, 16
 	ld l, a
 	ld h, HIGH(wTransferRows)
 	ld [hl], h ; h is non-zero
@@ -760,7 +760,7 @@ TilesetViewerMenu::
 	
 .updateBlockView
 	ld a, [wYPos + 1]
-	ld de, $9EAD
+	ld de, vFixedMap + VRAM_ROW_SIZE * 13 + 13
 	jp DrawBlock
 	
 	
@@ -890,7 +890,7 @@ TilesetViewerMenu::
 	ld b, c
 	call GetByteAcross ; NPC count
 	add a, a
-	ret z ; If no NPCs, then nothing to load
+	jr z, .noTiles ; If no NPCs, then nothing to load
 	add a, a
 	add a, a
 	sub b ; Trick : b was already loaded with the original copy of a !
@@ -906,7 +906,7 @@ TilesetViewerMenu::
 	call GetByteAcross ; get tile count
 	inc hl
 	and a
-	ret z ; If no tiles...
+	jr z, .noTiles ; If no tiles...
 	ld de, $80C0
 	ld b, a
 .loadNPCTiles
@@ -950,9 +950,47 @@ TilesetViewerMenu::
 	pop bc
 	dec b
 	jr nz, .loadNPCTiles
+	
+	db $FE
+.noTiles
+	; Load map's palettes
+	inc hl
+	ld de, wOBJPalette6_color2
+	ld b, c
+	ld c, 14
+	call CopyAcrossLite
+	
+	ld hl, wOBJPalette6_color2
+	ld c, 1
+.loadOBJPalettes
+	ld a, [hli]
+	ld e, a
+	ld a, [hli]
+	ld d, a
+	push hl
+	or e
+	jr nz, .loadPalette
+	; Load opposite gender's palette
+	ld a, [wPlayerGender]
+	and a
+	ld de, EvieDefaultPalette
+	jr nz, .loadPalette
+	ld de, TomDefaultPalette
+.loadPalette
+	push bc
+	callacross LoadOBJPalette_Hook
+	pop bc
+	
+	pop hl
+	inc c
+	ld a, c
+	cp 8
+	jr nz, .loadOBJPalettes
+	
 	ld hl, wEmoteGfxID
 	res 7, [hl] ; Reload emote gfx
 	jp ProcessNPCs
+	
 .loadSiblingGfx
 	push hl
 	ld a, [wPlayerGender]

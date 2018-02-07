@@ -10,12 +10,12 @@ PlayCredits::
 	; Clear the whole map
 	ld a, 1
 	ld [rVBK], a
-	ld hl, vTileMap0
-	ld bc, vTileMap1 - vTileMap0
 	ld [wTransferSprites], a
 	xor a
 	ld [wNumOfSprites], a
 	ld [wNumOfTileAnims], a ; Also clear all tile animators
+	ld hl, vTileMap0
+	ld bc, vTileMap1 - vTileMap0
 	call FillVRAM
 	ld [rVBK], a
 	call ClearMovableMap
@@ -69,7 +69,7 @@ PlayCredits::
 	
 	
 StaffCredits::
-	ld de, GrayPalette
+	ld de, InvertedPalette + 6
 	ld c, 0
 	callacross LoadOBJPalette_Hook
 	
@@ -214,7 +214,7 @@ StaffCredits::
 	ld bc, VRAM_ROW_SIZE * SCREEN_HEIGHT
 	ld a, $A9
 	call FillVRAM
-	ld de, GrayPalette
+	ld de, GrayPalette + 3
 	ld c, 0
 	callacross LoadBGPalette_Hook
 	
@@ -301,25 +301,18 @@ StaffCredits::
 	
 	
 	; Fade the screen for the final moment
-	; ld a, 8
-	; ld [wFadeSpeed], a
-	; callacross Fadeout
-	ld bc, 8 << 8 | LOW(rBGPI)
-	ld a, $80
-	ld [c], a
-	inc c
-	rst waitVBlank
-	ld a, $FF
-.blankOut
-	ld [c], a
-	dec b
-	jr nz, .blankOut
+	ld a, 8
+	ld [wFadeSpeed], a
+	callacross Fadeout
+	
 	xor a
 	ldh [hSCY], a
 	ldh [hSCX], a
+	
 	ld [wNumOfSprites], a
 	inc a
 	ld [wTransferSprites], a
+	
 	; Print "thank you for playing"
 	ld hl, CreditsThanksStrs
 	ld de, $98C3
@@ -332,6 +325,14 @@ StaffCredits::
 ;	ld de, $9924
 	ld e, $24
 	call CopyStrToVRAM
+	
+	ld hl, hGFXFlags
+	set 6, [hl]
+	ld de, InvertedPalette + 3
+	ld c, 0
+	callacross LoadBGPalette_Hook
+	ld hl, hGFXFlags
+	res 6, [hl]
 	
 	; Fade the text in
 	ld a, 4
@@ -441,27 +442,3 @@ CreditsThanksStrs::
 CreditsFinalStr::
 	dstr "SEE YOU LATER..."
 	
-DelayFrameFlickerSprites::
-	push bc
-	ld hl, wVirtualOAM + 2
-	ld b, 8 + 4 * 7
-.toggleOneSprite
-	ld a, [hl] ; Get tile ID
-	xor 2 ; Toggle
-	ld [hld], a
-	and 2 ; Check if it's now the RIGHT tile
-	ld a, 8
-	jr nz, .moveRight
-	ld a, -8
-.moveRight
-	add [hl] ; Add to current pos
-	ld [hli], a
-	ld a, l
-	add a, OAM_SPRITE_SIZE
-	ld l, a
-	dec b
-	jr nz, .toggleOneSprite
-	pop bc
-	ld [wTransferSprites], a
-	rst waitVBlank
-	ret

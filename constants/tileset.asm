@@ -1,8 +1,7 @@
 
 	enum_start
 	
-	enum_elem TILESET_TEST
-	enum_elem TILESET_TEST_HOUSE
+	enum_elem TILESET_OVERWORLD
 	enum_elem TILESET_INTRO
 	enum_elem TILESET_INTERIOR
 	enum_elem TILESET_INTERIOR_DARK
