@@ -1,6 +1,4 @@
-----------------------------------------------
--               WRAP WIDTH BAR               -
-----------------------------------------------
+
 8/22/17
 (MM/DD/YY)
 Hey. I'm Parzival Wolfram.
@@ -100,6 +98,6 @@ I'm not gonna say "it can't get worse" as that always ends badly.
 Wait, does this count?
 
 Anywho, I've run out of greets.
-----------------------------------------------
--               WRAP WIDTH BAR               -  
-----------------------------------------------
+
+2/8/18
+It's been a while, huh? Anyways, remember how I said I'm not doing a shitty Game Maker game? Well, I lied. I'll reveal it later. Maybe.
