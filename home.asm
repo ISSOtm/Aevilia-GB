@@ -245,7 +245,7 @@ THE_CONSTANT = 42
 	ldh [hTilemapMode], a
 	
 	; a = CONSOLE_CRAPPY (0)
-	jr .thisIsEmulator
+	jp .gotConsoleType
 	
 .hasEchoRAM
 	ld hl, $FF6C ; Undocumented, GBC-only port
@@ -253,7 +253,7 @@ THE_CONSTANT = 42
 	ld a, [hl]
 	inc a
 	inc a ; Will set 0 if and only if we read $FE
-	jr z, .thisIsGBC ; Correct behavior implies we are either on a GBC or on a GBA or on a really good emulator
+	jr z, .veryGoodAccuracy ; Correct behavior implies we are either on a GBC or on a GBA or on a really good emulator
 	
 	; Try to write to wram banks
 	; This will fail on a DMG
@@ -283,28 +283,101 @@ THE_CONSTANT = 42
 	
 	; 3DS VC doesn't flag rHDMA1 as readable, GG Nintendo
 	; Pan Docs flagged those as R/W - they are write-only.
-	ld a, [rHDMA1]
+	ld c, LOW(rHDMA1)
+	ld a, [c]
 	inc a
-	ld [rHDMA1], a
+	ld [c], a
 	ld b, a
-	ld a, [rHDMA1]
+	ld a, [c]
 	cp b
-	ld a, CONSOLE_3DS ; Closer to crap than decent
-	jr nz, .thisIsEmulator
+	ld a, CONSOLE_3DS ; Closer to being crap than decent
+	jr nz, .gotConsoleType
+	; This is a decent emulator, but not perfect
+	jr .decentEmu
 	
-	; This is decent emulator, but not perfect
-	inc a ; ld a, CONSOLE_DECENT
-	jr .thisIsEmulator
+.veryGoodAccuracy
+	di
+	ld a, $20 ; Enable Mode 0
+	ld [rSTAT], a
+	ld a, 2
+	ld [rIE], a ; Enable STAT int
+	ld b, 0
+	
+.doHDMA
+	ld c, LOW(rHDMA1)
+	ld a, $E0
+	ld [c], a
+	inc c
+	ld [c], a ; From $E0E0 (uh oh, Nintendo says not to do that)
+	inc c
+	ld a, $88
+	ld [c], a
+	inc c
+	ld a, b
+	ld [c], a ; To $88X0 (really anything is fine)
+	inc c ; Leave C pointing to HDMA length
+	
+	xor a ; We need IF = 0 when HALT is hit
+	ld [rIF], a
+	; There's a 1-cycle flaw here, but I dunno how to do better...
+	halt
+	; Alright, we're perfectly synced with the PPU, and in Mode 2. What could go wrong, Mr. Emulator ?
+	ld a, $80
+	ld [c], a
+	
+	; Delay until HDMA occurs
+	ld a, 13
+.delay
+	dec a
+	jr nz, .delay
+	ld a, b
+	and a
+	jr nz, .extraCycle
+.extraCycle
+	nop
+	
+	ld a, b
+	xor $10 ; HDMA triggers here (2nd time)
+	ld b, a ; or here (1st time)
+	jr nz, .doHDMA
+	
+	; We're going to check if it behaved correctly
+	xor a
+	ld [rSTAT], a ; Disable Mode 2 int
+	ld a, 3 ; Restore IE
+	ld [rIE], a
+	ei
+	
+	ld hl, $8800
+	ld de, $47 << 8 | CONSOLE_AWESOME
+.checkOneTile
+	ld c, $10
+.checkOneByte
+	ld a, [rSTAT]
+	and 2
+	jr nz, .checkOneByte
+	ld a, [hli]
+	cp d
+	jr nz, .awesomeEmu
+	dec c
+	jr nz, .checkOneByte
+	ld a, $EE ; Opcode for "xor imm8"
+	cp d
+	ld d, a
+	jr nz, .checkOneTile ; If we weren't checking for this tile, keep going
+	
 	
 .thisIsGBC
 	ldh a, [hConsoleType]
 	and a
 	ld a, CONSOLE_GBC
-	jr z, .gbc
+	jr z, .gotConsoleType
+.decentEmu
 	inc a
-.gbc
-	
-.thisIsEmulator
+.gotConsoleType
+	db $FE
+.awesomeEmu
+	ld a, e
 	ldh [hConsoleType], a
 	
 	; We will now check SRAM
