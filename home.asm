@@ -38,9 +38,8 @@ Init::
 	ld sp, $D000 ; Put SP out of HRAM to fixed WRAM (push will write to $CFFF then $CFFE ;)
 	
 .waitVBlank
-	ld a, [rSTAT]
-	and 3
-	dec a
+	ldh a, [rLY]
+	cp LY_VBLANK
 	jr nz, .waitVBlank
 	xor a
 	ld [rLCDC], a ; Shut screen down for init
