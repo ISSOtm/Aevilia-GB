@@ -14,12 +14,16 @@ UseCustomHooks = 1
 DontIncludeSongData = 1
 ; Disable Zombie mode, since it causes issues with SFX (and eats a lot of CPU)
 DisableZombieMode = 1
+; Tell DevSound to use the FX Hammer disassembly.
+UseFXHammerDisasm = 1
 ; DevSound defines its own `dbw` macro - which is exactly the same as Aevilia's, but we need to avoid conflicts, lel
 PURGE dbw
+
+INCLUDE	"sound/FXHammer.asm"
+
 INCLUDE "sound/DevSound/DevSound.asm"
 
 INCLUDE "sound/SongData.asm" ; Make sure this follows DevSound.asm !
 
 INCLUDE "sound/song_names.asm"
 
-INCLUDE	"sound/FXHammer.asm"
