@@ -2,10 +2,6 @@
 
 [![Build status badge](https://img.shields.io/badge/dynamic/json.svg?label=build&colorB=green&query=status&uri=https%3A%2F%2Fissotm.github.io%2Fbuild.json)](https://issotm.github.io/aevilia.html)
 
-[![ForTheBadge](https://forthebadge.com/images/featured/featured-powered-by-electricity.svg)](https://forthebadge.com)
-
-[![ForTheBadge](https://forthebadge.com/images/featured/featured-uses-badges.svg)](https://forthebadge.com)
-
 
 A RPG for the Game Boy Color, written in pure Sharp LR35902 (aka GBz80) assembly.
 
