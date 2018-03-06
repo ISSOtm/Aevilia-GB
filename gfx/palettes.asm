@@ -31,6 +31,11 @@ ConsolePalettes::
 	db $00, $00, $00
 	
 	; Decent emulator
+	db $10, $10, $10
+	db $00, $00, $00
+	db $00, $00, $00
+	
+	; Awesome emulator
 	db $14, $14, $14
 	db $1F, $1C, $00
 	db $00, $00, $00

@@ -75,11 +75,13 @@ MAX_BATT_ID		EQU 1
 ; -------------- MISC ---------------
 SRAM_UNLOCK		EQU $0A
 
-CONSOLE_CRAP	EQU $00
-CONSOLE_3DS		EQU $01
-CONSOLE_DECENT	EQU $02
-CONSOLE_GBC		EQU $03
-CONSOLE_GBA		EQU $04
+	enum_start
+	enum_elem CONSOLE_CRAP
+	enum_elem CONSOLE_3DS
+	enum_elem CONSOLE_DECENT
+	enum_elem CONSOLE_AWESOME
+	enum_elem CONSOLE_GBC
+	enum_elem CONSOLE_GBA
 
 ROM_VERSION		EQU 0
 

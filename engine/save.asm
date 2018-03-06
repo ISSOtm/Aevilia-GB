@@ -1000,6 +1000,7 @@ ConsoleTypes::
 	dw .crap
 	dw .vc
 	dw .decent
+	dw .awesome
 	dw .gbc
 	dw .gba
 	
@@ -1012,6 +1013,9 @@ ConsoleTypes::
 .decent
 	dstr "EMULATOR:"
 	dstr "DECENT"
+.awesome
+	dstr "EMULATOR:"
+	dstr "AWESOME"
 .gbc
 	dstr "CONSOLE:"
 	dstr "GBC"
