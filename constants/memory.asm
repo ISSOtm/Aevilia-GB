@@ -48,7 +48,6 @@ rNR50			equ $FF24
 rNR51			equ $FF25
 rNR52			equ $FF26
 _AUD3WAVERAM	equ $FF30
-waveBuffer		equ $FF30
 rLCDC			equ $FF40
 rSTAT			equ $FF41
 rSCY			equ $FF42
