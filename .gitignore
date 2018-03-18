@@ -21,3 +21,7 @@ make.exe
 msvcp60.dll
 msvcrt.dll
 sound/*.bak
+tools/img2tileset/build
+tools/img2tileset/dist
+tools/img2tileset/*.log
+*.spec
