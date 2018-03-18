@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 try:
 	from PIL import Image
@@ -26,7 +26,6 @@ parser.add_argument("outfile", metavar= "path/to/output.txt", nargs="?", default
 args = parser.parse_args()
 
 run_dry = args.dry
-optimize = args.optimize
 imgfile_name = args.imgfile_name
 outfile = args.outfile
 
@@ -160,7 +159,80 @@ for palette in tile_palettes:
 
 
 # Stage 5 - Attempt to merge some palettes, and pad the others
-# TODO
+nb_colors = [len(palette) for palette in color_palettes]
+
+def merge_palettes(i, j):
+	global nb_colors
+	global color_palettes
+
+	color_palettes[i].extend(color_palettes[j])
+	nb_colors[i] += nb_colors[j]
+	del nb_colors[j]
+	del color_palettes[j]
+
+
+# Attempt to merge 3-color and 1-color palettes
+try:
+	while True:
+		# Look for two palettes that can be merged
+		i = nb_colors.index(3) # This errors if there is none, which exits the loop
+		j = nb_colors.index(1) # Same here
+
+		merge_palettes(i, j)
+
+except ValueError:
+	pass
+
+
+# Attempt to merge 2-color palettes
+try:
+	while True:
+		i = nb_colors.index(2)
+		nb_colors[i] = -1 # Temporarily replace value to exclude from next search
+		try:
+			j = nb_colors.index(2)
+		finally:
+			nb_colors[i] = 2 # Make sure the value is restored, even if an error is raised!
+		
+		merge_palettes(i, j)
+
+except ValueError:
+	pass
+
+
+# Attempt to merge a possibly remaining 2-color palette with 1-color palettes
+# There can't be two remaining palettes, otherwise they'd have been merged together
+try:
+	i = nb_colors.index(2)
+
+	while nb_colors[i] < 4:
+		j = nb_colors.index(1)
+		merge_palettes(i, j)
+
+except ValueError:
+	pass
+
+
+# Attempt to merge 1-color palettes together
+try:
+	while True:
+		# It's possible to merge multiple palettes into one
+		i = nb_colors.index(1)
+
+		while nb_colors[i] < 4:
+			tmp = nb_colors[i]
+			nb_colors[i] = -1
+
+			try:
+				j = nb_colors.index(1)
+			finally:
+				nb_colors[i] = tmp
+			
+			merge_palettes(i, j)
+
+except ValueError:
+	pass
+
 
 for palette in color_palettes:
 	while len(palette) < 4:
