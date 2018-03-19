@@ -11,12 +11,16 @@ TilesetROMBanks:: ; MAKE SURE THIS IS 256-BYTE ALIGNED!!
 	db BANK(IntroTileset)
 	db BANK(InteriorTileset)
 	db BANK(InteriorTilesetDark)
+	db BANK(RuinsTileset)
+	db BANK(BeachTileset)
 	
 TilesetPointers::
 	dw OverworldTileset
 	dw IntroTileset
 	dw InteriorTileset
 	dw InteriorTilesetDark
+	dw RuinsTileset
+	dw BeachTileset
 
 
 ; ** Tileset structure **
@@ -30,3 +34,5 @@ INCLUDE "tileset/overworld.asm"
 INCLUDE "tileset/intro.asm"
 INCLUDE "tileset/interior.asm"
 INCLUDE "tileset/interior_dark.asm"
+INCLUDE "tileset/ruins.asm"
+INCLUDE "tileset/beach.asm"
