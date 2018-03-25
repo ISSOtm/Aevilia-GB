@@ -2305,7 +2305,7 @@ MovePlayer::
 	
 .verticalCollision
 	ld a, [wTempBuf + 4]
-	and $30
+	and DPAD_LEFT | DPAD_RIGHT
 	ld [wTempBuf + 4], a
 	
 .noVerticalCollision
@@ -2359,7 +2359,7 @@ MovePlayer::
 	
 .horizontalCollision
 	ld a, [wTempBuf + 4]
-	and $C0
+	and DPAD_UP | DPAD_DOWN
 	ld [wTempBuf + 4], a
 	
 .noHorizontalCollision
