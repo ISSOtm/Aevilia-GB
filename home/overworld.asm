@@ -30,6 +30,8 @@ OverworldLoop::
 	
 	ld a, 1
 	call SwitchRAMBanks
+	ld a, [wLoadedMapROMBank]
+	rst bankswitch
 	
 	; Run map script, if any
 	ld de, wMapScriptPtr + 1
