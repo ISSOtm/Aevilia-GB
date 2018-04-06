@@ -326,33 +326,30 @@ PaletteCommon::
 	ld a, [hli]
 	and $1F
 	ld d, a
-PaletteCommon_Custom: ; Call with (R,G,B) : (b,d,e)
+PaletteCommon_Custom: ; Call with (R,G,B) : (b,e,d)
 	ldh a, [hGFXFlags]
 	bit 7, a
-	ld a, b
+	ld a, e 
 	jr z, .notGBA
 	
 	; Adjust all three palettes, using the formula "GBAPal = GBCPal / 2 + $10"
+	ld a, b ; Load R
 	; Carry is clear from previous "and a"
 	rra
 	add a, $10
-	ld b, a ; Preserve this palette for later recovery
-	ld a, e ; Load middle color
+	ld b, a
+	ld a, d ; Load B
 	; Carry can't be set
 	rra
 	add a, $10
-	ld e, a
-	ld a, d
+	ld d, a
+	ld a, e ; Load G
 	; Same
 	rra
 	add a, $10
-	ld d, a
-	; Restore
-	ld a, b
 	
 .notGBA
-	ld b, a
-	ld a, e
+	; Rotate G in place (for both calculations)
 	rrca
 	rrca
 	rrca
@@ -362,9 +359,8 @@ PaletteCommon_Custom: ; Call with (R,G,B) : (b,d,e)
 	ld b, a
 	ld a, e
 	and $03
-	rl d
-	and a ; Clear carry
-	rl d
+	sla d
+	sla d
 	or d ; Mix 2/5 G and B
 	ld e, a
 .waitVRAM
