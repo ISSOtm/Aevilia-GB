@@ -1,12 +1,12 @@
 
-This file's purpose is to help debugging by explaining the error screen, as well as giving infos on the circumstances that can lead to it.
+This file's purpose is to help debugging by explaining the error screen, as well as giving info on the circumstances that can lead to it.
 
 
 GENERAL NOTES
 
 - Don't trust the F register on the error screen. It will be constant ($C0 IIRC) and I can't do much about that.
-- The error screen attempts to preserve the GB's state as much as possible. Thus, for example, only $C000 is modified. It's better to not use this address for storage (though for example the Konami cheat uses it).
-- To further not damage memory, the error handler sets SP to VRAM, specifically it will trash some of the 9800 tilemap.
+- The error screen attempts to preserve the GB's state as much as possible. Thus, for example, only $C000 is modified. It's best to not use this address for storage (though, for example, the Konami cheat uses it).
+- To further preserve memory, the error handler sets SP to VRAM, specifically meaning it will trash some of the 9800 tilemap.
 - The error screen disables interrupts, again to preserve as much of the state as possible. It also makes it autonomous, meaning it should be as accurate as possible.
 - The stack dump automatically dumps memory *around* the current SP value. It may not dump the entire stack.
 
@@ -20,7 +20,7 @@ The call-time trap is placed in `rst $38`, which triggers the error screen if th
 The run-time trap is in the Mode 2 ("music") interrupt handler. Basically, this handler will trigger the error screen if it detects its return address is in WRAM. Note that bypassing this trap is fairly simple : prepend a `di` to your WRAM code, and end it with a `reti`.
 
 Error screen walkthrough :
-The error screen will differ based on which trap activated. The call-time one will have all registers in the state they were when `rst $38` was called. The run-time one will have all registers at their state when the interrupt fired. The difference should be that the run-time will have [sp] pointing to RAM... except if a `rst $38` was called from RAM.
+The error screen will differ based on which trap activated. The call-time one will have all registers in the state they were in when `rst $38` was called. The run-time one will have all registers in the state they were in when the interrupt fired. The only difference should be that the run-time trap will have [sp] pointing to RAM... unless a `rst $38` was called from RAM.
 
 
 ERROR #1
@@ -63,4 +63,4 @@ ERROR #ERROR
 "UNKNOWN ERROR!!!"
 
 The error screen has been triggered with an invalid error code. Good luck investigating that.
-At least the error handler should be completely safe and always behave normally (this being the most "abnormal" state). The opposite would have been a shame - imagine ACE induced by the error handler !
+At least the error handler should be completely safe and always behave normally (this being the most "abnormal" state). The opposite would be a shame - imagine ACE induced by the error handler !
