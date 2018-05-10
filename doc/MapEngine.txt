@@ -3,7 +3,7 @@ AEVILIA GB MAP ENGINE
 As modular as I could manage to make it be.
 
 
-I- CONCEPTS
+I - CONCEPTS
 
 There are several abstractions the engine uses. They are intended to make programming and debugging easier.
 
@@ -12,14 +12,14 @@ There are several abstractions the engine uses. They are intended to make progra
 
 The overworld loop is independent from the rest of the game. Most prominent example : the button registers.
 Basically, the main button registers - hHeldButtons and hPressedButtons - are updated by the VBlank handler. An attentive reader will wonder what happens when an overworld frame spans more than one GB frame (ie. the game lags).
-The answer is, input may be inconsistent across a function (this used to cause softlocks when moving at speeds too high, for technical reasons. 'Twas fun patching, though).
+The answer is, input may be inconsistent across a function (this used to cause softlocks when moving at too high of speeds, for technical reasons. 'Twas fun patching, though).
 To fix this, the overworld loop has its own set of :
  - Frame counter (hOverworldFrameCounter)
  - Held buttons (hOverworldHeldButtons)
  - Pressed buttons (hOverworldPressedButtons)
 The functioning of the frame counter and held buttons are pretty much what you'd expect. The pressed buttons, however, follow a slightly more complicated logic.
 The game applies the same logic as it does with hPressedButtons (but uses hOverworldHeldButtons instead), but before writing back, it also applies the mask hOverworldButtonFilter.
-This allows to ignore certain actions (this is notable in the tutorial).
+This allows for ignoring certain actions (this is notable in the tutorial).
 There also are two other options to ignore the player's actions.
 wUnlinkJoypad, when non-zero, does NOT process MovePlayer nor the frame "actions" (pressed A, B, etc.). It should not be interfaced with directly, but rather through PreventJoypadMovement and AllowJoypadMovement.
 hIgnorePlayerActions does exactly the same, but is reset at the beginning of every frame. A few exceptions exist, done by skipping the resetting instruction (for example, the battle trigger does this to force the next frame to not take input on the following frame). It's basically a one-frame `wUnlinkJoypad`, and can be interfaced with directly. Notable uses include walking interactions lasting for more than a single frame, to avoid parasitic actions (since overworld joypad inputs will not be updated, pressing A on the same frame would also process interactions after the walking interaction returns).
@@ -27,7 +27,7 @@ hIgnorePlayerActions does exactly the same, but is reset at the beginning of eve
 
 2. Camera
 
-Everything in the game is rendered relatively to the camera. Also, the camera is a fully independent entity (from the player), which makes stuff such as cutscenes easier to make without any stupid hacks.
+Everything in the game is rendered relative to the camera. Also, the camera is a fully independent entity from the player, which makes stuff such as cutscenes easier to make without any stupid hacks.
 On every overworld frame, the camera's position is transferred to the GB's scrolling registers, and all graphics-related operations are done relatively to the camera.
 Most importantly, redrawing the terrain. Because, obviously, the maps in this game are way bigger than the GBC's 20x18 tile memory. Thus, tile data is updated as the camera (and thus the scrolling registers) moves around.
 The was the camera is designed, it can only move by 16 pixels in a frame. But for cosmetic reasons, the max speed was decreased to 15 pixels/frame.
