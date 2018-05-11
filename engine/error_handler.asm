@@ -1,34 +1,5 @@
 
-INCLUDE "macros.asm"
-INCLUDE "constants.asm"
-
 SECTION "Error handler", ROMX
-	
-	
-; Prints b as hex to de
-; Advances de as well
-PrintHex::
-	ld a, b
-	and $F0
-	swap a
-	add a, "0"
-	cp ":"
-	jr c, .isDigitHigh
-	add a, "A" - ":"
-.isDigitHigh
-	ld [de], a
-	inc de
-	ld a, b
-	and $0F
-	add a, "0"
-	cp ":"
-	jr c, .isDigitLow
-	add a, "A" - ":"
-.isDigitLow
-	ld [de], a
-	inc de
-	ret
-	
 	
 	
 ; Function to print the fatal error handler
@@ -57,6 +28,8 @@ DebugFatalError::
 	dec a
 	rst fill
 	ld [rVBK], a
+	ld c, 0
+	callacross LoadFont
 	ld c, 1
 	ld de, GrayPalette
 	callacross LoadBGPalette_Hook
@@ -86,9 +59,7 @@ DebugFatalError::
 	
 	; Print all registers at time of fatal error
 	ld hl, FatalErrorScreenStrings
-	ld e, $7B
-	rst copyStr
-	ld e, $58
+	ld e, $60
 .printRegisters
 	rst copyStr
 	pop bc
@@ -259,16 +230,14 @@ FatalErrorString::
 	dstr "UNKNOWN ERROR!!!"
 	dstr "RAM IS RW BUT NOT X"
 	dstr "CANNOT DIV BY ZERO"
-	db "WOOPS, "
-	dstr "WRONG DOOR"
+	dstr "WOOPS\, WRONG DOOR"
 	dstr "WHERE AM I??"
 	dstr "INVALID BATTLE TRANSITION"
 	dstr "NONEXISTANT ENEMY"
 	dstr "BAD THREAD 2 POINTER"
 	
 FatalErrorScreenStrings::
-	dstr "=D"
-	dstr "HI TCRF!AF ="
+	dstr "AF ="
 	dstr "BC ="
 	dstr "DE ="
 	dstr "HL ="

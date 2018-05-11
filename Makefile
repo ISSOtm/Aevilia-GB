@@ -1,13 +1,18 @@
 
 .SHELL: /bin/bash
-.PHONY: all rebuild
+.PHONY: all rebuild clean
 .SUFFIXES:
 .DEFAULT_GOAL: all
 
 
 FillValue = 0xFF
 
+# ROM version rule :
+# If the version is even, it's a debugging version : set DebugMode to 1
+# If the version is odd, it's a production version : set DebugMode to 0
 ROMVersion = 0
+DebugMode = 1
+
 GameID = ISSO
 GameTitle = AEVILIA
 NewLicensee = 42
@@ -17,79 +22,77 @@ MBCType = 0x1B
 # ROMSize = 0x02
 SRAMSize = 0x04
 
-bindir = ./bin
-objdir = ./obj
+bindir = bin
+objdir = obj
 
-CFLAGS = -E -p $(FillValue)
-LFLAGS = 
-FFLAGS = -Cjv -i $(GameID) -k $(NewLicensee) -l $(OldLicensee) -m $(MBCType) -n $(ROMVersion) -p $(FillValue) -r $(SRAMSize) -t $(GameTitle)
+objlist = $(objdir)/main.o $(objdir)/battle.o $(objdir)/engine.o $(objdir)/home.o $(objdir)/gfx.o $(objdir)/maps.o $(objdir)/save.o $(objdir)/sound.o $(objdir)/text.o $(objdir)/tileset.o
 
-RGBASM = ./rgbasm
-RGBLINK = ./rgblink
-RGBFIX = ./rgbfix
+ASFLAGS  = -E -p $(FillValue) -i sound/DevSound/
+LDFLAGS  = 
+FIXFLAGS = -Cjv -i $(GameID) -k $(NewLicensee) -l $(OldLicensee) -m $(MBCType) -n $(ROMVersion) -p $(FillValue) -r $(SRAMSize) -t $(GameTitle)
+
+RGBASM = rgbasm
+RGBLINK = rgblink
+RGBFIX = rgbfix
+
+ifeq ($(DebugMode), 1)
+ASFLAGS := $(ASFLAGS) -D DebugMode
+endif
 
 
-all: $(bindir)/aevilia.gbc
+all: $(bindir)/aevilia.gbc $(bindir)/aevilia_glitchmaps.gbc
 
 rebuild: clean all
 
 clean:
-	rm $(objdir)/*.o
-	rm $(bindir)/aevilia.gbc $(bindir)/aevilia.sym $(bindir)/aevilia.map
+	rm -f $(objdir)/*.o
+	rm -f $(bindir)/aevilia.gbc $(bindir)/aevilia.map $(bindir)/aevilia.sym
 
-$(bindir)/aevilia.sym:
-	rm $(bindir)/aevilia.gbc
-	make $(bindir)/aevilia.gbc
+$(bindir)/%.sym:
+	@if [ ! -d bin ]; then mkdir $(bindir); fi
+	rm $(@:.sym=.gbc)
+	make $(@:.sym=.gbc)
+	
+$(bindir)/%.gbc:
 
-$(bindir)/aevilia.gbc: $(objdir)/aevilia.o $(objdir)/home.o $(objdir)/gfx.o $(objdir)/txt.o $(objdir)/error_handler.o $(objdir)/save.o $(objdir)/map.o $(objdir)/font.o $(objdir)/thread2.o $(objdir)/testmaps.o $(objdir)/intromap.o $(objdir)/sound.o $(objdir)/battle.o $(objdir)/defaultsave.o $(objdir)/rants.o
-	$(RGBLINK) $(LFLAGS) -n $(bindir)/aevilia.sym -m $(bindir)/aevilia.map -o $@ $^
-	$(RGBFIX) $(FFLAGS) $@
+$(bindir)/aevilia.gbc: $(objlist)
+	@if [ ! -d bin ]; then mkdir $(bindir); fi
+ifeq ($(DebugMode), 1)
+	@echo
+	@echo "*** WARNING! COMPILING IN DEBUG MODE!"
+	@echo "*** DO NOT REDISTRIBUTE THIS ROM!"
+	@echo To disable debug mode, edit the Makefile.
+	@echo
+endif
+	$(RGBLINK) $(LDFLAGS) -n $(bindir)/aevilia.sym -m $(bindir)/aevilia.map -o $@ $^
+	$(RGBFIX) $(FIXFLAGS) $(@)
+	
+$(bindir)/aevilia_glitchmaps.gbc: $(objlist:.o=_glitchmaps.o)
+	@if [ ! -d bin ]; then mkdir $(bindir); fi
+ifeq ($(DebugMode), 1)
+	@echo
+	@echo "*** WARNING! COMPILING IN DEBUG MODE!"
+	@echo "*** DO NOT REDISTRIBUTE THIS ROM!"
+	@echo To disable debug mode, edit the Makefile.
+	@echo
+endif
+	$(RGBLINK) $(LDFLAGS) -o $@ $^
+	$(RGBFIX) $(FIXFLAGS) $@
 	
 	
-$(objdir)/%.o: constants.asm macros.asm constants/*.asm macros/*.asm
+$(objdir)/%.o: %.asm constants.asm macros.asm constants/*.asm macros/*.asm %/*.asm
+	@if [ ! -d obj ]; then mkdir $(objdir); fi
+	$(RGBASM) $(ASFLAGS) -o $@ $<
 	
-$(objdir)/aevilia.o: main.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
+$(objdir)/%_glitchmaps.o: %.asm constants.asm macros.asm constants/*.asm macros/*.asm %/*.asm
+	@if [ ! -d obj ]; then mkdir $(objdir); fi
+	$(RGBASM) $(ASFLAGS) -D GlitchMaps -o $@ $<
 	
-$(objdir)/home.o: home.asm home/*.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
 	
-$(objdir)/gfx.o: gfx/graphics.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/txt.o: engine/text.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/error_handler.o: engine/error_handler.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/save.o: engine/save.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/map.o: engine/map.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/font.o: engine/font.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/thread2.o: engine/thread2.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/testmaps.o: maps/test.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/intromap.o: maps/intro.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/sound.o: sound/DevSound.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/battle.o: battle/battle_engine.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/defaultsave.o: save/defaultsave.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
-	
-$(objdir)/rants.o: save/rants.asm
-	$(RGBASM) $(CFLAGS) -o $@ $<
+# Define special dependencies here (see "$(objdir)/%.o" rule for default dependencies)
+$(objdir)/maps.o: maps/*.blk
+$(objdir)/maps_glitchmaps.o: maps/*.blk
+
+$(objdir)/sound.o: sound/*.bin sound/DevSound/DevSound_*.asm sound/DevSound/NoiseData.bin
+$(objdir)/sound_glitchmaps.o: sound/*.bin sound/DevSound/DevSound_*.asm sound/DevSound/NoiseData.bin
 

@@ -18,7 +18,7 @@ INCLUDE "macros.asm"
 INCLUDE "constants.asm"
 
 
-INCLUDE "vram.asm"
-INCLUDE "sram.asm"
-INCLUDE "wram.asm"
-INCLUDE "hram.asm"
+INCLUDE "main/vram.asm"
+INCLUDE "main/sram.asm"
+INCLUDE "main/wram.asm"
+INCLUDE "main/hram.asm"

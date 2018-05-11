@@ -91,6 +91,7 @@ CallAcrossBanks::
 	push af
 	ld a, b
 	rst bankswitch
+	ld a, c ; DevSound's functions expect their argument in a, but we pass it via c
 	rst callHL
 	pop af
 	rst bankswitch
@@ -103,17 +104,6 @@ CopyAcrossLite::
 	ld a, b
 	rst bankswitch
 	rst copy
-	pop af
-	rst bankswitch
-	ret
-	
-; Copy str from b:hl to de
-CopyStrAcross::
-	ldh a, [hCurROMBank]
-	push af
-	ld a, b
-	rst bankswitch
-	rst copyStr
 	pop af
 	rst bankswitch
 	ret
@@ -166,11 +156,17 @@ SlowDownCPU::
 	ret nc ; Not at double-speed
 	
 SwitchCPUSpeed:
-	ld a, SELECT_NONE ; Prevent missclicking...
+	ld a, SELECT_NONE ; Prevent misclicking...
 	ld [rJOYP], a
 	ld a, 1
 	ld [rKEY1], a ; Request speed switch
-	stop ; GO !!
+	ld a, [rIE] ; Save interrupts
+	ld b, a
+	xor a
+	ld [rIE], a ; Prevent any interrupt
+	stop ; GO!!
+	ld a, b
+	ld [rIE], a ; Restore ints
 	ret
 	
 

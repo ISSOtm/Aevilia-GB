@@ -11,7 +11,8 @@ VBlankHandler::
 	
 	push de
 	push hl
-	ld a, BANK(wVirtualOAM)
+;	ld a, BANK(wVirtualOAM)
+	ld a, 1
 	ld [rSVBK], a
 	
 	
@@ -24,34 +25,34 @@ VBlankHandler::
 	
 	
 	; Transfer WRAM positions to I/O (hiding window if needed)
-	ld a, [wEnableWindow]
+	ldh a, [hEnableWindow]
 	and a
 	ld a, LY_VBLANK
 	jr z, .setWY ; Set window to be just under the screen, don't care about WX
-	ld a, [wWX]
+	ldh a, [hWX]
 	ld [rWX], a
-	ld a, [wWY]
+	ldh a, [hWY]
 .setWY
 	ld [rWY], a
 	
 	
-	ld a, [wScreenShakeAmplitude]
+	ldh a, [hScreenShakeAmplitude]
 	and a
 	jr z, .dontShakeScreen
 	
 	ld b, a
 	and $80 ; Check if bit 7 is set (its meaning is separate from the amplitude)
-	ld a, [wScreenShakeDisplacement]
+	ldh a, [hScreenShakeDisplacement]
 	jr nz, .moveLeft ; Bit 7 is set, move left
 	inc a
 .movementCommon ; Code common to both movements
-	ld [wScreenShakeDisplacement], a
+	ldh [hScreenShakeDisplacement], a
 	cp b
 	jr nz, .dontShakeScreen ; We didn't reach the edge of the displacement
 	ld a, b ; Retrieve amplitude
 	cpl ; Negate amplitude
 	inc a
-	ld [wScreenShakeAmplitude], a
+	ldh [hScreenShakeAmplitude], a
 	jr .capAtAmplitude
 ; The placement of this piece of code can seem strange,
 ; but it is placed at a point that wouldn't be traversed otherwise.
@@ -60,13 +61,13 @@ VBlankHandler::
 	dec a
 	jr .movementCommon
 .dontShakeScreen
-	ld [wScreenShakeDisplacement], a ; Avoid displacement carry-over (zeroing amplitude when displacement is non-zero then setting amplitude again)
+	ldh [hScreenShakeDisplacement], a ; Avoid displacement carry-over (zeroing amplitude when displacement is non-zero then setting amplitude again)
 	ld b, a ; Make sure B holds 0
 .capAtAmplitude ; Jump here with b containing the displacement
 	ldh a, [hTilemapMode]
 	and a
 	jr z, .mobileMap
-	ld a, TILE_SIZE * 8
+	ld a, TILE_SIZE * 14
 	ld [rSCY], a
 	ld a, [rLCDC]
 	or $08
@@ -78,9 +79,9 @@ VBlankHandler::
 	ld a, [rLCDC]
 	and $F7
 	ld [rLCDC], a
-	ld a, [wSCY]
+	ldh a, [hSCY]
 	ld [rSCY], a
-	ld a, [wSCX]
+	ldh a, [hSCX]
 .transferScroll
 	add a, b
 	ld [rSCX], a
@@ -88,14 +89,14 @@ VBlankHandler::
 	
 	; Transfer fixed map
 	ld bc, wTransferRows
+	ld d, wTextboxTileMap - wTransferRows
 	; We will look for any updated rows
 .fixedMapTransferLoop
 	ld a, [bc]
 	and a
 	jr nz, .rowUpdated
 	inc c ; Check next row
-	ld a, c
-	cp (wTextboxTileMap & $FF)
+	dec d
 	jr nz, .fixedMapTransferLoop
 	jr .doneTransferringFixedMap
 .rowUpdated ; This exits the loop, so only one row is transferred on each frame
@@ -105,7 +106,7 @@ VBlankHandler::
 	xor a
 	ld [bc], a ; Mark row as transferred
 	ld hl, wTextboxTileMap
-	ld d, vTileMap1 >> 8
+	ld d, HIGH(vTextboxTileMap)
 	ld a, c
 	add a, a
 	ld b, a
@@ -150,58 +151,61 @@ VBlankHandler::
 	and a
 	jr z, .dontTransferSprites
 	
-	; Transfer OAM
+	; OAM operations follow.
+	; First, transfer virtual OAM into staged OAM
 	ld hl, wNumOfSprites
-	ld a, [hli] ; Get number of sprites
+	ld a, [hl] ; Get number of sprites
 	cp NB_OF_SPRITES + 1 ; Make sure this number is valid
 	jr c, .numberOfSpritesValid
-	ld a, NB_OF_SPRITES ; This should never be reached, but... it might !
-	dec hl
-	ld [hli], a ; Force number of sprites to be valid
+	ld a, NB_OF_SPRITES ; This should never be reached, but... it might!
+	ld [hl], a
 .numberOfSpritesValid
-	ld c, a ; Save this
-	ld a, [hl] ; Subtract previous num of sprites
-	sub c ; Calc difference
-	jr c, .noSpritesToHide ; Negative ? Nothing to do !
-	jr z, .noSpritesToHide ; Zero ? Same !
-	
-	ld b, a ; Save this as a counter
-	dec hl
-	ld a, [hli] ; Retrieve # of sprites
+	ld b, a ; Save the number of main sprites
 	add a, a
-	add a, a ; Get offset
-	ld e, a ; wVirtualOAM is 256-byte aligned, so this is fine
-	ld d, wVirtualOAM >> 8 ; Get "erase" pointer
-	xor a ; Put sprite just above screen
-	
-.clearSprite
-	ld [de], a ; Move the sprite offscreen, to be faster don't clear the other bytes
+	add a, a
+	ld c, a
+	inc hl
+	ld a, [hl] ; Get previous count
+	ld [hl], b ; Store current count
+	sub b ; Calc diff
+	jr c, .doneClearingOAM
+	jr z, .doneClearingOAM
+	ld h, HIGH(wVirtualOAM)
+	ld l, c
+.clearSprites
+	ld [hl], 0
 REPT 4
-	inc de
+	inc l
 ENDR
-	dec b
-	jr nz, .clearSprite
+	dec a
+	jr nz, .clearSprites
 	
-.noSpritesToHide
-	ld [hl], c ; Store Current into Previous
+.doneClearingOAM
 	xor a ; Don't transfer sprites until update
 	ld [wTransferSprites], a
 	
 	; Copy DMA routine then call it
 	; Prevents DMA hijacking :D
 	ld hl, DMAScript
-	ld c, hDMAScript & $FF
+	ld c, LOW(hDMAScript)
 .copyDMARoutine
 	ld a, [hli]
 	ld [$FF00+c], a
 	inc c
-	cp $C9 ; Copied the RET ?
+	cp $C9 ; Copied the RET?
 	jr nz, .copyDMARoutine
 	; b's value was determined through testing...
 	; less means returning before the CPU has access (crash),
 	; and more means CPU time is wasted
-	ld bc, (41 << 8) + (rDMA & $FF)
-	ld a, wVirtualOAM >> 8
+	ld bc, (41 << 8) + LOW(rDMA)
+	ldh a, [hOAMMode]
+	and a
+	ld a, HIGH(wVirtualOAM)
+	jr z, .transferMainOAM
+	xor a
+	ldh [hOAMMode], a
+	ld a, HIGH(wStagedOAM)
+.transferMainOAM
 	call hDMAScript
 	
 .dontTransferSprites
@@ -210,35 +214,41 @@ ENDR
 	ld a, [wTextboxStatus]
 	and a
 	jr z, .noTextbox
+	ld b, TEXTBOX_MOVEMENT_SPEED
 	bit 7, a
 	jr z, .moveTextboxUpwards ; If bit 7 is reset, move upwards
 	and $7F
-	jr z, .skipSecondDec ; If status = $80, avoid decrementing (otherwise, causes a softlock)
+	jr z, .doneDecrementing ; If status = $80, avoid decrementing (otherwise, causes a softlock)
+.keepDecrementing
 	dec a ; Move downwards 1 pixel
-	jr z, .skipSecondDec ; Don't decrement if we reached the bottom
+	jr z, .doneDecrementing ; Don't decrement if we reached the bottom
+	dec b
+	jr nz, .keepDecrementing
 	or $80
 	dec a
-.skipSecondDec
 	ld [wTextboxStatus], a
 	and $7F
 	jr nz, .displayTextbox
+.doneDecrementing
 	ld [wTextboxStatus], a ; Clear "closing" bit
-	jr .textboxDone
+	jr .noTextbox
 	
 .moveTextboxUpwards
 	cp TILE_SIZE * 6 + 1 ; If the textbox is fully deployed
 	jr z, .displayTextbox
+.keepIncrementing
 	inc a
 	cp TILE_SIZE * 6 + 1
-	jr z, .skipSecondInc
-	inc a
-.skipSecondInc
+	jr z, .doneIncrementing
+	dec b
+	jr nz, .keepIncrementing
+.doneIncrementing
 	ld [wTextboxStatus], a
 .displayTextbox
 	and $7F
-	ld b, a
-	ld a, LY_VBLANK
-	sub b
+	cpl
+	add a, LY_VBLANK + 1
+	ldh [hTextboxLY], a
 	ld [rLYC], a
 	
 	ld hl, rSTAT
@@ -246,17 +256,38 @@ ENDR
 	jr .textboxDone
 	
 .noTextbox
+	dec a
+	ldh [hTextboxLY], a
 	ld hl, rSTAT
 	res 6, [hl]
 	
 .textboxDone
-	ld hl, rLCDC
+	dec hl ; ld hl, rLCDC
 	set 1, [hl]
 	
-	inc hl ; hl = rLCDC
+	inc hl ; hl = rSTAT
 	set 5, [hl] ; Enable Mode 2 interrupt to schedule music
-	; Due to a hardware bug exclusive to the DMG, this immediately schedules a LCD interrupt (but not on the CGB)
-	ld l, rIF & $FF
+	
+	ldh a, [hSpecialEffectsLY]
+	and a
+	jr z, .noSpecialEffects
+	bit 6, [hl] ; Check if textbox LYC is active
+	jr z, .enableSpecialEffects ; If not, enable
+	; If the effect's line is "in" the textbox, it has priority => don't
+	; So, don't trigger if FX >= text => text-FX <= 0 => text-1-FX < 0
+	ld e, a
+	ldh a, [hTextboxLY]
+	dec a
+	cp e
+	jr c, .noSpecialEffects
+	ld a, e ; Get back special FX LY
+.enableSpecialEffects
+	set 6, [hl]
+	ld [rLYC], a
+.noSpecialEffects
+	
+	; Due to a hardware bug exclusive to the DMG, editing STAT immediately schedules a LCD interrupt (but not on the CGB)
+	ld l, LOW(rIF)
 	res 1, [hl] ; Thus, we remove it.
 	
 	ldh a, [hCurRAMBank] ; Restore WRAM bank
@@ -298,7 +329,7 @@ UpdateJoypadState:: ; Initially part of VBlank, but may be used independently
 	cp CONSOLE_GBA
 .setGBA
 	ld a, $AF
-	jr nz, .setGBA + 1 ; Probably the worst hack in this entire game.
+	jr nz, .setGBA + 1 ; Probably the worst ASM hack in this entire game.
 	ld b, a
 	ld a, c
 	cp CONSOLE_GBC
@@ -339,40 +370,239 @@ DMAScript:
 	
 ; Handles all STAT operations
 STATHandler::
-	bit 2, [hl]
+	ld hl, rSTAT
+	; a = [rSTAT]
+	bit 2, a
 	jr z, .musicTime ; not on LY=LYC
 	
-	dec hl ; hl = rLCDC
-	res 1, [hl] ; Zero OBJ bit
+	; LY=LYC : check if it's textbox or special effects time
+	ld a, [rLYC]
+	ld l, a
+	ldh a, [hTextboxLY]
+	cp l
+	jr z, .doTextbox ; If we're on the textbox's LY, it has priority
 	
-	ld l, rWY & $FF
+	; Then we have to perform a special effect
+	ld l, LOW(hSpecialEffectsBuf)
+	; Wait until HBlank so the effect won't nuke the current line
+	ld a, [hli] ; Get target
+	and a
+	jr z, .doneWithEffects
+	push bc
+	dec a
+	and 9
+	add LOW(rSCY)
+	ld c, a ; Get target in HRAM
+	ld a, [hl] ; Read value
+	ld l, LOW(rSTAT)
+.waitEffectHBlank
+	bit 1, [hl]
+	jr nz, .waitEffectHBlank
+	ld [c], a ; Write
+	pop bc
+.doneWithEffects
+	ldh a, [hTextboxLY] ; Make sure the textbox will render afterwards
+	ld [rLYC], a ; (the value is $FF is the textbox is de-activated, so no prob')
+	ld hl, rSTAT
 	ld a, [rLY]
-;	sub 5  It would be nice if this worked. But it doesn't. Shame.
+	cp $8F
+	jr .endMode2
+	
+.doTextbox
+	ld l, LOW(rSTAT)
+.waitHBlank
+	bit 1, [hl]
+	jr nz, .waitHBlank
+	
+	dec l ; ld hl, rLCDC
+	res 1, [hl] ; Zero OBJ bit
+	set 3, [hl] ; Switch to textbox's tilemap
+	
+	ld l, LOW(rSCX)
+	xor a
+	ld [hld], a ; Stick to left edge, go to rSCY
+	dec a
+	ld [rWX], a ; Put window off-screen
+	ld a, [rLY]
+	cpl
+	add a, $40
 	ld [hli], a
-	ld a, 7
-	ld [hl], a
-	jr .end
+	cp LOW(($8F ^ $FF) + $40) ; Check if we were on last scanline ; If yes, we need to return quickly (VBlank is incoming)
+.endMode2
+	jp nz, .end
+	pop hl
+	pop af
+	reti
 	
 .musicTime
+	; Do HDMA first to ensure it's done before Mode 0 (this otherwise causes issues)
+	ldh a, [hHDMAInUse]
+	and a
+	jr z, .HDMAInactive
+	; The transfer may be "reserved" but not started (if the parameters are being written, for example)
+	ld a, [rHDMA5]
+	inc a ; Is the transfer active ?
+	jr z, .HDMAInactive
+	dec a ; The transfer is active, thus, it must be stopped
+	ld [rHDMA5], a ; Write a value with bit 7 reset, which stops the transfer
+	db $FE ; Absorbs the next byte, which turns into "cp $XX", and we don't care
+.HDMAInactive
+	dec a
+	ldh [hHDMALength], a
+	
+	
+	; hl = rSTAT
 	res 5, [hl] ; Disable mode 2 interrupt
-	
-	ld l, rIF & $FF
-	res 1, [hl] ; Remove LCD interrupt, which fis immediately requested on the GB due to a hardware bug
-	
-	ld a, BANK(DevSound_Play)
-	ld [ROMBankLow], a
-	ld a, BANK(DSVarsStart)
-	ld [rSVBK], a
-	call DevSound_Play ; Preserves all registers
-	
-.end
-	; Check the handler's return address
-	ld hl, sp+$05
-	bit 7, [hl] ; Is that RAM ?
-	jr nz, .RAMNotX ; YES ?? OH GOD WHAT THE-
-	
+	ld l, LOW(rIF)
+	res 1, [hl] ; Remove LCD interrupt, which is immediately requested on the GB due to a hardware bug
+	push de
+	push bc
 	ldh a, [hCurRAMBank]
 	push af
+	
+	ld a, BANK(wNumOfTileAnims)
+	ld [rSVBK], a
+	ld hl, wNumOfTileAnims
+	ld a, [hli]
+	and a
+	jp z, .noAnimators
+	ld b, a
+	
+	ld a, [rVBK] ; Save VRAM bank
+	push af
+.runAnimator
+	ld a, [hl] ; Get current frame
+	inc a ; Increment
+	ld [hli], a
+	sub [hl] ; Try subtracting the max frame
+	jr c, .dontAnim ; If current < max, don't animate
+	
+	dec hl
+	ld [hli], a ; Write back (current - max)
+	inc hl
+	ld a, [hli] ; Get current anim frame
+	inc a ; Advance
+.getFrame
+	sub [hl]
+	jr nc, .getFrame
+	add [hl] ; Get modulo
+	dec hl
+	ld [hli], a ; Write back
+	inc hl
+	ld d, a ; Store this
+	swap d
+	
+	ld a, [hli] ; Get tile ID
+	ld e, a ; Store this
+	res 7, e ; We're editing tiles $80-$FF, sure, but we'll transpose to $00-$7F for simplicity.
+	swap e
+	; Calculate target VRAM bank :
+	; If tile ID < $80  (VRAM bank 0) : MSB = 0 -> Carry = 0 -> Carry = 1 -> a = $FF -> a = $00
+	; If tile ID >= $80 (VRAM bank 1) : MSB = 1 -> Carry = 1 -> Carry = 0 -> a = $00 -> a = $01
+	rlca ; Get MSB in carry
+	ccf ; Complement it
+	sbc a, a ; Perform ASM magic
+	inc a
+	ld [rVBK], a ; Switch to copy's dest bank
+	
+	; Check is HDMA is currently in use
+	ldh a, [hHDMAInUse]
+	and a
+	jr nz, .useStandardCopy
+	
+	ld c, LOW(rHDMA1)
+	; Write copy's source pointer
+	ld a, d ; Get back swap'd frame
+	and $0F
+	add a, [hl] ; Add base pointer's high byte
+	inc hl
+	ld [$FF00+c], a ; rHDMA1
+	inc c
+	ld a, d
+	and $F0
+	add a, [hl] ; Add base pointer's low byte
+	ld [$FF00+c], a ; rHDMA2
+	inc c
+	
+	ld a, e
+	and $0F
+	add a, HIGH(v0Tiles1)
+	ld [$FF00+c], a ; rHDMA3
+	inc c
+	ld a, e
+	and $F0
+;	add a, LOW(v0Tiles1) ; This is $00
+	ld [$FF00+c], a ; rHDMA4
+	inc c
+	
+	; Switch to copy's source bank
+	ld a, BANK(wTileFrames)
+	ld [rSVBK], a
+	
+	; Transfer 16 bytes (one tile) via HDMA, assuming it will be over by next animator
+	ld a, $80
+	ld [$FF00+c], a ; rHDMA5
+	
+	; Wait until rHDMA5 reads $FF, ie. transfer has completed.
+.waitTransferDone
+	ld a, [$FF00+c]
+	inc a
+	jr nz, .waitTransferDone
+	jr .doneAnimating
+	
+.useStandardCopy
+	push hl
+	ld a, d
+	and $0F
+	add a, [hl]
+	inc hl
+	ld c, a
+	ld a, d
+	and $F0
+	add a, [hl]
+	ld l, a
+	ld h, c
+	
+	ld a, e
+	and $0F
+	add a, HIGH(v0Tiles1)
+	ld d, a
+	ld a, e
+	and $F0
+	ld e, a
+	
+	ld a, BANK(wTileFrames)
+	ld [rSVBK], a
+	
+	ld c, VRAM_TILE_SIZE
+	call CopyToVRAMLite
+	pop hl
+	
+.doneAnimating
+	ld a, BANK(wNumOfTileAnims)
+	ld [rSVBK], a
+.dontAnim
+	ld a, l
+	and $F8
+	add a, wTileAnim1_frameCount - wTileAnim0_frameCount
+	ld l, a ; Can't overflow
+	dec b
+	jp nz, .runAnimator
+	pop af
+	ld [rVBK], a ; Restore VRAM bank
+.noAnimators
+	
+	
+	ld a, BANK(DSVarsStart)
+	ld [rSVBK], a
+	ld a, BANK(DevSound_Play)
+	ld [ROMBankLow], a
+	call DevSound_Play ; Preserves all registers
+	ld a, BANK(FXHammer_Update)
+	ld [ROMBankLow], a
+	call FXHammer_Update
+	
+	
 	ldh a, [hCurROMBank]
 	push af
 	
@@ -380,12 +610,11 @@ STATHandler::
 	ld a, [hl]
 	and a
 	jr z, .noThread2 ; Don't jump if the index is 0. There's nothing to see there anyways.
+IF !DEF(GlitchMaps)
 	cp THREAD2_MAX
 	jr nc, .badThread2 ; Forbid invalid Thread 2 indexes
+ENDC
 	dec a ; Indexing thus starts at 1...
-	
-	push bc
-	push de
 	
 	ld b, a ; Save that index
 	ld a, BANK(Thread2Ptrs)
@@ -394,9 +623,9 @@ STATHandler::
 	ld a, b
 	add a, a
 ;	add a, b  Currently, only 2-byte entries since all Thread 2 functions must be in the same bank as the pointers
-	add a, Thread2Ptrs & $FF
+	add a, LOW(Thread2Ptrs)
 	ld l, a
-	adc Thread2Ptrs >> 8
+	adc HIGH(Thread2Ptrs)
 	sub l
 	ld h, a
 ;	ld a, [hli] ; Read bank
@@ -408,16 +637,44 @@ STATHandler::
 ;	ld [ROMBankLow], a
 	rst callHL
 	
-	pop de
-	pop bc
-	
 .noThread2
 	
 	pop af
 	ld [ROMBankLow], a
 	pop af
 	ld [rSVBK], a
+	pop bc
+	pop de
+	
+	ldh a, [hHDMALength] ; Check if HDMA was active
+	inc a
+	jr z, .end
+	dec a ; If so, restart it
+	or $80
+	ld l, a ; Save this
+.waitHDMAHBlank ; HDMA shouldn't be started during Mode 0, so wait until it's the beginning of Mode 3
+	ld a, [rSTAT]
+	and 3
+	jr nz, .waitHDMAHBlank
+.waitNotHBlank
+	ld a, [rSTAT]
+	and 3
+	jr z, .waitNotHBlank
+	ld a, l ; Get back length
+	ld [rHDMA5], a
+	
+	
+.end
+
+IF !DEF(GlitchMaps)
+	; Check the handler's return address
+	ld hl, sp+$05
+	bit 7, [hl] ; Is that RAM?
+	jr nz, .RAMNotX ; YES?? OH GOD WHAT THE-
+ENDC
 	pop hl
+	
+	
 	; Make sure to return during Mode 0 to avoid breaking anything
 .waitForMode0
 	ld a, [rSTAT]

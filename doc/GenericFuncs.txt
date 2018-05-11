@@ -4,7 +4,7 @@ GENERIC FUNCTIONS
 
 Some of the functions in Aevilia are what you'd expect of a GB stdlib.h, and this document explains a few of them.
 
-Obviously, whenevr possible, you will want to use the restarts. They also tend, due to size restrictions for the most part, to preserve registers more.
+Obviously, whenever possible, you will want to use the restarts. They also tend, due to size restrictions for the most part, to preserve registers more.
 They have their limits, though (compare the capabilities of rst fill and call Fill).
 
 
@@ -27,7 +27,7 @@ Note that if the VBlank interrupt is disabled, this will probably malfunction, s
 This will also malfunction if the VBlank handler returns after scanline $98.
 
 
-This function has the same return properties as rst isVBlanking, except it will always have C set because if you don't know why you're retarded.
+This function has the same return properties as rst isVBlanking, except it will always have C set because if you don't know why you're stupid.
 
 ---------------------------------------------------
 
@@ -185,7 +185,7 @@ This function preserves c and a, sets b to 0 and sets the Z flag.
 Fill
 
 This function is an extended version of rst fill. It fills bc bytes starting at hl with a.
-This function is not designed to work with VRAM, and there is no alternative. Thankfully so far I never needed any.
+This function is not designed to work with VRAM, and there is no alternative. Thankfully, thus far I haven't needed one.
 
 
 This function preserves a, moves hl, sets bc to 0, and sets the Z flag.
@@ -194,7 +194,7 @@ This function preserves a, moves hl, sets bc to 0, and sets the Z flag.
 
 Copy
 
-This function copies bc bytes from hl to de. If bc = 0, then 65536 bytes will be copied. (This implies copying the entier address space over itself. If that happens, send nukes.) Agin, when working with VRAM (be it source or destination, use CopyToVRAM (even if the destination isn't VRAM, it's just that I don't foresee any uses for copying from VRAM).
+This function copies bc bytes from hl to de. If bc = 0, then 65536 bytes will be copied. (This implies copying the entire address space over itself. If that happens, send nukes.) Agin, when working with VRAM, be it source or destination, use CopyToVRAM (even if the destination isn't VRAM, it's just that I don't foresee any uses for copying from VRAM).
 
 
 This function sets a and bc to 0, moves hl and de, clears the C flag and sets the Z flag.

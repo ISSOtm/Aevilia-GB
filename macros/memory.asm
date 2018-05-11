@@ -34,19 +34,31 @@ w\1Palette\2_color3::	ds 3
 ENDM
 
 
+; Use to declare a tile animation in RAM
+struct_tileanim: MACRO
+wTileAnim\1_frameCount::	db ; Number of frames elapsed since beginning
+wTileAnim\1_delayLength::	db ; When frameCount hits this, it resets, and one frame of anim is processed
+wTileAnim\1_currentFrame::	db ; Which frame of animation is being displayed
+wTileAnim\1_numOfFrames::	db ; Number of frames in the current animation
+wTileAnim\1_tileID::		db ; ID of the tile being animated
+wTileAnim\1_framesPtr::		dw ; Pointer to the frames (stored in WRAM)    /!\ THIS IS A BIG-ENDIAN POINTER!!!
+wTileAnim\1_unused::		ds 1 ; Unused
+ENDM
+
+
 ; tile_attr tile bit4 pal_id bank hflip vflip under_spr
 ; Use to declare a tile's data in ROM.
 ; Use in groups of four to declare a block's data
 ; 0 2
-; 1 3 (in this order !)
+; 1 3 (in this order!)
 tile_attr: MACRO
 	; The tile ID
 	db \1
 	; The attribute (transferred to VRAM bank 1), plus an extra bit (bit 4, unseen by the console) used for the block's metadata
 	db ((\7 & 1) << 7) | ((\6 & 1) << 6) | ((\5 & 1) << 5) | ((\2 & 1) << 4) | ((\4 & 1) << 3) | (\3 & $07)
 ENDM
-; Tile 0's bit 4 declares whether the player can walk on the block
-; Tile 1's bit 4 declares if the block is water
+; Tile 0's bit 4 declares if the block is water
+; Tile 1's bit 4 declares nothing (yet)
 ; Tile 2's bit 4 declares nothing (yet)
 ; Tile 3's bit 4 declares nothing (yet)
 
@@ -71,6 +83,7 @@ wWalkingInter\1_xpos::		dw
 wWalkingInter\1_ybox::		db
 wWalkingInter\1_xbox::		db
 wWalkingInter\1_textptr::	dw
+wWalkingInter\1_unused::	ds 8
 ENDM
 
 button_interaction: MACRO
@@ -79,6 +92,7 @@ wButtonInter\1_xpos::		dw
 wButtonInter\1_ybox::		db
 wButtonInter\1_xbox::		db
 wButtonInter\1_textptr::	dw
+wButtonInter\1_unused::		ds 8
 ENDM
 
 walking_loadzone: MACRO
@@ -86,8 +100,11 @@ wWalkingLoadZone\1_ypos::		dw
 wWalkingLoadZone\1_xpos::		dw
 wWalkingLoadZone\1_ybox::		db
 wWalkingLoadZone\1_xbox::		db
-wWalkingLoadZone\1_destMap::	db
+wWalkingLoadZone\1_thread2ID::	db
 wWalkingLoadZone\1_destWarp::	db
+wWalkingLoadZone\1_destMap::	db
+wWalkingLoadZone\1_sfxID::		db
+wWalkingLoadZone\1_unused::		ds 6
 ENDM
 
 button_loadzone: MACRO
@@ -95,8 +112,47 @@ wButtonLoadZone\1_ypos::		dw
 wButtonLoadZone\1_xpos::		dw
 wButtonLoadZone\1_ybox::		db
 wButtonLoadZone\1_xbox::		db
-wButtonLoadZone\1_destMap::		db
+wButtonLoadZone\1_thread2ID::	db
 wButtonLoadZone\1_destWarp::	db
+wButtonLoadZone\1_destMap::		db
+wButtonLoadZone\1_sfxID::		db
+wButtonLoadZone\1_unused::		ds 6
+ENDM
+
+
+animation: MACRO
+; Bit 7 : Unused
+; Bit 6 : Unused
+; Bit 5 : Unused
+; Bit 4 : Locked by text processing
+; Bits 3-0 : ID of the animation this one is waiting for, or $F if not waiting.
+wAnimation\1_linkID::		db
+wAnimation\1_delay::		db
+wAnimation\1_bank::			db
+wAnimation\1_ptr::			dw
+wAnimation\1_nbOfSprites::	db
+wAnimation\1_spriteID::		db ; ID of the first sprite it uses
+wAnimation\1_loopCounter::	db
+ENDM
+
+animation_stack: MACRO
+wAnimationStack\1_count::	db
+wAnimationStack\1_bank0::	db
+wAnimationStack\1_ptr0::	dw
+wAnimationStack\1_bank1::	db
+wAnimationStack\1_ptr1::	dw
+wAnimationStack\1_bank2::	db
+wAnimationStack\1_ptr2::	dw
+wAnimationStack\1_bank3::	db
+wAnimationStack\1_ptr3::	dw
+wAnimationStack\1_bank4::	db
+wAnimationStack\1_ptr4::	dw
+ENDM
+
+animation_gfx_hook: MACRO
+wAnimationGfxHook\1_animID::	db
+wAnimationGfxHook\1_buffer::	ds 6
+wAnimationGfxHook\1_unused::	db
 ENDM
 
 

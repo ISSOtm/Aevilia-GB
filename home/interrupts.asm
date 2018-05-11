@@ -14,9 +14,10 @@ VBlank_int::
 ; STAT
 STAT_int::
 	push af
+	ld a, [rSTAT]
 	push hl
-	ld hl, rSTAT
 	jp STATHandler
+	nop
 	
 ; Timer
 Timer_int::
@@ -33,9 +34,9 @@ SwitchRAMBanks::
 DoNothing::
 	ret
 	
-; Do you need a pointer to $00, be it byte or word ?
-; WE GOT YOU COVERED RIGHT HERE !!1
-NullPtr::
+; Do you need a pointer to $00, be it byte or word?
+; WE GOT YOU COVERED RIGHT HERE!!1
+NullWord::
 NullByte::
 	dw 0
 	

@@ -1,9 +1,9 @@
 
 AEVILIA GB MAP ENGINE
-As modular as I could manage to make it.
+As modular as I could manage to make it be.
 
 
-I- CONCEPTS
+I - CONCEPTS
 
 There are several abstractions the engine uses. They are intended to make programming and debugging easier.
 
@@ -12,23 +12,26 @@ There are several abstractions the engine uses. They are intended to make progra
 
 The overworld loop is independent from the rest of the game. Most prominent example : the button registers.
 Basically, the main button registers - hHeldButtons and hPressedButtons - are updated by the VBlank handler. An attentive reader will wonder what happens when an overworld frame spans more than one GB frame (ie. the game lags).
-The answer is, input may be inconsistent across a function (this used to cause softlocks when moving at speeds too high, for technical reasons. 'Twas fun patching, though).
+The answer is, input may be inconsistent across a function (this used to cause softlocks when moving at too high of speeds, for technical reasons. 'Twas fun patching, though).
 To fix this, the overworld loop has its own set of :
  - Frame counter (hOverworldFrameCounter)
  - Held buttons (hOverworldHeldButtons)
  - Pressed buttons (hOverworldPressedButtons)
 The functioning of the frame counter and held buttons are pretty much what you'd expect. The pressed buttons, however, follow a slightly more complicated logic.
 The game applies the same logic as it does with hPressedButtons (but uses hOverworldHeldButtons instead), but before writing back, it also applies the mask hOverworldButtonFilter.
-This allows to ignore certain actions (this is notable in the tutorial).
-There also are two options to ignore the player's actions.
+This allows for ignoring certain actions (this is notable in the tutorial).
+There also are two other options to ignore the player's actions.
+wUnlinkJoypad, when non-zero, does NOT process MovePlayer nor the frame "actions" (pressed A, B, etc.). It should not be interfaced with directly, but rather through PreventJoypadMovement and AllowJoypadMovement.
+hIgnorePlayerActions does exactly the same, but is reset at the beginning of every frame. A few exceptions exist, done by skipping the resetting instruction (for example, the battle trigger does this to force the next frame to not take input on the following frame). It's basically a one-frame `wUnlinkJoypad`, and can be interfaced with directly. Notable uses include walking interactions lasting for more than a single frame, to avoid parasitic actions (since overworld joypad inputs will not be updated, pressing A on the same frame would also process interactions after the walking interaction returns).
 
 
 2. Camera
 
-Everything in the game is rendered relatively to the camera. Also, the camera is a fully independent entity (from the player), which makes stuff such as cutscenes easier to make without any stupid hacks.
-On every overworld frame, the camera's position is transferred to the GB's scrolling registers, and all graphics-related operations are done relatively to the camera.
-Most importantly, redrawing the terrain. Because, obviously, the maps in this game are way bigger than the GBC's 20x18 tile memory. Thus, tile data is updated as the camera (and thus the scrolling registers) moves around.
-The was the camera is designed, it can only move by 16 pixels in a frame. But for cosmetic reasons, the max speed was decreased to 15 pixels/frame.
+Everything in the game is rendered relative to the camera. The camera is a fully independent entity from the player, which makes stuff such as cutscenes easier to make without any stupid hacks.
+On every overworld frame, the camera's position is transferred to the GB's scrolling registers, and all graphics-related operations are done relative to the camera.
+Most importantly, redrawing the terrain is done in this way. Because, obviously, the maps in this game are way bigger than the GBC's 20x18 tile memory. Thus, tile data is updated as the camera (and thus the scrolling registers) move around.
+The way the camera is designed, it can only move 16 pixels every frame. But, for cosmetic reasons, the max speed was decreased to 15 pixels/frame.
+Next is camera locking. Based on the current map's width and height, the camera will lock at the edges of the map. Note that this is done by fully "snapping" the camera to the "edge" position, thus overriding max cam speed. If the camera is "OoB" on one frame, the next frame will have the camera snap and redraw only one row, potentially leading to glitchiness.
 
 
 3. NPCs
@@ -37,9 +40,278 @@ An NPC is an entity that exists within the overworld. An NPC has a visual existe
 In contrast, the player entity only has a physical existence (though it's only affected by NPCs, and not the opposite).
 An NPC has :
  - A position
- - A hitbox (both for physical and interactions purposes)
- - An interaction script (short for "what happens when you interact with it)
+ - A hitbox (both for physical and interaction purposes)
+ - An interaction script (short for "what happens when you interact with it")
  - An appearance (short for "what you see on-screen"), which is a set of "singleton" appearances
  - A movement length (which serves both for its obvious purpose and to give the NPC a walking animation)
  - Movement permissions (which are sliiightly complicated)
+ - A movement speed
+ - Displacements (which track how far the NPC has moved, to restrict the movement)
+ - An unused byte
+The position is pmuch standard. Two 16-bit ints, same as the camera and the player and everything else : first one for the Y axis (vertical), second one for the X axis (horizontal).
+The hitbox is also standard : two 8-bit ints, one for the Y axis, and one for the X axis. Note that this only affects the interaction hitbox, not the graphical hitbox - it's always a 16x16 sprite.
+The interaction script is actually just one byte, which is the index to use in the map's NPC interaction table. An entry is a 2-byte pointer to a text stream that is processed when the NPC is interacted with.
+The appearance is an index which the NPC's tile IDs will be computed from. There's no table here, since all tiles are loaded into VRAM at tileset-loading time. Note that the byte actually contains two bits of data : IIIIIIDD ; "I" is the appearance that was just described, "D" is the direction - following the standard Up-Down-Left-Right scheme.
+The movement length is, most of the time, just that, "how many pixels will the NPC travel before entering a waiting state?" But if the NPC is in a waiting state, this instead is the number of frames to wait until the NPC exits the waiting state. See Section 3.i for details. The movement length also controls the walking animation, even if the NPC's locking bit is reset.
+The movement permissions are a bitfield, indicating both what state the NPC is in at a given moment, and what actions it is allowed to take. Bitfield : TTMMRLDD. TT = turning permissions (permission for vertical axis, then permission for horizontal axis), MM = moving permissions (same), R = "resting" bit (differentiates a moving NPC from a resting NPC), L = "locking" bit (if reset, the function completely skips the NPC), and DD = movement direction (meaningless in waiting and resting states). See Section 3.i for details.
 
+3.i  NPC movement
+
+An NPC is an entity that can move on its own. There's one function processing alll of the NPC movement, so here it is, summed up.
+
+MoveNPCs:
+  - For each NPC
+    - Check bit 2 of the movement flags
+	- If reset :
+	  - Completely ignore NPC
+	- Otherwise :
+	  - If the NPC's step counter is zero :
+	    ° NPC is in "wait" state
+		- Check if NPC has any "turning" permissions
+		- If no :
+		  - Do nothing (note that this doesn't overwrite the "resting" bit)
+		- If yes :
+		  - Pull random int
+		  - If all bits 0-5 (mask $3F) of the rand int's high byte are reset :
+			- If the NPC can turn on only one axis :
+			  - Pick that axis
+			- Otherwise :
+			  - If bit 1 of the rand int's low byte is reset :
+				- Pick the vertical axis
+			  - Otherwise :
+			  - Pick the horizontal axis
+			- If bit 2 of the rand int's low byte is reset :
+			  - Turn in the "negative" direction (U/L)
+			- Otherwise :
+			  - Turn in the "positive" direction (D/R)
+			- Write back flags (including forcing the NPC in a "moving" state, even if the "resting" bit was set)
+			- Turn NPC to face the "movement"'s direction
+			- If bit 0 of the rand int's low byte is reset :
+			  - Do nothing else
+			- Otherwise :
+			  - If the NPC isn't allowed to move on the picked axis :
+				° NPC only turns, so it stalls for a moment before picking an action
+				- AND low byte of rand int with $F8
+				- Roll right once
+				- Write as movement length
+				- Set resting bit
+			  - Otherwise :
+				° NPC starts moving
+				- Pull another random int
+				- Write the high byte as the movement length
+				° Will process one frame of movement immediately after (to apply collision, mostly), thus directly jumps into the "Otherwise" code labelled with a `*`
+		  - Otherwise :
+			- Do nothing else (the NPC did nothing, but RNG has been advanced)
+	  - Otherwise : *
+		- If the NPC's "resting" bit is set :
+		  ° NPC is in "rest" state
+		  - Decrement movement counter (which is a waiting counter, in this state)
+		  - If the movement counter reached zero :
+		    ° NPC steps into "wait" mode
+		    - Reset resting bit
+		  - Otherwise :
+		    - Do nothing else
+		- Otherwise :
+		  ° NPC is in "moving" mode
+		  - Remember speed for later
+		  - Subtract speed from remaining pixels
+		  - If it caused an overflow :
+		    - Replace remembered speed with remaining pixels (ie. cap speed on last step)
+			- Force 0 pixels remaining
+		  - Write number of pixels back
+		  - If it's zero :
+		    ° NPC finished walking
+			- Pull random int
+			- Write it to step counter
+			- Set resting bit
+		  - Copy NPC's coords to wTempBuf
+		  - Apply movement vector to these coords
+		  - Perform collision check
+		  - If collision occurs :
+		    - Go to `**` code (stopNPC)
+		  - Otherwise :
+		    - Update the axis's displacement
+			- If it generated an overflow : (**)
+			  - Pull random int
+			  - Write it to step counter
+			  - Set resting bit
+			- Otherwise :
+			  - Copy wTempBuf to NPC's coords (ie. move NPC)
+	- Move to next NPC struct
+
+A couple of notes :
+ - A resting NPC doesn't touch RNG.
+ - A waiting NPC will poke RNG at least once, and if it starts moving, it will poke RNG a second time (note : this restricts the possible range of steps, but how exactly ?)
+ - A moving NPC will only poke RNG if it stops. Note : if an NPC bonks on its last step, it will poke RNG twice instead (since the "last step" code will be run by both the bonking and the "last step" condition).
+ - A locked NPC draws its name from the fact that it's "locked" in time ; as soon as it's "unlocked", it resumes all operations. The "locking" bit is more like a "pause" button, in a way.
+ - A "waiting" NPC with its "resting" bit set is technically invalid, but actually corrected as soon as the function parses the NPC. Though, any "scripted" movement, ie. done by simply setting the step counter, will not correct the invalid state unless the NPC is processed at least once in its waiting state.
+ - Collision is done at run-time and only using the target position, which means an NPC may "bonk" into a wall from a distance if its speed is >1.
+ - For the same reason, if the NPC is moving too fast, it may just zoom through solid things (even more since I optimized collision detection to only use the two "front" points)
+ - Also, the collision detection only checks the two "edges" of the hitbox, meaning too large a hitbox will cause oddities.
+ - NPCs assume a 16x16 collision box for the player, to sweep an issue under the carpet (if the NPC's hitbox "encompassed" the player's, NPCs could go straight through the player... which was much more prominent with horizontal movement)
+
+
+4. Tilesets
+
+A tileset is what defines what a map looks like ; this is to have maps share visuals and save ROM space (and also loading times, since a tileset doesn't need to be reloaded, normally).
+A tileset is comprised of :
+ - Tiles (in raw format)
+ - Blocks
+ - Tile attributes
+ - Tile animators
+ - Palette pointers
+When a tileset is loaded, the tiles are copied into VRAM (but the unused slots aren't reset !), the block data and tile metadata are directly copied to WRAM (they are immediately in the right format), the tile animators (if any) are decompressed to WRAM, and the palettes are loaded.
+
+4.i Data structure
+
+The first byte of a tileset is the number of tiles it contains. If this byte is 0, it will be interpreted as 256.
+Then follows the tile data, in the same format as stored in VRAM. There should be as many tiles as indicated.
+Then follows the block data, explained in section a).
+Then follows the tile attributes, explained in section b).
+Then follows a byte indicating how many tile animators the tileset contains. If that byte is 0, then there are none.
+Then follows the animator data, explained in section c).
+Lastly, there are 13 (6 + 7) pointers to the palettes used. The first 6 are pointers to BG palettes ; they are *ALL* dereferenced and loaded, even if they aren't used. (I recommend putting a 0 pointer). Then next 
+
+4.i.a) Block data
+
+Blocks are the smallest unit manipulated by the map engine. A block is a square of 2x2 tiles, and the block data defines what's transferred to VRAM when a block is drawn. There are 4 tiles per block, and 2 bytes per tile. One byte defines "which tile", and the other its metadata (color, bank, flipping, and sprite priority).
+The first two bytes define the upper-left tile, the next two lower-left tile, then the upper-right tile, THEN the lower-right tile.
+For each tile, the first byte determines which tile ID will be displayed (this uses BG addressing). IDs < $80 are supposed to be "static"; mostly font data (which takes slots $20-$7F). IDs >= $80 are tileset tiles (note : thanks to VRAM bank 1, this capacity is doubled, yay!).
+The second byte of each tile defines its VRAM attributes, which are defined like so [*in* the Pan Docs] :
+  Bit 0-2  Background Palette number  (BGP0-7)
+  Bit 3    Tile VRAM Bank number      (0=Bank 0, 1=Bank 1)
+  Bit 4    Not used
+  Bit 5    Horizontal Flip            (0=Normal, 1=Mirror horizontally)
+  Bit 6    Vertical Flip              (0=Normal, 1=Mirror vertically)
+  Bit 7    BG-to-OAM Priority         (0=Use OAM priority bit, 1=BG Priority)
+Bit 4 being ignored by the GBC, it's instead used by the game to define a properly of the block :
+  Bit 4 of the UL (upper-left...) tile defines... nothing. Yet. Leave it 0.
+  Bit 4 of the LL (lower-left) tile defines whether or not the block shall be considered water (1 = water)
+  Bit 4 of the UR tile defines... nothing.
+  Bit 4 of the LR tile defines... nothing.
+The source code uses the macro "tile_attr", which defines both bytes for one tile. Here's the argument list :
+  #1 - Tile ID
+  #2 - Bit 4 (for meaning, see above)
+  #3 - Palette ID (0-7)
+  #4 - VRAM bank
+  #5 - Horizontal flip
+  #6 - Vertical flip
+  #7 - Priority
+The macro computes both bytes from these arguments.
+
+4.i.b) Tile attributes
+
+Currently there's only one bit that matters ; bit 7 simply states if the player is allowed to walk on the tile. If the bit is set, the tile is walkable. (Use the constant TILE_CANWALK)
+
+4.i.c) Animator data
+
+Animator data only requires 4 arguments :
+The first one is the period (in frames) at which the tile will be refreshed. Basically, the higher this number, the slower the animation will be. Note : 0 is invalid, but will act as 1.
+The second one is the number of animation frames there are, ie. how many different tiles the animations sports. WARNING : Putting a $00 here will softlock the game as soon as the animation plays !
+The third one is the ID of the tile that the animation targets. Slight subtelty here : the animators only target tiles $80 through $FF, but in BOTH VRAM banks ! To target a tile in VRAM bank 0, just put the tile's ID minus $80 ($00-$7F maps to 0:$80-$FF), and to target a tile in bank 1 don't do anything ($80-$FF maps to 1:$80-$FF).
+The fourth one is a pointer to the animation frames, again stored in raw tile format. Remark : the animator doesn't initialize the tile immediately, so you have to put a duplicate of the first frame in the tile array... welp.
+
+4.i.d) Cheat sheet
+
+Tileset structure :
+ - BYTE : NumOfTiles (0 => 256)
+ - Repeated NumOfTiles times :
+   - Raw tile data (16 bytes)
+ - Repeated 64 times :
+   - Raw block data (4 * 2 = 8 bytes)
+ - Repeated 256 times :
+   - Raw tile attribute  (1 byte)
+ - BYTE : NumOfAnimators
+ - Repeated NumOfAnimators times :
+   - Animator data (5 bytes)
+ - Repeated 6 times :
+   - WORD : pointer to BG palette
+ - Repeated 7 times :
+   - WORD : pointer to OBJ palette
+
+Block data : (all bytes)
+ - ID of upper-left tile of block (using BG addressing)
+ - Metadata of upper-left tile (as in VRAM)
+ - Lower-left tile ID
+ - Metadata of lower-left tile
+ - Upper-right tile ID
+ - Metadata of upper-right tile
+ - Lower-right tile ID
+ - Metadata of lower-right tile
+
+tile_attr arguments :
+ - Tile ID
+ - Bit 4
+ - Palette
+ - VRAM bank
+ - HFlip
+ - VFlip
+ - Priority
+
+Tile attribute : (byte)
+7654 3210
+WXXX XXXX
+W = Walkable (1 = tile can be walked on)
+X = Unused
+
+Animator data :
+ - BYTE : refresh period (# of frames between each update)
+ - BYTE : nb of animation frames (0 will softlock the game)
+ - BYTE : target tile (BTTTTTTT, target tile is B:($80 | TTTTTTT), ie tile with ID (TTTTTTT | $80) in bank B
+ - WORD : pointer to animation frames (will copy [nb of frames] * 16 bytes)
+
+
+5. Maps
+
+5.i Interactions
+
+There are 5 types of interactions : walking interactors, button interactors, walking loading zones, button loading zones, and NPCs.
+
+
+5.i.a) Interaction box
+
+An interaction is defined by its box, plus some additional metadata, which is not taken into account by the interaction function itself. An interaction box is basically two coordinates, which define the top-left point, and two sizes (one per axis). 
+Interaction boxes are defined in the source by the macro "interact_box" (arguments : origin Y pos, origin X pos, box Y size, box X size).
+
+5.i.b) Interacting with stuff
+
+To interact with an interaction, the interaction point (which depends on the type of interaction) must be within that box. (You can view the boxes using HUD.lua in BizHawk)
+The interaction point for "walking" interactions (walking interactors and walking loading zones) is the player's origin (located top-left of the player's sprite). For "button" interactions (button interactors, button loading zones, NPCs), it's a point located in front of the player (thus that depends both on position and orientation).
+Walking interactions are always computed right after player movement, even if there was no movement.
+
+5.i.c) Stay still !
+
+The overworld code is programmed to use joypad input to move the player, etc. However, in some situations (such as the character selection screen) this is a hindrance more than anything else. Luckily there are mechanics just so you can freeze that pesky player in place !
+
+5.i.c1) Preventing movement
+Setting the player's speed to 0 will lock the player in place, but they'll still be able to turn and use the buttons (such as START or A).
+
+5.i.c2) Preventing use of buttons
+hOverworldButtonFilter is a mask applied to hOverworldPressedButtons ; using it, you can prevent the use of some of the buttons. Note that this DOES NOT affect hOverworldHeldButtons !
+
+5.i.c3) Preventing anything
+It's possible for the game to skip moving the player and processing button actions. There are two ways of doing this :
+wUnlinkJoypad, when non-zero, enables this mechanic. Note that you should avoid modifying it directly, but rather through the functions PreventJoypadMovement and AllowJoypadMovement.
+hIgnorePlayerActions also enables this mechanic, BUT is cleared at the beginning of each overworld frame (except in some cases, and always for a good reason :p).
+Basically : if you plan on using joypad input for several frames while locking the player, use wUnlinkJoypad. If you just need to stall the player for one frame, use hIgnorePlayerActions.
+Note that a non-zero battle encounter has the same effect as hIgnorePlayerActions.
+
+5.ii Warping
+
+Warping from map to map is actually a complex process. You basically set wTargetWarpID and call LoadMap with the desired map ID in a. Note that an invalid map ID will generate an error !
+The game first reads the map's flags to determine whether to fade to and from white (going to an "exterior" map) or black (going to an "interior" map). Then it checks the map's track and compares it with the current track, to decide if it needs to change musics or not. Then it performs a fade-out.
+Then, the map's tileset is compared with the current one, and if they differ, the map's tileset is loaded.
+Then game then copies the interactions and NPCs to their tables in RAM, and checks for warps. Basically, the game checks if the warp is warp $FF - which stands for "don't perform any warping operation", and keeps player position, etc (this is primarily used when loading your file) if so.
+If the warp isn't warp $FF, the game checks if the warp indeed exists ; if not, it generates an error.
+Warping is basically setting the player's position and direction, maybe resetting the walking animation, changing the cameraman, setting Thread 2, and maybe running a custom script.
+The game then copies the block data to WRAM, and maybe runs a custom script (which is global to the map, not the warp !).
+Then the camera is moved, the player is copied to NPC 0, and NPC sprites are updated.
+Once all is done, the game performs a fade-in, both graphical and musical, using the same parameter as the fade-out, then returns.
+Note that hIgnorePlayerActions is set before returning.
+
+5.iii Map data
+
+Block data is the bulk of the map. It's basically an array of bytes, stored (in the source) in .blk files. The array is obviously 2D, with the same dimensions as specified in the map header. (Note : this makes the width more important than the height, sure.)
+The format is the most straightforward, so the best you can do is get AeviMap and a good AeviMap.ini, and start editing those .blk's.
+
+Notee : block data is copied to a WRAM bank ; thus, MAKE SURE BLOCK DATA IS AT MOST $1000 (4096) BLOCKS LARGE !!!

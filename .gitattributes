@@ -1,0 +1,11 @@
+
+*.exe	binary
+*.bin	binary
+*.blk	binary
+*.zip	binary
+
+rgbasm	binary
+rgblink	binary
+rgbfix	binary
+
+*.dmf	binary

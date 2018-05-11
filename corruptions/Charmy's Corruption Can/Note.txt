@@ -1,0 +1,2 @@
+Note, rhe corruptioncorruptions have different effects based on the presence of a save file, just reset after loading thr ROM to see the other variant.
+Also, a lot of these have flashing lights, you should probably know this by now.
