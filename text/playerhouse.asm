@@ -10,8 +10,8 @@ SECTION "Player house text strings", ROMX
 	dline 2, "Yeah\, let's not."
 	
 	dline 3, "Hey!"
-	dline 4, "I'm watching the"
-	dline 5, "TV\, there!"
+	dline 4, "I'm watching "
+	dline 5, "TV here!"
 	dline 6, "You're not"
 	dline 7, "transparent\, you"
 	dline 8, "know\, ",2,"!"
@@ -31,7 +31,7 @@ SECTION "Player house text strings", ROMX
 	dname 1
 	dline 0, "Wait!"
 	dline 1, "Um\, ",2,"..."
-	dline 2, "I know I was"
+	dline 2, "I know it was"
 	dline 3, "rude not to tell"
 	dline 4, "you before coming\,"
 	dline 5, "but..."
