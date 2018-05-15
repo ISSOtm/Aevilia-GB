@@ -16,7 +16,7 @@ sSRAM32kMessageDisplayed::
 ; Save files non-void and valid are okay and can be loaded
 ; Save files non-void and invalid make a message pop up and are replaced with their backup
 ; Save files void are empty, their contents can't be loaded : they are overwritten with default save data anyways
-; Save files are backed up during their loading only, not when saving.
+; Save files are backed up during loading only, not when saving.
 sNonVoidSaveFiles::
 	ds 3 ; Bitfield
 	
