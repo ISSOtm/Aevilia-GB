@@ -23,8 +23,8 @@ SECTION "Startham forest text strings", ROMX
 	dline 1, "diagonal rows of"
 	dline 2, "trees?"
 	dline 3, "Try holding"
-	dline 4, "two directions"
-	dline 5, "at the same time!"
+	dline 4, "UP and RIGHT at"
+	dline 5, "the same time!"
 	
 	set_text_prefix StarthamForestExitSign
 	dline 0, "To your left"
