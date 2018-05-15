@@ -118,7 +118,7 @@ hRandIntHigh::
 hTextboxLY::
 	ds 1
 	
-; This is used by the STAT handler to help performing various effects
+; This is used by the STAT handler to help perform various effects
 hSpecialEffectsLY:: ; Scanline at which the effect should happen
 	ds 1
 hSpecialEffectsBuf:: ; Pair (ID ; value), where value will be written to [rSCY + (ID - 1 & 9)]
