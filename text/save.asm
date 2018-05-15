@@ -2,7 +2,8 @@
 
 SECTION "File select text strings", ROMX
 	
-TechCrewName::	dstr "Tech crew"
+TechCrewName::
+	dstr "Tech crew"
 	
 	set_text_prefix CompatExplanationText
 	
@@ -60,7 +61,9 @@ TechCrewName::	dstr "Tech crew"
 	dline 2, "THIS CAN'T BE"
 	dline 3, "CANCELLED."
 	
-NoDeleteChoiceText::	dstr "NO"	dstr "DELETE"
+NoDeleteChoiceText::
+	dstr "NO"
+	dstr "DELETE"
 	
 	
 	set_text_prefix ConfirmCopyText
@@ -118,6 +121,7 @@ NoCopyChoiceText::
 	
 	dline 0, "DLC is unavai-"
 	dline 1, "lable because"
-	dline 2, "it's not."
-	dline 3, "Deal with it."
+	dline 2, "it's not "
+	dline 3, "possible."
+	dline 4, "Deal with it."
 	
