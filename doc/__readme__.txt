@@ -4,6 +4,8 @@ This folder is here to explain how the game works, how some of its components sh
 
 My native language isn't English. These docs will probably contain more than a few mistakes, don't act like you're surprised, goddammit !
 
+(That's what I'm here for. -PW)
+
 And please don't remove my name. Or the name of anyone who contributed to this.
 Thank you.
 
