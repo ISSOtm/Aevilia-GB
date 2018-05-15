@@ -27,9 +27,9 @@ If you want to build the ROM from source, please refer to the [INSTALL.md](http:
 
 To play the game, you can either play it on hardware, or use an emulator.
 
-For hardware, we recommend the [Everdrive X5](https://krikzz.com/store/home/47-everdrive-gb.html) flashcart, although any flashcart should work. We may also release cartridges of the game, when it's finished.
+For hardware, we recommend the [Everdrive X5](https://krikzz.com/store/home/47-everdrive-gb.html) flashcart, although any flashcart should work. We may also release cartridges of the game when it's finished, depending on popularity and interest.
 
-If you're looking for emulator advice, check out [our wiki page](http://github.com/ISSOtm/Aevilia-GB/wiki/Emulators) about that.
+If you're looking for emulator advice, check out [our wiki page](http://github.com/ISSOtm/Aevilia-GB/wiki/Emulators).
 
 
 # Licensing
@@ -38,7 +38,7 @@ Aevilia is licensed under the Apache 2.0 license (please refer to the [LICENSE](
 
 [DevSound](http://github.com/DevEd2/DevSound/) is licensed under the MIT license (please refer to [its own LICENSE file](http://github.com/DevEd2/DevSound/blob/master/LICENSE)).
 
-The gist of these licenses is that re-use of the code/assets present in these repositories is allowed, even for commercial uses, as long as the licenses are included, and the modifications are clearly stated (in the case of Aevilia's license). If you want more info, you can always read the whole licenses (although I wish that to nobody), ask us (there's contact info below), or even just google what you're allowed to do.
+The gist of these licenses is that re-use of the code/assets present in these repositories is allowed, even for commercial uses, as long as the licenses are included, and the modifications are clearly stated (in the case of Aevilia's license). If you want more info, you can always read the whole licenses (although I wish that on nobody), ask us (there's contact info below), or even just google what you're allowed to do.
 
 
 # Contents
