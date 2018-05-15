@@ -27,7 +27,7 @@ hIgnorePlayerActions does exactly the same, but is reset at the beginning of eve
 
 2. Camera
 
-Everything in the game is rendered relative to the camera. The camera is a fully independent entity from the player, which makes stuff such as cutscenes easier to make without any stupid hacks.
+Everything in the game is rendered relative to the camera. The camera is a fully independent entity, which makes stuff such as cutscenes easier to make without any stupid hacks.
 On every overworld frame, the camera's position is transferred to the GB's scrolling registers, and all graphics-related operations are done relative to the camera.
 Most importantly, redrawing the terrain is done in this way. Because, obviously, the maps in this game are way bigger than the GBC's 20x18 tile memory. Thus, tile data is updated as the camera (and thus the scrolling registers) move around.
 The way the camera is designed, it can only move 16 pixels every frame. But, for cosmetic reasons, the max speed was decreased to 15 pixels/frame.
@@ -143,10 +143,10 @@ A couple of notes :
  - A resting NPC doesn't touch RNG.
  - A waiting NPC will poke RNG at least once, and if it starts moving, it will poke RNG a second time (note : this restricts the possible range of steps, but how exactly ?)
  - A moving NPC will only poke RNG if it stops. Note : if an NPC bonks on its last step, it will poke RNG twice instead (since the "last step" code will be run by both the bonking and the "last step" condition).
- - A locked NPC draws its name from the fact that it's "locked" in time ; as soon as it's "unlocked", it resumes all operations. The "locking" bit is more like a "pause" button, in a way.
+ - A locked NPC draws its name from the fact that it's "locked" in time ; as soon as it's "unlocked", it resumes all operations. The "locking" bit is like a "pause" button, in a way.
  - A "waiting" NPC with its "resting" bit set is technically invalid, but actually corrected as soon as the function parses the NPC. Though, any "scripted" movement, ie. done by simply setting the step counter, will not correct the invalid state unless the NPC is processed at least once in its waiting state.
  - Collision is done at run-time and only using the target position, which means an NPC may "bonk" into a wall from a distance if its speed is >1.
- - For the same reason, if the NPC is moving too fast, it may just zoom through solid things (even more since I optimized collision detection to only use the two "front" points)
+ - For the same reason, if the NPC is moving too fast, it may just zoom through solid things (even more so since I optimized collision detection to only use the two "front" points)
  - Also, the collision detection only checks the two "edges" of the hitbox, meaning too large a hitbox will cause oddities.
  - NPCs assume a 16x16 collision box for the player, to sweep an issue under the carpet (if the NPC's hitbox "encompassed" the player's, NPCs could go straight through the player... which was much more prominent with horizontal movement)
 
@@ -160,7 +160,7 @@ A tileset is comprised of :
  - Tile attributes
  - Tile animators
  - Palette pointers
-When a tileset is loaded, the tiles are copied into VRAM (but the unused slots aren't reset !), the block data and tile metadata are directly copied to WRAM (they are immediately in the right format), the tile animators (if any) are decompressed to WRAM, and the palettes are loaded.
+When a tileset is loaded, the tiles are copied into VRAM (but the unused slots aren't reset !), the block data and tile metadata are directly copied to WRAM (they are already in the right format), the tile animators (if any) are decompressed to WRAM, and the palettes are loaded.
 
 4.i Data structure
 
@@ -171,6 +171,8 @@ Then follows the tile attributes, explained in section b).
 Then follows a byte indicating how many tile animators the tileset contains. If that byte is 0, then there are none.
 Then follows the animator data, explained in section c).
 Lastly, there are 13 (6 + 7) pointers to the palettes used. The first 6 are pointers to BG palettes ; they are *ALL* dereferenced and loaded, even if they aren't used. (I recommend putting a 0 pointer). Then next 
+
+# TODO: Finish writing this segment
 
 4.i.a) Block data
 
@@ -185,10 +187,10 @@ The second byte of each tile defines its VRAM attributes, which are defined like
   Bit 6    Vertical Flip              (0=Normal, 1=Mirror vertically)
   Bit 7    BG-to-OAM Priority         (0=Use OAM priority bit, 1=BG Priority)
 Bit 4 being ignored by the GBC, it's instead used by the game to define a properly of the block :
-  Bit 4 of the UL (upper-left...) tile defines... nothing. Yet. Leave it 0.
+  Bit 4 of the UL (upper-left) tile defines... nothing. Yet. Leave it 0.
   Bit 4 of the LL (lower-left) tile defines whether or not the block shall be considered water (1 = water)
-  Bit 4 of the UR tile defines... nothing.
-  Bit 4 of the LR tile defines... nothing.
+  Bit 4 of the UR (upper-right) tile defines... nothing. Yet. Leave it 0.
+  Bit 4 of the LR (lower-right) tile defines... nothing. Yet. Leave it 0.
 The source code uses the macro "tile_attr", which defines both bytes for one tile. Here's the argument list :
   #1 - Tile ID
   #2 - Bit 4 (for meaning, see above)
@@ -209,7 +211,7 @@ Animator data only requires 4 arguments :
 The first one is the period (in frames) at which the tile will be refreshed. Basically, the higher this number, the slower the animation will be. Note : 0 is invalid, but will act as 1.
 The second one is the number of animation frames there are, ie. how many different tiles the animations sports. WARNING : Putting a $00 here will softlock the game as soon as the animation plays !
 The third one is the ID of the tile that the animation targets. Slight subtelty here : the animators only target tiles $80 through $FF, but in BOTH VRAM banks ! To target a tile in VRAM bank 0, just put the tile's ID minus $80 ($00-$7F maps to 0:$80-$FF), and to target a tile in bank 1 don't do anything ($80-$FF maps to 1:$80-$FF).
-The fourth one is a pointer to the animation frames, again stored in raw tile format. Remark : the animator doesn't initialize the tile immediately, so you have to put a duplicate of the first frame in the tile array... welp.
+The fourth one is a pointer to the animation frames, again stored in raw tile format. Dev's Remark : the animator doesn't initialize the tile immediately, so you have to put a duplicate of the first frame in the tile array... welp.
 
 4.i.d) Cheat sheet
 
@@ -256,9 +258,9 @@ X = Unused
 
 Animator data :
  - BYTE : refresh period (# of frames between each update)
- - BYTE : nb of animation frames (0 will softlock the game)
+ - BYTE : # of animation frames (0 will softlock the game)
  - BYTE : target tile (BTTTTTTT, target tile is B:($80 | TTTTTTT), ie tile with ID (TTTTTTT | $80) in bank B
- - WORD : pointer to animation frames (will copy [nb of frames] * 16 bytes)
+ - WORD : pointer to animation frames (will copy [# of frames] * 16 bytes)
 
 
 5. Maps
@@ -282,6 +284,8 @@ Walking interactions are always computed right after player movement, even if th
 5.i.c) Stay still !
 
 The overworld code is programmed to use joypad input to move the player, etc. However, in some situations (such as the character selection screen) this is a hindrance more than anything else. Luckily there are mechanics just so you can freeze that pesky player in place !
+
+# TODO: Details?
 
 5.i.c1) Preventing movement
 Setting the player's speed to 0 will lock the player in place, but they'll still be able to turn and use the buttons (such as START or A).
