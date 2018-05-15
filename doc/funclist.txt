@@ -1,7 +1,6 @@
 
 LIST OF FUNCTIONS IN AEVILIA GB
-This document's purpose is to provide a quick overview of all of Aevilia GB's functions.
-At least the most common ones.
+This document's purpose is to provide a quick overview of all of Aevilia GB's functions, or at least the most common ones.
 All registers not listed under a function's effects are preserved.
 
 
@@ -37,7 +36,7 @@ rst copy
 rst bankswitch
 	restarts.asm
 	Switches to ROM bank a (and registers switch in HRAM).
-	ALWAYS use this to bankswitch ! Except if you're sure of what you're doing... but avoid anyways.
+	ALWAYS use this to bankswitch !
 -	Preserves all registers.
 
 rst copyStr
@@ -61,7 +60,7 @@ VBlankHandler
 
 UpdateJoypadState
 	handlers.asm
-	Polls the hardware to update hHeldButtons and hPressedButtons. (And pserforms soft-reset)
+	Polls the hardware to update hHeldButtons and hPressedButtons. (And performs soft-reset)
 -	Modifies a and bc.
 -	Usually called by VBlankHandler, but may be used from any context.
 
@@ -126,7 +125,7 @@ OpenSRAM
 	home/utilities.asm
 	Performs a write to ROM to unlock SRAM.
 -	Sets a to $0A.
--	Please don't mind the hackish "db $D6" that saves one byte and maybe nothing of processor time.
+-	Please don't mind the hackish "db $D6" that saves one byte and maybe nothing in processor time.
 
 CloseSRAM
 	home/utilities.asm
@@ -286,7 +285,7 @@ CopyToFixedMap
 
 EnableTextbox
 	gfx/graphics.asm
-	Makes the text box being its appearing animation.
+	Makes the text box do its appearing animation.
 -	Even if the text box is already up... or going down.
 -	Modifies a.
 
