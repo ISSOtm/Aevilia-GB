@@ -37,8 +37,8 @@ SECTION "Intro map text strings", ROMX
 	dline 0, "Ah."
 	dline 1, "Someone has"
 	dline 2, "arrived."
-	dline 3, "Then hello."
-	dline 4, "Use the d-pad"
+	dline 3, "Hello."
+	dline 4, "Use the D-Pad"
 	dline 5, "to move around."
 	
 	
