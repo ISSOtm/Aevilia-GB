@@ -5,6 +5,8 @@
 
 A RPG for the Game Boy Color, written in pure Sharp LR35902 (aka GBz80) assembly.
 
+Please be aware that this codebase is not updated anymore. A rewrite, not public for the moment, is being worked on.
+
 Note : this is neither a tutorial nor a walkthrough for the game.
 
 
