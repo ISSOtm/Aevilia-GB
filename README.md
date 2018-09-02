@@ -16,9 +16,12 @@ Note : this is neither a tutorial nor a walkthrough for the game.
 - [Contact](#contact)
 
 
-# Compiling The Game
+# Downloads
 
-If you are looking for one of stable versions, check out the [stable releases](http://github.com/ISSOtm/Aevilia-GB/releases/tag/stable) page [NOTE : currently returns a 404, since there are none :p].
+Download links are provided [here](https://eldred.fr/aevilia.html).
+
+
+# Compiling The Game
 
 Nightlies (ROM rebuilt daily) can be found [here](http://issotm.github.io/aevilia_nightly.gbc)
 
