@@ -235,6 +235,7 @@ FatalErrorString::
 	dstr "INVALID BATTLE TRANSITION"
 	dstr "NONEXISTANT ENEMY"
 	dstr "BAD THREAD 2 POINTER"
+	dstr "DIVIDE BY CUCUMBER"
 	
 FatalErrorScreenStrings::
 	dstr "AF ="
