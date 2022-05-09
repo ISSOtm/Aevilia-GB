@@ -82,7 +82,8 @@ Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [FrostedGeullei
 # Contact
 
 Replace "@..." with "@gmail.com" in any of these.
-```- ISSOtm            : eldredhabert0@... (if you speak French, that's my main language !)
+```
+- ISSOtm            : eldredhabert0@... (if you speak French, that's my main language !)
 - DevEd             : deved8@...
 - Parzival          : parzivalwolfram@...
 - FrostedGeulleisia : amazingcharm4757@...```
