@@ -76,7 +76,7 @@ Most programming was done by [ISSOtm](http://github.com/ISSOtm/).
 
 Most graphics were drawn by [Kai](http://github.com/kaikun97).
 
-Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [Charmy](http://github.com/CharmyBee99).
+Map-making by [Parzival](http://github.com/ParzivalWolfram/) and [FrostedGeulleisia](http://github.com/FrostedGeulleisia).
 
 
 # Contact
@@ -85,4 +85,4 @@ Replace "@..." with "@gmail.com" in any of these.
 - ISSOtm   : eldredhabert0@... (if you speak French, that's my main language !)
 - DevEd    : deved8@...
 - Parzival : parzivalwolfram@...
-- Charmy   : amazingcharm4757@...
+- FrostedGeulleisia   : amazingcharm4757@...
