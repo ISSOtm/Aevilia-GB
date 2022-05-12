@@ -408,7 +408,7 @@ StaffCreditsStrs::
 	dstr "MAP DESIGN"
 	db 0
 	dstr "Parzival"
-	dstr "Charmy"
+	dstr "Geulleisia"
 	db 0
 	
 	dstr "VC SUPPORT"
